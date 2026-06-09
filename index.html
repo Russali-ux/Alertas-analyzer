@@ -762,7 +762,13 @@ async function selectAlerta(idx) {
       dirigido:resultado.dirigido_a||[], acciones:resultado.acciones_detalladas||[], resumen:resultado.resumen_accion||''
     });
   } catch(e) {
-    Object.assign(alertas[idx], { status:'error', accion:'Error en análisis', urgencia:'INFORMATIVA', resumen: e.message });
+    const sinKey = e.message.includes('API key') || e.message.includes('Ingresa');
+    Object.assign(alertas[idx], {
+      status:'error',
+      accion: sinKey ? 'SIN API KEY — ANÁLISIS PENDIENTE' : 'Error en análisis',
+      urgencia:'INFORMATIVA',
+      resumen: e.message
+    });
   }
 
   updateItem(idx);
@@ -775,7 +781,15 @@ async function selectAlerta(idx) {
 ════════════════════════════════════════════ */
 async function analizarConIA(texto, titulo, githubPdfUrl = null) {
   const apiKey = getApiKey();
-  if (!apiKey) throw new Error(`Ingresa tu API key de ${getProviderName()}.`);
+  if (!apiKey) {
+    // Verificar si hay alguna key en cualquier campo
+    const groqKey = document.getElementById('groqQaKey')?.value?.trim();
+    if (groqKey && currentProvider !== 'groq') {
+      // Sugerir cambiar a Groq
+      throw new Error(`No hay API key de ${getProviderName()}. ¿Quieres usar Groq? Selecciona "Groq" como proveedor e ingresa tu gsk_ key.`);
+    }
+    throw new Error(`Ingresa tu API key de ${getProviderName()} para analizar alertas.`);
+  }
   const config = API_CONFIG[currentProvider];
 
   let body;
@@ -836,7 +850,10 @@ function extractPdfText(buffer) {
 }
 
 /* ════════════════════════════════════════════
-   VISOR PDF
+   VISOR PDF — con fallback encadenado
+   1º pdf.js (Mozilla CDN) — mejor compatibilidad
+   2º Google Docs Viewer — fallback
+   3º Descarga directa — último recurso
 ════════════════════════════════════════════ */
 function loadPdfViewer(a) {
   const wrap  = document.getElementById('pdfViewerWrap');
@@ -864,9 +881,12 @@ function loadPdfViewer(a) {
   tabs.style.display  = 'flex';
   empty.style.display = 'none';
 
-  // Google Docs Viewer funciona para cualquier PDF público (GitHub raw o DIGEMID)
-  // GitHub raw directo falla en iframe por cabeceras de seguridad del navegador
-  const viewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(urlToLoad)}&embedded=true`;
+  // Viewers encadenados: pdfjs → Google Docs → link directo
+  const VIEWERS = [
+    u => `https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(u)}`,
+    u => `https://docs.google.com/viewer?url=${encodeURIComponent(u)}&embedded=true`,
+  ];
+  let viewerIdx = 0;
 
   let iframe = document.getElementById('pdfIframe');
   if (!iframe) {
@@ -875,7 +895,33 @@ function loadPdfViewer(a) {
     iframe.style.cssText = 'width:100%;height:100%;border:none;';
     wrap.appendChild(iframe);
   }
-  iframe.src = viewerUrl;
+
+  function tryViewer(idx) {
+    if (idx >= VIEWERS.length) {
+      // Todos fallaron — mostrar link de descarga
+      wrap.innerHTML = `<div class="pdf-empty">
+        <div class="pdf-empty-icon">📄</div>
+        <div class="pdf-empty-title">No se puede mostrar el PDF aquí</div>
+        <div class="pdf-empty-sub">
+          <a href="${urlToLoad}" target="_blank" style="color:var(--accent);font-weight:700">
+            Abrir PDF en nueva pestaña →
+          </a>
+        </div>
+      </div>`;
+      return;
+    }
+    const viewerUrl = VIEWERS[idx](urlToLoad);
+    iframe.src = viewerUrl;
+    // Si carga vacío en 8s, intentar el siguiente viewer
+    iframe._fallbackTimer = setTimeout(() => {
+      if (iframe.contentDocument?.title?.includes('404') ||
+          iframe.contentDocument?.body?.innerText?.includes('not found')) {
+        tryViewer(idx + 1);
+      }
+    }, 8000);
+  }
+
+  tryViewer(0);
 }
 
 function switchPdfTab(tab) {
@@ -1182,7 +1228,7 @@ function renderDetail(a) {
     <div style="margin-top:11px">${pdfButtons}</div>
 
     <div class="action-card ${urg}">
-      <div class="action-label">🤖 ${getProviderName()} · ${a.urgencia||'INFORMATIVA'}</div>
+      <div class="action-label">${a.status==='error'&&(a.accion||'').includes('SIN API KEY') ? '⚠ SIN API KEY' : '🤖 '+getProviderName()+' · '+(a.urgencia||'INFORMATIVA')}</div>
       <div class="action-main">${a.accion||'—'}</div>
       <div class="action-summary">${a.resumen||''}</div>
     </div>
