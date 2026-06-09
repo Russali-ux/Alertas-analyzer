@@ -284,8 +284,15 @@ header p{font-size:11px;color:var(--sub);margin-top:1px}
     <div class="github-section">
       <div class="provider-title">⬡ GitHub PDF Store (opcional)</div>
       <input type="text" id="githubRepo" class="api-input"
-        placeholder="usuario/repo  ej: conkomerco/digemid-alertas" style="margin-bottom:5px">
+        placeholder="ej: Russali-ux/Alertas-analyzer" style="margin-bottom:5px">
       <input type="text" id="githubBranch" class="api-input" value="main" placeholder="Rama (main)">
+    </div>
+
+    <div class="github-section" style="background:rgba(249,115,22,.04);border-color:rgba(249,115,22,.2)">
+      <div class="provider-title" style="color:#f97316">⚡ Groq — Q&amp;A sobre PDF (opcional)</div>
+      <p style="font-size:9px;color:var(--muted);margin-bottom:5px">Gratis y rápido para el chat del PDF. Obtén tu key en console.groq.com</p>
+      <input type="password" id="groqQaKey" class="api-input"
+        placeholder="gsk_... (console.groq.com — gratis)" autocomplete="off">
     </div>
 
     <label>Alertas a cargar</label>
@@ -702,20 +709,27 @@ async function selectAlerta(idx) {
     }
     alertas[idx].pdfUrl = pdfUrl;
 
-    // Construir URL de GitHub
+    // Construir URL de GitHub — mismo naming que scraper v3
     let githubPdfUrl = null;
     const ghBase = getGithubBase();
     if (ghBase) {
       const fecha  = a.fecha || 'sin-fecha';
-      const titulo = a.titulo.slice(0,60).replace(/[^\w\-.]/g,'_').replace(/_+/g,'_');
-      const tryUrl = `${ghBase}/pdfs/${fecha}_${titulo}.pdf`;
-      try {
-        const r = await fetch(tryUrl, { method:'HEAD', signal: AbortSignal.timeout(4000) });
-        if (r.ok) githubPdfUrl = tryUrl;
-      } catch(e) {
-        // fallback: asumir que existe si el repo está configurado
-        githubPdfUrl = tryUrl;
+      // El scraper usa: fecha_TITULO_SANITIZADO.pdf (max 120 chars)
+      const tituloSan = a.titulo.slice(0,60).replace(/[^\w\-.]/g,'_').replace(/_+/g,'_');
+      const nombreBase = `${fecha}_${tituloSan}`;
+      // Intentar varias variantes del nombre (el scraper puede truncar diferente)
+      const candidatos = [
+        `${ghBase}/pdfs/${nombreBase}.pdf`,
+        `${ghBase}/pdfs/${nombreBase.slice(0,120)}.pdf`,
+      ];
+      for (const url of candidatos) {
+        try {
+          const r = await fetch(url, { method:'HEAD', signal: AbortSignal.timeout(5000) });
+          if (r.ok) { githubPdfUrl = url; break; }
+        } catch(e) {}
       }
+      // Si ninguno responde (CORS bloquea HEAD), asumir que existe el primero
+      if (!githubPdfUrl) githubPdfUrl = candidatos[0];
     }
     alertas[idx].githubPdfUrl = githubPdfUrl;
 
@@ -856,7 +870,17 @@ function switchPdfTab(tab) {
    Resto: usa texto extraído localmente
 ════════════════════════════════════════════ */
 async function askPdfQuestion() {
-  const apiKey   = getApiKey();
+  // Prioridad: Groq key dedicado → proveedor principal
+  const groqDedicada = document.getElementById('groqQaKey')?.value?.trim();
+  const apiKeyMain   = getApiKey();
+  
+  // Si hay Groq key dedicada, usar Groq para el Q&A del PDF
+  const usarGroq   = !!groqDedicada;
+  const qaProvider = usarGroq ? 'groq' : currentProvider;
+  const qaApiKey   = usarGroq ? groqDedicada : apiKeyMain;
+  const qaConfig   = API_CONFIG[qaProvider];
+  const qaName     = usarGroq ? 'Groq' : getProviderName();
+
   const input    = document.getElementById('pdfQaInput');
   const msgs     = document.getElementById('pdfQaMessages');
   const errDiv   = document.getElementById('pdfQaError');
@@ -864,7 +888,10 @@ async function askPdfQuestion() {
   const question = input.value.trim();
 
   errDiv.style.display = 'none';
-  if (!apiKey)  { errDiv.textContent=`⚠ Ingresa tu API key de ${getProviderName()}.`; errDiv.style.display='block'; return; }
+  if (!qaApiKey) {
+    errDiv.textContent = `⚠ Ingresa tu API key de ${qaName} (o una Groq key en el campo de Q&A).`;
+    errDiv.style.display='block'; return;
+  }
   if (!question) return;
 
   const a = alertas[activeIdx];
@@ -878,36 +905,35 @@ async function askPdfQuestion() {
 
   const thinkDiv = document.createElement('div');
   thinkDiv.className = 'qa-msg qa-bot';
-  thinkDiv.innerHTML = `<span class="spin">⟳</span> ${getProviderName()} leyendo documento...`;
+  thinkDiv.innerHTML = `<span class="spin">⟳</span> ${qaName} leyendo documento...`;
   msgs.appendChild(thinkDiv);
   msgs.scrollTop = msgs.scrollHeight;
   btn.disabled = true; btn.textContent = '...';
 
   try {
-    const config  = API_CONFIG[currentProvider];
-    const ghUrl   = a.githubPdfUrl;
+    const ghUrl = a.githubPdfUrl;
     let body;
 
-    // Claude + GitHub URL: enviar PDF directamente
-    if (ghUrl && currentProvider === 'anthropic' && config.buildBodyPdfUrl) {
+    // Claude (proveedor principal) + GitHub URL → enviar PDF nativo
+    if (ghUrl && qaProvider === 'anthropic' && qaConfig.buildBodyPdfUrl) {
       const hist = pdfQaHistory.map(h => [
         { role:'user', content: h.q },
         { role:'assistant', content: h.a }
       ]).flat();
-      body = config.buildBodyPdfUrl(ghUrl, question, SYSTEM_PROMPT_QA, hist);
+      body = qaConfig.buildBodyPdfUrl(ghUrl, question, SYSTEM_PROMPT_QA, hist);
     } else {
-      // Resto de proveedores: usar texto extraído del PDF
+      // Todos los demás (incluyendo Groq): texto extraído del PDF como contexto
       const ctx = a.textoCompleto?.length > 80
         ? a.textoCompleto.slice(0, 7000)
         : `Alerta: ${a.titulo}\nProducto: ${a.producto}\nTipo: ${a.tipo}\nFecha: ${a.fecha}`;
-      const prompt = `DOCUMENTO:\n${ctx}\n\n---\nPREGUNTA: ${question}`;
-      body = config.buildBody(prompt, SYSTEM_PROMPT_QA, pdfQaHistory.slice(-6));
+      const prompt = `DOCUMENTO DE ALERTA DIGEMID:\n${ctx}\n\n---\nPREGUNTA: ${question}`;
+      body = qaConfig.buildBody(prompt, SYSTEM_PROMPT_QA, pdfQaHistory.slice(-6));
     }
 
-    const resp = await fetch(config.url, { method:'POST', headers:config.headers(apiKey), body:JSON.stringify(body) });
+    const resp = await fetch(qaConfig.url, { method:'POST', headers:qaConfig.headers(qaApiKey), body:JSON.stringify(body) });
     if (!resp.ok) { const e = await resp.json().catch(()=>{}); throw new Error(e?.error?.message || `API error ${resp.status}`); }
     const data   = await resp.json();
-    const answer = config.extractText(data);
+    const answer = qaConfig.extractText(data);
 
     pdfQaHistory.push({ q:question, a:answer });
     thinkDiv.className = 'qa-msg qa-bot';
