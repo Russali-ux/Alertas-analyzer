@@ -1,0 +1,45 @@
+name: 🚨 Monitoreo DIGEMID Diario
+
+on:
+  schedule:
+    - cron: '0 13 * * *'   # 8:00 AM Lima (UTC-5 → UTC 13:00, lunes a viernes)
+  workflow_dispatch:         # ejecución manual desde GitHub Actions → "Run workflow"
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write        # necesario para subir PDFs, JSONs y summaries al repo
+
+    steps:
+      - name: 📥 Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0     # historial completo para evitar conflictos de push
+
+      - name: 🐍 Setup Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 📦 Instalar dependencias
+        run: |
+          pip install --upgrade pip
+          pip install requests beautifulsoup4 pandas openpyxl pymupdf anthropic
+
+      - name: 🔍 Ejecutar scraper DIGEMID
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GITHUB_TOKEN:      ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPO:       ${{ github.repository }}
+          GITHUB_BRANCH:     main
+        run: python scraper_alertas_digemid.py
+
+      - name: 💾 Commit resultados
+        run: |
+          git config user.name  "digemid-bot"
+          git config user.email "bot@conkomerco.com"
+          git pull --rebase origin main || true
+          git add data/ summaries/ || true
+          git diff --staged --quiet || git commit -m "📋 Alertas DIGEMID $(date +'%Y-%m-%d %H:%M UTC')"
+          git push origin main || true
