@@ -784,7 +784,7 @@ if __name__ == "__main__":
     # Exportar Excel local
     fecha_str = datetime.now().strftime("%Y%m%d_%H%M")
     nombre_xlsx = f"alertas_digemid_{fecha_str}.xlsx"
-    ruta_xlsx   = f"/mnt/user-data/outputs/{nombre_xlsx}"
+    ruta_xlsx   = os.path.join(os.getcwd(), nombre_xlsx)
     exportar_excel(df, ruta_xlsx)
 
     # Subir JSON + resumen a GitHub
