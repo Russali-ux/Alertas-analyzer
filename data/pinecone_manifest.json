@@ -1,0 +1,183 @@
+{
+  "namespace": "digemid-alertas",
+  "files": {
+    "2026-05-22_ALERTA_DIGEMID_Nº_53-2026.pdf": {
+      "sha256": "939f5c9ccc346e764ce6e4614e4a6bb870c58036daac7c1974c72017eb27cb9e",
+      "record_ids": [
+        "939f5c9ccc346e764ce6e461-0000"
+      ],
+      "chunks": 1
+    },
+    "2026-05-22_ALERTA_DIGEMID_Nº_54-2026.pdf": {
+      "sha256": "d69f37097a9ba12d56d3f72c7072e4f26a51bd6f8a774635dfb1071ca432cb51",
+      "record_ids": [
+        "d69f37097a9ba12d56d3f72c-0000"
+      ],
+      "chunks": 1
+    },
+    "2026-05-22_ALERTA_DIGEMID_Nº_55-2026.pdf": {
+      "sha256": "4ed64c9901b59fe3275d4db9fc9c74d617c4339553ed268afca87fd32ba44983",
+      "record_ids": [
+        "4ed64c9901b59fe3275d4db9-0000"
+      ],
+      "chunks": 1
+    },
+    "2026-05-28_ALERTA_DIGEMID_Nº_56-2026.pdf": {
+      "sha256": "013a759fbf3eea665dbc27cca249e0f15291fe1f92d68090ffb82f5c32572067",
+      "record_ids": [
+        "013a759fbf3eea665dbc27cc-0000"
+      ],
+      "chunks": 1
+    },
+    "2026-05-28_ALERTA_DIGEMID_Nº_57-2026.pdf": {
+      "sha256": "f217865a769f7bd3764a9cbe1cbc770669c8efd720971865981acf88624fe69a",
+      "record_ids": [
+        "f217865a769f7bd3764a9cbe-0000"
+      ],
+      "chunks": 1
+    },
+    "2026-05-28_ALERTA_DIGEMID_Nº_58-2026.pdf": {
+      "sha256": "4ff7fe5fc63a7f3ca39b3438c1210de9468bfcda166943600ba17547f25ad6f7",
+      "record_ids": [
+        "4ff7fe5fc63a7f3ca39b3438-0000"
+      ],
+      "chunks": 1
+    },
+    "2026-06-02_ALERTA_DIGEMID_Nº_59-2026.pdf": {
+      "sha256": "a42d31b5dc828c1a8e433b967a3dc0b030d5cf61eaaa68ae97f70ac5a71f235c",
+      "record_ids": [
+        "a42d31b5dc828c1a8e433b96-0000",
+        "a42d31b5dc828c1a8e433b96-0001"
+      ],
+      "chunks": 2
+    },
+    "2026-06-03_ALERTA_DIGEMID_Nº_60-2026.pdf": {
+      "sha256": "8d11a69574b7bf321a58dc314644b83560a254fe59b74e81ba84ba3ff89a79f1",
+      "record_ids": [
+        "8d11a69574b7bf321a58dc31-0000"
+      ],
+      "chunks": 1
+    },
+    "2026-06-03_ALERTA_DIGEMID_Nº_61-2026.pdf": {
+      "sha256": "2b6c568c61800d62ca1527e80ef05e352d223afcd82e790282c8e0829bbe43af",
+      "record_ids": [
+        "2b6c568c61800d62ca1527e8-0000"
+      ],
+      "chunks": 1
+    },
+    "2026-06-03_ALERTA_DIGEMID_Nº_62-2026.pdf": {
+      "sha256": "c3d4ebab550130ba635889159c703393a37330a0167d82978aeea68ab1bc1d12",
+      "record_ids": [
+        "c3d4ebab550130ba63588915-0000"
+      ],
+      "chunks": 1
+    },
+    "2026-06-12_ALERTA_DIGEMID_Nº_63-2026.pdf": {
+      "sha256": "14030d0eb6ff4564f46b7945f98b7eb4530fad33b9321840c1bf8133af7075f8",
+      "record_ids": [
+        "14030d0eb6ff4564f46b7945-0000"
+      ],
+      "chunks": 1
+    },
+    "2026-06-12_ALERTA_DIGEMID_Nº_64-2026.pdf": {
+      "sha256": "869ff70dc8d8273e6b5fdda98c404c051a774c2597c808c570b1c1121378e925",
+      "record_ids": [
+        "869ff70dc8d8273e6b5fdda9-0000"
+      ],
+      "chunks": 1
+    },
+    "2026-06-12_ALERTA_DIGEMID_Nº_65-2026.pdf": {
+      "sha256": "7e48ba0d7ca0fe49c744666ad0a6178d53fd41b191b2018204e6e9473b554e58",
+      "record_ids": [
+        "7e48ba0d7ca0fe49c744666a-0000"
+      ],
+      "chunks": 1
+    },
+    "2026-06-26_ALERTA_DIGEMID_Nº_66-2026.pdf": {
+      "sha256": "a1ff696a57fdc64489b19c6e600e1e0ae09c33681a154f36961097425ccd00b2",
+      "record_ids": [
+        "a1ff696a57fdc64489b19c6e-0000"
+      ],
+      "chunks": 1
+    },
+    "2026-06-26_ALERTA_DIGEMID_Nº_67-2026.pdf": {
+      "sha256": "53917a17d4177e17163a517733e99f3de274ac218dffdb7d14b00ae691e50a07",
+      "record_ids": [
+        "53917a17d4177e17163a5177-0000"
+      ],
+      "chunks": 1
+    },
+    "2026-06-26_ALERTA_DIGEMID_Nº_68-2026.pdf": {
+      "sha256": "4575a3651dc092ca5ec9f76fa866ac5687a841a4930130179834b2382d5eb075",
+      "record_ids": [
+        "4575a3651dc092ca5ec9f76f-0000",
+        "4575a3651dc092ca5ec9f76f-0001"
+      ],
+      "chunks": 2
+    },
+    "2026-06-26_ALERTA_DIGEMID_Nº_69-2026.pdf": {
+      "sha256": "7ad4033c0e685b4d8fe7bd09499d8ed02738095f3875095af79ab2920060bc6e",
+      "record_ids": [
+        "7ad4033c0e685b4d8fe7bd09-0000"
+      ],
+      "chunks": 1
+    },
+    "2026-07-01_ALERTA_DIGEMID_Nº_70-2026.pdf": {
+      "sha256": "36848852b5f24049f2c4da54b850cd2eeb5800a8a4900e3fcdd2cf0999816879",
+      "record_ids": [
+        "36848852b5f24049f2c4da54-0000"
+      ],
+      "chunks": 1
+    },
+    "2026-07-06_ALERTA_DIGEMID_Nº_71-2026.pdf": {
+      "sha256": "c351b9213b3732ad24a7817b15f5a57d4c875dc7e2de1c3d45f424364b0b45fa",
+      "record_ids": [
+        "c351b9213b3732ad24a7817b-0000"
+      ],
+      "chunks": 1
+    },
+    "2026-07-06_ALERTA_DIGEMID_Nº_72-2026.pdf": {
+      "sha256": "809774c33ff70bd6c686a7c0fbdc8875392641bf6b3c06673105082f7616d12b",
+      "record_ids": [
+        "809774c33ff70bd6c686a7c0-0000"
+      ],
+      "chunks": 1
+    },
+    "2026-07-06_ALERTA_DIGEMID_Nº_73-2026.pdf": {
+      "sha256": "22bbf6fa4aaa05e51a233f79c3d16e4c02c30390373e469c58e35dc48b7b69b2",
+      "record_ids": [
+        "22bbf6fa4aaa05e51a233f79-0000"
+      ],
+      "chunks": 1
+    },
+    "2026-07-06_ALERTA_DIGEMID_Nº_74-2026.pdf": {
+      "sha256": "14806ef7de43fd2da98e05c7027fd4b40a3c965d3059fa6a8f8ffe921551636c",
+      "record_ids": [
+        "14806ef7de43fd2da98e05c7-0000"
+      ],
+      "chunks": 1
+    },
+    "2026-07-06_ALERTA_DIGEMID_Nº_75-2026.pdf": {
+      "sha256": "021f12ba51889352b3996b0bb49094f2af6830faea635f7633f1deffbcb64d3a",
+      "record_ids": [
+        "021f12ba51889352b3996b0b-0000"
+      ],
+      "chunks": 1
+    },
+    "2026-07-10_ALERTA_DIGEMID_Nº_76-2026.pdf": {
+      "sha256": "f24927382b8a5e1695db9591cc3a5b6e656a84b7df7f914ae6656edaa2b315ee",
+      "record_ids": [
+        "f24927382b8a5e1695db9591-0000"
+      ],
+      "chunks": 1
+    },
+    "2026-07-10_ALERTA_DIGEMID_Nº_77-2026.pdf": {
+      "sha256": "79039a010f43f9aa3907842c62145d3e40b0c31af01c84cd8347472c73f055dd",
+      "record_ids": [
+        "79039a010f43f9aa3907842c-0000",
+        "79039a010f43f9aa3907842c-0001"
+      ],
+      "chunks": 2
+    }
+  }
+}
