@@ -1,0 +1,8 @@
+fastapi>=0.115,<1
+gunicorn>=22,<24
+openai>=1.93,<2
+pinecone>=7.3,<9
+pydantic>=2.8,<3
+pymupdf>=1.24,<2
+uvicorn[standard]>=0.30,<1
+

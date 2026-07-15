@@ -157,3 +157,54 @@ Para cambiar el horario, edita `.github/workflows/digemid_monitor.yml`:
 - [DIGEMID Alertas](https://www.digemid.minsa.gob.pe/alertas)
 - [Conkomerco](https://conkomerco.com)
 - [ConkoSafe — Plataforma FV](https://conkomerco.com/conkosafe)
+
+---
+
+## 🧠 Base vectorial Pinecone (piloto)
+
+El repositorio incluye una integración RAG segura con Pinecone:
+
+- `pinecone_indexer.py` extrae el texto de `pdfs/*.pdf`, lo fragmenta y sincroniza únicamente documentos nuevos o modificados.
+- `pinecone_store.py` crea o abre el índice con embeddings integrados de Pinecone.
+- `rag_api.py` busca los fragmentos relevantes y usa OpenAI para generar una respuesta fundamentada.
+- `data/pinecone_manifest.json` registra hashes e identificadores para evitar duplicados.
+
+El modelo de embeddings predeterminado es `multilingual-e5-large`, apropiado para documentos y consultas en español. Pinecone genera los embeddings durante la carga y la búsqueda, por lo que el indexador no consume la API de embeddings de OpenAI.
+
+### Secretos de GitHub
+
+En **Settings → Secrets and variables → Actions**, agrega:
+
+| Nombre | Tipo | Descripción |
+|---|---|---|
+| `PINECONE_API_KEY` | Secret | Clave del proyecto Pinecone |
+| `PINECONE_INDEX_NAME` | Variable opcional | Nombre del índice; por defecto `alertas-analyzer` |
+
+El workflow diario ejecuta la sincronización después del scraper. Si el secreto no existe, omite ese paso sin interrumpir el monitoreo.
+
+### API RAG en Hostinger
+
+Instala las dependencias y configura las variables usando `.env.example` como referencia:
+
+```bash
+pip install -r requirements-rag.txt
+uvicorn rag_api:app --host 127.0.0.1 --port 8000
+```
+
+Para producción se recomienda ejecutar Uvicorn detrás del proxy HTTPS de Hostinger. Variables requeridas:
+
+```text
+PINECONE_API_KEY
+PINECONE_INDEX_NAME=alertas-analyzer
+PINECONE_NAMESPACE=digemid-alertas
+OPENAI_API_KEY
+RAG_ALLOWED_ORIGINS=https://ia.conkomercoplataforma.com
+```
+
+En la interfaz web, introduce la URL pública completa del endpoint en **Base documental Pinecone**, por ejemplo:
+
+```text
+https://api.tu-dominio.com/api/rag/query
+```
+
+Las claves de Pinecone y OpenAI permanecen en el servidor y nunca se envían al navegador.
