@@ -4,6 +4,7 @@ __pycache__/
 *.pyo
 .env
 .venv/
+.venv-*/
 venv/
 
 # Output local (no subir Excel al repo, solo PDFs y JSONs)

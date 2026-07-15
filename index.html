@@ -295,6 +295,13 @@ header p{font-size:11px;color:var(--sub);margin-top:1px}
         placeholder="gsk_... (console.groq.com — gratis)" autocomplete="off">
     </div>
 
+    <div class="github-section" style="background:rgba(16,163,127,.04);border-color:rgba(16,163,127,.2)">
+      <div class="provider-title" style="color:#10a37f">Base documental Pinecone</div>
+      <p style="font-size:9px;color:var(--muted);margin-bottom:5px">URL pública de la API RAG segura desplegada en Hostinger.</p>
+      <input type="url" id="ragApiUrl" class="api-input"
+        placeholder="https://tu-dominio.com/api/rag/query" autocomplete="url">
+    </div>
+
     <label>Alertas a cargar</label>
     <div class="fetch-row">
       <input type="number" id="numPages" value="10" min="1" max="100" placeholder="N°">
@@ -954,9 +961,10 @@ async function askPdfQuestion() {
   const errDiv   = document.getElementById('pdfQaError');
   const btn      = document.getElementById('btnPdfAsk');
   const question = input.value.trim();
+  const ragApiUrl = document.getElementById('ragApiUrl')?.value?.trim();
 
   errDiv.style.display = 'none';
-  if (!qaApiKey) {
+  if (!ragApiUrl && !qaApiKey) {
     errDiv.textContent = `⚠ Ingresa tu API key de ${qaName} (o una Groq key en el campo de Q&A).`;
     errDiv.style.display='block'; return;
   }
@@ -973,7 +981,7 @@ async function askPdfQuestion() {
 
   const thinkDiv = document.createElement('div');
   thinkDiv.className = 'qa-msg qa-bot';
-  thinkDiv.innerHTML = `<span class="spin">⟳</span> ${qaName} leyendo documento...`;
+  thinkDiv.innerHTML = `<span class="spin">⟳</span> ${ragApiUrl ? 'Pinecone' : qaName} leyendo documento...`;
   msgs.appendChild(thinkDiv);
   msgs.scrollTop = msgs.scrollHeight;
   btn.disabled = true; btn.textContent = '...';
@@ -981,6 +989,25 @@ async function askPdfQuestion() {
   try {
     const ghUrl = a.githubPdfUrl;
     let body;
+
+    if (ragApiUrl) {
+      const ragResponse = await fetch(ragApiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          question,
+          pdf_url: ghUrl || null,
+          history: pdfQaHistory.slice(-6)
+        })
+      });
+      const ragData = await ragResponse.json().catch(() => ({}));
+      if (!ragResponse.ok) throw new Error(ragData?.detail || `API RAG error ${ragResponse.status}`);
+      const answer = ragData.answer || 'No se recibió una respuesta.';
+      pdfQaHistory.push({ q:question, a:answer });
+      thinkDiv.className = 'qa-msg qa-bot';
+      thinkDiv.innerHTML = answer.replace(/\n/g,'<br>');
+      return;
+    }
 
     // Claude (proveedor principal) + GitHub URL → enviar PDF nativo
     if (ghUrl && qaProvider === 'anthropic' && qaConfig.buildBodyPdfUrl) {

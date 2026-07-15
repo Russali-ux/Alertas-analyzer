@@ -25,7 +25,7 @@ jobs:
       - name: 📦 Instalar dependencias
         run: |
           pip install --upgrade pip
-          pip install requests beautifulsoup4 pandas openpyxl pymupdf anthropic
+          pip install requests beautifulsoup4 pandas openpyxl pymupdf anthropic "pinecone>=7.3,<9"
 
       - name: 🔍 Ejecutar scraper DIGEMID
         env:
@@ -34,6 +34,18 @@ jobs:
           GITHUB_REPO:       ${{ github.repository }}
           GITHUB_BRANCH:     main
         run: python scraper_alertas_digemid.py
+
+      - name: Sincronizar PDFs con Pinecone
+        env:
+          PINECONE_API_KEY:    ${{ secrets.PINECONE_API_KEY }}
+          PINECONE_INDEX_NAME: ${{ vars.PINECONE_INDEX_NAME || 'alertas-analyzer' }}
+          PINECONE_NAMESPACE:  digemid-alertas
+        run: |
+          if [ -n "$PINECONE_API_KEY" ]; then
+            python pinecone_indexer.py --sync
+          else
+            echo "PINECONE_API_KEY no configurada; se omite la indexación."
+          fi
 
       - name: 💾 Commit resultados
         run: |
