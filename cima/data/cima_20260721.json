@@ -1,0 +1,200 @@
+{
+  "generado": "2026-07-21T02:23:19Z",
+  "generado_str": "21/07/2026 02:23 UTC",
+  "fecha_codigo": "20260721",
+  "periodo": {
+    "desde": "19/07/2026",
+    "hasta": "21/07/2026",
+    "dias": 2
+  },
+  "excel": "ConkosafeIA_Regulatorio_20260721.xlsx",
+  "markdown": "../summaries/cima_2026-07-21.md",
+  "stats": {
+    "total": 10,
+    "solo_ft": 0,
+    "solo_prosp": 0,
+    "ambos": 10,
+    "top_labs": [
+      {
+        "lab": "Eugia Pharma (Malta) Limited",
+        "n": 2
+      },
+      {
+        "lab": "Optimal Regulatory Solutions S.L.U.",
+        "n": 2
+      },
+      {
+        "lab": "Tecnimede España Industria Farmaceutica S.A.",
+        "n": 2
+      },
+      {
+        "lab": "Biotest Pharma Gmbh",
+        "n": 1
+      },
+      {
+        "lab": "Vivanta Generics S.R.O.",
+        "n": 1
+      },
+      {
+        "lab": "Aaa-Pharma Gmbh",
+        "n": 1
+      },
+      {
+        "lab": "Tillomed Malta Limited",
+        "n": 1
+      }
+    ]
+  },
+  "registros": [
+    {
+      "nreg": "90714",
+      "nombre": "PRUFIBRY 1 G POLVO Y DISOLVENTE PARA SOLUCION INYECTABLE Y PARA PERFUSION",
+      "lab": "Biotest Pharma Gmbh",
+      "fecha": "20/07/2026 06:56",
+      "tipo": "MODIFICADO",
+      "otros": "",
+      "cat": "both",
+      "has_ft": true,
+      "has_prosp": true,
+      "ft_pdf": "https://cima.aemps.es/cima/pdfs/ft/90714/FT_90714.pdf",
+      "ft_html": "https://cima.aemps.es/cima/dochtml/ft/90714/FT_90714.html",
+      "p_pdf": "https://cima.aemps.es/cima/pdfs/p/90714/P_90714.pdf",
+      "p_html": "https://cima.aemps.es/cima/dochtml/p/90714/P_90714.html"
+    },
+    {
+      "nreg": "91424",
+      "nombre": "NILOTINIB EUGIA 150 MG CAPSULAS DURAS EFG",
+      "lab": "Eugia Pharma (Malta) Limited",
+      "fecha": "20/07/2026 06:56",
+      "tipo": "MODIFICADO",
+      "otros": "",
+      "cat": "both",
+      "has_ft": true,
+      "has_prosp": true,
+      "ft_pdf": "https://cima.aemps.es/cima/pdfs/ft/91424/FT_91424.pdf",
+      "ft_html": "https://cima.aemps.es/cima/dochtml/ft/91424/FT_91424.html",
+      "p_pdf": "https://cima.aemps.es/cima/pdfs/p/91424/P_91424.pdf",
+      "p_html": "https://cima.aemps.es/cima/dochtml/p/91424/P_91424.html"
+    },
+    {
+      "nreg": "91425",
+      "nombre": "NILOTINIB EUGIA 200 MG CAPSULAS DURAS EFG",
+      "lab": "Eugia Pharma (Malta) Limited",
+      "fecha": "20/07/2026 06:56",
+      "tipo": "MODIFICADO",
+      "otros": "",
+      "cat": "both",
+      "has_ft": true,
+      "has_prosp": true,
+      "ft_pdf": "https://cima.aemps.es/cima/pdfs/ft/91425/FT_91425.pdf",
+      "ft_html": "https://cima.aemps.es/cima/dochtml/ft/91425/FT_91425.html",
+      "p_pdf": "https://cima.aemps.es/cima/pdfs/p/91425/P_91425.pdf",
+      "p_html": "https://cima.aemps.es/cima/dochtml/p/91425/P_91425.html"
+    },
+    {
+      "nreg": "91459",
+      "nombre": "PARACETAMOL UPSA 1 G GRANULADO EN SOBRES",
+      "lab": "Optimal Regulatory Solutions S.L.U.",
+      "fecha": "20/07/2026 06:56",
+      "tipo": "MODIFICADO",
+      "otros": "",
+      "cat": "both",
+      "has_ft": true,
+      "has_prosp": true,
+      "ft_pdf": "https://cima.aemps.es/cima/pdfs/ft/91459/FT_91459.pdf",
+      "ft_html": "https://cima.aemps.es/cima/dochtml/ft/91459/FT_91459.html",
+      "p_pdf": "https://cima.aemps.es/cima/pdfs/p/91459/P_91459.pdf",
+      "p_html": "https://cima.aemps.es/cima/dochtml/p/91459/P_91459.html"
+    },
+    {
+      "nreg": "91460",
+      "nombre": "PARACETAMOL UPSA 500 MG GRANULADO EN SOBRES",
+      "lab": "Optimal Regulatory Solutions S.L.U.",
+      "fecha": "20/07/2026 06:56",
+      "tipo": "MODIFICADO",
+      "otros": "",
+      "cat": "both",
+      "has_ft": true,
+      "has_prosp": true,
+      "ft_pdf": "https://cima.aemps.es/cima/pdfs/ft/91460/FT_91460.pdf",
+      "ft_html": "https://cima.aemps.es/cima/dochtml/ft/91460/FT_91460.html",
+      "p_pdf": "https://cima.aemps.es/cima/pdfs/p/91460/P_91460.pdf",
+      "p_html": "https://cima.aemps.es/cima/dochtml/p/91460/P_91460.html"
+    },
+    {
+      "nreg": "91463",
+      "nombre": "MACITENTAN VIVANTA 10 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG",
+      "lab": "Vivanta Generics S.R.O.",
+      "fecha": "20/07/2026 06:56",
+      "tipo": "MODIFICADO",
+      "otros": "",
+      "cat": "both",
+      "has_ft": true,
+      "has_prosp": true,
+      "ft_pdf": "https://cima.aemps.es/cima/pdfs/ft/91463/FT_91463.pdf",
+      "ft_html": "https://cima.aemps.es/cima/dochtml/ft/91463/FT_91463.html",
+      "p_pdf": "https://cima.aemps.es/cima/pdfs/p/91463/P_91463.pdf",
+      "p_html": "https://cima.aemps.es/cima/dochtml/p/91463/P_91463.html"
+    },
+    {
+      "nreg": "91464",
+      "nombre": "MAGEROT 32,8 MG COMPRIMIDOS",
+      "lab": "Aaa-Pharma Gmbh",
+      "fecha": "20/07/2026 06:56",
+      "tipo": "MODIFICADO",
+      "otros": "",
+      "cat": "both",
+      "has_ft": true,
+      "has_prosp": true,
+      "ft_pdf": "https://cima.aemps.es/cima/pdfs/ft/91464/FT_91464.pdf",
+      "ft_html": "https://cima.aemps.es/cima/dochtml/ft/91464/FT_91464.html",
+      "p_pdf": "https://cima.aemps.es/cima/pdfs/p/91464/P_91464.pdf",
+      "p_html": "https://cima.aemps.es/cima/dochtml/p/91464/P_91464.html"
+    },
+    {
+      "nreg": "91465",
+      "nombre": "LIRAGLUTIDA TECNIGEN 6 MG/ML SOLUCION INYECTABLE EN PLUMA PRECARGADA",
+      "lab": "Tecnimede España Industria Farmaceutica S.A.",
+      "fecha": "20/07/2026 06:56",
+      "tipo": "MODIFICADO",
+      "otros": "",
+      "cat": "both",
+      "has_ft": true,
+      "has_prosp": true,
+      "ft_pdf": "https://cima.aemps.es/cima/pdfs/ft/91465/FT_91465.pdf",
+      "ft_html": "https://cima.aemps.es/cima/dochtml/ft/91465/FT_91465.html",
+      "p_pdf": "https://cima.aemps.es/cima/pdfs/p/91465/P_91465.pdf",
+      "p_html": "https://cima.aemps.es/cima/dochtml/p/91465/P_91465.html"
+    },
+    {
+      "nreg": "91466",
+      "nombre": "LIRAGLUTIDA TECNIMEDE 6 MG/ML SOLUCION INYECTABLE EN PLUMA PRECARGADA",
+      "lab": "Tecnimede España Industria Farmaceutica S.A.",
+      "fecha": "20/07/2026 06:56",
+      "tipo": "MODIFICADO",
+      "otros": "",
+      "cat": "both",
+      "has_ft": true,
+      "has_prosp": true,
+      "ft_pdf": "https://cima.aemps.es/cima/pdfs/ft/91466/FT_91466.pdf",
+      "ft_html": "https://cima.aemps.es/cima/dochtml/ft/91466/FT_91466.html",
+      "p_pdf": "https://cima.aemps.es/cima/pdfs/p/91466/P_91466.pdf",
+      "p_html": "https://cima.aemps.es/cima/dochtml/p/91466/P_91466.html"
+    },
+    {
+      "nreg": "91467",
+      "nombre": "DALBAVANCINA TILLOMED 500 MG POLVO PARA CONCENTRADO PARA SOLUCION PARA PERFUSION EFG",
+      "lab": "Tillomed Malta Limited",
+      "fecha": "20/07/2026 06:56",
+      "tipo": "MODIFICADO",
+      "otros": "",
+      "cat": "both",
+      "has_ft": true,
+      "has_prosp": true,
+      "ft_pdf": "https://cima.aemps.es/cima/pdfs/ft/91467/FT_91467.pdf",
+      "ft_html": "https://cima.aemps.es/cima/dochtml/ft/91467/FT_91467.html",
+      "p_pdf": "https://cima.aemps.es/cima/pdfs/p/91467/P_91467.pdf",
+      "p_html": "https://cima.aemps.es/cima/dochtml/p/91467/P_91467.html"
+    }
+  ]
+}

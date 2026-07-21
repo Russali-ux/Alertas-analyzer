@@ -1,0 +1,57 @@
+name: 💊 Monitor CIMA (Ficha Técnica / Prospecto)
+
+# Workflow INDEPENDIENTE del monitor DIGEMID.
+# Solo lee/escribe dentro de cima/  → no interfiere con data/ ni summaries/ de DIGEMID.
+
+on:
+  schedule:
+    - cron: '30 13 * * *'   # 08:30 AM Lima (UTC-5 → 13:30 UTC). Desfasado del de DIGEMID.
+  workflow_dispatch:
+    inputs:
+      dias:
+        description: 'Ventana de días hacia atrás (default 30)'
+        required: false
+        default: '30'
+
+# Evita que dos corridas se pisen al hacer push
+concurrency:
+  group: cima-monitor
+  cancel-in-progress: false
+
+jobs:
+  monitor-cima:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write        # necesario para commitear cima/data y cima/summaries
+
+    steps:
+      - name: 📥 Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🐍 Setup Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 📦 Instalar dependencias
+        run: |
+          pip install --upgrade pip
+          pip install -r cima/requirements.txt
+
+      - name: 🔍 Ejecutar monitor CIMA
+        run: |
+          python cima/cima_monitor.py \
+            --dias "${{ github.event.inputs.dias || '30' }}" \
+            --data-dir cima/data \
+            --summary-dir cima/summaries
+
+      - name: 💾 Commit resultados CIMA
+        run: |
+          git config user.name  "cima-bot"
+          git config user.email "bot@conkomerco.com"
+          git pull --rebase origin main || true
+          git add cima/data/ cima/summaries/ || true
+          git diff --staged --quiet || git commit -m "💊 CIMA FT/Prospecto $(date +'%Y-%m-%d %H:%M UTC')"
+          git push origin main || true

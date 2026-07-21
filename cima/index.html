@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ConkoSafe IA — CIMA · Ficha Técnica y Prospecto (AEMPS)</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#ffffff; --surface:#f5f7fa; --border:#d0d7e3; --accent:#0077cc;
+  --ft:#00996a; --prosp:#0077cc; --ambos:#cc7a00;
+  --ink:#1a2433; --muted:#67788c; --header:#1A3A5C;
+  --sora:'Sora',system-ui,sans-serif; --mono:'Space Mono',monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sora);font-size:14px;line-height:1.45}
+a{color:var(--accent)}
+header{background:linear-gradient(120deg,#1A3A5C,#0077cc);color:#fff;padding:20px 26px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+header h1{margin:0;font-size:20px;font-weight:700;letter-spacing:.2px}
+header p{margin:4px 0 0;font-size:12px;opacity:.85;font-family:var(--mono)}
+.pill{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);padding:5px 12px;border-radius:20px;font-size:11px;font-family:var(--mono)}
+.wrap{max-width:1240px;margin:0 auto;padding:22px 26px 60px}
+.backlink{display:inline-block;margin-bottom:14px;font-size:12px;font-family:var(--mono);color:var(--muted);text-decoration:none}
+.backlink:hover{color:var(--accent)}
+
+.controls{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:18px}
+.ctrl{display:flex;flex-direction:column;gap:4px}
+.ctrl label{font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);font-family:var(--mono)}
+select,input[type=search]{font-family:var(--sora);font-size:13px;padding:8px 10px;border:1px solid var(--border);border-radius:8px;background:#fff;min-width:190px}
+.btn{font-family:var(--sora);font-size:13px;font-weight:600;padding:9px 16px;border:none;border-radius:8px;background:var(--accent);color:#fff;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+.btn:hover{filter:brightness(1.08)}
+.btn.ghost{background:#fff;color:var(--accent);border:1px solid var(--accent)}
+
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+.stat{background:#fff;border:1px solid var(--border);border-radius:12px;padding:14px 16px;position:relative;overflow:hidden}
+.stat .n{font-size:28px;font-weight:700;font-family:var(--mono);line-height:1}
+.stat .l{font-size:11px;color:var(--muted);margin-top:5px;text-transform:uppercase;letter-spacing:.5px}
+.stat::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px}
+.stat.total::before{background:var(--header)}
+.stat.ft::before{background:var(--ft)}
+.stat.prosp::before{background:var(--prosp)}
+.stat.ambos::before{background:var(--ambos)}
+.stat.total .n{color:var(--header)} .stat.ft .n{color:var(--ft)}
+.stat.prosp .n{color:var(--prosp)} .stat.ambos .n{color:var(--ambos)}
+
+.meta{font-size:12px;color:var(--muted);font-family:var(--mono);margin-bottom:12px}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:11px;color:var(--muted);margin-bottom:10px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.dot{width:12px;height:12px;border-radius:3px;display:inline-block}
+.dot.ft{background:#D5E8D4;border:1px solid var(--ft)}
+.dot.prosp{background:#DAE8FC;border:1px solid var(--prosp)}
+.dot.ambos{background:#FFE6CC;border:1px solid var(--ambos)}
+
+.table-scroll{overflow-x:auto;border:1px solid var(--border);border-radius:12px}
+table{border-collapse:collapse;width:100%;min-width:920px;font-size:13px}
+thead th{background:var(--header);color:#fff;text-align:left;padding:10px 12px;font-weight:600;font-size:12px;position:sticky;top:0}
+tbody td{padding:9px 12px;border-top:1px solid var(--border);vertical-align:top}
+tbody tr.ft{background:#f2f9f2} tbody tr.prosp{background:#f1f6fd} tbody tr.both{background:#fff6ec}
+tbody tr:hover{background:#eef3f8}
+.nreg{font-family:var(--mono);font-size:12px;white-space:nowrap}
+.tag{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;font-family:var(--mono)}
+.tag.ft{background:#D5E8D4;color:#0a5e42} .tag.prosp{background:#DAE8FC;color:#0a4d80} .tag.both{background:#FFE6CC;color:#8a4d00}
+.tipo{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.links a{display:inline-block;margin:1px 3px 1px 0;font-size:11px;font-family:var(--mono);padding:2px 7px;border:1px solid var(--border);border-radius:6px;text-decoration:none;white-space:nowrap}
+.links a.ftl{border-color:var(--ft);color:var(--ft)}
+.links a.pl{border-color:var(--prosp);color:var(--prosp)}
+.links a:hover{background:var(--surface)}
+.empty{padding:60px 20px;text-align:center;color:var(--muted)}
+.err{background:#fdecec;border:1px solid #f5b5b5;color:#a11;padding:12px 14px;border-radius:10px;font-size:13px;margin-bottom:16px}
+footer{margin-top:30px;font-size:11px;color:var(--muted);font-family:var(--mono);border-top:1px solid var(--border);padding-top:14px}
+@media(max-width:720px){.stats{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>💊 ConkoSafe IA — Monitor CIMA</h1>
+    <p>Cambios en Ficha Técnica y Prospecto · AEMPS (España)</p>
+  </div>
+  <div class="pill">Ficha Técnica · Prospecto</div>
+</header>
+
+<div class="wrap">
+  <a class="backlink" href="../">← Volver a DIGEMID Analyzer</a>
+
+  <div id="err" class="err" style="display:none"></div>
+
+  <div class="controls">
+    <div class="ctrl">
+      <label>Fecha del reporte</label>
+      <select id="dateSelect"></select>
+    </div>
+    <div class="ctrl">
+      <label>Buscar (medicamento / laboratorio / Nº)</label>
+      <input type="search" id="search" placeholder="Ej: amoxicilina, Cinfa, 90714...">
+    </div>
+    <div class="ctrl">
+      <label>Filtrar categoría</label>
+      <select id="catFilter">
+        <option value="">Todas</option>
+        <option value="ft">Solo Ficha Técnica</option>
+        <option value="prosp">Solo Prospecto</option>
+        <option value="both">FT + Prospecto</option>
+      </select>
+    </div>
+    <a class="btn" id="xlsxBtn" href="#" target="_blank" rel="noopener">⬇ Descargar Excel</a>
+    <a class="btn ghost" id="mdBtn" href="#" target="_blank" rel="noopener">📄 Ver resumen (MD)</a>
+  </div>
+
+  <div class="meta" id="meta">Cargando…</div>
+
+  <div class="stats">
+    <div class="stat total"><div class="n" id="sTotal">—</div><div class="l">Total FT / Prospecto</div></div>
+    <div class="stat ft"><div class="n" id="sFt">—</div><div class="l">Solo Ficha Técnica</div></div>
+    <div class="stat prosp"><div class="n" id="sProsp">—</div><div class="l">Solo Prospecto</div></div>
+    <div class="stat ambos"><div class="n" id="sAmbos">—</div><div class="l">FT + Prospecto</div></div>
+  </div>
+
+  <div class="legend">
+    <span><i class="dot ft"></i> Solo Ficha Técnica</span>
+    <span><i class="dot prosp"></i> Solo Prospecto</span>
+    <span><i class="dot ambos"></i> FT + Prospecto</span>
+  </div>
+
+  <div class="table-scroll">
+    <table>
+      <thead>
+        <tr>
+          <th>Nº Registro</th><th>Medicamento</th><th>Laboratorio</th>
+          <th>Fecha del cambio</th><th>Tipo</th><th>Categoría</th><th>Documentos</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+
+  <footer id="foot">
+    Fuente: <a href="https://cima.aemps.es/cima/rest/registroCambios" target="_blank" rel="noopener">CIMA — AEMPS (registroCambios)</a>.
+    Datos generados automáticamente por el workflow <code>cima_monitor.yml</code>.
+    Nota: CIMA indica que el documento completo fue modificado, no la sección específica (4.1, 4.8, etc.).
+  </footer>
+</div>
+
+<script>
+const DATA_DIR = 'data/';
+let current = null;
+
+const $ = id => document.getElementById(id);
+const catLabel = {ft:'Solo FT', prosp:'Solo Prospecto', both:'FT + Prospecto'};
+
+function showErr(msg){ const e=$('err'); e.style.display='block'; e.textContent=msg; }
+
+async function init(){
+  let idx;
+  try{
+    const r = await fetch(DATA_DIR+'index.json',{cache:'no-store'});
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    idx = await r.json();
+  }catch(e){
+    showErr('No se pudo cargar data/index.json. Aún no hay corridas del workflow, '
+            +'o GitHub Pages no ha publicado los datos. Detalle: '+e.message);
+    $('meta').textContent='Sin datos disponibles.';
+    return;
+  }
+  const sel = $('dateSelect');
+  if(!idx.fechas || !idx.fechas.length){
+    $('meta').textContent='El índice no contiene fechas todavía.';
+    return;
+  }
+  idx.fechas.forEach(f=>{
+    const o=document.createElement('option');
+    o.value=f.archivo; o.textContent=`${f.fecha}  ·  ${f.total} cambio(s)`;
+    sel.appendChild(o);
+  });
+  sel.onchange = ()=> loadReport(sel.value);
+  ['search','catFilter'].forEach(id=> $(id).oninput = render);
+  loadReport(idx.latest || idx.fechas[0].archivo);
+}
+
+async function loadReport(file){
+  try{
+    const r = await fetch(DATA_DIR+file,{cache:'no-store'});
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    current = await r.json();
+  }catch(e){ showErr('No se pudo cargar '+file+': '+e.message); return; }
+  $('err').style.display='none';
+
+  const s=current.stats;
+  $('sTotal').textContent=s.total; $('sFt').textContent=s.solo_ft;
+  $('sProsp').textContent=s.solo_prosp; $('sAmbos').textContent=s.ambos;
+
+  const p=current.periodo;
+  $('meta').innerHTML = `Periodo: <b>${p.desde} → ${p.hasta}</b> (últimos ${p.dias} días) · `
+    + `Generado: ${current.generado_str}`;
+  $('xlsxBtn').href = DATA_DIR + current.excel;
+  $('mdBtn').href   = current.markdown;
+  render();
+}
+
+function render(){
+  if(!current) return;
+  const q=$('search').value.trim().toLowerCase();
+  const cat=$('catFilter').value;
+  const rows=current.registros.filter(r=>{
+    if(cat && r.cat!==cat) return false;
+    if(!q) return true;
+    return (r.nombre+' '+r.lab+' '+r.nreg).toLowerCase().includes(q);
+  });
+
+  const tb=$('tbody');
+  if(!rows.length){
+    tb.innerHTML=`<tr><td colspan="7"><div class="empty">Sin resultados para el filtro actual.</div></td></tr>`;
+    return;
+  }
+  tb.innerHTML = rows.map(r=>{
+    const links=[];
+    if(r.has_ft){
+      links.push(`<a class="ftl" href="${r.ft_pdf}" target="_blank" rel="noopener">FT · PDF</a>`);
+      links.push(`<a class="ftl" href="${r.ft_html}" target="_blank" rel="noopener">FT · HTML</a>`);
+    }
+    if(r.has_prosp){
+      links.push(`<a class="pl" href="${r.p_pdf}" target="_blank" rel="noopener">Prosp · PDF</a>`);
+      links.push(`<a class="pl" href="${r.p_html}" target="_blank" rel="noopener">Prosp · HTML</a>`);
+    }
+    const esc=t=>(t||'').replace(/</g,'&lt;');
+    return `<tr class="${r.cat}">
+      <td class="nreg">${esc(r.nreg)}</td>
+      <td>${esc(r.nombre)}</td>
+      <td>${esc(r.lab)}</td>
+      <td class="nreg">${esc(r.fecha)}</td>
+      <td class="tipo">${esc(r.tipo)}</td>
+      <td><span class="tag ${r.cat}">${catLabel[r.cat]||r.cat}</span></td>
+      <td class="links">${links.join('')}</td>
+    </tr>`;
+  }).join('');
+}
+
+init();
+</script>
+</body>
+</html>
