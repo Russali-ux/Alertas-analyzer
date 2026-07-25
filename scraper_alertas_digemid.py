@@ -45,6 +45,11 @@ import pandas as pd
 from datetime import datetime
 import fitz   # pymupdf  →  pip install pymupdf
 
+try:
+    from supabase_sync import subir_a_supabase
+except ImportError:
+    subir_a_supabase = None
+
 # ─────────────────────────────────────────────────────────────────
 # CONFIGURACIÓN PRINCIPAL
 # ─────────────────────────────────────────────────────────────────
@@ -89,7 +94,8 @@ Responde SOLO con JSON, sin texto adicional ni bloques de código:
   "urgencia": "<INMEDIATA | PREVENTIVA | INFORMATIVA>",
   "dirigido_a": ["<destinatario 1>", "<destinatario 2>"],
   "acciones_detalladas": ["<acción 1>", "<acción 2>", "..."],
-  "resumen_accion": "<1-2 oraciones resumiendo qué debe hacer el lector>"
+  "resumen_accion": "<1-2 oraciones resumiendo qué debe hacer el lector>",
+  "titular_registro_sanitario": "<nombre de la empresa/laboratorio titular del registro sanitario mencionado en el documento, o null si no se menciona>"
 }
 
 TEXTO DE LA ALERTA:
@@ -108,7 +114,8 @@ Responde SOLO con JSON, sin texto adicional ni bloques de código:
   "urgencia": "<INMEDIATA | PREVENTIVA | INFORMATIVA>",
   "dirigido_a": ["<destinatario 1>", "<destinatario 2>"],
   "acciones_detalladas": ["<acción 1>", "<acción 2>", "..."],
-  "resumen_accion": "<1-2 oraciones resumiendo qué debe hacer el lector>"
+  "resumen_accion": "<1-2 oraciones resumiendo qué debe hacer el lector>",
+  "titular_registro_sanitario": "<nombre de la empresa/laboratorio titular del registro sanitario mencionado en el documento, o null si no se menciona>"
 }
 """
 
@@ -390,13 +397,38 @@ def analizar_heuristico(texto: str) -> dict:
     if not resumen and acciones_detalladas:
         resumen = acciones_detalladas[0][:220]
 
+    titular_registro_sanitario = _extraer_titular_heuristico(texto)
+
     return {
         "accion_principal":    accion_principal,
         "urgencia":            urgencia,
         "dirigido_a":          dirigido_a,
         "acciones_detalladas": acciones_detalladas,
         "resumen_accion":      resumen,
+        "titular_registro_sanitario": titular_registro_sanitario,
     }
+
+
+def _extraer_titular_heuristico(texto: str) -> str | None:
+    """
+    Extrae el nombre del titular del registro sanitario por patrones de texto.
+    Cubre las variantes más comunes usadas en las alertas DIGEMID.
+    """
+    patrones = [
+        r"[Tt]itular(?:\s+de[l]?)?\s+[Rr]egistro\s+[Ss]anitario\s*:?\s*([^\n.]{3,120})",
+        r"[Tt]itular\s+d[e|el]\s+[Rr]\.?\s?[Ss]\.?\s*:?\s*([^\n.]{3,120})",
+        r"[Ee]mpresa\s+[Tt]itular\s*:?\s*([^\n.]{3,120})",
+        r"[Ll]aboratorio\s+[Tt]itular\s*:?\s*([^\n.]{3,120})",
+    ]
+    for patron in patrones:
+        m = re.search(patron, texto)
+        if m:
+            candidato = m.group(1).strip(" :-\t")
+            # Corta en el primer salto de línea doble o punto y coma residual
+            candidato = re.split(r"\s{2,}|;", candidato)[0].strip()
+            if 3 <= len(candidato) <= 120:
+                return candidato
+    return None
 
 
 # ─────────────────────────────────────────────────────────────────
@@ -460,7 +492,7 @@ def enriquecer_alerta(alerta: dict) -> dict:
             "pdf_url": None, "github_pdf_url": None,
             "accion_principal": "Sin URL", "urgencia": "INFORMATIVA",
             "resumen_accion": "Sin URL", "acciones_detalladas": "", "dirigido_a": "",
-            "motor_analisis": "—"
+            "motor_analisis": "—", "titular_registro_sanitario": None,
         })
         return alerta
 
@@ -472,7 +504,7 @@ def enriquecer_alerta(alerta: dict) -> dict:
             "github_pdf_url": None,
             "accion_principal": "Sin PDF", "urgencia": "INFORMATIVA",
             "resumen_accion": "PDF no encontrado.", "acciones_detalladas": "", "dirigido_a": "",
-            "motor_analisis": "—"
+            "motor_analisis": "—", "titular_registro_sanitario": None,
         })
         return alerta
 
@@ -482,7 +514,7 @@ def enriquecer_alerta(alerta: dict) -> dict:
             "github_pdf_url": None,
             "accion_principal": "Error descarga PDF", "urgencia": "INFORMATIVA",
             "resumen_accion": "No se pudo descargar el PDF.", "acciones_detalladas": "", "dirigido_a": "",
-            "motor_analisis": "—"
+            "motor_analisis": "—", "titular_registro_sanitario": None,
         })
         return alerta
 
@@ -503,7 +535,7 @@ def enriquecer_alerta(alerta: dict) -> dict:
             "accion_principal": "PDF escaneado", "urgencia": "INFORMATIVA",
             "resumen_accion": "PDF es imagen, sin texto extraíble.",
             "acciones_detalladas": "", "dirigido_a": "",
-            "motor_analisis": "—"
+            "motor_analisis": "—", "titular_registro_sanitario": None,
         })
         return alerta
 
@@ -533,6 +565,13 @@ def enriquecer_alerta(alerta: dict) -> dict:
     alerta["acciones_detalladas"] = " | ".join(resultado.get("acciones_detalladas", []))
     alerta["dirigido_a"]          = " | ".join(resultado.get("dirigido_a", []))
     alerta["motor_analisis"]      = motor_nombre
+    alerta["titular_registro_sanitario"] = resultado.get("titular_registro_sanitario") or None
+
+    # Si Claude no lo encontró (o se usó el motor heurístico sin match), intenta
+    # una pasada heurística adicional sobre el texto como último recurso.
+    if not alerta["titular_registro_sanitario"]:
+        alerta["titular_registro_sanitario"] = _extraer_titular_heuristico(texto)
+
     return alerta
 
 
@@ -652,6 +691,7 @@ def exportar_excel(df: pd.DataFrame, ruta: str):
     COLS = [
         ("Título",               "titulo",               40),
         ("Producto",             "producto",             28),
+        ("Titular Registro Sanitario", "titular_registro_sanitario", 32),
         ("Tipo de Alerta",       "tipo_alerta",          20),
         ("Fecha Publicación",    "fecha_publicacion",    15),
         ("⚡ Acción Principal",  "accion_principal",     30),
@@ -794,6 +834,12 @@ if __name__ == "__main__":
         subir_json_a_github(registros, f"alertas_{fecha_dia}.json")
         subir_json_a_github(registros, "alertas_latest.json")
         subir_resumen_a_github(df, datetime.now().strftime("%Y/%m/%d"))
+
+    # Subir a Supabase (requiere SUPABASE_URL y SUPABASE_SERVICE_ROLE_KEY)
+    if subir_a_supabase is not None:
+        subir_a_supabase(df)
+    else:
+        print("⚠️  supabase_sync.py no encontrado junto al scraper; se omite la sincronización.")
 
     print("\n✅ Proceso completado.")
 
