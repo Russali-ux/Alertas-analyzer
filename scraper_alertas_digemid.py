@@ -80,6 +80,39 @@ except Exception:
 
 
 # ─────────────────────────────────────────────────────────────────
+# LISTAS AUXILIARES — extracción heurística de Titular de Registro
+# ─────────────────────────────────────────────────────────────────
+# En las tablas de Alertas DIGEMID el orden de columnas es
+# FABRICANTE → PAÍS → TITULAR DEL REGISTRO SANITARIO. Como el texto
+# plano del PDF linealiza la fila de ENCABEZADOS antes que los DATOS,
+# buscar justo después de la etiqueta "TITULAR..." captura el
+# FABRICANTE por error. En cambio, se ubica el nombre de país (lista
+# curada abajo) dentro de los datos y se toma la razón social que
+# aparece justo después de él — esa posición es siempre el Titular,
+# nunca el Fabricante (que aparece ANTES del país en la tabla).
+_PAISES = [
+    "ESTADOS UNIDOS", "REPÚBLICA DOMINICANA", "REPUBLICA DOMINICANA",
+    "PAÍSES BAJOS", "PAISES BAJOS", "COREA DEL SUR", "NUEVA ZELANDA",
+    "COSTA RICA", "EL SALVADOR", "PUERTO RICO", "SUDÁFRICA", "SUDAFRICA",
+    "REINO UNIDO",
+    "PERÚ", "PERU", "ARGENTINA", "BRASIL", "COLOMBIA", "CHILE", "MÉXICO", "MEXICO",
+    "ECUADOR", "BOLIVIA", "URUGUAY", "PARAGUAY", "VENEZUELA", "PANAMÁ", "PANAMA",
+    "GUATEMALA", "HONDURAS", "NICARAGUA", "CUBA", "CANADÁ", "CANADA", "ESPAÑA",
+    "ITALIA", "FRANCIA", "ALEMANIA", "HOLANDA", "SUIZA", "BÉLGICA", "BELGICA",
+    "PORTUGAL", "IRLANDA", "AUSTRIA", "DINAMARCA", "SUECIA", "NORUEGA", "FINLANDIA",
+    "POLONIA", "HUNGRÍA", "HUNGRIA", "RUMANÍA", "RUMANIA", "GRECIA", "TURQUÍA",
+    "TURQUIA", "RUSIA", "CHINA", "INDIA", "JAPÓN", "JAPON", "COREA", "TAIWÁN",
+    "TAIWAN", "SINGAPUR", "MALASIA", "INDONESIA", "TAILANDIA", "VIETNAM", "ISRAEL",
+    "EGIPTO", "AUSTRALIA",
+]
+_PAIS_PAT = r"\b(?:" + "|".join(re.escape(p) for p in _PAISES) + r")\b"
+# Acepta mayúsculas Y minúsculas (razones sociales suelen venir en
+# Mayúscula-minúscula, ej. "Droguería TECNOLOGÍA Y MATERIALES S.R.L.")
+_SUFIJO_PAT = (r"[A-ZÁÉÍÓÚÑ][A-Za-zÁÉÍÓÚÑáéíóúñ0-9\.\,&\s]{2,90}?"
+               r"(?:S\.?A\.?C\.?|S\.?R\.?L\.?|E\.?I\.?R\.?L\.?|S\.?A\.?)\.?")
+
+
+# ─────────────────────────────────────────────────────────────────
 # PROMPT PARA CLAUDE API
 # ─────────────────────────────────────────────────────────────────
 PROMPT_ACCIONES_TEXTO = """\
@@ -95,7 +128,7 @@ Responde SOLO con JSON, sin texto adicional ni bloques de código:
   "dirigido_a": ["<destinatario 1>", "<destinatario 2>"],
   "acciones_detalladas": ["<acción 1>", "<acción 2>", "..."],
   "resumen_accion": "<1-2 oraciones resumiendo qué debe hacer el lector>",
-  "titular_registro_sanitario": "<nombre de la empresa/laboratorio titular del registro sanitario mencionado en el documento, o null si no se menciona>"
+  "titular_registro_sanitario": "<razón social exacta de la empresa TITULAR DEL REGISTRO SANITARIO (columna 'TITULAR DEL REGISTRO SANITARIO' de la tabla, si existe). IMPORTANTE: no es lo mismo que el FABRICANTE — son columnas distintas y casi siempre empresas diferentes (el fabricante suele ser extranjero, el titular suele ser una droguería peruana). Si hay varios productos/titulares, sepáralos con ' | '. null si no se menciona>"
 }
 
 TEXTO DE LA ALERTA:
@@ -115,7 +148,7 @@ Responde SOLO con JSON, sin texto adicional ni bloques de código:
   "dirigido_a": ["<destinatario 1>", "<destinatario 2>"],
   "acciones_detalladas": ["<acción 1>", "<acción 2>", "..."],
   "resumen_accion": "<1-2 oraciones resumiendo qué debe hacer el lector>",
-  "titular_registro_sanitario": "<nombre de la empresa/laboratorio titular del registro sanitario mencionado en el documento, o null si no se menciona>"
+  "titular_registro_sanitario": "<razón social exacta de la empresa TITULAR DEL REGISTRO SANITARIO (columna 'TITULAR DEL REGISTRO SANITARIO' de la tabla, si existe). IMPORTANTE: no es lo mismo que el FABRICANTE — son columnas distintas y casi siempre empresas diferentes (el fabricante suele ser extranjero, el titular suele ser una droguería peruana). Si hay varios productos/titulares, sepáralos con ' | '. null si no se menciona>"
 }
 """
 
@@ -411,24 +444,28 @@ def analizar_heuristico(texto: str) -> dict:
 
 def _extraer_titular_heuristico(texto: str) -> str | None:
     """
-    Extrae el nombre del titular del registro sanitario por patrones de texto.
-    Cubre las variantes más comunes usadas en las alertas DIGEMID.
+    Extrae el nombre del titular del registro sanitario de la TABLA de
+    Alertas DIGEMID (columnas: ... FABRICANTE | PAÍS | TITULAR DEL REGISTRO
+    SANITARIO | RESULTADOS ANALÍTICOS). No usa un patrón "Titular: X" porque
+    ese formato NO aparece en los PDFs reales — el nombre solo se ubica por
+    posición en la tabla. Ver comentario junto a _PAIS_PAT más arriba.
+    Si hay varios productos/titulares en la misma alerta, se devuelven todos
+    separados por " | ".
     """
-    patrones = [
-        r"[Tt]itular(?:\s+de[l]?)?\s+[Rr]egistro\s+[Ss]anitario\s*:?\s*([^\n.]{3,120})",
-        r"[Tt]itular\s+d[e|el]\s+[Rr]\.?\s?[Ss]\.?\s*:?\s*([^\n.]{3,120})",
-        r"[Ee]mpresa\s+[Tt]itular\s*:?\s*([^\n.]{3,120})",
-        r"[Ll]aboratorio\s+[Tt]itular\s*:?\s*([^\n.]{3,120})",
-    ]
-    for patron in patrones:
-        m = re.search(patron, texto)
-        if m:
-            candidato = m.group(1).strip(" :-\t")
-            # Corta en el primer salto de línea doble o punto y coma residual
-            candidato = re.split(r"\s{2,}|;", candidato)[0].strip()
-            if 3 <= len(candidato) <= 120:
-                return candidato
-    return None
+    up = texto.upper()
+    if not re.search(r"TITULAR\s+DEL\s+REGISTRO\s+SANITARIO", up):
+        return None
+
+    vistos = []
+    for m_pais in re.finditer(_PAIS_PAT, up):
+        ventana = texto[m_pais.end(): m_pais.end() + 150]
+        m_emp = re.search(_SUFIJO_PAT, ventana, re.IGNORECASE)
+        if m_emp:
+            cand = re.sub(r"\s+", " ", m_emp.group(0)).strip(" .,")
+            if cand and cand not in vistos:
+                vistos.append(cand)
+
+    return " | ".join(vistos) if vistos else None
 
 
 # ─────────────────────────────────────────────────────────────────
