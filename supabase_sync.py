@@ -4,11 +4,12 @@ supabase_sync.py
 Sube (upsert) las alertas DIGEMID ya procesadas por scraper_alertas_digemid.py
 hacia la tabla `alertas_digemid` en Supabase.
 
-Se asume que `df` es el DataFrame final que ya arma el scraper, con las
-columnas descritas en el README ("Columnas del Excel generado"):
-    Título, Producto, Tipo de Alerta, Fecha Publicación, Acción Principal,
-    Urgencia, Dirigido a, Acciones Requeridas, Resumen IA, Motor Análisis,
-    URL PDF GitHub, URL PDF DIGEMID
+Se asume que `df` es el DataFrame final que arma scrapear_alertas(), cuyas
+columnas reales (snake_case, no las etiquetas bonitas del Excel) son:
+    titulo, producto, titular_registro_sanitario, tipo_alerta,
+    fecha_publicacion, accion_principal, urgencia, dirigido_a,
+    acciones_detalladas, resumen_accion, motor_analisis,
+    pdf_url, github_pdf_url
 
 Requiere:
     pip install supabase --break-system-packages
@@ -29,29 +30,38 @@ def _get_client() -> Client:
     return create_client(url, key)
 
 
+def _limpio(valor):
+    """Convierte NaN/NaT de pandas a None; deja el resto intacto."""
+    if valor is None:
+        return None
+    try:
+        if pd.isna(valor):
+            return None
+    except (TypeError, ValueError):
+        pass
+    return valor
+
+
 def _fila_a_registro(fila: pd.Series) -> dict:
-    """Convierte una fila del DataFrame al formato de la tabla alertas_digemid."""
-    fecha = fila.get("Fecha Publicación")
-    if pd.notna(fecha):
-        # Normaliza a YYYY-MM-DD si viene como datetime/Timestamp
+    """Convierte una fila del DataFrame (columnas reales del scraper) al formato de la tabla alertas_digemid."""
+    fecha = _limpio(fila.get("fecha_publicacion"))
+    if fecha is not None:
         fecha = pd.to_datetime(fecha).strftime("%Y-%m-%d")
-    else:
-        fecha = None
 
     return {
-        "titulo": fila.get("Título"),
-        "producto": fila.get("Producto"),
-        "titular_registro_sanitario": fila.get("Titular Registro Sanitario") or fila.get("titular_registro_sanitario"),
-        "tipo_alerta": fila.get("Tipo de Alerta"),
+        "titulo": _limpio(fila.get("titulo")),
+        "producto": _limpio(fila.get("producto")),
+        "titular_registro_sanitario": _limpio(fila.get("titular_registro_sanitario")),
+        "tipo_alerta": _limpio(fila.get("tipo_alerta")),
         "fecha_publicacion": fecha,
-        "accion_principal": fila.get("Acción Principal") or fila.get("⚡ Acción Principal"),
-        "urgencia": fila.get("Urgencia"),
-        "dirigido_a": fila.get("Dirigido a"),
-        "acciones_requeridas": fila.get("Acciones Requeridas"),
-        "resumen_ia": fila.get("Resumen IA"),
-        "motor_analisis": fila.get("Motor Análisis"),
-        "url_pdf_github": fila.get("URL PDF GitHub"),
-        "url_pdf_digemid": fila.get("URL PDF DIGEMID"),
+        "accion_principal": _limpio(fila.get("accion_principal")),
+        "urgencia": _limpio(fila.get("urgencia")),
+        "dirigido_a": _limpio(fila.get("dirigido_a")),
+        "acciones_requeridas": _limpio(fila.get("acciones_detalladas")),
+        "resumen_ia": _limpio(fila.get("resumen_accion")),
+        "motor_analisis": _limpio(fila.get("motor_analisis")),
+        "url_pdf_github": _limpio(fila.get("github_pdf_url")),
+        "url_pdf_digemid": _limpio(fila.get("pdf_url")),
     }
 
 
@@ -68,9 +78,19 @@ def subir_a_supabase(df: pd.DataFrame) -> None:
     supabase = _get_client()
     registros = [_fila_a_registro(fila) for _, fila in df.iterrows()]
 
+    # Evita mandar filas sin titulo/fecha (violarían el not-null / la clave de conflicto)
+    registros_validos = [r for r in registros if r.get("titulo") and r.get("fecha_publicacion")]
+    omitidos = len(registros) - len(registros_validos)
+    if omitidos:
+        print(f"⚠️  {omitidos} fila(s) sin título o fecha; se omiten de la subida a Supabase.")
+
+    if not registros_validos:
+        print("⚠️  No hay registros válidos para subir a Supabase.")
+        return
+
     resultado = (
         supabase.table("alertas_digemid")
-        .upsert(registros, on_conflict="titulo,fecha_publicacion")
+        .upsert(registros_validos, on_conflict="titulo,fecha_publicacion")
         .execute()
     )
     print(f"✅ Supabase: {len(resultado.data)} registros insertados/actualizados en alertas_digemid.")
