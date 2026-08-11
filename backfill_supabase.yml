@@ -1,0 +1,46 @@
+name: "Backfill historico -> Supabase"
+
+# Solo manual — es un relleno de una sola vez, no un monitoreo recurrente.
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry run (solo mostrar, no sube a Supabase)"
+        type: boolean
+        default: false
+
+jobs:
+  backfill:
+    name: "Backfill historico -> Supabase"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Instalar dependencias
+        run: |
+          pip install --upgrade pip
+          pip install requests pandas pymupdf supabase
+          if [ -n "${{ secrets.ANTHROPIC_API_KEY }}" ]; then
+            pip install anthropic
+          fi
+
+      - name: Ejecutar backfill
+        env:
+          GITHUB_TOKEN:               ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPO:                ${{ github.repository }}
+          GITHUB_BRANCH:              main
+          ANTHROPIC_API_KEY:          ${{ secrets.ANTHROPIC_API_KEY }}
+          SUPABASE_URL:               ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY:  ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then
+            python3 backfill_supabase.py --dry-run
+          else
+            python3 backfill_supabase.py
+          fi
