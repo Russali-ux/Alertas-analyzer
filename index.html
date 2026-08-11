@@ -119,6 +119,16 @@ header p{font-size:12px;color:rgba(255,255,255,.85);margin-top:3px;font-family:v
 .accion-pendiente{background:var(--surface);color:var(--muted);border:1px solid var(--border)}
 .accion-lista{font-size:11px;font-weight:600;color:var(--text)}
 .rol-badge{display:inline-block;padding:2px 7px;border-radius:4px;font-family:var(--mono);font-size:9px;font-weight:700}
+.cima-toggle{position:relative;display:inline-block;width:36px;height:20px;flex-shrink:0}
+.cima-toggle input{opacity:0;width:0;height:0}
+.cima-toggle .slider{position:absolute;inset:0;background:var(--border);border-radius:20px;cursor:pointer;transition:background .2s}
+.cima-toggle .slider::before{content:'';position:absolute;width:16px;height:16px;left:2px;top:2px;background:#fff;border-radius:50%;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.cima-toggle input:checked + .slider{background:var(--safe)}
+.cima-toggle input:checked + .slider::before{transform:translateX(16px)}
+.cima-toggle input:disabled + .slider{opacity:.5;cursor:not-allowed}
+.btn-delete-user{background:rgba(224,0,48,.08);color:var(--danger);border:1px solid rgba(224,0,48,.25);border-radius:6px;padding:5px 10px;font-family:var(--mono);font-size:9px;font-weight:700;cursor:pointer;white-space:nowrap}
+.btn-delete-user:hover{background:rgba(224,0,48,.16)}
+.btn-delete-user:disabled{opacity:.4;cursor:not-allowed}
 .rol-admin{background:rgba(255,176,32,.15);color:#8a5200;border:1px solid rgba(255,176,32,.35)}
 .rol-usuario{background:var(--surface);color:var(--sub);border:1px solid var(--border)}
 
@@ -143,7 +153,7 @@ header p{font-size:12px;color:rgba(255,255,255,.85);margin-top:3px;font-family:v
     <h1>ConkoSafe IA — Alertas DIGEMID</h1>
     <p>Monitor de alertas sanitarias · Conkomerco Farmacovigilancia</p>
   </div>
-  <a href="cima/" class="status-pill" title="Monitor CIMA - Ficha Técnica y Prospecto (AEMPS)">CIMA: Ficha Técnica / Prospecto →</a>
+  <a href="cima/" class="status-pill gate-hidden" id="cimaLink" title="Monitor CIMA - Ficha Técnica y Prospecto (AEMPS)">CIMA: Ficha Técnica / Prospecto →</a>
   <div class="user-badge gate-hidden" id="userBadge">
     <span class="status-pill loading" id="statusPill">Cargando…</span>
     <div class="who" id="whoText"></div>
@@ -273,8 +283,10 @@ header p{font-size:12px;color:rgba(255,255,255,.85);margin-top:3px;font-family:v
             <th>Correo</th>
             <th>Empresa</th>
             <th>Rol</th>
+            <th>Acceso CIMA</th>
             <th>Registrado</th>
             <th>Último acceso</th>
+            <th>Acción</th>
           </tr>
         </thead>
         <tbody id="usersTbody"></tbody>
@@ -398,6 +410,7 @@ async function onLoggedIn(session) {
   document.getElementById('whoText').innerHTML =
     `<b>${currentPerfil?.nombre || currentUser.email}${esAdmin ? '<span class="admin-tag">ADMIN</span>' : ''}</b><span>${currentUser.email}</span>`;
   document.getElementById('navUsuarios').classList.toggle('gate-hidden', !esAdmin);
+  document.getElementById('cimaLink').classList.toggle('gate-hidden', !(esAdmin || currentPerfil?.acceso_cima));
 
   cargarAlertas();
 }
@@ -408,6 +421,7 @@ function onLoggedOut() {
   document.getElementById('gateOverlay').classList.remove('gate-hidden');
   document.getElementById('rootApp').classList.add('gate-hidden');
   document.getElementById('userBadge').classList.add('gate-hidden');
+  document.getElementById('cimaLink').classList.add('gate-hidden');
   cambiarVista('alertas');
 }
 
@@ -573,17 +587,18 @@ function exportarCSV() {
 ════════════════════════════════════════════ */
 async function cargarUsuarios() {
   const tbody = document.getElementById('usersTbody');
-  tbody.innerHTML = `<tr><td colspan="6"><div class="state-box"><div class="state-icon">⏳</div><div>Cargando usuarios…</div></div></td></tr>`;
+  tbody.innerHTML = `<tr><td colspan="8"><div class="state-box"><div class="state-icon">⏳</div><div>Cargando usuarios…</div></div></td></tr>`;
 
   const { data, error } = await sb.from(TABLE_PERFILES).select('*').order('creado_en', { ascending: false });
   if (error) {
-    tbody.innerHTML = `<tr><td colspan="6"><div class="state-box"><div class="state-icon">⚠</div><div>${error.message}</div></div></td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="8"><div class="state-box"><div class="state-icon">⚠</div><div>${error.message}</div></div></td></tr>`;
     return;
   }
   usuarios = data || [];
   document.getElementById('usrCount').textContent = `${usuarios.length} usuarios`;
 
   const fmt = d => d ? new Date(d).toLocaleString('es-PE', { dateStyle: 'short', timeStyle: 'short' }) : '<span class="cell-empty">Nunca</span>';
+  const esUnoMismo = id => currentUser && id === currentUser.id;
 
   tbody.innerHTML = usuarios.map(u => `
     <tr>
@@ -591,10 +606,44 @@ async function cargarUsuarios() {
       <td style="font-size:12px">${u.email}</td>
       <td style="font-size:12px">${u.empresa || '<span class="cell-empty">—</span>'}</td>
       <td><span class="rol-badge rol-${u.rol}">${u.rol}</span></td>
+      <td>
+        <label class="cima-toggle" title="${u.acceso_cima ? 'Acceso CIMA activo' : 'Acceso CIMA desactivado'}">
+          <input type="checkbox" ${u.acceso_cima ? 'checked' : ''} onchange="cambiarAccesoCima('${u.id}', this.checked, this)">
+          <span class="slider"></span>
+        </label>
+      </td>
       <td class="cell-fecha">${fmt(u.creado_en)}</td>
       <td class="cell-fecha">${fmt(u.ultimo_acceso)}</td>
+      <td>
+        <button class="btn-delete-user" ${esUnoMismo(u.id) ? 'disabled title="No puedes eliminar tu propia cuenta"' : ''}
+          onclick="eliminarUsuario('${u.id}', '${(u.email||'').replace(/'/g,"\\'")}')">🗑 Eliminar</button>
+      </td>
     </tr>
   `).join('');
+}
+
+async function cambiarAccesoCima(userId, acceso, checkbox) {
+  checkbox.disabled = true;
+  const { error } = await sb.rpc('admin_set_acceso_cima', { target_id: userId, acceso });
+  checkbox.disabled = false;
+  if (error) {
+    alert('No se pudo actualizar el acceso a CIMA: ' + error.message);
+    checkbox.checked = !acceso; // revertir visualmente
+    return;
+  }
+  const u = usuarios.find(x => x.id === userId);
+  if (u) u.acceso_cima = acceso;
+}
+
+async function eliminarUsuario(userId, email) {
+  if (!confirm(`¿Eliminar la cuenta de ${email}? Esta acción no se puede deshacer.`)) return;
+  const { error } = await sb.rpc('admin_delete_usuario', { target_id: userId });
+  if (error) {
+    alert('No se pudo eliminar el usuario: ' + error.message);
+    return;
+  }
+  cargarUsuarios();
+}
 }
 </script>
 

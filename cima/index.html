@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ConkoSafe IA — CIMA · Ficha Técnica y Prospecto (AEMPS)</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{
   --bg:#ffffff; --surface:#f5f7fa; --border:#d0d7e3; --accent:#0077cc;
@@ -144,6 +145,10 @@ footer{margin-top:30px;font-size:11px;color:var(--muted);font-family:var(--mono)
 </div>
 
 <script>
+const SUPABASE_URL      = 'https://ggbnfdaxtsngsjssrwrl.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdnYm5mZGF4dHNuZ3Nqc3Nyd3JsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ4ODAzODIsImV4cCI6MjEwMDQ1NjM4Mn0.126hhMpakcOlzp5KyyWdMU56UjwLwn5Xn4Nc13OIjgU';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
 const DATA_DIR = 'data/';
 let current = null;
 
@@ -151,6 +156,26 @@ const $ = id => document.getElementById(id);
 const catLabel = {ft:'Solo FT', prosp:'Solo Prospecto', both:'FT + Prospecto'};
 
 function showErr(msg){ const e=$('err'); e.style.display='block'; e.textContent=msg; }
+
+function showAccessBlocked(){
+  document.querySelector('.wrap').innerHTML = `
+    <div class="err" style="display:block">
+      🔒 Tu cuenta no tiene acceso al módulo CIMA. Pídele a un administrador que te lo habilite
+      desde el panel de Usuarios, o <a href="../">vuelve a Alertas</a>.
+    </div>`;
+}
+
+async function verificarAccesoYcargar(){
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) { window.location.href = '../'; return; }
+
+  const { data: perfil } = await sb.from('perfiles').select('rol, acceso_cima').eq('id', session.user.id).single();
+  if (!perfil || (perfil.rol !== 'admin' && !perfil.acceso_cima)) {
+    showAccessBlocked();
+    return;
+  }
+  init();
+}
 
 async function init(){
   let idx;
@@ -237,7 +262,7 @@ function render(){
   }).join('');
 }
 
-init();
+verificarAccesoYcargar();
 </script>
 </body>
 </html>
