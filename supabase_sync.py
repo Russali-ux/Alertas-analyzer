@@ -9,7 +9,7 @@ columnas reales (snake_case, no las etiquetas bonitas del Excel) son:
     titulo, producto, titular_registro_sanitario, tipo_alerta,
     fecha_publicacion, accion_principal, urgencia, dirigido_a,
     acciones_detalladas, resumen_accion, motor_analisis,
-    pdf_url, github_pdf_url
+    pdf_url, github_pdf_url, url
 
 Requiere:
     pip install supabase --break-system-packages
@@ -62,6 +62,7 @@ def _fila_a_registro(fila: pd.Series) -> dict:
         "motor_analisis": _limpio(fila.get("motor_analisis")),
         "url_pdf_github": _limpio(fila.get("github_pdf_url")),
         "url_pdf_digemid": _limpio(fila.get("pdf_url")),
+        "url_pagina_digemid": _limpio(fila.get("url")),
     }
 
 

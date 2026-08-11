@@ -113,6 +113,8 @@ header p{font-size:12px;color:rgba(255,255,255,.85);margin-top:3px;font-family:v
 .urg-informativa{background:rgba(0,119,204,.08);color:var(--accent);border:1px solid rgba(0,119,204,.2)}
 .pdf-gh-link{display:inline-flex;align-items:center;gap:4px;font-family:var(--mono);font-size:9px;font-weight:700;color:#24292e;background:rgba(36,41,46,.07);border:1px solid rgba(36,41,46,.18);border-radius:4px;padding:2px 7px;text-decoration:none}
 .pdf-gh-link:hover{background:rgba(36,41,46,.14)}
+.digemid-link{display:inline-flex;align-items:center;gap:4px;font-family:var(--mono);font-size:9px;font-weight:700;color:var(--accent);background:rgba(0,119,204,.07);border:1px solid rgba(0,119,204,.2);border-radius:4px;padding:2px 7px;text-decoration:none}
+.digemid-link:hover{background:rgba(0,119,204,.14)}
 .accion-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 7px;border-radius:4px;font-family:var(--mono);font-size:9px;font-weight:700;white-space:nowrap}
 .accion-pendiente{background:var(--surface);color:var(--muted);border:1px solid var(--border)}
 .accion-lista{font-size:11px;font-weight:600;color:var(--text)}
@@ -249,6 +251,7 @@ header p{font-size:12px;color:rgba(255,255,255,.85);margin-top:3px;font-family:v
             <th>Resumen IA</th>
             <th onclick="sortTable('fecha_publicacion')">Fecha Pub.</th>
             <th>PDF</th>
+            <th>DIGEMID</th>
           </tr>
         </thead>
         <tbody id="alertsTbody"></tbody>
@@ -503,7 +506,7 @@ function renderTable() {
   document.getElementById('tblCount').textContent = `${rows.length} alertas`;
 
   if (!rows.length) {
-    tbody.innerHTML = `<tr><td colspan="8"><div class="state-box">
+    tbody.innerHTML = `<tr><td colspan="9"><div class="state-box">
       <div class="state-icon">🔍</div><div>Sin resultados para este filtro.</div>
     </div></td></tr>`;
     return;
@@ -523,6 +526,9 @@ function renderTable() {
     const pdfCell = pdfHref
       ? `<a class="pdf-gh-link" href="${pdfHref}" target="_blank" onclick="event.stopPropagation()">${a.url_pdf_github ? '⬡ GitHub' : '📄 PDF'}</a>`
       : `<span class="cell-empty">Sin PDF</span>`;
+    const digemidCell = a.url_pagina_digemid
+      ? `<a class="digemid-link" href="${a.url_pagina_digemid}" target="_blank" onclick="event.stopPropagation()">🔗 Ver en DIGEMID</a>`
+      : `<span class="cell-empty">Sin link</span>`;
     const resumenCell = a.resumen_ia
       ? a.resumen_ia
       : `<span class="cell-empty">Sin resumen</span>`;
@@ -540,6 +546,7 @@ function renderTable() {
       <td class="cell-resumen">${resumenCell}</td>
       <td class="cell-fecha">${a.fecha_publicacion || '<span class="cell-empty">—</span>'}</td>
       <td>${pdfCell}</td>
+      <td>${digemidCell}</td>
     </tr>`;
   }).join('');
 }
