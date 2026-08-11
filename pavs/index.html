@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ConkoSafe IA — Monitor PAVS</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{
+  --bg:#ffffff; --surface:#f5f7fa; --border:#d0d7e3; --accent:#0077cc;
+  --danger:#e00030; --warn:#cc8800; --safe:#00996a;
+  --ink:#1a2433; --muted:#67788c; --header:#1A3A5C;
+  --sora:'Sora',system-ui,sans-serif; --mono:'Space Mono',monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sora);font-size:14px;line-height:1.45}
+a{color:var(--accent)}
+header{background:linear-gradient(120deg,#1A3A5C,#0077cc);color:#fff;padding:20px 26px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+header h1{margin:0;font-size:20px;font-weight:700;letter-spacing:.2px}
+header p{margin:4px 0 0;font-size:12px;opacity:.85;font-family:var(--mono)}
+.pill{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);padding:5px 12px;border-radius:20px;font-size:11px;font-family:var(--mono)}
+a.pill{text-decoration:none;color:#fff;cursor:pointer}
+a.pill:hover{background:rgba(255,255,255,.26)}
+.header-pills{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.wrap{max-width:1320px;margin:0 auto;padding:22px 26px 60px}
+
+.controls{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:18px}
+.ctrl{display:flex;flex-direction:column;gap:4px}
+.ctrl label{font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);font-family:var(--mono)}
+select,input[type=search]{font-family:var(--sora);font-size:13px;padding:8px 10px;border:1px solid var(--border);border-radius:8px;background:#fff;min-width:160px}
+.btn{font-family:var(--sora);font-size:13px;font-weight:600;padding:9px 16px;border:none;border-radius:8px;background:var(--accent);color:#fff;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+.btn:hover{filter:brightness(1.08)}
+.btn.ghost{background:#fff;color:var(--accent);border:1px solid var(--accent)}
+
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+.stat{background:#fff;border:1px solid var(--border);border-radius:12px;padding:14px 16px;position:relative;overflow:hidden}
+.stat .n{font-size:28px;font-weight:700;font-family:var(--mono);line-height:1}
+.stat .l{font-size:11px;color:var(--muted);margin-top:5px;text-transform:uppercase;letter-spacing:.5px}
+.stat::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px}
+.stat.total::before{background:var(--header)}
+.stat.anio::before{background:var(--accent)}
+.stat.agencias::before{background:var(--safe)}
+.stat.paises::before{background:var(--warn)}
+.stat.total .n{color:var(--header)} .stat.anio .n{color:var(--accent)}
+.stat.agencias .n{color:var(--safe)} .stat.paises .n{color:var(--warn)}
+
+.panels{display:grid;grid-template-columns:1.3fr 1fr;gap:14px;margin-bottom:18px}
+.panel{background:#fff;border:1px solid var(--border);border-radius:12px;padding:14px 16px}
+.panel h3{margin:0 0 10px;font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);font-family:var(--mono)}
+.bar-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:12px}
+.bar-label{width:110px;flex-shrink:0;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar-track{flex:1;background:var(--surface);border-radius:5px;height:14px;overflow:hidden}
+.bar-fill{height:100%;background:var(--accent);border-radius:5px}
+.bar-count{width:44px;text-align:right;font-family:var(--mono);color:var(--muted);flex-shrink:0}
+@media(max-width:900px){.panels{grid-template-columns:1fr}}
+
+.meta{font-size:12px;color:var(--muted);font-family:var(--mono);margin-bottom:12px}
+
+.table-scroll{overflow-x:auto;border:1px solid var(--border);border-radius:12px}
+table{border-collapse:collapse;width:100%;min-width:1080px;font-size:13px}
+thead th{background:var(--header);color:#fff;text-align:left;padding:10px 12px;font-weight:600;font-size:12px;position:sticky;top:0;cursor:pointer;user-select:none;white-space:nowrap}
+thead th:hover{background:#12314f}
+thead th.sorted::after{content:' ▾';font-size:10px}
+thead th.sorted.asc::after{content:' ▴'}
+tbody td{padding:9px 12px;border-top:1px solid var(--border);vertical-align:top}
+tbody tr:hover{background:#eef3f8}
+.nreg{font-family:var(--mono);font-size:12px;white-space:nowrap}
+.tag{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;font-family:var(--mono);white-space:nowrap}
+.tag.seguridad{background:#FFE6CC;color:#8a4d00}
+.tag.dhpc{background:#DAE8FC;color:#0a4d80}
+.tag.modificacion{background:#D5E8D4;color:#0a5e42}
+.tag.otro{background:var(--surface);color:var(--muted)}
+.titulo-cell{max-width:340px}
+.links a{display:inline-block;font-size:11px;font-family:var(--mono);padding:2px 7px;border:1px solid var(--border);border-radius:6px;text-decoration:none;white-space:nowrap;color:var(--accent)}
+.links a:hover{background:var(--surface)}
+.empty{padding:60px 20px;text-align:center;color:var(--muted)}
+.err{background:#fdecec;border:1px solid #f5b5b5;color:#a11;padding:12px 14px;border-radius:10px;font-size:13px;margin-bottom:16px}
+.pager{display:flex;align-items:center;justify-content:center;gap:12px;padding:14px 0;font-family:var(--mono);font-size:12px;color:var(--muted)}
+.pager button{font-family:var(--mono);font-size:12px;background:#fff;border:1px solid var(--border);border-radius:6px;padding:5px 12px;cursor:pointer}
+.pager button:disabled{opacity:.4;cursor:not-allowed}
+footer{margin-top:30px;font-size:11px;color:var(--muted);font-family:var(--mono);border-top:1px solid var(--border);padding-top:14px}
+@media(max-width:720px){.stats{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>💊 ConkoSafe IA — Monitor PAVS</h1>
+    <p>Alertas de Países de Alta Vigilancia Sanitaria · FT-95 / DS043</p>
+  </div>
+  <div class="header-pills">
+    <a class="pill" href="../">← Volver a Alertas</a>
+    <div class="pill" id="lastSync">Cargando…</div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div id="err" class="err" style="display:none"></div>
+
+  <div class="stats">
+    <div class="stat total"><div class="n" id="sTotal">—</div><div class="l">Total alertas</div></div>
+    <div class="stat anio"><div class="n" id="sAnio">—</div><div class="l">Este año</div></div>
+    <div class="stat agencias"><div class="n" id="sAgencias">—</div><div class="l">Agencias</div></div>
+    <div class="stat paises"><div class="n" id="sPaises">—</div><div class="l">Países</div></div>
+  </div>
+
+  <div class="panels">
+    <div class="panel">
+      <h3>Alertas por año</h3>
+      <div id="chartAnio"></div>
+    </div>
+    <div class="panel">
+      <h3>Top agencias</h3>
+      <div id="chartAgencia"></div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <div class="ctrl">
+      <label>Buscar (título / producto / IFA)</label>
+      <input type="search" id="search" placeholder="Ej: metamizol, DRESS, fingolimod...">
+    </div>
+    <div class="ctrl">
+      <label>Año</label>
+      <select id="anioFilter"><option value="">Todos</option></select>
+    </div>
+    <div class="ctrl">
+      <label>País</label>
+      <select id="paisFilter"><option value="">Todos</option></select>
+    </div>
+    <div class="ctrl">
+      <label>Agencia</label>
+      <select id="agenciaFilter"><option value="">Todas</option></select>
+    </div>
+    <div class="ctrl">
+      <label>Tipo de alerta</label>
+      <select id="tipoFilter"><option value="">Todos</option></select>
+    </div>
+    <button class="btn ghost" id="refreshBtn">↻ Actualizar</button>
+    <button class="btn" id="csvBtn">⬇ Exportar CSV</button>
+  </div>
+
+  <div class="meta" id="meta">Cargando…</div>
+
+  <div class="table-scroll">
+    <table>
+      <thead>
+        <tr>
+          <th data-key="anio">Año</th>
+          <th data-key="fecha_emision">Fecha Emisión</th>
+          <th data-key="pais">País</th>
+          <th data-key="agencia">Agencia</th>
+          <th data-key="tipo_alerta">Tipo</th>
+          <th data-key="titulo_alerta">Título</th>
+          <th data-key="tipo_producto">Producto</th>
+          <th data-key="ifa">IFA</th>
+          <th>Enlace</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+
+  <div class="pager">
+    <button id="prevBtn">← Anterior</button>
+    <span id="pageInfo">—</span>
+    <button id="nextBtn">Siguiente →</button>
+  </div>
+
+  <footer>
+    Fuente: reporte FT-95 Monitoreo de Alertas de PAVS (DS043), sincronizado diariamente vía
+    <a href="https://github.com/Russali-ux/PAVS_Digemid" target="_blank" rel="noopener">PAVS_Digemid</a>
+    (GitHub Actions) a la tabla <code>pavs_alertas</code> en Supabase.
+  </footer>
+</div>
+
+<script>
+const SUPABASE_URL      = 'https://ggbnfdaxtsngsjssrwrl.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdnYm5mZGF4dHNuZ3Nqc3Nyd3JsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ4ODAzODIsImV4cCI6MjEwMDQ1NjM4Mn0.126hhMpakcOlzp5KyyWdMU56UjwLwn5Xn4Nc13OIjgU';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const $ = id => document.getElementById(id);
+let ALL = [];
+let filtered = [];
+let sortKey = 'fecha_emision', sortAsc = false;
+let page = 0;
+const PAGE_SIZE = 50;
+
+function showErr(msg){ const e=$('err'); e.style.display='block'; e.textContent=msg; }
+
+function showAccessBlocked(){
+  document.querySelector('.wrap').innerHTML = `
+    <div class="err" style="display:block">
+      🔒 Tu cuenta no tiene acceso al módulo PAVS. Pídele a un administrador que te lo habilite
+      desde el panel de Usuarios, o <a href="../">vuelve a Alertas</a>.
+    </div>`;
+}
+
+async function verificarAccesoYcargar(){
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) { window.location.href = '../'; return; }
+
+  const { data: perfil } = await sb.from('perfiles').select('rol, acceso_pavs').eq('id', session.user.id).single();
+  if (!perfil || (perfil.rol !== 'admin' && !perfil.acceso_pavs)) {
+    showAccessBlocked();
+    return;
+  }
+  init();
+}
+
+async function fetchAll(){
+  // trae todo en lotes de 1000 (límite por request de PostgREST)
+  let rows = [], from = 0;
+  const BATCH = 1000;
+  while (true){
+    const { data, error } = await sb.from('pavs_alertas')
+      .select('anio,mes,fecha_emision,fecha_revision,pais,agencia,tipo_alerta,titulo_alerta,tipo_producto,ifa,reaccion_adversa,enlace')
+      .order('fecha_emision', { ascending:false })
+      .range(from, from + BATCH - 1);
+    if (error) throw error;
+    rows = rows.concat(data);
+    if (data.length < BATCH) break;
+    from += BATCH;
+  }
+  return rows;
+}
+
+function fillSelect(id, values){
+  const sel = $(id);
+  values.forEach(v=>{
+    const o = document.createElement('option');
+    o.value = v; o.textContent = v;
+    sel.appendChild(o);
+  });
+}
+
+function tagClass(tipo){
+  const t = (tipo||'').toLowerCase();
+  if (t.includes('seguridad')) return 'seguridad';
+  if (t.includes('dhpc')) return 'dhpc';
+  if (t.includes('modificacion')) return 'modificacion';
+  return 'otro';
+}
+
+function renderCharts(){
+  const porAnio = {};
+  const porAgencia = {};
+  ALL.forEach(r=>{
+    if (r.anio) porAnio[r.anio] = (porAnio[r.anio]||0) + 1;
+    if (r.agencia) porAgencia[r.agencia] = (porAgencia[r.agencia]||0) + 1;
+  });
+
+  const anios = Object.keys(porAnio).sort();
+  const maxAnio = Math.max(...Object.values(porAnio), 1);
+  $('chartAnio').innerHTML = anios.map(a=>{
+    const c = porAnio[a];
+    const w = Math.round((c/maxAnio)*100);
+    return `<div class="bar-row"><div class="bar-label">${a}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${w}%"></div></div>
+      <div class="bar-count">${c}</div></div>`;
+  }).join('');
+
+  const topAgencias = Object.entries(porAgencia).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  const maxAg = Math.max(...topAgencias.map(x=>x[1]), 1);
+  $('chartAgencia').innerHTML = topAgencias.map(([ag,c])=>{
+    const w = Math.round((c/maxAg)*100);
+    return `<div class="bar-row"><div class="bar-label" title="${ag}">${ag}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${w}%"></div></div>
+      <div class="bar-count">${c}</div></div>`;
+  }).join('');
+}
+
+function applyFilters(){
+  const q = $('search').value.trim().toLowerCase();
+  const anio = $('anioFilter').value;
+  const pais = $('paisFilter').value;
+  const agencia = $('agenciaFilter').value;
+  const tipo = $('tipoFilter').value;
+
+  filtered = ALL.filter(r=>{
+    if (anio && String(r.anio) !== anio) return false;
+    if (pais && r.pais !== pais) return false;
+    if (agencia && r.agencia !== agencia) return false;
+    if (tipo && r.tipo_alerta !== tipo) return false;
+    if (q){
+      const hay = (r.titulo_alerta+' '+(r.tipo_producto||'')+' '+(r.ifa||'')).toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  });
+
+  sortRows();
+  page = 0;
+  renderTable();
+}
+
+function sortRows(){
+  filtered.sort((a,b)=>{
+    let va = a[sortKey], vb = b[sortKey];
+    if (va == null) va = '';
+    if (vb == null) vb = '';
+    if (va < vb) return sortAsc ? -1 : 1;
+    if (va > vb) return sortAsc ? 1 : -1;
+    return 0;
+  });
+}
+
+function renderTable(){
+  $('meta').textContent = `${filtered.length} alerta(s) encontrada(s) de ${ALL.length} totales.`;
+
+  const start = page * PAGE_SIZE;
+  const rows = filtered.slice(start, start + PAGE_SIZE);
+  const tb = $('tbody');
+
+  if (!rows.length){
+    tb.innerHTML = `<tr><td colspan="9"><div class="empty">Sin resultados para el filtro actual.</div></td></tr>`;
+  } else {
+    const esc = t => (t||'').toString().replace(/</g,'&lt;');
+    tb.innerHTML = rows.map(r=>`<tr>
+      <td class="nreg">${esc(r.anio)}</td>
+      <td class="nreg">${esc(r.fecha_emision)}</td>
+      <td>${esc(r.pais)}</td>
+      <td>${esc(r.agencia)}</td>
+      <td><span class="tag ${tagClass(r.tipo_alerta)}">${esc(r.tipo_alerta)}</span></td>
+      <td class="titulo-cell">${esc(r.titulo_alerta)}</td>
+      <td>${esc(r.tipo_producto)}</td>
+      <td>${esc(r.ifa)}</td>
+      <td class="links">${r.enlace ? `<a href="${esc(r.enlace)}" target="_blank" rel="noopener">Ver fuente ↗</a>` : ''}</td>
+    </tr>`).join('');
+  }
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  $('pageInfo').textContent = `Página ${page+1} de ${totalPages}`;
+  $('prevBtn').disabled = page === 0;
+  $('nextBtn').disabled = page >= totalPages - 1;
+
+  document.querySelectorAll('thead th[data-key]').forEach(th=>{
+    th.classList.toggle('sorted', th.dataset.key === sortKey);
+    th.classList.toggle('asc', th.dataset.key === sortKey && sortAsc);
+  });
+}
+
+function exportCSV(){
+  const cols = ['anio','mes','fecha_emision','fecha_revision','pais','agencia','tipo_alerta','titulo_alerta','tipo_producto','ifa','reaccion_adversa','enlace'];
+  const esc = v => `"${(v==null?'':String(v)).replace(/"/g,'""')}"`;
+  const lines = [cols.join(',')].concat(
+    filtered.map(r=> cols.map(c=>esc(r[c])).join(','))
+  );
+  const blob = new Blob(['\uFEFF'+lines.join('\n')], {type:'text/csv;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `pavs_alertas_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+async function init(){
+  try{
+    ALL = await fetchAll();
+  }catch(e){
+    showErr('No se pudo cargar la tabla pavs_alertas desde Supabase: ' + e.message);
+    $('meta').textContent = 'Sin datos disponibles.';
+    return;
+  }
+
+  $('sTotal').textContent = ALL.length;
+  const anioActual = new Date().getFullYear();
+  $('sAnio').textContent = ALL.filter(r=>Number(r.anio)===anioActual).length;
+  const agenciasSet = new Set(ALL.map(r=>r.agencia).filter(Boolean));
+  const paisesSet = new Set(ALL.map(r=>r.pais).filter(Boolean));
+  $('sAgencias').textContent = agenciasSet.size;
+  $('sPaises').textContent = paisesSet.size;
+
+  const ultimaFecha = ALL.reduce((max,r)=> r.fecha_emision && r.fecha_emision > max ? r.fecha_emision : max, '');
+  $('lastSync').textContent = ultimaFecha ? `Última alerta: ${ultimaFecha}` : 'Sin datos';
+
+  fillSelect('anioFilter', [...new Set(ALL.map(r=>r.anio).filter(Boolean))].sort((a,b)=>b-a).map(String));
+  fillSelect('paisFilter', [...paisesSet].sort());
+  fillSelect('agenciaFilter', [...agenciasSet].sort());
+  fillSelect('tipoFilter', [...new Set(ALL.map(r=>r.tipo_alerta).filter(Boolean))].sort());
+
+  renderCharts();
+  filtered = ALL.slice();
+  sortRows();
+  renderTable();
+
+  document.querySelectorAll('thead th[data-key]').forEach(th=>{
+    th.addEventListener('click', ()=>{
+      const key = th.dataset.key;
+      if (sortKey === key) sortAsc = !sortAsc;
+      else { sortKey = key; sortAsc = false; }
+      sortRows(); page = 0; renderTable();
+    });
+  });
+
+  ['search','anioFilter','paisFilter','agenciaFilter','tipoFilter'].forEach(id=>{
+    $(id).addEventListener('input', applyFilters);
+  });
+  $('refreshBtn').addEventListener('click', init);
+  $('csvBtn').addEventListener('click', exportCSV);
+  $('prevBtn').addEventListener('click', ()=>{ if(page>0){ page--; renderTable(); } });
+  $('nextBtn').addEventListener('click', ()=>{
+    const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+    if(page < totalPages-1){ page++; renderTable(); }
+  });
+}
+
+verificarAccesoYcargar();
+</script>
+</body>
+</html>

@@ -154,6 +154,7 @@ header p{font-size:12px;color:rgba(255,255,255,.85);margin-top:3px;font-family:v
     <p>Monitor de alertas sanitarias · Conkomerco Farmacovigilancia</p>
   </div>
   <a href="cima/" class="status-pill gate-hidden" id="cimaLink" title="Monitor CIMA - Ficha Técnica y Prospecto (AEMPS)">CIMA: Ficha Técnica / Prospecto →</a>
+  <a href="pavs/" class="status-pill gate-hidden" id="pavsLink" title="Monitor PAVS - Alertas de Países de Alta Vigilancia Sanitaria">PAVS: Países de Alta Vigilancia →</a>
   <div class="user-badge gate-hidden" id="userBadge">
     <span class="status-pill loading" id="statusPill">Cargando…</span>
     <div class="who" id="whoText"></div>
@@ -411,6 +412,7 @@ async function onLoggedIn(session) {
     `<b>${currentPerfil?.nombre || currentUser.email}${esAdmin ? '<span class="admin-tag">ADMIN</span>' : ''}</b><span>${currentUser.email}</span>`;
   document.getElementById('navUsuarios').classList.toggle('gate-hidden', !esAdmin);
   document.getElementById('cimaLink').classList.toggle('gate-hidden', !(esAdmin || currentPerfil?.acceso_cima));
+  document.getElementById('pavsLink').classList.remove('gate-hidden');
 
   cargarAlertas();
 }
@@ -422,6 +424,7 @@ function onLoggedOut() {
   document.getElementById('rootApp').classList.add('gate-hidden');
   document.getElementById('userBadge').classList.add('gate-hidden');
   document.getElementById('cimaLink').classList.add('gate-hidden');
+  document.getElementById('pavsLink').classList.add('gate-hidden');
   cambiarVista('alertas');
 }
 
