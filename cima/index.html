@@ -19,9 +19,10 @@ header{background:linear-gradient(120deg,#1A3A5C,#0077cc);color:#fff;padding:20p
 header h1{margin:0;font-size:20px;font-weight:700;letter-spacing:.2px}
 header p{margin:4px 0 0;font-size:12px;opacity:.85;font-family:var(--mono)}
 .pill{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);padding:5px 12px;border-radius:20px;font-size:11px;font-family:var(--mono)}
+a.pill{text-decoration:none;color:#fff;cursor:pointer}
+a.pill:hover{background:rgba(255,255,255,.26)}
+.header-pills{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .wrap{max-width:1240px;margin:0 auto;padding:22px 26px 60px}
-.backlink{display:inline-block;margin-bottom:14px;font-size:12px;font-family:var(--mono);color:var(--muted);text-decoration:none}
-.backlink:hover{color:var(--accent)}
 
 .controls{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:18px}
 .ctrl{display:flex;flex-direction:column;gap:4px}
@@ -77,12 +78,13 @@ footer{margin-top:30px;font-size:11px;color:var(--muted);font-family:var(--mono)
     <h1>💊 ConkoSafe IA — Monitor CIMA</h1>
     <p>Cambios en Ficha Técnica y Prospecto · AEMPS (España)</p>
   </div>
-  <div class="pill">Ficha Técnica · Prospecto</div>
+  <div class="header-pills">
+    <a class="pill" href="../">← Volver a Alertas</a>
+    <div class="pill">Ficha Técnica · Prospecto</div>
+  </div>
 </header>
 
 <div class="wrap">
-  <a class="backlink" href="../">← Volver a DIGEMID Analyzer</a>
-
   <div id="err" class="err" style="display:none"></div>
 
   <div class="controls">
