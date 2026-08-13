@@ -1,0 +1,52 @@
+name: FDA AEMS - monitoreo mensual de señales
+
+on:
+  schedule:
+    # Día 3 de cada mes a las 09:00 UTC (04:00 hora Perú).
+    # El día 3 (no el 1) da margen a que la FDA termine de publicar el
+    # reporte trimestral cuando corresponde a inicio de trimestre.
+    - cron: '0 9 3 * *'
+  workflow_dispatch:
+    inputs:
+      full_backfill:
+        description: 'Recorrer también reportes archivados (carga histórica completa, no solo --no-archived)'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+jobs:
+  scrape-and-sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Instalar dependencias
+        run: pip install requests beautifulsoup4 --quiet
+
+      - name: Ejecutar scraper y sincronizar con Supabase
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          if [ "${{ github.event.inputs.full_backfill }}" = "true" ]; then
+            python3 fda_aems_sync_supabase.py --db data/fda_aems_data.json
+          else
+            python3 fda_aems_sync_supabase.py --db data/fda_aems_data.json --no-archived
+          fi
+
+      - name: Commitear JSON acumulado actualizado
+        run: |
+          git config user.name "fda-aems-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add data/fda_aems_data.json
+          git diff --cached --quiet && echo "Sin cambios en el JSON" || \
+            git commit -m "chore(fda-aems): actualizacion mensual de señales [skip ci]"
+          git push
