@@ -1,19 +1,19 @@
 {
-  "generado": "2026-08-12T14:36:04Z",
-  "generado_str": "12/08/2026 14:36 UTC",
-  "fecha_codigo": "20260812",
+  "generado": "2026-08-11T14:35:53Z",
+  "generado_str": "11/08/2026 14:35 UTC",
+  "fecha_codigo": "20260811",
   "periodo": {
-    "desde": "13/07/2026",
-    "hasta": "12/08/2026",
+    "desde": "12/07/2026",
+    "hasta": "11/08/2026",
     "dias": 30
   },
-  "excel": "ConkosafeIA_Regulatorio_20260812.xlsx",
-  "markdown": "../summaries/cima_2026-08-12.md",
+  "excel": "ConkosafeIA_Regulatorio_20260811.xlsx",
+  "markdown": "../summaries/cima_2026-08-11.md",
   "stats": {
-    "total": 877,
+    "total": 866,
     "solo_ft": 79,
     "solo_prosp": 255,
-    "ambos": 543,
+    "ambos": 532,
     "top_labs": [
       {
         "lab": "Viatris Limited",
@@ -21,15 +21,11 @@
       },
       {
         "lab": "Sandoz Farmaceutica S.A.",
-        "n": 51
+        "n": 48
       },
       {
         "lab": "Aurovitas Spain, S.A.U.",
         "n": 30
-      },
-      {
-        "lab": "Laboratorio Stada S.L.",
-        "n": 23
       },
       {
         "lab": "Zentiva K.S.",
@@ -41,6 +37,10 @@
       },
       {
         "lab": "Laboratorios Cinfa S.A.",
+        "n": 21
+      },
+      {
+        "lab": "Laboratorio Stada S.L.",
         "n": 21
       },
       {
@@ -58,171 +58,6 @@
     ]
   },
   "registros": [
-    {
-      "nreg": "86345",
-      "nombre": "VISUCOPT 20MG/ML + 5MG/ML COLIRIO EN SOLUCION",
-      "lab": "Visufarma S.P.A.",
-      "fecha": "12/08/2026 06:56",
-      "tipo": "MODIFICADO",
-      "otros": "",
-      "cat": "both",
-      "has_ft": true,
-      "has_prosp": true,
-      "ft_pdf": "https://cima.aemps.es/cima/pdfs/ft/86345/FT_86345.pdf",
-      "ft_html": "https://cima.aemps.es/cima/dochtml/ft/86345/FT_86345.html",
-      "p_pdf": "https://cima.aemps.es/cima/pdfs/p/86345/P_86345.pdf",
-      "p_html": "https://cima.aemps.es/cima/dochtml/p/86345/P_86345.html"
-    },
-    {
-      "nreg": "86346",
-      "nombre": "VISUCOPT 20MG/ML + 5MG/ML COLIRIO EN SOLUCION EN ENVASE UNIDOSIS",
-      "lab": "Visufarma S.P.A.",
-      "fecha": "12/08/2026 06:56",
-      "tipo": "MODIFICADO",
-      "otros": "",
-      "cat": "both",
-      "has_ft": true,
-      "has_prosp": true,
-      "ft_pdf": "https://cima.aemps.es/cima/pdfs/ft/86346/FT_86346.pdf",
-      "ft_html": "https://cima.aemps.es/cima/dochtml/ft/86346/FT_86346.html",
-      "p_pdf": "https://cima.aemps.es/cima/pdfs/p/86346/P_86346.pdf",
-      "p_html": "https://cima.aemps.es/cima/dochtml/p/86346/P_86346.html"
-    },
-    {
-      "nreg": "91536",
-      "nombre": "GELOCATIL GRIPE CON FENILEFRINA GRANULADO PARA SOLUCION ORAL",
-      "lab": "Ferrer Internacional S.A.",
-      "fecha": "12/08/2026 06:55",
-      "tipo": "MODIFICADO",
-      "otros": "Otros cambios",
-      "cat": "both",
-      "has_ft": true,
-      "has_prosp": true,
-      "ft_pdf": "https://cima.aemps.es/cima/pdfs/ft/91536/FT_91536.pdf",
-      "ft_html": "https://cima.aemps.es/cima/dochtml/ft/91536/FT_91536.html",
-      "p_pdf": "https://cima.aemps.es/cima/pdfs/p/91536/P_91536.pdf",
-      "p_html": "https://cima.aemps.es/cima/dochtml/p/91536/P_91536.html"
-    },
-    {
-      "nreg": "91537",
-      "nombre": "BRONCHIPRET SIMPLEX PASTILLAS PARA CHUPAR",
-      "lab": "Bionorica Se",
-      "fecha": "12/08/2026 06:55",
-      "tipo": "MODIFICADO",
-      "otros": "",
-      "cat": "both",
-      "has_ft": true,
-      "has_prosp": true,
-      "ft_pdf": "https://cima.aemps.es/cima/pdfs/ft/91537/FT_91537.pdf",
-      "ft_html": "https://cima.aemps.es/cima/dochtml/ft/91537/FT_91537.html",
-      "p_pdf": "https://cima.aemps.es/cima/pdfs/p/91537/P_91537.pdf",
-      "p_html": "https://cima.aemps.es/cima/dochtml/p/91537/P_91537.html"
-    },
-    {
-      "nreg": "70914",
-      "nombre": "ARTISS SOLUCIONES PARA ADHESIVO TISULAR, ULTRACONGELADAS",
-      "lab": "Baxter S.L.",
-      "fecha": "12/08/2026 06:55",
-      "tipo": "MODIFICADO",
-      "otros": "",
-      "cat": "both",
-      "has_ft": true,
-      "has_prosp": true,
-      "ft_pdf": "https://cima.aemps.es/cima/pdfs/ft/70914/FT_70914.pdf",
-      "ft_html": "https://cima.aemps.es/cima/dochtml/ft/70914/FT_70914.html",
-      "p_pdf": "https://cima.aemps.es/cima/pdfs/p/70914/P_70914.pdf",
-      "p_html": "https://cima.aemps.es/cima/dochtml/p/70914/P_70914.html"
-    },
-    {
-      "nreg": "76028",
-      "nombre": "APIRETAL 100 mg/ml SOLUCION ORAL SABOR CEREZA",
-      "lab": "Laboratorios Ern S.A.",
-      "fecha": "12/08/2026 06:55",
-      "tipo": "MODIFICADO",
-      "otros": "",
-      "cat": "both",
-      "has_ft": true,
-      "has_prosp": true,
-      "ft_pdf": "https://cima.aemps.es/cima/pdfs/ft/76028/FT_76028.pdf",
-      "ft_html": "https://cima.aemps.es/cima/dochtml/ft/76028/FT_76028.html",
-      "p_pdf": "https://cima.aemps.es/cima/pdfs/p/76028/P_76028.pdf",
-      "p_html": "https://cima.aemps.es/cima/dochtml/p/76028/P_76028.html"
-    },
-    {
-      "nreg": "74332",
-      "nombre": "GALANTAMINA SANDOZ 8 mg CAPSULAS DURAS DE LIBERACION PROLONGADA EFG",
-      "lab": "Sandoz Farmaceutica S.A.",
-      "fecha": "12/08/2026 06:55",
-      "tipo": "MODIFICADO",
-      "otros": "",
-      "cat": "both",
-      "has_ft": true,
-      "has_prosp": true,
-      "ft_pdf": "https://cima.aemps.es/cima/pdfs/ft/74332/FT_74332.pdf",
-      "ft_html": "https://cima.aemps.es/cima/dochtml/ft/74332/FT_74332.html",
-      "p_pdf": "https://cima.aemps.es/cima/pdfs/p/74332/P_74332.pdf",
-      "p_html": "https://cima.aemps.es/cima/dochtml/p/74332/P_74332.html"
-    },
-    {
-      "nreg": "74333",
-      "nombre": "GALANTAMINA SANDOZ 16 mg CAPSULAS DURAS DE LIBERACION PROLONGADA EFG.",
-      "lab": "Sandoz Farmaceutica S.A.",
-      "fecha": "12/08/2026 06:55",
-      "tipo": "MODIFICADO",
-      "otros": "",
-      "cat": "both",
-      "has_ft": true,
-      "has_prosp": true,
-      "ft_pdf": "https://cima.aemps.es/cima/pdfs/ft/74333/FT_74333.pdf",
-      "ft_html": "https://cima.aemps.es/cima/dochtml/ft/74333/FT_74333.html",
-      "p_pdf": "https://cima.aemps.es/cima/pdfs/p/74333/P_74333.pdf",
-      "p_html": "https://cima.aemps.es/cima/dochtml/p/74333/P_74333.html"
-    },
-    {
-      "nreg": "74334",
-      "nombre": "GALANTAMINA SANDOZ 24 mg CAPSULAS DURAS DE LIBERACION PROLONGADA EFG",
-      "lab": "Sandoz Farmaceutica S.A.",
-      "fecha": "12/08/2026 06:55",
-      "tipo": "MODIFICADO",
-      "otros": "",
-      "cat": "both",
-      "has_ft": true,
-      "has_prosp": true,
-      "ft_pdf": "https://cima.aemps.es/cima/pdfs/ft/74334/FT_74334.pdf",
-      "ft_html": "https://cima.aemps.es/cima/dochtml/ft/74334/FT_74334.html",
-      "p_pdf": "https://cima.aemps.es/cima/pdfs/p/74334/P_74334.pdf",
-      "p_html": "https://cima.aemps.es/cima/dochtml/p/74334/P_74334.html"
-    },
-    {
-      "nreg": "81809",
-      "nombre": "EZETIMIBA/SIMVASTATINA STADA 10 MG/40 MG COMPRIMIDOS EFG",
-      "lab": "Laboratorio Stada S.L.",
-      "fecha": "12/08/2026 06:55",
-      "tipo": "MODIFICADO",
-      "otros": "",
-      "cat": "both",
-      "has_ft": true,
-      "has_prosp": true,
-      "ft_pdf": "https://cima.aemps.es/cima/pdfs/ft/81809/FT_81809.pdf",
-      "ft_html": "https://cima.aemps.es/cima/dochtml/ft/81809/FT_81809.html",
-      "p_pdf": "https://cima.aemps.es/cima/pdfs/p/81809/P_81809.pdf",
-      "p_html": "https://cima.aemps.es/cima/dochtml/p/81809/P_81809.html"
-    },
-    {
-      "nreg": "81810",
-      "nombre": "EZETIMIBA/SIMVASTATINA STADA 10 MG/20 MG COMPRIMIDOS EFG",
-      "lab": "Laboratorio Stada S.L.",
-      "fecha": "12/08/2026 06:55",
-      "tipo": "MODIFICADO",
-      "otros": "",
-      "cat": "both",
-      "has_ft": true,
-      "has_prosp": true,
-      "ft_pdf": "https://cima.aemps.es/cima/pdfs/ft/81810/FT_81810.pdf",
-      "ft_html": "https://cima.aemps.es/cima/dochtml/ft/81810/FT_81810.html",
-      "p_pdf": "https://cima.aemps.es/cima/pdfs/p/81810/P_81810.pdf",
-      "p_html": "https://cima.aemps.es/cima/dochtml/p/81810/P_81810.html"
-    },
     {
       "nreg": "91456",
       "nombre": "VITAMINA D3 CINFA 25.000 UI CÁPSULAS BLANDAS",
