@@ -58,7 +58,7 @@ select,input[type=search]{font-family:var(--sora);font-size:13px;padding:8px 10p
 .meta{font-size:12px;color:var(--muted);font-family:var(--mono);margin-bottom:12px}
 
 .table-scroll{overflow-x:auto;border:1px solid var(--border);border-radius:12px}
-table{border-collapse:collapse;width:100%;min-width:1080px;font-size:13px}
+table{border-collapse:collapse;width:100%;min-width:1340px;font-size:13px}
 thead th{background:var(--header);color:#fff;text-align:left;padding:10px 12px;font-weight:600;font-size:12px;position:sticky;top:0;cursor:pointer;user-select:none;white-space:nowrap}
 thead th:hover{background:#12314f}
 thead th.sorted::after{content:' ▾';font-size:10px}
@@ -81,6 +81,34 @@ tbody tr:hover{background:#eef3f8}
 .pager button:disabled{opacity:.4;cursor:not-allowed}
 footer{margin-top:30px;font-size:11px;color:var(--muted);font-family:var(--mono);border-top:1px solid var(--border);padding-top:14px}
 @media(max-width:720px){.stats{grid-template-columns:repeat(2,1fr)}}
+
+/* ── ATC cell ── */
+.atc-cell{min-width:260px}
+.atc-input{width:100%;font-family:var(--sora);font-size:12.5px;padding:6px 8px;border:1px solid var(--border);border-radius:6px;background:#fff}
+.atc-input.invalid{border-color:var(--danger);background:#fff5f5}
+.atc-input.dirty{border-color:var(--warn)}
+.atc-row2{display:flex;align-items:center;gap:6px;margin-top:5px}
+.atc-code-badge{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--header);background:var(--surface);border:1px solid var(--border);border-radius:5px;padding:2px 7px;min-width:66px;text-align:center;white-space:nowrap}
+.atc-code-badge.empty{color:var(--muted);font-weight:400}
+.btn-mini{border:1px solid var(--border);background:#fff;border-radius:5px;font-size:12px;padding:3px 7px;cursor:pointer;line-height:1}
+.btn-mini:hover{background:var(--surface)}
+.btn-mini.save:not(:disabled){border-color:var(--accent);color:var(--accent)}
+.btn-mini:disabled{opacity:.35;cursor:not-allowed}
+.atc-saved-flash{color:var(--safe);font-family:var(--mono);font-size:10px;white-space:nowrap}
+
+/* ── Historial modal ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(10,20,35,.55);display:flex;align-items:center;justify-content:center;z-index:500;padding:20px}
+.modal-box{background:#fff;border-radius:14px;max-width:560px;width:100%;max-height:80vh;overflow:auto;padding:22px 24px;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+.modal-box h3{margin:0 0 4px;font-size:15px;color:var(--header)}
+.modal-box .sub{font-size:11px;color:var(--muted);font-family:var(--mono);margin-bottom:14px}
+.modal-close{float:right;background:none;border:none;font-size:18px;cursor:pointer;color:var(--muted)}
+.hist-row{border-top:1px solid var(--border);padding:10px 0;font-size:12.5px}
+.hist-row:first-child{border-top:none}
+.hist-change{font-family:var(--mono);font-size:11.5px}
+.hist-change .old{color:var(--danger);text-decoration:line-through;opacity:.7}
+.hist-change .new{color:var(--safe);font-weight:700}
+.hist-meta{color:var(--muted);font-size:10.5px;margin-top:2px;font-family:var(--mono)}
+.hist-empty{color:var(--muted);text-align:center;padding:20px 0;font-size:12.5px}
 </style>
 </head>
 <body>
@@ -155,6 +183,7 @@ footer{margin-top:30px;font-size:11px;color:var(--muted);font-family:var(--mono)
           <th data-key="titulo_alerta">Título</th>
           <th data-key="tipo_producto">Producto</th>
           <th data-key="ifa">IFA</th>
+          <th>ATC Name / ATC Code</th>
           <th>Enlace</th>
         </tr>
       </thead>
@@ -172,7 +201,19 @@ footer{margin-top:30px;font-size:11px;color:var(--muted);font-family:var(--mono)
     Fuente: reporte FT-95 Monitoreo de Alertas de PAVS (DS043), sincronizado diariamente vía
     <a href="https://github.com/Russali-ux/PAVS_Digemid" target="_blank" rel="noopener">PAVS_Digemid</a>
     (GitHub Actions) a la tabla <code>pavs_alertas</code> en Supabase.
+    Clasificación ATC (OMS): catálogo <code>atc_codes</code> · cambios versionados en <code>pavs_alertas_atc_historial</code>.
   </footer>
+</div>
+
+<datalist id="atcDatalist"></datalist>
+
+<div class="modal-overlay" id="histModal" style="display:none">
+  <div class="modal-box">
+    <button class="modal-close" id="histClose">✕</button>
+    <h3 id="histTitle">Historial ATC</h3>
+    <div class="sub" id="histSub"></div>
+    <div id="histBody"></div>
+  </div>
 </div>
 
 <script>
@@ -215,7 +256,7 @@ async function fetchAll(){
   const BATCH = 1000;
   while (true){
     const { data, error } = await sb.from('pavs_alertas')
-      .select('anio,mes,fecha_emision,fecha_revision,pais,agencia,tipo_alerta,titulo_alerta,tipo_producto,ifa,reaccion_adversa,enlace')
+      .select('id,anio,mes,fecha_emision,fecha_revision,pais,agencia,tipo_alerta,titulo_alerta,tipo_producto,ifa,reaccion_adversa,enlace,atc_code,atc_actualizado_en,atc_codes(atc_code,atc_name,atc_name_es)')
       .order('fecha_emision', { ascending:false })
       .range(from, from + BATCH - 1);
     if (error) throw error;
@@ -224,6 +265,153 @@ async function fetchAll(){
     from += BATCH;
   }
   return rows;
+}
+
+// ── Catálogo ATC (OMS) — nivel sustancia (7 caracteres) para el selector ──
+let ATC_MAP = new Map();     // "Nombre (CODIGO)" -> {code, name}
+let ATC_BY_CODE = new Map(); // CODIGO -> "Nombre (CODIGO)"
+
+function atcDisplay(entry){
+  const name = entry.atc_name_es || entry.atc_name || entry.atc_code;
+  return `${name} (${entry.atc_code})`;
+}
+
+async function fetchAtcCatalog(){
+  let rows = [], from = 0;
+  const BATCH = 1000;
+  while (true){
+    const { data, error } = await sb.from('atc_codes')
+      .select('atc_code,atc_name,atc_name_es')
+      .order('atc_name_es', { ascending:true })
+      .range(from, from + BATCH - 1);
+    if (error) throw error;
+    rows = rows.concat(data);
+    if (data.length < BATCH) break;
+    from += BATCH;
+  }
+  // Solo nivel 5 (sustancia activa): códigos de 7 caracteres
+  const nivel5 = rows.filter(r => r.atc_code && r.atc_code.length === 7);
+  nivel5.forEach(e=>{
+    const disp = atcDisplay(e);
+    ATC_MAP.set(disp, { code: e.atc_code, name: e.atc_name_es || e.atc_name });
+    ATC_BY_CODE.set(e.atc_code, disp);
+  });
+
+  const dl = $('atcDatalist');
+  const frag = document.createDocumentFragment();
+  nivel5.forEach(e=>{
+    const opt = document.createElement('option');
+    opt.value = atcDisplay(e);
+    frag.appendChild(opt);
+  });
+  dl.innerHTML = '';
+  dl.appendChild(frag);
+}
+
+function atcCellHtml(r){
+  const currentDisp = r.atc_codes ? atcDisplay(r.atc_codes) : '';
+  const currentCode = r.atc_code || '';
+  const esc = t => (t||'').toString().replace(/</g,'&lt;').replace(/"/g,'&quot;');
+  return `
+    <input type="text" list="atcDatalist" class="atc-input" data-id="${r.id}"
+      data-current="${esc(currentDisp)}" value="${esc(currentDisp)}"
+      placeholder="Buscar principio activo (IFA)...">
+    <div class="atc-row2">
+      <span class="atc-code-badge ${currentCode ? '' : 'empty'}" data-id="${r.id}">${esc(currentCode || '— sin ATC')}</span>
+      <button class="btn-mini save" data-id="${r.id}" disabled title="Guardar clasificación ATC">💾</button>
+      <button class="btn-mini hist" data-id="${r.id}" title="Ver historial de versiones">🕒</button>
+      <span class="atc-saved-flash" data-id="${r.id}"></span>
+    </div>`;
+}
+
+function onAtcInputChange(e){
+  const input = e.target;
+  const id = input.dataset.id;
+  const val = input.value.trim();
+  const badge = document.querySelector(`.atc-code-badge[data-id="${id}"]`);
+  const saveBtn = document.querySelector(`.btn-mini.save[data-id="${id}"]`);
+
+  if (val === ''){
+    input.classList.remove('invalid');
+    input.classList.toggle('dirty', input.dataset.current !== '');
+    badge.textContent = '— sin ATC';
+    badge.classList.add('empty');
+    saveBtn.disabled = input.dataset.current === '';
+    return;
+  }
+
+  const match = ATC_MAP.get(val);
+  if (match){
+    input.classList.remove('invalid');
+    input.classList.toggle('dirty', val !== input.dataset.current);
+    badge.textContent = match.code;
+    badge.classList.remove('empty');
+    saveBtn.disabled = val === input.dataset.current;
+  } else {
+    input.classList.add('invalid');
+    input.classList.remove('dirty');
+    badge.textContent = 'Selecciona de la lista';
+    badge.classList.add('empty');
+    saveBtn.disabled = true;
+  }
+}
+
+async function guardarAtc(id){
+  const input = document.querySelector(`.atc-input[data-id="${id}"]`);
+  const val = input.value.trim();
+  const flash = document.querySelector(`.atc-saved-flash[data-id="${id}"]`);
+  const saveBtn = document.querySelector(`.btn-mini.save[data-id="${id}"]`);
+  let code = null;
+  if (val !== ''){
+    const match = ATC_MAP.get(val);
+    if (!match){ flash.textContent = '⚠ selecciona una opción válida'; return; }
+    code = match.code;
+  }
+
+  saveBtn.disabled = true;
+  flash.textContent = 'Guardando…';
+  const { error } = await sb.from('pavs_alertas').update({ atc_code: code }).eq('id', id);
+  if (error){
+    flash.textContent = '⚠ ' + error.message;
+    saveBtn.disabled = false;
+    return;
+  }
+  input.dataset.current = val;
+  input.classList.remove('dirty');
+  flash.textContent = '✓ guardado';
+  setTimeout(()=>{ flash.textContent=''; }, 3000);
+
+  // reflejar en memoria (ALL/filtered) para que persista al re-renderizar/paginar
+  const row = ALL.find(r => r.id === id);
+  if (row){
+    row.atc_code = code;
+    row.atc_codes = code ? { atc_code: code, atc_name: null, atc_name_es: val.replace(/ \([^)]+\)$/,'') } : null;
+  }
+}
+
+async function verHistorial(id, titulo){
+  const modal = $('histModal');
+  $('histTitle').textContent = 'Historial de clasificación ATC';
+  $('histSub').textContent = titulo || '';
+  $('histBody').innerHTML = '<div class="hist-empty">Cargando…</div>';
+  modal.style.display = 'flex';
+
+  const { data, error } = await sb.from('pavs_alertas_atc_historial')
+    .select('atc_code_anterior,atc_code_nuevo,cambiado_por_email,cambiado_en')
+    .eq('pavs_alertas_id', id)
+    .order('cambiado_en', { ascending:false });
+
+  if (error){ $('histBody').innerHTML = `<div class="hist-empty">Error: ${error.message}</div>`; return; }
+  if (!data.length){ $('histBody').innerHTML = '<div class="hist-empty">Sin cambios registrados todavía para esta alerta.</div>'; return; }
+
+  const nombreDe = code => code ? (ATC_BY_CODE.get(code) || code) : '(sin ATC)';
+  $('histBody').innerHTML = data.map(h => `
+    <div class="hist-row">
+      <div class="hist-change">
+        <span class="old">${nombreDe(h.atc_code_anterior)}</span> → <span class="new">${nombreDe(h.atc_code_nuevo)}</span>
+      </div>
+      <div class="hist-meta">${h.cambiado_por_email || 'desconocido'} · ${new Date(h.cambiado_en).toLocaleString('es-PE')}</div>
+    </div>`).join('');
 }
 
 function fillSelect(id, values){
@@ -314,7 +502,7 @@ function renderTable(){
   const tb = $('tbody');
 
   if (!rows.length){
-    tb.innerHTML = `<tr><td colspan="9"><div class="empty">Sin resultados para el filtro actual.</div></td></tr>`;
+    tb.innerHTML = `<tr><td colspan="10"><div class="empty">Sin resultados para el filtro actual.</div></td></tr>`;
   } else {
     const esc = t => (t||'').toString().replace(/</g,'&lt;');
     tb.innerHTML = rows.map(r=>`<tr>
@@ -326,8 +514,23 @@ function renderTable(){
       <td class="titulo-cell">${esc(r.titulo_alerta)}</td>
       <td>${esc(r.tipo_producto)}</td>
       <td>${esc(r.ifa)}</td>
+      <td class="atc-cell">${atcCellHtml(r)}</td>
       <td class="links">${r.enlace ? `<a href="${esc(r.enlace)}" target="_blank" rel="noopener">Ver fuente ↗</a>` : ''}</td>
     </tr>`).join('');
+
+    tb.querySelectorAll('.atc-input').forEach(inp=>{
+      inp.addEventListener('input', onAtcInputChange);
+      inp.addEventListener('change', onAtcInputChange);
+    });
+    tb.querySelectorAll('.btn-mini.save').forEach(btn=>{
+      btn.addEventListener('click', ()=> guardarAtc(btn.dataset.id));
+    });
+    tb.querySelectorAll('.btn-mini.hist').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const r = rows.find(x=>x.id===btn.dataset.id) || ALL.find(x=>x.id===btn.dataset.id);
+        verHistorial(btn.dataset.id, r ? r.titulo_alerta : '');
+      });
+    });
   }
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
@@ -342,10 +545,14 @@ function renderTable(){
 }
 
 function exportCSV(){
-  const cols = ['anio','mes','fecha_emision','fecha_revision','pais','agencia','tipo_alerta','titulo_alerta','tipo_producto','ifa','reaccion_adversa','enlace'];
+  const cols = ['anio','mes','fecha_emision','fecha_revision','pais','agencia','tipo_alerta','titulo_alerta','tipo_producto','ifa','reaccion_adversa','atc_code','enlace'];
   const esc = v => `"${(v==null?'':String(v)).replace(/"/g,'""')}"`;
+  const rowVal = (r,c) => {
+    if (c === 'atc_code') return r.atc_code || '';
+    return r[c];
+  };
   const lines = [cols.join(',')].concat(
-    filtered.map(r=> cols.map(c=>esc(r[c])).join(','))
+    filtered.map(r=> cols.map(c=>esc(rowVal(r,c))).join(','))
   );
   const blob = new Blob(['\uFEFF'+lines.join('\n')], {type:'text/csv;charset=utf-8'});
   const url = URL.createObjectURL(blob);
@@ -358,9 +565,9 @@ function exportCSV(){
 
 async function init(){
   try{
-    ALL = await fetchAll();
+    [ALL] = await Promise.all([ fetchAll(), fetchAtcCatalog() ]);
   }catch(e){
-    showErr('No se pudo cargar la tabla pavs_alertas desde Supabase: ' + e.message);
+    showErr('No se pudo cargar la tabla pavs_alertas (o el catálogo ATC) desde Supabase: ' + e.message);
     $('meta').textContent = 'Sin datos disponibles.';
     return;
   }
@@ -400,6 +607,8 @@ async function init(){
   });
   $('refreshBtn').addEventListener('click', init);
   $('csvBtn').addEventListener('click', exportCSV);
+  $('histClose').addEventListener('click', ()=>{ $('histModal').style.display='none'; });
+  $('histModal').addEventListener('click', (e)=>{ if(e.target.id==='histModal') $('histModal').style.display='none'; });
   $('prevBtn').addEventListener('click', ()=>{ if(page>0){ page--; renderTable(); } });
   $('nextBtn').addEventListener('click', ()=>{
     const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
