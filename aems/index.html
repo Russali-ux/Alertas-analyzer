@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Monitor FDA AEMS — ConkoSafe IA</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+  :root {
+    --navy: #1E3A78; --teal: #1A8C93; --red: #B3261E; --bg: #F4F6FA;
+    --card: #FFFFFF; --border: #E2E6ED; --text: #1F2937; --muted: #6B7280;
+  }
+  * { box-sizing: border-box; }
+  body { font-family: Arial, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; }
+  header { background: var(--navy); color: #fff; padding: 20px 28px; }
+  header h1 { margin: 0; font-size: 20px; }
+  header p { margin: 4px 0 0; font-size: 13px; color: #C9D3EA; }
+  .container { max-width: 1200px; margin: 0 auto; padding: 24px 20px 60px; }
+  .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px; margin-bottom: 24px; }
+  .kpi { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; text-align: center; }
+  .kpi .label { font-size: 11px; color: var(--muted); font-weight: bold; text-transform: uppercase; letter-spacing: .03em; }
+  .kpi .value { font-size: 26px; font-weight: bold; color: var(--teal); margin-top: 4px; }
+  .charts { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 28px; }
+  @media (max-width: 860px) { .charts { grid-template-columns: 1fr; } }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+  .card h2 { margin: 0 0 12px; font-size: 14px; color: var(--navy); }
+  .controls { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+  .controls input, .controls select {
+    padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px;
+  }
+  .controls input { flex: 1; min-width: 220px; }
+  table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  thead th {
+    background: var(--navy); color: #fff; text-align: left; padding: 8px 10px;
+    position: sticky; top: 0; cursor: pointer; user-select: none;
+  }
+  thead th:hover { background: #274a94; }
+  tbody td { padding: 7px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tbody tr:nth-child(even) { background: #FAFBFD; }
+  tbody tr:hover { background: #EEF2FA; }
+  .badge { display: inline-block; padding: 1px 8px; border-radius: 10px; font-size: 11px; font-weight: bold; }
+  .badge.periodo { background: #DCF0F1; color: var(--teal); }
+  a.src { color: var(--teal); text-decoration: none; font-size: 11px; }
+  a.src:hover { text-decoration: underline; }
+  .table-wrap { max-height: 560px; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px; }
+  .count-note { font-size: 12px; color: var(--muted); margin: 8px 0 0; }
+  .state-note { font-size: 13px; color: var(--muted); padding: 40px; text-align: center; }
+  footer { text-align: center; font-size: 11px; color: var(--muted); padding: 20px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Monitor FDA AEMS — Señales de Riesgo Serio</h1>
+  <p>ConkoSafe IA · Fuente: New Safety Information or Potential Signals of Serious Risks (FDA AEMS) · Datos en vivo desde Supabase</p>
+</header>
+<div class="container">
+
+  <div class="kpis">
+    <div class="kpi"><div class="label">Reportes trimestrales</div><div class="value" id="kpiPeriodos">—</div></div>
+    <div class="kpi"><div class="label">Señales totales</div><div class="value" id="kpiTotal">—</div></div>
+    <div class="kpi"><div class="label">Principios activos distintos</div><div class="value" id="kpiPrincipios">—</div></div>
+    <div class="kpi"><div class="label">Periodo cubierto</div><div class="value" id="kpiRango" style="font-size:16px">—</div></div>
+  </div>
+
+  <div class="charts">
+    <div class="card">
+      <h2>Señales por año</h2>
+      <canvas id="chartAnio" height="220"></canvas>
+    </div>
+    <div class="card">
+      <h2>Top 15 principios activos más frecuentes</h2>
+      <canvas id="chartPrincipios" height="220"></canvas>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Detalle de señales</h2>
+    <div class="controls">
+      <input type="text" id="buscar" placeholder="Buscar por producto, principio activo, señal o información adicional...">
+      <select id="filtroAnio"><option value="">Todos los años</option></select>
+    </div>
+    <div class="table-wrap">
+      <table id="tablaSenales">
+        <thead>
+          <tr>
+            <th data-col="periodo">Periodo</th>
+            <th data-col="producto">Producto</th>
+            <th data-col="principio">Principio(s) Activo(s)</th>
+            <th data-col="senal">Señal de Riesgo</th>
+            <th data-col="info">Información Adicional</th>
+            <th data-col="fuente">Fuente</th>
+          </tr>
+        </thead>
+        <tbody><tr><td colspan="6" class="state-note">Cargando señales desde Supabase…</td></tr></tbody>
+      </table>
+    </div>
+    <p class="count-note" id="contador"></p>
+  </div>
+
+</div>
+<footer>Generado automáticamente por el scraper mensual FDA AEMS (GitHub Actions) · Los datos provienen de fda.gov y no implican que la FDA haya confirmado una relación causal.</footer>
+
+<script>
+// ---- Configuración Supabase (mismo proyecto que cima/pavs) ----
+const SUPABASE_URL = 'https://ggbnfdaxtsngsjssrwrl.supabase.co';
+const SUPABASE_ANON_KEY = 'PEGAR_AQUI_LA_MISMA_ANON_KEY_QUE_USAN_cima/index.html_Y_pavs/index.html';
+
+let DATA = [];
+
+async function fetchAllSenales() {
+  const pageSize = 1000;
+  let from = 0;
+  let all = [];
+  while (true) {
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/fda_aems_senales?select=periodo,anio,producto,principio,senal,info,url&order=anio.desc`,
+      {
+        headers: {
+          apikey: SUPABASE_ANON_KEY,
+          Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+          Range: `${from}-${from + pageSize - 1}`,
+        },
+      }
+    );
+    if (!res.ok) throw new Error(`Supabase ${res.status}: ${await res.text()}`);
+    const batch = await res.json();
+    all = all.concat(batch);
+    if (batch.length < pageSize) break;
+    from += pageSize;
+  }
+  return all;
+}
+
+function renderKpis() {
+  const periodos = new Set(DATA.map(d => d.periodo));
+  const principios = new Set();
+  DATA.forEach(d => (d.principio || '').split('/').forEach(p => {
+    const t = p.trim();
+    if (t) principios.add(t.toLowerCase());
+  }));
+  const anios = DATA.map(d => d.anio).filter(Boolean);
+  document.getElementById('kpiPeriodos').textContent = periodos.size;
+  document.getElementById('kpiTotal').textContent = DATA.length;
+  document.getElementById('kpiPrincipios').textContent = principios.size;
+  if (anios.length) {
+    document.getElementById('kpiRango').textContent = `${Math.min(...anios)} – ${Math.max(...anios)}`;
+  }
+}
+
+function renderCharts() {
+  try {
+    const anioCounts = {};
+    DATA.forEach(d => { if (d.anio) anioCounts[d.anio] = (anioCounts[d.anio] || 0) + 1; });
+    const anioLabels = Object.keys(anioCounts).sort();
+
+    const principioCounts = {};
+    DATA.forEach(d => (d.principio || '').split('/').forEach(p => {
+      const t = p.trim();
+      if (t) principioCounts[t] = (principioCounts[t] || 0) + 1;
+    }));
+    const topPrincipios = Object.entries(principioCounts)
+      .sort((a, b) => b[1] - a[1]).slice(0, 15);
+
+    new Chart(document.getElementById('chartAnio'), {
+      type: 'bar',
+      data: {
+        labels: anioLabels,
+        datasets: [{ label: 'Señales', data: anioLabels.map(a => anioCounts[a]), backgroundColor: '#1A8C93' }]
+      },
+      options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+    });
+
+    new Chart(document.getElementById('chartPrincipios'), {
+      type: 'bar',
+      data: {
+        labels: topPrincipios.map(p => p[0]),
+        datasets: [{ label: 'Señales', data: topPrincipios.map(p => p[1]), backgroundColor: '#1E3A78' }]
+      },
+      options: { indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true } } }
+    });
+  } catch (e) {
+    console.warn('No se pudieron dibujar los gráficos:', e);
+    document.querySelectorAll('.charts canvas').forEach(c => {
+      c.outerHTML = '<p style="color:#6B7280;font-size:12px">Gráfico no disponible (Chart.js no cargó). La tabla sigue funcionando.</p>';
+    });
+  }
+}
+
+function renderTable() {
+  const tbody = document.querySelector('#tablaSenales tbody');
+  const buscar = document.getElementById('buscar');
+  const filtroAnio = document.getElementById('filtroAnio');
+  const contador = document.getElementById('contador');
+
+  const anios = [...new Set(DATA.map(d => d.anio))].filter(Boolean).sort((a, b) => b - a);
+  anios.forEach(a => {
+    const opt = document.createElement('option');
+    opt.value = a; opt.textContent = a;
+    filtroAnio.appendChild(opt);
+  });
+
+  let sortCol = null, sortDir = 1;
+
+  function render() {
+    const q = buscar.value.toLowerCase();
+    const anio = filtroAnio.value;
+    let rows = DATA.filter(d => {
+      if (anio && String(d.anio) !== anio) return false;
+      if (!q) return true;
+      return `${d.producto} ${d.principio} ${d.senal} ${d.info}`.toLowerCase().includes(q);
+    });
+    if (sortCol) {
+      rows = rows.slice().sort((a, b) => {
+        const va = (a[sortCol] || '').toString().toLowerCase();
+        const vb = (b[sortCol] || '').toString().toLowerCase();
+        return va < vb ? -1 * sortDir : va > vb ? 1 * sortDir : 0;
+      });
+    }
+    tbody.innerHTML = rows.map(d => `
+      <tr>
+        <td><span class="badge periodo">${d.periodo}</span></td>
+        <td>${d.producto}</td>
+        <td><strong>${d.principio || ''}</strong></td>
+        <td>${d.senal}</td>
+        <td>${d.info || ''}</td>
+        <td><a class="src" href="${d.url}" target="_blank" rel="noopener">Ver fuente ↗</a></td>
+      </tr>
+    `).join('');
+    contador.textContent = `Mostrando ${rows.length} de ${DATA.length} señales`;
+  }
+
+  document.querySelectorAll('thead th').forEach(th => {
+    th.addEventListener('click', () => {
+      const col = th.dataset.col;
+      sortDir = (sortCol === col) ? -sortDir : 1;
+      sortCol = col;
+      render();
+    });
+  });
+  buscar.addEventListener('input', render);
+  filtroAnio.addEventListener('change', render);
+  render();
+}
+
+(async function init() {
+  try {
+    DATA = await fetchAllSenales();
+    renderKpis();
+    renderCharts();
+    renderTable();
+  } catch (e) {
+    document.querySelector('#tablaSenales tbody').innerHTML =
+      `<tr><td colspan="6" class="state-note">Error cargando datos de Supabase: ${e.message}</td></tr>`;
+  }
+})();
+</script>
+</body>
+</html>
