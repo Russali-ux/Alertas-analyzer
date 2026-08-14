@@ -155,6 +155,7 @@ header p{font-size:12px;color:rgba(255,255,255,.85);margin-top:3px;font-family:v
   </div>
   <a href="cima/" class="status-pill gate-hidden" id="cimaLink" title="Monitor CIMA - Ficha Técnica y Prospecto (AEMPS)">CIMA: Ficha Técnica / Prospecto →</a>
   <a href="pavs/" class="status-pill gate-hidden" id="pavsLink" title="Monitor PAVS - Alertas de Países de Alta Vigilancia Sanitaria">PAVS: Países de Alta Vigilancia →</a>
+  <a href="aems/" class="status-pill gate-hidden" id="aemsLink" title="Monitor FDA AEMS - Señales de Riesgo (FDA)">FDA AEMS: Señales de Riesgo →</a>
   <div class="user-badge gate-hidden" id="userBadge">
     <span class="status-pill loading" id="statusPill">Cargando…</span>
     <div class="who" id="whoText"></div>
@@ -413,6 +414,7 @@ async function onLoggedIn(session) {
   document.getElementById('navUsuarios').classList.toggle('gate-hidden', !esAdmin);
   document.getElementById('cimaLink').classList.toggle('gate-hidden', !(esAdmin || currentPerfil?.acceso_cima));
   document.getElementById('pavsLink').classList.remove('gate-hidden');
+  document.getElementById('aemsLink').classList.remove('gate-hidden');
 
   cargarAlertas();
 }
@@ -425,6 +427,7 @@ function onLoggedOut() {
   document.getElementById('userBadge').classList.add('gate-hidden');
   document.getElementById('cimaLink').classList.add('gate-hidden');
   document.getElementById('pavsLink').classList.add('gate-hidden');
+  document.getElementById('aemsLink').classList.add('gate-hidden');
   cambiarVista('alertas');
 }
 

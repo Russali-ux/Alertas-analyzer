@@ -45,7 +45,11 @@ ARCHIVED_URL = f"{BASE}/drugs/fda-adverse-event-monitoring-system-aems/archived-
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
-                  "(KHTML, like Gecko) Chrome/124.0 Safari/537.36"
+                  "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    "Accept-Language": "en-US,en;q=0.9",
+    "Accept-Encoding": "gzip, deflate, br",
+    "Referer": f"{BASE}/",
 }
 
 DEFAULT_DB_PATH = "fda_aems_data.json"
@@ -66,6 +70,7 @@ def log(msg: str):
 
 
 def get(url: str, retries: int = 3, timeout: int = 30):
+    import random
     last_err = None
     for i in range(retries):
         try:
@@ -74,8 +79,9 @@ def get(url: str, retries: int = 3, timeout: int = 30):
             return r
         except Exception as e:  # noqa: BLE001
             last_err = e
-            log(f"  reintento {i+1}/{retries} para {url} ({e})")
-            time.sleep(1.5 * (i + 1))
+            wait = 5 * (i + 1) + random.uniform(1, 4)
+            log(f"  reintento {i+1}/{retries} para {url} ({e}) — esperando {wait:.1f}s")
+            time.sleep(wait)
     raise RuntimeError(f"No se pudo obtener {url}: {last_err}")
 
 
