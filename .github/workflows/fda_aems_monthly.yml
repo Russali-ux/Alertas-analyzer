@@ -1,23 +1,20 @@
-name: FDA AEMS - monitoreo mensual de señales
+name: FDA AEMS - sync mensual (OneDrive -> repo -> Supabase)
 
 on:
   schedule:
-    # Día 3 de cada mes a las 09:00 UTC (04:00 hora Perú).
+    # Día 3 de cada mes ~09:00 UTC (04:00 hora Perú) = cada ~30 días.
     # El día 3 (no el 1) da margen a que la FDA termine de publicar el
-    # reporte trimestral cuando corresponde a inicio de trimestre.
+    # reporte trimestral cuando corresponde a inicio de trimestre, y a que
+    # la corrida local del scraper (vía skill fda-aems-monitor) ya haya
+    # dejado el JSON nuevo en OneDrive.
     - cron: '0 9 3 * *'
-  workflow_dispatch:
-    inputs:
-      full_backfill:
-        description: 'Recorrer también reportes archivados (carga histórica completa, no solo --no-archived)'
-        type: boolean
-        default: false
+  workflow_dispatch: {}
 
 permissions:
   contents: write
 
 jobs:
-  scrape-and-sync:
+  sync:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -28,19 +25,27 @@ jobs:
         with:
           python-version: '3.11'
 
+      - name: Install rclone
+        run: curl https://rclone.org/install.sh | sudo bash
+
+      - name: Configurar rclone (OneDrive)
+        env:
+          RCLONE_CONF_CONTENT: ${{ secrets.RCLONE_CONF }}
+        run: |
+          mkdir -p ~/.config/rclone
+          printf '%s' "$RCLONE_CONF_CONTENT" > ~/.config/rclone/rclone.conf
+
       - name: Instalar dependencias
         run: pip install requests beautifulsoup4 --quiet
 
-      - name: Ejecutar scraper y sincronizar con Supabase
+      - name: 0. Traer fda_aems_data.json de OneDrive
+        run: python3 scripts_fetch_aems_from_onedrive.py
+
+      - name: 1. Sincronizar con Supabase (sin scrapear, ya viene de OneDrive)
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-        run: |
-          if [ "${{ github.event.inputs.full_backfill }}" = "true" ]; then
-            python3 fda_aems_sync_supabase.py --db data/fda_aems_data.json
-          else
-            python3 fda_aems_sync_supabase.py --db data/fda_aems_data.json --no-archived
-          fi
+        run: python3 fda_aems_sync_from_json.py --db data/fda_aems_data.json
 
       - name: Commitear JSON acumulado actualizado
         run: |
@@ -48,5 +53,5 @@ jobs:
           git config user.email "actions@users.noreply.github.com"
           git add data/fda_aems_data.json
           git diff --cached --quiet && echo "Sin cambios en el JSON" || \
-            git commit -m "chore(fda-aems): actualizacion mensual de señales [skip ci]"
+            git commit -m "chore(fda-aems): sync mensual desde OneDrive [skip ci]"
           git push
