@@ -101,6 +101,7 @@ header p{font-size:12px;color:rgba(255,255,255,.85);margin-top:3px;font-family:v
 .cell-num{font-family:var(--mono);font-size:9px;color:var(--muted);display:block;margin-bottom:2px}
 .cell-fecha{font-family:var(--mono);font-size:10px;color:var(--sub);white-space:nowrap}
 .cell-resumen{max-width:260px;font-size:11px;color:var(--sub);line-height:1.5}
+.cell-titular{max-width:190px;font-size:11px;color:var(--text);line-height:1.4;font-weight:500}
 .cell-empty{color:var(--muted);font-size:11px}
 .tipo-badge{display:inline-block;padding:2px 7px;border-radius:4px;font-family:var(--mono);font-size:9px;font-weight:700;white-space:nowrap}
 .tipo-falsificados{background:rgba(224,0,48,.1);color:var(--danger);border:1px solid rgba(224,0,48,.2)}
@@ -257,6 +258,7 @@ header p{font-size:12px;color:rgba(255,255,255,.85);margin-top:3px;font-family:v
           <tr>
             <th onclick="sortTable('titulo')">Título</th>
             <th onclick="sortTable('producto')">Producto</th>
+            <th onclick="sortTable('titular_registro_sanitario')">Titular impactado</th>
             <th onclick="sortTable('tipo_alerta')">Tipo de Alerta</th>
             <th onclick="sortTable('urgencia')">Urgencia</th>
             <th onclick="sortTable('accion_principal')">Acción Principal</th>
@@ -476,7 +478,7 @@ async function cargarAlertas() {
     pill.className = 'status-pill error';
     pill.textContent = 'Error de conexión';
     document.getElementById('alertsTbody').innerHTML = `
-      <tr><td colspan="8"><div class="state-box">
+      <tr><td colspan="10"><div class="state-box">
         <div class="state-icon">⚠</div>
         <div>No se pudo conectar a Supabase.<br>${e.message}</div>
         <button class="retry" onclick="cargarAlertas()">Reintentar</button>
@@ -509,6 +511,7 @@ function renderTable() {
     const matchQ = !q ||
       (a.titulo||'').toLowerCase().includes(q) ||
       (a.producto||'').toLowerCase().includes(q) ||
+      (a.titular_registro_sanitario||'').toLowerCase().includes(q) ||
       (a.tipo_alerta||'').toLowerCase().includes(q) ||
       (a.accion_principal||'').toLowerCase().includes(q);
     const matchUrg = !urg || a.urgencia === urg;
@@ -526,7 +529,7 @@ function renderTable() {
   document.getElementById('tblCount').textContent = `${rows.length} alertas`;
 
   if (!rows.length) {
-    tbody.innerHTML = `<tr><td colspan="9"><div class="state-box">
+    tbody.innerHTML = `<tr><td colspan="10"><div class="state-box">
       <div class="state-icon">🔍</div><div>Sin resultados para este filtro.</div>
     </div></td></tr>`;
     return;
@@ -560,6 +563,7 @@ function renderTable() {
         <span style="font-size:12px;font-weight:600">${titulo}</span>
       </td>
       <td style="max-width:160px;font-size:12px">${a.producto || '<span class="cell-empty">No especificado</span>'}</td>
+      <td class="cell-titular">${a.titular_registro_sanitario || '<span class="cell-empty">Sin titular</span>'}</td>
       <td><span class="tipo-badge ${tipoClass(a.tipo_alerta)}">${a.tipo_alerta || 'General'}</span></td>
       <td>${urgBadge}</td>
       <td style="max-width:200px">${accionCell}</td>
@@ -577,7 +581,7 @@ function abrirPdf(url) {
 
 function exportarCSV() {
   if (!alertas.length) return;
-  const cols = ['titulo','producto','tipo_alerta','urgencia','accion_principal','resumen_ia','fecha_publicacion','url_pdf_digemid','url_pdf_github'];
+  const cols = ['titulo','producto','titular_registro_sanitario','tipo_alerta','urgencia','accion_principal','resumen_ia','fecha_publicacion','url_pdf_digemid','url_pdf_github'];
   const header = cols.join(',');
   const esc = v => `"${(v ?? '').toString().replace(/"/g,'""')}"`;
   const body = alertas.map(a => cols.map(c => esc(a[c])).join(',')).join('\n');
