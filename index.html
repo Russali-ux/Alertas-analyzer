@@ -264,7 +264,6 @@ header p{font-size:12px;color:rgba(255,255,255,.85);margin-top:3px;font-family:v
             <th onclick="sortTable('accion_principal')">Acción Principal</th>
             <th>Resumen IA</th>
             <th onclick="sortTable('fecha_publicacion')">Fecha Pub.</th>
-            <th>PDF</th>
             <th>DIGEMID</th>
           </tr>
         </thead>
@@ -478,7 +477,7 @@ async function cargarAlertas() {
     pill.className = 'status-pill error';
     pill.textContent = 'Error de conexión';
     document.getElementById('alertsTbody').innerHTML = `
-      <tr><td colspan="10"><div class="state-box">
+      <tr><td colspan="9"><div class="state-box">
         <div class="state-icon">⚠</div>
         <div>No se pudo conectar a Supabase.<br>${e.message}</div>
         <button class="retry" onclick="cargarAlertas()">Reintentar</button>
@@ -529,7 +528,7 @@ function renderTable() {
   document.getElementById('tblCount').textContent = `${rows.length} alertas`;
 
   if (!rows.length) {
-    tbody.innerHTML = `<tr><td colspan="10"><div class="state-box">
+    tbody.innerHTML = `<tr><td colspan="9"><div class="state-box">
       <div class="state-icon">🔍</div><div>Sin resultados para este filtro.</div>
     </div></td></tr>`;
     return;
@@ -569,7 +568,6 @@ function renderTable() {
       <td style="max-width:200px">${accionCell}</td>
       <td class="cell-resumen">${resumenCell}</td>
       <td class="cell-fecha">${a.fecha_publicacion || '<span class="cell-empty">—</span>'}</td>
-      <td>${pdfCell}</td>
       <td>${digemidCell}</td>
     </tr>`;
   }).join('');
