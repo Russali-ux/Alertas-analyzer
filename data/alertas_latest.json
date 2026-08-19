@@ -5,7 +5,7 @@
     "tipo_alerta": "Productos Falsificados",
     "fecha_publicacion": "2026-08-17",
     "url": "https://www.digemid.minsa.gob.pe/webDigemid/alertas-modificaciones/2026/alerta-digemid-no-100-2026/",
-    "fecha_captura": "2026-08-18 13:45:24",
+    "fecha_captura": "2026-08-19 13:47:39",
     "pdf_url": "https://www.digemid.minsa.gob.pe/Archivos/Alertas/2026/ALERTA_100-26.pdf",
     "github_pdf_url": "https://raw.githubusercontent.com/Russali-ux/Alertas-analyzer/main/pdfs/2026-08-17_ALERTA_DIGEMID_Nº_100-2026.pdf",
     "accion_principal": "NO ADQUIRIR / NO COMERCIALIZAR",
@@ -14,7 +14,8 @@
     "acciones_detalladas": "",
     "dirigido_a": "profesionales de la salud, instituciones, establecimientos \nfarmacéuticos y no farmacéuticos del sector público y privado, y al público en general lo siguiente",
     "motor_analisis": "Heurístico",
-    "titular_registro_sanitario": NaN
+    "titular_registro_sanitario": NaN,
+    "numero_lote": NaN
   },
   {
     "titulo": "ALERTA DIGEMID Nº 99-2026",
@@ -22,7 +23,7 @@
     "tipo_alerta": "Productos Falsificados",
     "fecha_publicacion": "2026-08-17",
     "url": "https://www.digemid.minsa.gob.pe/webDigemid/alertas-modificaciones/2026/alerta-digemid-no-99-2026/",
-    "fecha_captura": "2026-08-18 13:45:24",
+    "fecha_captura": "2026-08-19 13:47:39",
     "pdf_url": "https://www.digemid.minsa.gob.pe/Archivos/Alertas/2026/ALERTA_99-26.pdf",
     "github_pdf_url": "https://raw.githubusercontent.com/Russali-ux/Alertas-analyzer/main/pdfs/2026-08-17_ALERTA_DIGEMID_Nº_99-2026.pdf",
     "accion_principal": "NO ADQUIRIR / NO COMERCIALIZAR",
@@ -31,7 +32,8 @@
     "acciones_detalladas": "El lote del producto original M-2110095EM tiene 10 dígitos. | El rotulado inmediato del producto original esta de acuerdo a lo | El lote del producto original M-211095EM tiene 9 dígitos. | El rotulado inmediato del producto falsificado difiere del original",
     "dirigido_a": "profesionales de la salud, instituciones, \nestablecimientos farmacéuticos y no farmacéuticos del sector público y privado, y al público en general lo siguiente",
     "motor_analisis": "Heurístico",
-    "titular_registro_sanitario": NaN
+    "titular_registro_sanitario": NaN,
+    "numero_lote": "M-2110095EM | M-211095EM"
   },
   {
     "titulo": "ALERTA DIGEMID Nº 98-2026",
@@ -39,7 +41,7 @@
     "tipo_alerta": "Productos Falsificados",
     "fecha_publicacion": "2026-08-17",
     "url": "https://www.digemid.minsa.gob.pe/webDigemid/alertas-modificaciones/2026/alerta-digemid-no-98-2026/",
-    "fecha_captura": "2026-08-18 13:45:24",
+    "fecha_captura": "2026-08-19 13:47:39",
     "pdf_url": "https://www.digemid.minsa.gob.pe/Archivos/Alertas/2026/ALERTA_98-26.pdf",
     "github_pdf_url": "https://raw.githubusercontent.com/Russali-ux/Alertas-analyzer/main/pdfs/2026-08-17_ALERTA_DIGEMID_Nº_98-2026.pdf",
     "accion_principal": "NO ADQUIRIR / NO COMERCIALIZAR",
@@ -48,7 +50,8 @@
     "acciones_detalladas": "",
     "dirigido_a": "profesionales de la salud, instituciones, establecimientos farmacéuticos \ny no farmacéuticos del sector público y privado, y al público en general lo siguiente",
     "motor_analisis": "Heurístico",
-    "titular_registro_sanitario": NaN
+    "titular_registro_sanitario": NaN,
+    "numero_lote": NaN
   },
   {
     "titulo": "ALERTA DIGEMID Nº 97-2026",
@@ -56,7 +59,7 @@
     "tipo_alerta": "Productos Falsificados",
     "fecha_publicacion": "2026-08-17",
     "url": "https://www.digemid.minsa.gob.pe/webDigemid/alertas-modificaciones/2026/alerta-digemid-no-97-2026/",
-    "fecha_captura": "2026-08-18 13:45:24",
+    "fecha_captura": "2026-08-19 13:47:39",
     "pdf_url": "https://www.digemid.minsa.gob.pe/Archivos/Alertas/2026/ALERTA_97-26.pdf",
     "github_pdf_url": "https://raw.githubusercontent.com/Russali-ux/Alertas-analyzer/main/pdfs/2026-08-17_ALERTA_DIGEMID_Nº_97-2026.pdf",
     "accion_principal": "NO ADQUIRIR / NO COMERCIALIZAR",
@@ -65,7 +68,8 @@
     "acciones_detalladas": "No adquirir y no consumir productos farmacéuticos sin registro sanitario ni adquirir productos | Tener en cuenta que muchos de estos productos ilegales se comercializan en lugares sin",
     "dirigido_a": "profesionales de la salud, instituciones, establecimientos farmacéuticos, \nresponsables del suministro de medicamentos en el sector público y privado, y al público en \ngeneral lo siguiente | profesionales de la salud, pacientes y población en general",
     "motor_analisis": "Heurístico",
-    "titular_registro_sanitario": NaN
+    "titular_registro_sanitario": NaN,
+    "numero_lote": NaN
   },
   {
     "titulo": "ALERTA DIGEMID Nº 96-2026",
@@ -73,7 +77,7 @@
     "tipo_alerta": "Productos Falsificados",
     "fecha_publicacion": "2026-08-17",
     "url": "https://www.digemid.minsa.gob.pe/webDigemid/alertas-modificaciones/2026/alerta-digemid-no-96-2026/",
-    "fecha_captura": "2026-08-18 13:45:24",
+    "fecha_captura": "2026-08-19 13:47:39",
     "pdf_url": "https://www.digemid.minsa.gob.pe/Archivos/Alertas/2026/ALERTA_96-26.pdf",
     "github_pdf_url": "https://raw.githubusercontent.com/Russali-ux/Alertas-analyzer/main/pdfs/2026-08-17_ALERTA_DIGEMID_Nº_96-2026.pdf",
     "accion_principal": "NO ADQUIRIR / NO COMERCIALIZAR",
@@ -82,7 +86,8 @@
     "acciones_detalladas": "No adquirir y no consumir productos farmacéuticos sin registro sanitario ni adquirir productos | Tener en cuenta que muchos de estos productos ilegales se comercializan en lugares sin",
     "dirigido_a": "profesionales de la salud, instituciones, establecimientos farmacéuticos, \nresponsables del suministro de medicamentos en el sector público y privado, y al público en \ngeneral lo siguiente | profesionales de la salud, pacientes y población en general",
     "motor_analisis": "Heurístico",
-    "titular_registro_sanitario": NaN
+    "titular_registro_sanitario": NaN,
+    "numero_lote": NaN
   },
   {
     "titulo": "ALERTA DIGEMID Nº 95-2026",
@@ -90,7 +95,7 @@
     "tipo_alerta": "Productos Falsificados",
     "fecha_publicacion": "2026-08-17",
     "url": "https://www.digemid.minsa.gob.pe/webDigemid/alertas-modificaciones/2026/alerta-digemid-no-95-2026/",
-    "fecha_captura": "2026-08-18 13:45:24",
+    "fecha_captura": "2026-08-19 13:47:39",
     "pdf_url": "https://www.digemid.minsa.gob.pe/Archivos/Alertas/2026/ALERTA_95-26.pdf",
     "github_pdf_url": "https://raw.githubusercontent.com/Russali-ux/Alertas-analyzer/main/pdfs/2026-08-17_ALERTA_DIGEMID_Nº_95-2026.pdf",
     "accion_principal": "NO ADQUIRIR / NO COMERCIALIZAR",
@@ -99,7 +104,8 @@
     "acciones_detalladas": "No adquirir y no consumir productos farmacéuticos sin registro sanitario ni adquirir productos | Tener en cuenta que muchos productos ilegales se comercializan en lugares sin autorización",
     "dirigido_a": "profesionales de la salud, instituciones, establecimientos farmacéuticos, \nresponsables del suministro de medicamentos en el sector público y privado, y al público en \ngeneral lo siguiente | profesionales de la salud, pacientes y población en general",
     "motor_analisis": "Heurístico",
-    "titular_registro_sanitario": NaN
+    "titular_registro_sanitario": NaN,
+    "numero_lote": NaN
   },
   {
     "titulo": "ALERTA DIGEMID Nº 94-2026",
@@ -107,7 +113,7 @@
     "tipo_alerta": "Productos Falsificados",
     "fecha_publicacion": "2026-08-17",
     "url": "https://www.digemid.minsa.gob.pe/webDigemid/alertas-modificaciones/2026/alerta-digemid-no-94-2026/",
-    "fecha_captura": "2026-08-18 13:45:24",
+    "fecha_captura": "2026-08-19 13:47:39",
     "pdf_url": "https://www.digemid.minsa.gob.pe/Archivos/Alertas/2026/ALERTA_94-26.pdf",
     "github_pdf_url": "https://raw.githubusercontent.com/Russali-ux/Alertas-analyzer/main/pdfs/2026-08-17_ALERTA_DIGEMID_Nº_94-2026.pdf",
     "accion_principal": "NO ADQUIRIR / NO COMERCIALIZAR",
@@ -116,7 +122,8 @@
     "acciones_detalladas": "No adquirir y no consumir productos farmacéuticos sin registro sanitario ni adquirir productos | Tener en cuenta que muchos de estos productos ilegales se comercializan en lugares sin",
     "dirigido_a": "profesionales de la salud, instituciones, establecimientos farmacéuticos, \nresponsables del suministro de medicamentos en el sector público y privado, y al público en \ngeneral lo siguiente | profesionales de la salud, pacientes y población en general",
     "motor_analisis": "Heurístico",
-    "titular_registro_sanitario": NaN
+    "titular_registro_sanitario": NaN,
+    "numero_lote": NaN
   },
   {
     "titulo": "ALERTA DIGEMID Nº 93-2026",
@@ -124,7 +131,7 @@
     "tipo_alerta": "Productos Falsificados",
     "fecha_publicacion": "2026-08-17",
     "url": "https://www.digemid.minsa.gob.pe/webDigemid/alertas-modificaciones/2026/alerta-digemid-no-93-2026/",
-    "fecha_captura": "2026-08-18 13:45:24",
+    "fecha_captura": "2026-08-19 13:47:39",
     "pdf_url": "https://www.digemid.minsa.gob.pe/Archivos/Alertas/2026/ALERTA_93-26.pdf",
     "github_pdf_url": "https://raw.githubusercontent.com/Russali-ux/Alertas-analyzer/main/pdfs/2026-08-17_ALERTA_DIGEMID_Nº_93-2026.pdf",
     "accion_principal": "NO ADQUIRIR / NO COMERCIALIZAR",
@@ -133,7 +140,8 @@
     "acciones_detalladas": "",
     "dirigido_a": "profesionales de la salud, instituciones, establecimientos \nfarmacéuticos y no farmacéuticos del sector público y privado, y al público en general lo siguiente",
     "motor_analisis": "Heurístico",
-    "titular_registro_sanitario": "Producto incautado por la Sub Gerencia de Regulación Sectorial Gerencia Regional de Sa"
+    "titular_registro_sanitario": "Producto incautado por la Sub Gerencia de Regulación Sectorial Gerencia Regional de Sa",
+    "numero_lote": NaN
   },
   {
     "titulo": "ALERTA DIGEMID Nº 92-2026",
@@ -141,7 +149,7 @@
     "tipo_alerta": "Control de Calidad",
     "fecha_publicacion": "2026-08-13",
     "url": "https://www.digemid.minsa.gob.pe/webDigemid/alertas-modificaciones/2026/alerta-digemid-no-92-2026/",
-    "fecha_captura": "2026-08-18 13:45:24",
+    "fecha_captura": "2026-08-19 13:47:39",
     "pdf_url": "https://www.digemid.minsa.gob.pe/Archivos/Alertas/2026/ALERTA_92-26.pdf",
     "github_pdf_url": "https://raw.githubusercontent.com/Russali-ux/Alertas-analyzer/main/pdfs/2026-08-13_ALERTA_DIGEMID_Nº_92-2026.pdf",
     "accion_principal": "RETIRO DEL MERCADO",
@@ -150,7 +158,8 @@
     "acciones_detalladas": "",
     "dirigido_a": "profesionales de la salud, instituciones, \nestablecimientos farmacéuticos, responsables del suministro de medicamentos en el sector público y privado, y al público en general lo siguiente",
     "motor_analisis": "Heurístico",
-    "titular_registro_sanitario": "Droguería OXIMEDIC IMPORT S.A.C"
+    "titular_registro_sanitario": "Droguería OXIMEDIC IMPORT S.A.C",
+    "numero_lote": NaN
   },
   {
     "titulo": "ALERTA DIGEMID Nº 91-2026",
@@ -158,7 +167,7 @@
     "tipo_alerta": "Productos Falsificados",
     "fecha_publicacion": "2026-08-13",
     "url": "https://www.digemid.minsa.gob.pe/webDigemid/alertas-modificaciones/2026/alerta-digemid-no-91-2026/",
-    "fecha_captura": "2026-08-18 13:45:24",
+    "fecha_captura": "2026-08-19 13:47:39",
     "pdf_url": "https://www.digemid.minsa.gob.pe/Archivos/Alertas/2026/ALERTA_91-26.pdf",
     "github_pdf_url": "https://raw.githubusercontent.com/Russali-ux/Alertas-analyzer/main/pdfs/2026-08-13_ALERTA_DIGEMID_Nº_91-2026.pdf",
     "accion_principal": "NO ADQUIRIR / NO COMERCIALIZAR",
@@ -167,6 +176,7 @@
     "acciones_detalladas": "No adquirir y no consumir productos farmacéuticos sin registro sanitario ni adquirir productos | Tener en cuenta que muchos de estos productos ilegales se comercializan en lugares sin",
     "dirigido_a": "profesionales de la salud, instituciones, establecimientos farmacéuticos, \nresponsables del suministro de medicamentos en el sector público y privado, y al público en \ngeneral lo siguiente | profesionales de la salud, pacientes y población en general",
     "motor_analisis": "Heurístico",
-    "titular_registro_sanitario": NaN
+    "titular_registro_sanitario": NaN,
+    "numero_lote": NaN
   }
 ]
