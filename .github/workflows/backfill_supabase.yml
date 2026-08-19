@@ -25,7 +25,7 @@ jobs:
       - name: Instalar dependencias
         run: |
           pip install --upgrade pip
-          pip install requests pandas pymupdf supabase
+          pip install requests beautifulsoup4 pandas pymupdf supabase
           if [ -n "${{ secrets.ANTHROPIC_API_KEY }}" ]; then
             pip install anthropic
           fi
