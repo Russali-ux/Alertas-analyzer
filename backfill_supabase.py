@@ -3,9 +3,10 @@ backfill_supabase.py
 ---------------------
 Relleno histórico (una sola vez): lee todos los índices data/alertas_*.json
 que scraper_alertas_digemid.py ya subió a GitHub, junta y deduplica las
-alertas, completa "titular_registro_sanitario" para las que lo tengan vacío
-(descargando el PDF ya guardado en pdfs/ y aplicando la heurística corregida
-de scraper_alertas_digemid.py), y sube TODO a Supabase con subir_a_supabase().
+alertas, completa "titular_registro_sanitario" y "numero_lote" para las que
+lo tengan vacío (descargando el PDF ya guardado en pdfs/ y aplicando la
+misma lógica —Claude API o heurística— de scraper_alertas_digemid.py), y
+sube TODO a Supabase con subir_a_supabase().
 
 No vuelve a scrapear digemid.minsa.gob.pe — usa lo que ya está guardado en
 el propio repositorio de GitHub.
@@ -40,6 +41,7 @@ import fitz  # pymupdf
 # (deben vivir en el mismo directorio / mismo repo).
 from scraper_alertas_digemid import (
     _extraer_titular_heuristico,
+    _extraer_lote_heuristico,
     analizar_con_claude_texto,
 )
 from supabase_sync import subir_a_supabase
@@ -129,8 +131,11 @@ def main(dry_run: bool = False):
     filas = list(por_titulo.values())
     print(f"\nTotal alertas únicas históricas: {len(filas)}")
 
-    faltantes = [f for f in filas if _vacio(f.get("titular_registro_sanitario"))]
-    print(f"Sin titular_registro_sanitario: {len(faltantes)}")
+    faltantes = [
+        f for f in filas
+        if _vacio(f.get("titular_registro_sanitario")) or _vacio(f.get("numero_lote"))
+    ]
+    print(f"Sin titular_registro_sanitario y/o sin numero_lote: {len(faltantes)}")
 
     tiene_claude = bool(os.environ.get("ANTHROPIC_API_KEY"))
     print(f"Motor de re-análisis: {'Claude API' if tiene_claude else 'Heurístico'}\n")
@@ -161,19 +166,30 @@ def main(dry_run: bool = False):
             continue
 
         titular = None
+        numero_lote = None
         if tiene_claude:
             resultado = analizar_con_claude_texto(texto)
             if resultado:
                 titular = resultado.get("titular_registro_sanitario") or None
+                numero_lote = resultado.get("numero_lote") or None
         if not titular:
             titular = _extraer_titular_heuristico(texto)
+        if not numero_lote:
+            numero_lote = _extraer_lote_heuristico(texto)
 
-        if titular:
+        cambios = []
+        if titular and _vacio(fila.get("titular_registro_sanitario")):
             fila["titular_registro_sanitario"] = titular
+            cambios.append(f"titular={titular}")
+        if numero_lote and _vacio(fila.get("numero_lote")):
+            fila["numero_lote"] = numero_lote
+            cambios.append(f"lote={numero_lote}")
+
+        if cambios:
             completadas += 1
-            print(f"-> {titular}")
+            print("-> " + " | ".join(cambios))
         else:
-            print("no se encontró titular en el documento.")
+            print("nada nuevo encontrado en el documento.")
 
     print(f"\nCompletadas: {completadas}/{len(faltantes)}")
 
@@ -181,7 +197,7 @@ def main(dry_run: bool = False):
 
     if dry_run:
         print("\n[DRY RUN] No se sube a Supabase. Vista previa:")
-        cols = [c for c in ["titulo", "titular_registro_sanitario"] if c in df.columns]
+        cols = [c for c in ["titulo", "titular_registro_sanitario", "numero_lote"] if c in df.columns]
         print(df[cols].to_string())
         return
 
