@@ -151,6 +151,9 @@ header p{font-size:12px;color:rgba(255,255,255,.85);margin-top:3px;font-family:v
 .dash-grid{display:grid;grid-template-columns:1.1fr 1fr 0.9fr;gap:10px;margin-bottom:14px}
 .dash-panel{background:#fff;border:1px solid var(--border);border-radius:10px;padding:14px 16px}
 .dash-panel h3{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.6px;color:var(--sub);font-weight:700;margin-bottom:10px}
+.dash-panel-full{margin-bottom:14px}
+.dash-panel-full .bar-label{width:220px}
+.dash-panel-full .bar-fill{background:linear-gradient(90deg,rgba(224,0,48,.35),var(--danger))}
 .bar-row{display:flex;align-items:center;gap:8px;margin-bottom:7px}
 .bar-label{width:108px;flex-shrink:0;font-size:11px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .bar-track{flex:1;background:var(--surface);border-radius:4px;height:16px;position:relative;overflow:hidden}
@@ -167,6 +170,37 @@ header p{font-size:12px;color:rgba(255,255,255,.85);margin-top:3px;font-family:v
 .donut-legend b{font-family:var(--mono);color:var(--text);margin-left:auto;padding-left:10px}
 .lote-chip{display:inline-block;font-family:var(--mono);font-size:9.5px;background:var(--surface);border:1px solid var(--border);color:#8a5200;padding:1px 6px;border-radius:4px;margin:1px 3px 1px 0;white-space:nowrap}
 .cell-lote{max-width:150px}
+/* Columna N° Lote oculta de la tabla por pedido del cliente (el dato sigue
+   disponible para el buscador, el dashboard y el CSV — solo no se muestra
+   como columna visible). Quitar esta regla para volver a mostrarla. */
+.col-lote{display:none}
+
+/* Columna "Editar" — solo visible cuando el usuario logueado es admin
+   (se activa agregando la clase .is-admin a #alertsTable en onLoggedIn) */
+.col-admin{display:none}
+#alertsTable.is-admin .col-admin{display:table-cell}
+.btn-edit-alerta{background:#fff;color:var(--accent);border:1px solid var(--border);border-radius:6px;padding:5px 10px;font-family:var(--mono);font-size:9px;font-weight:700;cursor:pointer;white-space:nowrap}
+.btn-edit-alerta:hover{border-color:var(--accent);background:rgba(0,119,204,.06)}
+
+/* ── MODAL DE EDICIÓN MANUAL (solo admin) ── */
+.edit-overlay{position:fixed;inset:0;background:rgba(15,25,40,.55);display:flex;align-items:center;justify-content:center;z-index:70;padding:20px}
+.edit-overlay.gate-hidden{display:none}
+.edit-card{background:#fff;border-radius:14px;max-width:560px;width:100%;max-height:88vh;overflow-y:auto;padding:26px 28px;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.edit-card h2{font-size:16px;font-weight:700;margin-bottom:4px}
+.edit-card .sub{font-size:11.5px;color:var(--sub);margin-bottom:18px;line-height:1.5}
+.edit-field{margin-bottom:14px}
+.edit-field label{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:5px;font-family:var(--mono)}
+.edit-field input,.edit-field select,.edit-field textarea{width:100%;border:1px solid var(--border);border-radius:8px;padding:9px 12px;font-size:13px;font-family:var(--sans);outline:none;background:#fff;color:var(--text)}
+.edit-field input:focus,.edit-field select:focus,.edit-field textarea:focus{border-color:var(--accent)}
+.edit-field textarea{resize:vertical;min-height:56px;font-family:var(--sans)}
+.edit-actions{display:flex;gap:10px;margin-top:8px}
+.edit-actions button{flex:1;border-radius:8px;padding:10px;font-size:13px;font-weight:700;cursor:pointer;border:1px solid var(--border)}
+.btn-save-edit{background:var(--accent);color:#fff;border-color:var(--accent)}
+.btn-save-edit:hover{opacity:.9}
+.btn-save-edit:disabled{opacity:.5;cursor:not-allowed}
+.btn-cancel-edit{background:#fff;color:var(--sub)}
+.btn-cancel-edit:hover{border-color:var(--sub)}
+.edit-error{color:var(--danger);font-size:11px;margin-top:10px;display:none}
 
 /* ── BOTÓN FLOTANTE DE WHATSAPP ── */
 .wa-float{position:fixed;bottom:22px;right:22px;width:58px;height:58px;background:#25D366;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(0,0,0,.25);z-index:60;text-decoration:none;transition:transform .2s,box-shadow .2s}
@@ -310,6 +344,10 @@ header p{font-size:12px;color:rgba(255,255,255,.85);margin-top:3px;font-family:v
           </div>
         </div>
       </div>
+      <div class="dash-panel dash-panel-full">
+        <h3>Productos más falsificados (por Nº de alertas) — según el filtro de tipo de alerta activo</h3>
+        <div id="chartProducto"></div>
+      </div>
     </div>
 
     <div class="tbl-scroll">
@@ -319,13 +357,14 @@ header p{font-size:12px;color:rgba(255,255,255,.85);margin-top:3px;font-family:v
             <th onclick="sortTable('titulo')">Título</th>
             <th onclick="sortTable('producto')">Producto</th>
             <th onclick="sortTable('titular_registro_sanitario')">Titular impactado</th>
-            <th onclick="sortTable('numero_lote')">N° Lote</th>
+            <th class="col-lote" onclick="sortTable('numero_lote')">N° Lote</th>
             <th onclick="sortTable('tipo_alerta')">Tipo de Alerta</th>
             <th onclick="sortTable('urgencia')">Urgencia</th>
             <th onclick="sortTable('accion_principal')">Acción Principal</th>
             <th>Resumen IA</th>
             <th onclick="sortTable('fecha_publicacion')">Fecha Pub.</th>
             <th>DIGEMID</th>
+            <th class="col-admin">Editar</th>
           </tr>
         </thead>
         <tbody id="alertsTbody"></tbody>
@@ -359,6 +398,64 @@ header p{font-size:12px;color:rgba(255,255,255,.85);margin-top:3px;font-family:v
   </div>
 
 </div><!-- /root -->
+
+<!-- ── MODAL: EDICIÓN MANUAL DE ALERTA (solo admin) ── -->
+<div class="edit-overlay gate-hidden" id="editOverlay">
+  <div class="edit-card">
+    <h2>✏️ Editar alerta</h2>
+    <p class="sub" id="editSubtitulo">—</p>
+    <form id="editForm" onsubmit="return guardarEdicionAlerta(event)">
+      <div class="edit-field">
+        <label>Producto</label>
+        <input type="text" id="editProducto">
+      </div>
+      <div class="edit-field">
+        <label>Titular del registro sanitario</label>
+        <input type="text" id="editTitular">
+      </div>
+      <div class="edit-field">
+        <label>Tipo de alerta</label>
+        <select id="editTipoAlerta">
+          <option value="Productos Falsificados">Productos Falsificados</option>
+          <option value="Control de Calidad">Control de Calidad</option>
+          <option value="Seguridad">Seguridad</option>
+          <option value="Comercialización Ilegal">Comercialización Ilegal</option>
+          <option value="General">General</option>
+          <option value="__otro__">Otro (escribir abajo)</option>
+        </select>
+      </div>
+      <div class="edit-field" id="editTipoAlertaOtroWrap" style="display:none">
+        <label>Especificar tipo de alerta</label>
+        <input type="text" id="editTipoAlertaOtro" placeholder="Ej: Retiro Voluntario">
+      </div>
+      <div class="edit-field">
+        <label>Urgencia</label>
+        <select id="editUrgencia">
+          <option value="INMEDIATA">🔴 Inmediata</option>
+          <option value="PREVENTIVA">🟡 Preventiva</option>
+          <option value="INFORMATIVA">🔵 Informativa</option>
+        </select>
+      </div>
+      <div class="edit-field">
+        <label>Acción principal</label>
+        <input type="text" id="editAccionPrincipal">
+      </div>
+      <div class="edit-field">
+        <label>N° de lote</label>
+        <input type="text" id="editNumeroLote" placeholder="Ej: M-2110095EM | 2122942 (separar varios con &quot; | &quot;)">
+      </div>
+      <div class="edit-field">
+        <label>Resumen IA</label>
+        <textarea id="editResumenIa"></textarea>
+      </div>
+      <div class="edit-actions">
+        <button type="button" class="btn-cancel-edit" onclick="cerrarEditorAlerta()">Cancelar</button>
+        <button type="submit" class="btn-save-edit" id="btnGuardarEdicion">Guardar cambios</button>
+      </div>
+      <div class="edit-error" id="editError"></div>
+    </form>
+  </div>
+</div>
 
 <script>
 /* ════════════════════════════════════════════
@@ -474,6 +571,7 @@ async function onLoggedIn(session) {
   document.getElementById('whoText').innerHTML =
     `<b>${currentPerfil?.nombre || currentUser.email}${esAdmin ? '<span class="admin-tag">ADMIN</span>' : ''}</b><span>${currentUser.email}</span>`;
   document.getElementById('navUsuarios').classList.toggle('gate-hidden', !esAdmin);
+  document.getElementById('alertsTable').classList.toggle('is-admin', esAdmin);
   document.getElementById('cimaLink').classList.toggle('gate-hidden', !(esAdmin || currentPerfil?.acceso_cima));
   document.getElementById('pavsLink').classList.remove('gate-hidden');
   document.getElementById('aemsLink').classList.remove('gate-hidden');
@@ -484,6 +582,7 @@ async function onLoggedIn(session) {
 function onLoggedOut() {
   currentUser = null;
   currentPerfil = null;
+  document.getElementById('alertsTable').classList.remove('is-admin');
   document.getElementById('gateOverlay').classList.remove('gate-hidden');
   document.getElementById('rootApp').classList.add('gate-hidden');
   document.getElementById('userBadge').classList.add('gate-hidden');
@@ -539,7 +638,7 @@ async function cargarAlertas() {
     pill.className = 'status-pill error';
     pill.textContent = 'Error de conexión';
     document.getElementById('alertsTbody').innerHTML = `
-      <tr><td colspan="10"><div class="state-box">
+      <tr><td colspan="11"><div class="state-box">
         <div class="state-icon">⚠</div>
         <div>No se pudo conectar a Supabase.<br>${e.message}</div>
         <button class="retry" onclick="cargarAlertas()">Reintentar</button>
@@ -604,7 +703,7 @@ function renderTable() {
   renderDashboard(rows);
 
   if (!rows.length) {
-    tbody.innerHTML = `<tr><td colspan="10"><div class="state-box">
+    tbody.innerHTML = `<tr><td colspan="11"><div class="state-box">
       <div class="state-icon">🔍</div><div>Sin resultados para este filtro.</div>
     </div></td></tr>`;
     return;
@@ -639,13 +738,14 @@ function renderTable() {
       </td>
       <td style="max-width:160px;font-size:12px">${a.producto || '<span class="cell-empty">No especificado</span>'}</td>
       <td class="cell-titular">${a.titular_registro_sanitario || '<span class="cell-empty">Sin titular</span>'}</td>
-      <td class="cell-lote">${loteChips(a.numero_lote)}</td>
+      <td class="cell-lote col-lote">${loteChips(a.numero_lote)}</td>
       <td><span class="tipo-badge ${tipoClass(a.tipo_alerta)}">${a.tipo_alerta || 'General'}</span></td>
       <td>${urgBadge}</td>
       <td style="max-width:200px">${accionCell}</td>
       <td class="cell-resumen">${resumenCell}</td>
       <td class="cell-fecha">${a.fecha_publicacion || '<span class="cell-empty">—</span>'}</td>
       <td>${digemidCell}</td>
+      <td class="col-admin"><button class="btn-edit-alerta" onclick="event.stopPropagation();abrirEditorAlerta('${a.id}')">✏️ Editar</button></td>
     </tr>`;
   }).join('');
 }
@@ -722,11 +822,155 @@ function renderDashboard(rows) {
     <div class="row"><span class="dot" style="background:#cc8800"></span>Con lote <b>${conLote}</b></div>
     <div class="row"><span class="dot" style="background:#e5e9f0"></span>Sin lote <b>${sinLote}</b></div>
   `;
+
+  // Productos más falsificados (respeta el filtro de tipo de alerta activo:
+  // si eliges "Productos Falsificados" en el selector de arriba, este ranking
+  // queda acotado solo a esas alertas)
+  const prodCounts = {};
+  rows.forEach(a => {
+    const p = normalizarProducto(a.producto);
+    if (p) prodCounts[p] = (prodCounts[p] || 0) + 1;
+  });
+  const prodSorted = Object.entries(prodCounts).sort((x,y) => y[1]-x[1]);
+  const prodEl = document.getElementById('chartProducto');
+  if (!prodSorted.length) {
+    prodEl.innerHTML = '<div class="dash-empty">Sin productos identificables en este filtro.</div>';
+  } else {
+    const prodMax = prodSorted[0][1];
+    prodEl.innerHTML = prodSorted.slice(0, 10).map(([label, count]) => {
+      const pct = Math.max(6, (count/prodMax)*100);
+      return `<div class="bar-row">
+        <div class="bar-label" title="${label}">${label}</div>
+        <div class="bar-track"><div class="bar-fill" style="width:${pct}%"><span>${count}</span></div></div>
+      </div>`;
+    }).join('');
+  }
+}
+
+// Agrupa nombres de producto parecidos (misma lógica que el dashboard PAVS
+// de referencia): recorta basura típica del scraping ("Descargar", saltos
+// de línea) y se queda con el primer segmento antes de una coma/paréntesis,
+// para que "DOLO CORDRALAN 500mg, caja x10" y "DOLO CORDRALAN (genérico)"
+// cuenten como el mismo producto en el ranking.
+function normalizarProducto(producto) {
+  if (!producto) return null;
+  let p = producto.replace(/\s+/g, ' ').trim();
+  p = p.replace(/Descargar\s*$/i, '').trim();
+  p = p.split(/[,(]/)[0].trim();
+  if (!p) return null;
+  return p.length > 45 ? p.slice(0, 45).trim() + '…' : p;
 }
 
 function abrirPdf(url) {
   if (url) window.open(url, '_blank');
 }
+
+/* ════════════════════════════════════════════
+   EDICIÓN MANUAL DE ALERTAS (solo admin)
+   Corrige campos generados por IA/heurística que
+   hayan quedado mal clasificados (ej. tipo_alerta).
+════════════════════════════════════════════ */
+let editandoAlertaId = null;
+
+function esAdminActual() {
+  return currentPerfil?.rol === 'admin';
+}
+
+function abrirEditorAlerta(id) {
+  if (!esAdminActual()) return;
+  const a = alertas.find(x => x.id === id);
+  if (!a) return;
+  editandoAlertaId = id;
+
+  document.getElementById('editSubtitulo').textContent = a.titulo || '—';
+  document.getElementById('editProducto').value = a.producto || '';
+  document.getElementById('editTitular').value = a.titular_registro_sanitario || '';
+  document.getElementById('editUrgencia').value = a.urgencia || 'INFORMATIVA';
+  document.getElementById('editAccionPrincipal').value = a.accion_principal || '';
+  document.getElementById('editNumeroLote').value = a.numero_lote || '';
+  document.getElementById('editResumenIa').value = a.resumen_ia || '';
+
+  const tipoSel = document.getElementById('editTipoAlerta');
+  const opciones = Array.from(tipoSel.options).map(o => o.value);
+  if (a.tipo_alerta && opciones.includes(a.tipo_alerta)) {
+    tipoSel.value = a.tipo_alerta;
+    document.getElementById('editTipoAlertaOtroWrap').style.display = 'none';
+    document.getElementById('editTipoAlertaOtro').value = '';
+  } else {
+    tipoSel.value = '__otro__';
+    document.getElementById('editTipoAlertaOtroWrap').style.display = 'block';
+    document.getElementById('editTipoAlertaOtro').value = a.tipo_alerta || '';
+  }
+
+  document.getElementById('editError').style.display = 'none';
+  document.getElementById('editOverlay').classList.remove('gate-hidden');
+}
+
+function cerrarEditorAlerta() {
+  document.getElementById('editOverlay').classList.add('gate-hidden');
+  editandoAlertaId = null;
+}
+
+async function guardarEdicionAlerta(event) {
+  event.preventDefault();
+  if (!esAdminActual() || !editandoAlertaId) return false;
+
+  const btn = document.getElementById('btnGuardarEdicion');
+  const errDiv = document.getElementById('editError');
+  errDiv.style.display = 'none';
+  btn.disabled = true;
+  btn.textContent = 'Guardando…';
+
+  const tipoSel = document.getElementById('editTipoAlerta').value;
+  const tipoFinal = tipoSel === '__otro__'
+    ? document.getElementById('editTipoAlertaOtro').value.trim()
+    : tipoSel;
+
+  const payload = {
+    target_id: editandoAlertaId,
+    p_producto: document.getElementById('editProducto').value.trim(),
+    p_titular_registro_sanitario: document.getElementById('editTitular').value.trim(),
+    p_tipo_alerta: tipoFinal,
+    p_urgencia: document.getElementById('editUrgencia').value,
+    p_accion_principal: document.getElementById('editAccionPrincipal').value.trim(),
+    p_numero_lote: document.getElementById('editNumeroLote').value.trim(),
+    p_resumen_ia: document.getElementById('editResumenIa').value.trim(),
+  };
+
+  const { error } = await sb.rpc('admin_actualizar_alerta_digemid', payload);
+
+  btn.disabled = false;
+  btn.textContent = 'Guardar cambios';
+
+  if (error) {
+    errDiv.textContent = 'No se pudo guardar: ' + error.message;
+    errDiv.style.display = 'block';
+    return false;
+  }
+
+  // Refleja el cambio en memoria sin tener que recargar todo desde Supabase
+  const idx = alertas.findIndex(a => a.id === editandoAlertaId);
+  if (idx !== -1) {
+    alertas[idx] = {
+      ...alertas[idx],
+      producto: payload.p_producto,
+      titular_registro_sanitario: payload.p_titular_registro_sanitario,
+      tipo_alerta: payload.p_tipo_alerta,
+      urgencia: payload.p_urgencia,
+      accion_principal: payload.p_accion_principal,
+      numero_lote: payload.p_numero_lote,
+      resumen_ia: payload.p_resumen_ia,
+    };
+  }
+  populateTipoFilter();
+  renderTable();
+  cerrarEditorAlerta();
+  return false;
+}
+
+document.getElementById('editTipoAlerta').addEventListener('change', function () {
+  document.getElementById('editTipoAlertaOtroWrap').style.display = this.value === '__otro__' ? 'block' : 'none';
+});
 
 function exportarCSV() {
   if (!alertas.length) return;
