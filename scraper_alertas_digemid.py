@@ -128,7 +128,8 @@ Responde SOLO con JSON, sin texto adicional ni bloques de código:
   "dirigido_a": ["<destinatario 1>", "<destinatario 2>"],
   "acciones_detalladas": ["<acción 1>", "<acción 2>", "..."],
   "resumen_accion": "<1-2 oraciones resumiendo qué debe hacer el lector>",
-  "titular_registro_sanitario": "<razón social exacta de la empresa TITULAR DEL REGISTRO SANITARIO (columna 'TITULAR DEL REGISTRO SANITARIO' de la tabla, si existe). IMPORTANTE: no es lo mismo que el FABRICANTE — son columnas distintas y casi siempre empresas diferentes (el fabricante suele ser extranjero, el titular suele ser una droguería peruana). Si hay varios productos/titulares, sepáralos con ' | '. null si no se menciona>"
+  "titular_registro_sanitario": "<razón social exacta de la empresa TITULAR DEL REGISTRO SANITARIO (columna 'TITULAR DEL REGISTRO SANITARIO' de la tabla, si existe). IMPORTANTE: no es lo mismo que el FABRICANTE — son columnas distintas y casi siempre empresas diferentes (el fabricante suele ser extranjero, el titular suele ser una droguería peruana). Si hay varios productos/titulares, sepáralos con ' | '. null si no se menciona>",
+  "numero_lote": "<número(s) de lote CONCRETO(S) mencionados como impactados por la alerta (ej. lote del producto falsificado, lote retirado del mercado, lote con resultado no conforme). NO uses el texto genérico de recomendación 'verificar el número de lote antes de comprar' — solo códigos de lote reales que aparezcan en el documento. Si hay varios, sepáralos con ' | '. null si no se menciona ningún lote específico>"
 }
 
 TEXTO DE LA ALERTA:
@@ -148,7 +149,8 @@ Responde SOLO con JSON, sin texto adicional ni bloques de código:
   "dirigido_a": ["<destinatario 1>", "<destinatario 2>"],
   "acciones_detalladas": ["<acción 1>", "<acción 2>", "..."],
   "resumen_accion": "<1-2 oraciones resumiendo qué debe hacer el lector>",
-  "titular_registro_sanitario": "<razón social exacta de la empresa TITULAR DEL REGISTRO SANITARIO (columna 'TITULAR DEL REGISTRO SANITARIO' de la tabla, si existe). IMPORTANTE: no es lo mismo que el FABRICANTE — son columnas distintas y casi siempre empresas diferentes (el fabricante suele ser extranjero, el titular suele ser una droguería peruana). Si hay varios productos/titulares, sepáralos con ' | '. null si no se menciona>"
+  "titular_registro_sanitario": "<razón social exacta de la empresa TITULAR DEL REGISTRO SANITARIO (columna 'TITULAR DEL REGISTRO SANITARIO' de la tabla, si existe). IMPORTANTE: no es lo mismo que el FABRICANTE — son columnas distintas y casi siempre empresas diferentes (el fabricante suele ser extranjero, el titular suele ser una droguería peruana). Si hay varios productos/titulares, sepáralos con ' | '. null si no se menciona>",
+  "numero_lote": "<número(s) de lote CONCRETO(S) mencionados como impactados por la alerta (ej. lote del producto falsificado, lote retirado del mercado, lote con resultado no conforme). NO uses el texto genérico de recomendación 'verificar el número de lote antes de comprar' — solo códigos de lote reales que aparezcan en el documento. Si hay varios, sepáralos con ' | '. null si no se menciona ningún lote específico>"
 }
 """
 
@@ -431,6 +433,7 @@ def analizar_heuristico(texto: str) -> dict:
         resumen = acciones_detalladas[0][:220]
 
     titular_registro_sanitario = _extraer_titular_heuristico(texto)
+    numero_lote = _extraer_lote_heuristico(texto)
 
     return {
         "accion_principal":    accion_principal,
@@ -439,7 +442,37 @@ def analizar_heuristico(texto: str) -> dict:
         "acciones_detalladas": acciones_detalladas,
         "resumen_accion":      resumen,
         "titular_registro_sanitario": titular_registro_sanitario,
+        "numero_lote":         numero_lote,
     }
+
+
+# Patrón de código de lote típico DIGEMID: letras/dígitos, a veces con
+# guion (ej. "M-2110095EM", "L240501", "AB12345"). Debe empezar con
+# mayúscula/dígito y contener al menos un dígito para descartar palabras
+# sueltas del texto ("del", "producto", etc.).
+_LOTE_CODIGO_PAT = re.compile(r"\b([A-Z][A-Z0-9]*-?[A-Z0-9]{4,15})\b")
+_LOTE_VENTANA = 60  # caracteres a mirar después de "lote" (cubre frases
+                     # como "lote del producto original M-2110095EM")
+
+
+def _extraer_lote_heuristico(texto: str) -> str | None:
+    """
+    Busca códigos de lote concretos en una ventana de texto después de la
+    palabra "lote", evitando el texto genérico repetido en (casi) todas
+    las alertas DIGEMID ("se recomienda verificar el número de lote antes
+    de su compra"), que no va seguido de ningún código real.
+    """
+    vistos: list[str] = []
+    for m in re.finditer(r"[Ll]ote(?:s)?\b", texto):
+        ventana = texto[m.end(): m.end() + _LOTE_VENTANA]
+        c = _LOTE_CODIGO_PAT.search(ventana)
+        if not c:
+            continue
+        candidato = c.group(1).strip(" .,:-")
+        if re.search(r"\d", candidato) and candidato not in vistos:
+            vistos.append(candidato)
+
+    return " | ".join(vistos) if vistos else None
 
 
 def _extraer_titular_heuristico(texto: str) -> str | None:
@@ -603,11 +636,14 @@ def enriquecer_alerta(alerta: dict) -> dict:
     alerta["dirigido_a"]          = " | ".join(resultado.get("dirigido_a", []))
     alerta["motor_analisis"]      = motor_nombre
     alerta["titular_registro_sanitario"] = resultado.get("titular_registro_sanitario") or None
+    alerta["numero_lote"]         = resultado.get("numero_lote") or None
 
     # Si Claude no lo encontró (o se usó el motor heurístico sin match), intenta
     # una pasada heurística adicional sobre el texto como último recurso.
     if not alerta["titular_registro_sanitario"]:
         alerta["titular_registro_sanitario"] = _extraer_titular_heuristico(texto)
+    if not alerta["numero_lote"]:
+        alerta["numero_lote"] = _extraer_lote_heuristico(texto)
 
     return alerta
 
@@ -729,6 +765,7 @@ def exportar_excel(df: pd.DataFrame, ruta: str):
         ("Título",               "titulo",               40),
         ("Producto",             "producto",             28),
         ("Titular Registro Sanitario", "titular_registro_sanitario", 32),
+        ("N° Lote Impactado",    "numero_lote",          25),
         ("Tipo de Alerta",       "tipo_alerta",          20),
         ("Fecha Publicación",    "fecha_publicacion",    15),
         ("⚡ Acción Principal",  "accion_principal",     30),

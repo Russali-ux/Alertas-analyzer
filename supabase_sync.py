@@ -6,7 +6,7 @@ hacia la tabla `alertas_digemid` en Supabase.
 
 Se asume que `df` es el DataFrame final que arma scrapear_alertas(), cuyas
 columnas reales (snake_case, no las etiquetas bonitas del Excel) son:
-    titulo, producto, titular_registro_sanitario, tipo_alerta,
+    titulo, producto, titular_registro_sanitario, numero_lote, tipo_alerta,
     fecha_publicacion, accion_principal, urgencia, dirigido_a,
     acciones_detalladas, resumen_accion, motor_analisis,
     pdf_url, github_pdf_url, url
@@ -52,6 +52,7 @@ def _fila_a_registro(fila: pd.Series) -> dict:
         "titulo": _limpio(fila.get("titulo")),
         "producto": _limpio(fila.get("producto")),
         "titular_registro_sanitario": _limpio(fila.get("titular_registro_sanitario")),
+        "numero_lote": _limpio(fila.get("numero_lote")),
         "tipo_alerta": _limpio(fila.get("tipo_alerta")),
         "fecha_publicacion": fecha,
         "accion_principal": _limpio(fila.get("accion_principal")),
