@@ -140,7 +140,14 @@ header p{font-size:12px;color:rgba(255,255,255,.85);margin-top:3px;font-family:v
 
 /* ── DASHBOARD (KPIs + gráficos, recalculado según filtros activos) ── */
 .dash-wrap{padding:16px 20px 4px;border-bottom:1px solid var(--border);background:var(--surface);flex-shrink:0}
-.dash-hint{font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px}
+.dash-accordion{border:none}
+.dash-accordion summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:6px;padding-bottom:10px}
+.dash-accordion summary::-webkit-details-marker{display:none}
+.dash-accordion summary::before{content:'▸';display:inline-block;font-size:9px;color:var(--muted);transition:transform .15s}
+.dash-accordion[open] summary::before{transform:rotate(90deg)}
+.dash-accordion summary:hover{color:var(--accent)}
+.dash-hint{font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:0}
+.dash-body{padding-top:2px}
 .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
 .kpi{background:#fff;border:1px solid var(--border);border-radius:10px;padding:12px 14px}
 .kpi .n{font-family:var(--mono);font-size:24px;font-weight:700;color:var(--text);line-height:1}
@@ -153,7 +160,7 @@ header p{font-size:12px;color:rgba(255,255,255,.85);margin-top:3px;font-family:v
 .dash-panel h3{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.6px;color:var(--sub);font-weight:700;margin-bottom:10px}
 .dash-panel-full{margin-bottom:14px}
 .dash-panel-full .bar-label{width:220px}
-.dash-panel-full .bar-fill{background:linear-gradient(90deg,rgba(224,0,48,.35),var(--danger))}
+.dash-panel-full .bar-fill{background:linear-gradient(90deg,rgba(167,139,250,.4),#a78bfa)}
 .bar-row{display:flex;align-items:center;gap:8px;margin-bottom:7px}
 .bar-label{width:108px;flex-shrink:0;font-size:11px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .bar-track{flex:1;background:var(--surface);border-radius:4px;height:16px;position:relative;overflow:hidden}
@@ -320,34 +327,38 @@ header p{font-size:12px;color:rgba(255,255,255,.85);margin-top:3px;font-family:v
     </div>
 
     <div class="dash-wrap">
-      <div class="dash-hint">📊 Resumen del filtro activo — se recalcula con la búsqueda y los selectores de arriba</div>
-      <div class="kpis">
-        <div class="kpi"><div class="n" id="kpiTotal">0</div><div class="l">Alertas en el filtro</div></div>
-        <div class="kpi"><div class="n warn" id="kpiLote">0</div><div class="l">Con lote identificado</div></div>
-        <div class="kpi"><div class="n danger" id="kpiInmediata">0</div><div class="l">Urgencia inmediata</div></div>
-        <div class="kpi"><div class="n accent" id="kpiTipoTop">—</div><div class="l">Tipo más frecuente</div></div>
-      </div>
-      <div class="dash-grid">
-        <div class="dash-panel">
-          <h3>Por urgencia</h3>
-          <div id="chartUrgencia"></div>
-        </div>
-        <div class="dash-panel">
-          <h3>Tipos de alerta más frecuentes</h3>
-          <div id="chartTipo"></div>
-        </div>
-        <div class="dash-panel">
-          <h3>Con vs. sin lote reportado</h3>
-          <div class="donut-wrap">
-            <svg id="donutLote" width="88" height="88" viewBox="0 0 88 88"></svg>
-            <div class="donut-legend" id="donutLoteLegend"></div>
+      <details class="dash-accordion" open>
+        <summary class="dash-hint">📊 Resumen del filtro activo — se recalcula con la búsqueda y los selectores de arriba</summary>
+        <div class="dash-body">
+          <div class="kpis">
+            <div class="kpi"><div class="n" id="kpiTotal">0</div><div class="l">Alertas en el filtro</div></div>
+            <div class="kpi"><div class="n warn" id="kpiLote">0</div><div class="l">Con lote identificado</div></div>
+            <div class="kpi"><div class="n danger" id="kpiInmediata">0</div><div class="l">Urgencia inmediata</div></div>
+            <div class="kpi"><div class="n accent" id="kpiTipoTop">—</div><div class="l">Tipo más frecuente</div></div>
+          </div>
+          <div class="dash-grid">
+            <div class="dash-panel">
+              <h3>Por urgencia</h3>
+              <div id="chartUrgencia"></div>
+            </div>
+            <div class="dash-panel">
+              <h3>Tipos de alerta más frecuentes</h3>
+              <div id="chartTipo"></div>
+            </div>
+            <div class="dash-panel">
+              <h3>Con vs. sin lote reportado</h3>
+              <div class="donut-wrap">
+                <svg id="donutLote" width="88" height="88" viewBox="0 0 88 88"></svg>
+                <div class="donut-legend" id="donutLoteLegend"></div>
+              </div>
+            </div>
+          </div>
+          <div class="dash-panel dash-panel-full">
+            <h3>Productos más falsificados (por Nº de alertas) — según el filtro de tipo de alerta activo</h3>
+            <div id="chartProducto"></div>
           </div>
         </div>
-      </div>
-      <div class="dash-panel dash-panel-full">
-        <h3>Productos más falsificados (por Nº de alertas) — según el filtro de tipo de alerta activo</h3>
-        <div id="chartProducto"></div>
-      </div>
+      </details>
     </div>
 
     <div class="tbl-scroll">
