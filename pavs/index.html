@@ -3,1067 +3,632 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ConkoSafe IA — Alertas DIGEMID</title>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<title>ConkoSafe IA — Monitor PAVS</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-:root {
-  --bg:      #ffffff;
-  --surface: #f5f7fa;
-  --border:  #d0d7e3;
-  --accent:  #0077cc;
-  --danger:  #e00030;
-  --warn:    #cc8800;
-  --safe:    #00996a;
-  --muted:   #8a9ab8;
-  --text:    #1a2030;
-  --sub:     #5a6a82;
-  --mono:    'IBM Plex Mono', monospace;
-  --sans:    'IBM Plex Sans', Arial, sans-serif;
+:root{
+  --bg:#ffffff; --surface:#f5f7fa; --border:#d0d7e3; --accent:#0077cc;
+  --danger:#e00030; --warn:#cc8800; --safe:#00996a;
+  --ink:#1a2433; --muted:#67788c; --header:#1A3A5C;
+  --sora:'Sora',system-ui,sans-serif; --mono:'Space Mono',monospace;
 }
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%}
-body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow:hidden;display:flex;flex-direction:column}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sora);font-size:14px;line-height:1.45}
+a{color:var(--accent)}
+header{background:linear-gradient(120deg,#1A3A5C,#0077cc);color:#fff;padding:20px 26px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+header h1{margin:0;font-size:20px;font-weight:700;letter-spacing:.2px}
+header p{margin:4px 0 0;font-size:12px;opacity:.85;font-family:var(--mono)}
+.pill{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);padding:5px 12px;border-radius:20px;font-size:11px;font-family:var(--mono)}
+a.pill{text-decoration:none;color:#fff;cursor:pointer}
+a.pill:hover{background:rgba(255,255,255,.26)}
+.header-pills{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.wrap{max-width:1320px;margin:0 auto;padding:22px 26px 60px}
 
-/* ── HEADER (mismo estilo que el Monitor CIMA) ── */
-header{background:linear-gradient(120deg,#1A3A5C,#0077cc);padding:20px 26px;border-bottom:none;display:flex;align-items:center;gap:14px;flex-wrap:wrap;flex-shrink:0}
-.logo-badge{width:40px;height:40px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
-header h1{font-size:20px;font-weight:700;letter-spacing:.2px;color:#fff}
-header p{font-size:12px;color:rgba(255,255,255,.85);margin-top:3px;font-family:var(--mono)}
-.status-pill{font-family:var(--mono);font-size:10px;padding:5px 12px;border-radius:20px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.14);color:#fff;display:flex;align-items:center;gap:6px;text-decoration:none;cursor:pointer}
-.status-pill.error{border-color:#ffb3b3;color:#ffdcdc}
-.status-pill.loading{border-color:rgba(255,255,255,.3);color:rgba(255,255,255,.75)}
-.status-pill::before{content:'';width:6px;height:6px;border-radius:50%;background:currentColor;animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-.user-badge{margin-left:auto;display:flex;align-items:center;gap:8px}
-.user-badge .who{font-family:var(--mono);font-size:10px;color:#fff;text-align:right;line-height:1.3}
-.user-badge .who b{display:block;font-size:11px}
-.user-badge .who span{opacity:.75}
-.admin-tag{background:#ffb020;color:#3a2400;padding:1px 6px;border-radius:4px;font-size:8px;font-weight:700;margin-left:5px;vertical-align:middle}
-.btn-logout{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:8px;padding:6px 12px;font-family:var(--mono);font-size:10px;font-weight:700;cursor:pointer}
-.btn-logout:hover{background:rgba(255,255,255,.24)}
+.controls{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:18px}
+.ctrl{display:flex;flex-direction:column;gap:4px}
+.ctrl label{font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);font-family:var(--mono)}
+select,input[type=search]{font-family:var(--sora);font-size:13px;padding:8px 10px;border:1px solid var(--border);border-radius:8px;background:#fff;min-width:160px}
+.btn{font-family:var(--sora);font-size:13px;font-weight:600;padding:9px 16px;border:none;border-radius:8px;background:var(--accent);color:#fff;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+.btn:hover{filter:brightness(1.08)}
+.btn.ghost{background:#fff;color:var(--accent);border:1px solid var(--accent)}
 
-/* ── AUTH OVERLAY (login / registro) ── */
-.gate-overlay{position:fixed;inset:0;background:rgba(15,25,40,.55);display:flex;align-items:center;justify-content:center;z-index:50;padding:20px}
-.gate-card{background:#fff;border-radius:14px;max-width:400px;width:100%;padding:28px 26px;box-shadow:0 20px 60px rgba(0,0,0,.25)}
-.gate-card h2{font-size:16px;font-weight:700;margin-bottom:6px}
-.gate-card p.sub{font-size:12px;color:var(--sub);margin-bottom:18px;line-height:1.5}
-.auth-tabs{display:flex;border:1px solid var(--border);border-radius:9px;overflow:hidden;margin-bottom:18px}
-.btn-google{width:100%;display:flex;align-items:center;justify-content:center;gap:9px;background:#fff;color:var(--text);border:1px solid var(--border);border-radius:8px;padding:10px;font-family:var(--sans);font-size:13px;font-weight:600;cursor:pointer;transition:background .2s}
-.btn-google:hover{background:var(--surface)}
-.btn-google svg{width:17px;height:17px;flex-shrink:0}
-.auth-divider{display:flex;align-items:center;gap:10px;margin:16px 0;font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
-.auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:var(--border)}
-.auth-tab{flex:1;background:var(--surface);border:none;padding:9px;font-family:var(--mono);font-size:10px;font-weight:700;color:var(--sub);cursor:pointer;letter-spacing:.5px}
-.auth-tab.active{background:var(--accent);color:#fff}
-.gate-field{margin-bottom:12px}
-.gate-field label{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:5px;font-family:var(--mono)}
-.gate-field input{width:100%;border:1px solid var(--border);border-radius:8px;padding:9px 12px;font-size:13px;font-family:var(--sans);outline:none}
-.gate-field input:focus{border-color:var(--accent)}
-.gate-submit{width:100%;background:var(--accent);color:#fff;border:none;border-radius:8px;padding:11px;font-size:13px;font-weight:700;cursor:pointer;margin-top:6px;transition:opacity .2s}
-.gate-submit:hover{opacity:.9}
-.gate-submit:disabled{opacity:.5;cursor:not-allowed}
-.gate-error{color:var(--danger);font-size:11px;margin-top:10px;display:none}
-.gate-ok{color:var(--safe);font-size:11px;margin-top:10px;display:none;line-height:1.5}
-.gate-hidden{display:none!important}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+.stat{background:#fff;border:1px solid var(--border);border-radius:12px;padding:14px 16px;position:relative;overflow:hidden}
+.stat .n{font-size:28px;font-weight:700;font-family:var(--mono);line-height:1}
+.stat .l{font-size:11px;color:var(--muted);margin-top:5px;text-transform:uppercase;letter-spacing:.5px}
+.stat::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px}
+.stat.total::before{background:var(--header)}
+.stat.anio::before{background:var(--accent)}
+.stat.agencias::before{background:var(--safe)}
+.stat.paises::before{background:var(--warn)}
+.stat.total .n{color:var(--header)} .stat.anio .n{color:var(--accent)}
+.stat.agencias .n{color:var(--safe)} .stat.paises .n{color:var(--warn)}
 
-/* ── ROOT LAYOUT ── */
-.root{display:flex;flex-direction:column;flex:1;min-height:0;overflow:hidden}
+.panels{display:grid;grid-template-columns:1.3fr 1fr;gap:14px;margin-bottom:18px}
+.panel{background:#fff;border:1px solid var(--border);border-radius:12px;padding:14px 16px}
+.panel h3{margin:0 0 10px;font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);font-family:var(--mono)}
+.bar-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:12px}
+.bar-label{width:110px;flex-shrink:0;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar-track{flex:1;background:var(--surface);border-radius:5px;height:14px;overflow:hidden}
+.bar-fill{height:100%;background:var(--accent);border-radius:5px}
+.bar-count{width:44px;text-align:right;font-family:var(--mono);color:var(--muted);flex-shrink:0}
+@media(max-width:900px){.panels{grid-template-columns:1fr}}
 
-/* ── NAV DE VISTAS (Alertas / Usuarios, solo admin) ── */
-.view-nav{display:flex;gap:0;padding:0 20px;border-bottom:1px solid var(--border);background:var(--surface);flex-shrink:0}
-.view-nav button{background:transparent;border:none;border-bottom:2px solid transparent;padding:10px 16px;font-family:var(--mono);font-size:10px;font-weight:700;color:var(--muted);cursor:pointer;letter-spacing:.5px}
-.view-nav button.active{color:var(--accent);border-bottom-color:var(--accent)}
+.meta{font-size:12px;color:var(--muted);font-family:var(--mono);margin-bottom:12px}
 
-/* ── TOOLBAR ── */
-.tbl-toolbar{display:flex;align-items:center;gap:10px;padding:12px 20px;border-bottom:1px solid var(--border);background:var(--surface);flex-shrink:0;flex-wrap:wrap}
-.tbl-count{font-family:var(--mono);font-size:11px;color:var(--sub);white-space:nowrap}
-.tbl-filter{flex:1;min-width:200px;border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:12px;outline:none;background:#fff;color:var(--text)}
-.tbl-filter:focus{border-color:var(--accent)}
-.urg-select{border:1px solid var(--border);border-radius:8px;padding:8px 10px;font-family:var(--mono);font-size:10px;font-weight:700;background:#fff;color:var(--sub);outline:none;cursor:pointer}
-.urg-select:focus{border-color:var(--accent)}
-.btn-export,.btn-refresh{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:8px 14px;font-family:var(--mono);font-size:10px;font-weight:700;cursor:pointer;white-space:nowrap;transition:opacity .2s}
-.btn-export:hover,.btn-refresh:hover{opacity:.85}
-.btn-refresh{background:#fff;color:var(--sub);border:1px solid var(--border)}
-.btn-refresh:hover{border-color:var(--accent);color:var(--accent);opacity:1}
+.table-scroll{overflow-x:auto;border:1px solid var(--border);border-radius:12px}
+table{border-collapse:collapse;width:100%;min-width:1340px;font-size:13px}
+thead th{background:var(--header);color:#fff;text-align:left;padding:10px 12px;font-weight:600;font-size:12px;position:sticky;top:0;cursor:pointer;user-select:none;white-space:nowrap}
+thead th:hover{background:#12314f}
+thead th.sorted::after{content:' ▾';font-size:10px}
+thead th.sorted.asc::after{content:' ▴'}
+tbody td{padding:9px 12px;border-top:1px solid var(--border);vertical-align:top}
+tbody tr:hover{background:#eef3f8}
+.nreg{font-family:var(--mono);font-size:12px;white-space:nowrap}
+.tag{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;font-family:var(--mono);white-space:nowrap}
+.tag.seguridad{background:#FFE6CC;color:#8a4d00}
+.tag.dhpc{background:#DAE8FC;color:#0a4d80}
+.tag.modificacion{background:#D5E8D4;color:#0a5e42}
+.tag.otro{background:var(--surface);color:var(--muted)}
+.titulo-cell{max-width:340px}
+.links a{display:inline-block;font-size:11px;font-family:var(--mono);padding:2px 7px;border:1px solid var(--border);border-radius:6px;text-decoration:none;white-space:nowrap;color:var(--accent)}
+.links a:hover{background:var(--surface)}
+.empty{padding:60px 20px;text-align:center;color:var(--muted)}
+.err{background:#fdecec;border:1px solid #f5b5b5;color:#a11;padding:12px 14px;border-radius:10px;font-size:13px;margin-bottom:16px}
+.pager{display:flex;align-items:center;justify-content:center;gap:12px;padding:14px 0;font-family:var(--mono);font-size:12px;color:var(--muted)}
+.pager button{font-family:var(--mono);font-size:12px;background:#fff;border:1px solid var(--border);border-radius:6px;padding:5px 12px;cursor:pointer}
+.pager button:disabled{opacity:.4;cursor:not-allowed}
+footer{margin-top:30px;font-size:11px;color:var(--muted);font-family:var(--mono);border-top:1px solid var(--border);padding-top:14px}
+@media(max-width:720px){.stats{grid-template-columns:repeat(2,1fr)}}
 
-/* ── TABLE ── */
-.tbl-scroll{flex:1;overflow:auto;min-height:0}
-#vistaAlertas,#vistaUsuarios{display:flex;flex-direction:column;flex:1;min-height:0;overflow:hidden}
-.tbl-scroll::-webkit-scrollbar{width:5px;height:5px}
-.tbl-scroll::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
-.alerts-table{width:100%;border-collapse:collapse;font-size:12px}
-.alerts-table th{padding:9px 12px;text-align:left;font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--sub);background:var(--surface);border-bottom:2px solid var(--border);white-space:nowrap;cursor:pointer;user-select:none;position:sticky;top:0;z-index:1}
-.alerts-table th:hover{color:var(--accent)}
-.alerts-table td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:top;color:var(--text)}
-.alerts-table tr.data-row{cursor:pointer;transition:background .15s}
-.alerts-table tr.data-row:hover{background:rgba(0,119,204,.04)}
-.cell-num{font-family:var(--mono);font-size:9px;color:var(--muted);display:block;margin-bottom:2px}
-.cell-fecha{font-family:var(--mono);font-size:10px;color:var(--sub);white-space:nowrap}
-.cell-resumen{max-width:260px;font-size:11px;color:var(--sub);line-height:1.5}
-.cell-titular{max-width:190px;font-size:11px;color:var(--text);line-height:1.4;font-weight:500}
-.cell-empty{color:var(--muted);font-size:11px}
-.tipo-badge{display:inline-block;padding:2px 7px;border-radius:4px;font-family:var(--mono);font-size:9px;font-weight:700;white-space:nowrap}
-.tipo-falsificados{background:rgba(224,0,48,.1);color:var(--danger);border:1px solid rgba(224,0,48,.2)}
-.tipo-calidad{background:rgba(0,153,106,.09);color:var(--safe);border:1px solid rgba(0,153,106,.2)}
-.tipo-seguridad{background:rgba(204,136,0,.1);color:var(--warn);border:1px solid rgba(204,136,0,.2)}
-.tipo-general{background:var(--surface);color:var(--sub);border:1px solid var(--border)}
-.urgencia-badge{display:inline-block;padding:2px 7px;border-radius:4px;font-family:var(--mono);font-size:9px;font-weight:700;white-space:nowrap}
-.urg-inmediata{background:rgba(224,0,48,.1);color:var(--danger);border:1px solid rgba(224,0,48,.2)}
-.urg-preventiva{background:rgba(204,136,0,.1);color:var(--warn);border:1px solid rgba(204,136,0,.2)}
-.urg-informativa{background:rgba(0,119,204,.08);color:var(--accent);border:1px solid rgba(0,119,204,.2)}
-.pdf-gh-link{display:inline-flex;align-items:center;gap:4px;font-family:var(--mono);font-size:9px;font-weight:700;color:#24292e;background:rgba(36,41,46,.07);border:1px solid rgba(36,41,46,.18);border-radius:4px;padding:2px 7px;text-decoration:none}
-.pdf-gh-link:hover{background:rgba(36,41,46,.14)}
-.digemid-link{display:inline-flex;align-items:center;gap:4px;font-family:var(--mono);font-size:9px;font-weight:700;color:var(--accent);background:rgba(0,119,204,.07);border:1px solid rgba(0,119,204,.2);border-radius:4px;padding:2px 7px;text-decoration:none}
-.digemid-link:hover{background:rgba(0,119,204,.14)}
-.accion-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 7px;border-radius:4px;font-family:var(--mono);font-size:9px;font-weight:700;white-space:nowrap}
-.accion-pendiente{background:var(--surface);color:var(--muted);border:1px solid var(--border)}
-.accion-lista{font-size:11px;font-weight:600;color:var(--text)}
-.rol-badge{display:inline-block;padding:2px 7px;border-radius:4px;font-family:var(--mono);font-size:9px;font-weight:700}
-.cima-toggle{position:relative;display:inline-block;width:36px;height:20px;flex-shrink:0}
-.cima-toggle input{opacity:0;width:0;height:0}
-.cima-toggle .slider{position:absolute;inset:0;background:var(--border);border-radius:20px;cursor:pointer;transition:background .2s}
-.cima-toggle .slider::before{content:'';position:absolute;width:16px;height:16px;left:2px;top:2px;background:#fff;border-radius:50%;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.3)}
-.cima-toggle input:checked + .slider{background:var(--safe)}
-.cima-toggle input:checked + .slider::before{transform:translateX(16px)}
-.cima-toggle input:disabled + .slider{opacity:.5;cursor:not-allowed}
-.btn-delete-user{background:rgba(224,0,48,.08);color:var(--danger);border:1px solid rgba(224,0,48,.25);border-radius:6px;padding:5px 10px;font-family:var(--mono);font-size:9px;font-weight:700;cursor:pointer;white-space:nowrap}
-.btn-delete-user:hover{background:rgba(224,0,48,.16)}
-.btn-delete-user:disabled{opacity:.4;cursor:not-allowed}
-.rol-admin{background:rgba(255,176,32,.15);color:#8a5200;border:1px solid rgba(255,176,32,.35)}
-.rol-usuario{background:var(--surface);color:var(--sub);border:1px solid var(--border)}
+/* ── ATC cell ── */
+.atc-cell{min-width:260px}
+.atc-input{width:100%;font-family:var(--sora);font-size:12.5px;padding:6px 8px;border:1px solid var(--border);border-radius:6px;background:#fff}
+.atc-input.invalid{border-color:var(--danger);background:#fff5f5}
+.atc-input.dirty{border-color:var(--warn)}
+.atc-row2{display:flex;align-items:center;gap:6px;margin-top:5px}
+.atc-code-badge{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--header);background:var(--surface);border:1px solid var(--border);border-radius:5px;padding:2px 7px;min-width:66px;text-align:center;white-space:nowrap}
+.atc-code-badge.empty{color:var(--muted);font-weight:400}
+.btn-mini{border:1px solid var(--border);background:#fff;border-radius:5px;font-size:12px;padding:3px 7px;cursor:pointer;line-height:1}
+.btn-mini:hover{background:var(--surface)}
+.btn-mini.save:not(:disabled){border-color:var(--accent);color:var(--accent)}
+.btn-mini:disabled{opacity:.35;cursor:not-allowed}
+.atc-saved-flash{color:var(--safe);font-family:var(--mono);font-size:10px;white-space:nowrap}
 
-/* ── EMPTY / ERROR STATES ── */
-.state-box{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:60px 24px;color:var(--muted);text-align:center}
-.state-icon{font-size:34px;opacity:.3}
-.state-box .retry{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:7px 16px;font-family:var(--mono);font-size:11px;font-weight:700;cursor:pointer}
-
-/* ── DASHBOARD (KPIs + gráficos, recalculado según filtros activos) ── */
-.dash-wrap{padding:16px 20px 4px;border-bottom:1px solid var(--border);background:var(--surface);flex-shrink:0}
-.dash-accordion{border:none}
-.dash-accordion summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:6px;padding-bottom:10px}
-.dash-accordion summary::-webkit-details-marker{display:none}
-.dash-accordion summary::before{content:'▸';display:inline-block;font-size:9px;color:var(--muted);transition:transform .15s}
-.dash-accordion[open] summary::before{transform:rotate(90deg)}
-.dash-accordion summary:hover{color:var(--accent)}
-.dash-hint{font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:0}
-.dash-body{padding-top:2px}
-.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
-.kpi{background:#fff;border:1px solid var(--border);border-radius:10px;padding:12px 14px}
-.kpi .n{font-family:var(--mono);font-size:24px;font-weight:700;color:var(--text);line-height:1}
-.kpi .n.danger{color:var(--danger)}
-.kpi .n.warn{color:var(--warn)}
-.kpi .n.accent{color:var(--accent)}
-.kpi .l{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-top:5px}
-.dash-grid{display:grid;grid-template-columns:1.1fr 1fr 0.9fr;gap:10px;margin-bottom:14px}
-.dash-panel{background:#fff;border:1px solid var(--border);border-radius:10px;padding:14px 16px}
-.dash-panel h3{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.6px;color:var(--sub);font-weight:700;margin-bottom:10px}
-.dash-panel-full{margin-bottom:14px}
-.dash-panel-full .bar-label{width:220px}
-.dash-panel-full .bar-fill{background:linear-gradient(90deg,rgba(167,139,250,.4),#a78bfa)}
-.bar-row{display:flex;align-items:center;gap:8px;margin-bottom:7px}
-.bar-label{width:108px;flex-shrink:0;font-size:11px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.bar-track{flex:1;background:var(--surface);border-radius:4px;height:16px;position:relative;overflow:hidden}
-.bar-fill{height:100%;border-radius:4px;display:flex;align-items:center;justify-content:flex-end;padding-right:6px;min-width:20px;background:linear-gradient(90deg,rgba(0,119,204,.35),var(--accent))}
-.bar-fill.inmediata{background:linear-gradient(90deg,rgba(224,0,48,.35),var(--danger))}
-.bar-fill.preventiva{background:linear-gradient(90deg,rgba(204,136,0,.35),var(--warn))}
-.bar-fill.informativa{background:linear-gradient(90deg,rgba(0,119,204,.35),var(--accent))}
-.bar-fill span{font-family:var(--mono);font-size:9px;color:#fff;font-weight:700}
-.dash-empty{color:var(--muted);font-size:11px;padding:14px 0;text-align:center}
-.donut-wrap{display:flex;align-items:center;gap:14px}
-.donut-legend{font-size:10.5px}
-.donut-legend .row{display:flex;align-items:center;gap:6px;margin-bottom:6px}
-.donut-legend .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.donut-legend b{font-family:var(--mono);color:var(--text);margin-left:auto;padding-left:10px}
-.lote-chip{display:inline-block;font-family:var(--mono);font-size:9.5px;background:var(--surface);border:1px solid var(--border);color:#8a5200;padding:1px 6px;border-radius:4px;margin:1px 3px 1px 0;white-space:nowrap}
-.cell-lote{max-width:150px}
-/* Columna N° Lote oculta de la tabla por pedido del cliente (el dato sigue
-   disponible para el buscador, el dashboard y el CSV — solo no se muestra
-   como columna visible). Quitar esta regla para volver a mostrarla. */
-.col-lote{display:none}
-
-/* Columna "Editar" — solo visible cuando el usuario logueado es admin
-   (se activa agregando la clase .is-admin a #alertsTable en onLoggedIn) */
-.col-admin{display:none}
-#alertsTable.is-admin .col-admin{display:table-cell}
-.btn-edit-alerta{background:#fff;color:var(--accent);border:1px solid var(--border);border-radius:6px;padding:5px 10px;font-family:var(--mono);font-size:9px;font-weight:700;cursor:pointer;white-space:nowrap}
-.btn-edit-alerta:hover{border-color:var(--accent);background:rgba(0,119,204,.06)}
-
-/* ── MODAL DE EDICIÓN MANUAL (solo admin) ── */
-.edit-overlay{position:fixed;inset:0;background:rgba(15,25,40,.55);display:flex;align-items:center;justify-content:center;z-index:70;padding:20px}
-.edit-overlay.gate-hidden{display:none}
-.edit-card{background:#fff;border-radius:14px;max-width:560px;width:100%;max-height:88vh;overflow-y:auto;padding:26px 28px;box-shadow:0 20px 60px rgba(0,0,0,.3)}
-.edit-card h2{font-size:16px;font-weight:700;margin-bottom:4px}
-.edit-card .sub{font-size:11.5px;color:var(--sub);margin-bottom:18px;line-height:1.5}
-.edit-field{margin-bottom:14px}
-.edit-field label{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:5px;font-family:var(--mono)}
-.edit-field input,.edit-field select,.edit-field textarea{width:100%;border:1px solid var(--border);border-radius:8px;padding:9px 12px;font-size:13px;font-family:var(--sans);outline:none;background:#fff;color:var(--text)}
-.edit-field input:focus,.edit-field select:focus,.edit-field textarea:focus{border-color:var(--accent)}
-.edit-field textarea{resize:vertical;min-height:56px;font-family:var(--sans)}
-.edit-actions{display:flex;gap:10px;margin-top:8px}
-.edit-actions button{flex:1;border-radius:8px;padding:10px;font-size:13px;font-weight:700;cursor:pointer;border:1px solid var(--border)}
-.btn-save-edit{background:var(--accent);color:#fff;border-color:var(--accent)}
-.btn-save-edit:hover{opacity:.9}
-.btn-save-edit:disabled{opacity:.5;cursor:not-allowed}
-.btn-cancel-edit{background:#fff;color:var(--sub)}
-.btn-cancel-edit:hover{border-color:var(--sub)}
-.edit-error{color:var(--danger);font-size:11px;margin-top:10px;display:none}
-
-/* ── BOTÓN FLOTANTE DE WHATSAPP ── */
-.wa-float{position:fixed;bottom:22px;right:22px;width:58px;height:58px;background:#25D366;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(0,0,0,.25);z-index:60;text-decoration:none;transition:transform .2s,box-shadow .2s}
-.wa-float:hover{transform:scale(1.08);box-shadow:0 6px 20px rgba(0,0,0,.32)}
-.wa-float svg{width:30px;height:30px}
-.wa-float::before{content:'';position:absolute;inset:0;border-radius:50%;background:#25D366;animation:wa-pulse 2.2s infinite}
-@keyframes wa-pulse{0%{transform:scale(1);opacity:.55}100%{transform:scale(1.7);opacity:0}}
+/* ── Historial modal ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(10,20,35,.55);display:flex;align-items:center;justify-content:center;z-index:500;padding:20px}
+.modal-box{background:#fff;border-radius:14px;max-width:560px;width:100%;max-height:80vh;overflow:auto;padding:22px 24px;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+.modal-box h3{margin:0 0 4px;font-size:15px;color:var(--header)}
+.modal-box .sub{font-size:11px;color:var(--muted);font-family:var(--mono);margin-bottom:14px}
+.modal-close{float:right;background:none;border:none;font-size:18px;cursor:pointer;color:var(--muted)}
+.hist-row{border-top:1px solid var(--border);padding:10px 0;font-size:12.5px}
+.hist-row:first-child{border-top:none}
+.hist-change{font-family:var(--mono);font-size:11.5px}
+.hist-change .old{color:var(--danger);text-decoration:line-through;opacity:.7}
+.hist-change .new{color:var(--safe);font-weight:700}
+.hist-meta{color:var(--muted);font-size:10.5px;margin-top:2px;font-family:var(--mono)}
+.hist-empty{color:var(--muted);text-align:center;padding:20px 0;font-size:12.5px}
 </style>
 </head>
 <body>
-
 <header>
-  <div class="logo-badge">💊</div>
   <div>
-    <h1>ConkoSafe IA — Alertas DIGEMID</h1>
-    <p>Monitor de alertas sanitarias · Conkomerco Farmacovigilancia</p>
+    <h1>💊 ConkoSafe IA — Monitor PAVS</h1>
+    <p>Alertas de Países de Alta Vigilancia Sanitaria · FT-95 / DS043</p>
   </div>
-  <a href="cima/" class="status-pill gate-hidden" id="cimaLink" title="Monitor CIMA - Ficha Técnica y Prospecto (AEMPS)">CIMA: Ficha Técnica / Prospecto →</a>
-  <a href="pavs/" class="status-pill gate-hidden" id="pavsLink" title="Monitor PAVS - Alertas de Países de Alta Vigilancia Sanitaria">PAVS: Países de Alta Vigilancia →</a>
-  <a href="aems/" class="status-pill gate-hidden" id="aemsLink" title="Monitor FDA AEMS - Señales de Riesgo (FDA)">FDA AEMS: Señales de Riesgo →</a>
-  <div class="user-badge gate-hidden" id="userBadge">
-    <span class="status-pill loading" id="statusPill">Cargando…</span>
-    <div class="who" id="whoText"></div>
-    <button class="btn-logout" onclick="cerrarSesion()">Salir</button>
+  <div class="header-pills">
+    <a class="pill" href="../">← Volver a Alertas</a>
+    <div class="pill" id="lastSync">Cargando…</div>
   </div>
 </header>
 
-<!-- ── AUTH OVERLAY: LOGIN / REGISTRO (Supabase Auth) ── -->
-<div class="gate-overlay" id="gateOverlay">
-  <div class="gate-card">
-    <button type="button" class="btn-google" onclick="iniciarSesionGoogle()">
-      <svg viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.9 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 6.1 29.5 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20c11 0 19.1-8 19.1-19.5 0-1.3-.1-2.7-.3-4z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 15.9 18.9 13 24 13c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 6.1 29.5 4 24 4c-7.7 0-14.3 4.3-17.7 10.7z"/><path fill="#4CAF50" d="M24 44c5.3 0 10.2-2 13.9-5.4l-6.4-5.4C29.4 34.9 26.8 36 24 36c-5.3 0-9.7-3.1-11.3-7.5l-6.5 5C9.6 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.3 4.3-4.2 5.7l6.4 5.4C41.5 35.9 44 30.3 44 24c0-1.3-.1-2.7-.4-4z"/></svg>
-      Continuar con Google
-    </button>
-    <div class="auth-divider">o</div>
-    <div class="auth-tabs">
-      <button class="auth-tab active" id="tabLogin" onclick="cambiarTabAuth('login')">Iniciar sesión</button>
-      <button class="auth-tab" id="tabSignup" onclick="cambiarTabAuth('signup')">Registrarme</button>
+<div class="wrap">
+  <div id="err" class="err" style="display:none"></div>
+
+  <div class="controls">
+    <div class="ctrl">
+      <label>Buscar (título / producto / IFA)</label>
+      <input type="search" id="search" placeholder="Ej: metamizol, DRESS, fingolimod...">
     </div>
-
-
-    <!-- LOGIN -->
-    <form id="loginForm" onsubmit="return manejarLogin(event)">
-      <h2>🔒 Acceso al monitor</h2>
-      <p class="sub">Ingresa con tu correo y contraseña registrados.</p>
-      <div class="gate-field">
-        <label>Correo electrónico</label>
-        <input type="email" id="loginEmail" required autocomplete="email" placeholder="nombre@empresa.com">
-      </div>
-      <div class="gate-field">
-        <label>Contraseña</label>
-        <input type="password" id="loginPassword" required autocomplete="current-password" placeholder="••••••••">
-      </div>
-      <button type="submit" class="gate-submit" id="loginBtn">Ingresar</button>
-      <div class="gate-error" id="loginError"></div>
-    </form>
-
-    <!-- SIGNUP -->
-    <form id="signupForm" class="gate-hidden" onsubmit="return manejarSignup(event)">
-      <h2>Crear cuenta</h2>
-      <p class="sub">Regístrate para acceder al dashboard de Alertas DIGEMID.</p>
-      <div class="gate-field">
-        <label>Nombre completo</label>
-        <input type="text" id="signupNombre" required autocomplete="name" placeholder="Ej: Russbelt Aliaga">
-      </div>
-      <div class="gate-field">
-        <label>Correo electrónico</label>
-        <input type="email" id="signupEmail" required autocomplete="email" placeholder="nombre@empresa.com">
-      </div>
-      <div class="gate-field">
-        <label>Empresa (opcional)</label>
-        <input type="text" id="signupEmpresa" autocomplete="organization" placeholder="Ej: Conkomerco">
-      </div>
-      <div class="gate-field">
-        <label>Contraseña</label>
-        <input type="password" id="signupPassword" required minlength="6" autocomplete="new-password" placeholder="Mínimo 6 caracteres">
-      </div>
-      <button type="submit" class="gate-submit" id="signupBtn">Crear cuenta</button>
-      <div class="gate-error" id="signupError"></div>
-      <div class="gate-ok" id="signupOk"></div>
-    </form>
+    <div class="ctrl">
+      <label>Año</label>
+      <select id="anioFilter"><option value="">Todos</option></select>
+    </div>
+    <div class="ctrl">
+      <label>País</label>
+      <select id="paisFilter"><option value="">Todos</option></select>
+    </div>
+    <div class="ctrl">
+      <label>Agencia</label>
+      <select id="agenciaFilter"><option value="">Todas</option></select>
+    </div>
+    <div class="ctrl">
+      <label>Tipo de alerta</label>
+      <select id="tipoFilter"><option value="">Todos</option></select>
+    </div>
+    <div class="ctrl">
+      <label>Producto</label>
+      <select id="productoFilter"><option value="">Todos</option></select>
+    </div>
+    <button class="btn ghost" id="refreshBtn">↻ Actualizar</button>
+    <button class="btn" id="csvBtn">⬇ Exportar CSV</button>
   </div>
+
+  <div class="stats">
+    <div class="stat total"><div class="n" id="sTotal">—</div><div class="l">Total alertas</div></div>
+    <div class="stat anio"><div class="n" id="sAnio">—</div><div class="l">Este año</div></div>
+    <div class="stat agencias"><div class="n" id="sAgencias">—</div><div class="l">Agencias</div></div>
+    <div class="stat paises"><div class="n" id="sPaises">—</div><div class="l">Países</div></div>
+  </div>
+
+  <div class="panels">
+    <div class="panel">
+      <h3>Alertas por año</h3>
+      <div id="chartAnio"></div>
+    </div>
+    <div class="panel">
+      <h3>Top agencias</h3>
+      <div id="chartAgencia"></div>
+    </div>
+  </div>
+
+  <div class="meta" id="meta">Cargando…</div>
+
+  <div class="table-scroll">
+    <table>
+      <thead>
+        <tr>
+          <th data-key="anio">Año</th>
+          <th data-key="fecha_emision">Fecha Emisión</th>
+          <th data-key="pais">País</th>
+          <th data-key="agencia">Agencia</th>
+          <th data-key="tipo_alerta">Tipo</th>
+          <th data-key="titulo_alerta">Título</th>
+          <th data-key="tipo_producto">Producto</th>
+          <th data-key="ifa">IFA</th>
+          <th>ATC Name / ATC Code</th>
+          <th>Enlace</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+
+  <div class="pager">
+    <button id="prevBtn">← Anterior</button>
+    <span id="pageInfo">—</span>
+    <button id="nextBtn">Siguiente →</button>
+  </div>
+
+  <footer>
+    Fuente: reporte FT-95 Monitoreo de Alertas de PAVS (DS043), sincronizado diariamente vía
+    <a href="https://github.com/Russali-ux/PAVS_Digemid" target="_blank" rel="noopener">PAVS_Digemid</a>
+    (GitHub Actions) a la tabla <code>pavs_alertas</code> en Supabase.
+    Clasificación ATC (OMS): catálogo <code>atc_codes</code> · cambios versionados en <code>pavs_alertas_atc_historial</code>.
+  </footer>
 </div>
 
-<div class="root gate-hidden" id="rootApp">
+<datalist id="atcDatalist"></datalist>
 
-  <!-- Nav de vistas (Usuarios solo visible si es admin) -->
-  <div class="view-nav">
-    <button class="active" id="navAlertas" onclick="cambiarVista('alertas')">📋 Alertas</button>
-    <button class="gate-hidden" id="navUsuarios" onclick="cambiarVista('usuarios')">👥 Usuarios</button>
-  </div>
-
-  <!-- ── VISTA: ALERTAS ── -->
-  <div id="vistaAlertas">
-    <div class="tbl-toolbar">
-      <span class="tbl-count" id="tblCount">— alertas</span>
-      <input class="tbl-filter" id="tblSearch"
-        placeholder="🔍 Filtrar por título, producto o tipo..." oninput="filterTable()">
-      <select class="urg-select" id="urgFilter" onchange="filterTable()">
-        <option value="">Todas las urgencias</option>
-        <option value="INMEDIATA">🔴 Inmediata</option>
-        <option value="PREVENTIVA">🟡 Preventiva</option>
-        <option value="INFORMATIVA">🔵 Informativa</option>
-      </select>
-      <select class="urg-select" id="tipoFilter" onchange="filterTable()">
-        <option value="">Todos los tipos</option>
-      </select>
-      <select class="urg-select" id="limitSelect" onchange="cargarAlertas()">
-        <option value="25">Mostrar 25</option>
-        <option value="50" selected>Mostrar 50</option>
-        <option value="100">Mostrar 100</option>
-        <option value="250">Mostrar 250</option>
-        <option value="0">Mostrar todas</option>
-      </select>
-      <button class="btn-refresh" onclick="cargarAlertas()">↻ Actualizar</button>
-      <button class="btn-export" onclick="exportarCSV()">↓ Exportar CSV</button>
-    </div>
-
-    <div class="dash-wrap">
-      <details class="dash-accordion" open>
-        <summary class="dash-hint">📊 Resumen del filtro activo — se recalcula con la búsqueda y los selectores de arriba</summary>
-        <div class="dash-body">
-          <div class="kpis">
-            <div class="kpi"><div class="n" id="kpiTotal">0</div><div class="l">Alertas en el filtro</div></div>
-            <div class="kpi"><div class="n warn" id="kpiLote">0</div><div class="l">Con lote identificado</div></div>
-            <div class="kpi"><div class="n danger" id="kpiInmediata">0</div><div class="l">Urgencia inmediata</div></div>
-            <div class="kpi"><div class="n accent" id="kpiTipoTop">—</div><div class="l">Tipo más frecuente</div></div>
-          </div>
-          <div class="dash-grid">
-            <div class="dash-panel">
-              <h3>Por urgencia</h3>
-              <div id="chartUrgencia"></div>
-            </div>
-            <div class="dash-panel">
-              <h3>Tipos de alerta más frecuentes</h3>
-              <div id="chartTipo"></div>
-            </div>
-            <div class="dash-panel">
-              <h3>Con vs. sin lote reportado</h3>
-              <div class="donut-wrap">
-                <svg id="donutLote" width="88" height="88" viewBox="0 0 88 88"></svg>
-                <div class="donut-legend" id="donutLoteLegend"></div>
-              </div>
-            </div>
-          </div>
-          <div class="dash-panel dash-panel-full">
-            <h3>Productos más falsificados (por Nº de alertas) — según el filtro de tipo de alerta activo</h3>
-            <div id="chartProducto"></div>
-          </div>
-        </div>
-      </details>
-    </div>
-
-    <div class="tbl-scroll">
-      <table class="alerts-table" id="alertsTable">
-        <thead>
-          <tr>
-            <th onclick="sortTable('titulo')">Título</th>
-            <th onclick="sortTable('producto')">Producto</th>
-            <th onclick="sortTable('titular_registro_sanitario')">Titular impactado</th>
-            <th class="col-lote" onclick="sortTable('numero_lote')">N° Lote</th>
-            <th onclick="sortTable('tipo_alerta')">Tipo de Alerta</th>
-            <th onclick="sortTable('urgencia')">Urgencia</th>
-            <th onclick="sortTable('accion_principal')">Acción Principal</th>
-            <th>Resumen IA</th>
-            <th onclick="sortTable('fecha_publicacion')">Fecha Pub.</th>
-            <th>DIGEMID</th>
-            <th class="col-admin">Editar</th>
-          </tr>
-        </thead>
-        <tbody id="alertsTbody"></tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- ── VISTA: USUARIOS (solo admin) ── -->
-  <div id="vistaUsuarios" class="gate-hidden">
-    <div class="tbl-toolbar">
-      <span class="tbl-count" id="usrCount">— usuarios</span>
-      <button class="btn-refresh" onclick="cargarUsuarios()">↻ Actualizar</button>
-    </div>
-    <div class="tbl-scroll">
-      <table class="alerts-table" id="usersTable">
-        <thead>
-          <tr>
-            <th>Nombre</th>
-            <th>Correo</th>
-            <th>Empresa</th>
-            <th>Rol</th>
-            <th>Acceso CIMA</th>
-            <th>Registrado</th>
-            <th>Último acceso</th>
-            <th>Acción</th>
-          </tr>
-        </thead>
-        <tbody id="usersTbody"></tbody>
-      </table>
-    </div>
-  </div>
-
-</div><!-- /root -->
-
-<!-- ── MODAL: EDICIÓN MANUAL DE ALERTA (solo admin) ── -->
-<div class="edit-overlay gate-hidden" id="editOverlay">
-  <div class="edit-card">
-    <h2>✏️ Editar alerta</h2>
-    <p class="sub" id="editSubtitulo">—</p>
-    <form id="editForm" onsubmit="return guardarEdicionAlerta(event)">
-      <div class="edit-field">
-        <label>Producto</label>
-        <input type="text" id="editProducto">
-      </div>
-      <div class="edit-field">
-        <label>Titular del registro sanitario</label>
-        <input type="text" id="editTitular">
-      </div>
-      <div class="edit-field">
-        <label>Tipo de alerta</label>
-        <select id="editTipoAlerta">
-          <option value="Productos Falsificados">Productos Falsificados</option>
-          <option value="Control de Calidad">Control de Calidad</option>
-          <option value="Seguridad">Seguridad</option>
-          <option value="Comercialización Ilegal">Comercialización Ilegal</option>
-          <option value="General">General</option>
-          <option value="__otro__">Otro (escribir abajo)</option>
-        </select>
-      </div>
-      <div class="edit-field" id="editTipoAlertaOtroWrap" style="display:none">
-        <label>Especificar tipo de alerta</label>
-        <input type="text" id="editTipoAlertaOtro" placeholder="Ej: Retiro Voluntario">
-      </div>
-      <div class="edit-field">
-        <label>Urgencia</label>
-        <select id="editUrgencia">
-          <option value="INMEDIATA">🔴 Inmediata</option>
-          <option value="PREVENTIVA">🟡 Preventiva</option>
-          <option value="INFORMATIVA">🔵 Informativa</option>
-        </select>
-      </div>
-      <div class="edit-field">
-        <label>Acción principal</label>
-        <input type="text" id="editAccionPrincipal">
-      </div>
-      <div class="edit-field">
-        <label>N° de lote</label>
-        <input type="text" id="editNumeroLote" placeholder="Ej: M-2110095EM | 2122942 (separar varios con &quot; | &quot;)">
-      </div>
-      <div class="edit-field">
-        <label>Resumen IA</label>
-        <textarea id="editResumenIa"></textarea>
-      </div>
-      <div class="edit-actions">
-        <button type="button" class="btn-cancel-edit" onclick="cerrarEditorAlerta()">Cancelar</button>
-        <button type="submit" class="btn-save-edit" id="btnGuardarEdicion">Guardar cambios</button>
-      </div>
-      <div class="edit-error" id="editError"></div>
-    </form>
+<div class="modal-overlay" id="histModal" style="display:none">
+  <div class="modal-box">
+    <button class="modal-close" id="histClose">✕</button>
+    <h3 id="histTitle">Historial ATC</h3>
+    <div class="sub" id="histSub"></div>
+    <div id="histBody"></div>
   </div>
 </div>
 
 <script>
-/* ════════════════════════════════════════════
-   SUPABASE — Auth + datos
-════════════════════════════════════════════ */
 const SUPABASE_URL      = 'https://ggbnfdaxtsngsjssrwrl.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdnYm5mZGF4dHNuZ3Nqc3Nyd3JsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ4ODAzODIsImV4cCI6MjEwMDQ1NjM4Mn0.126hhMpakcOlzp5KyyWdMU56UjwLwn5Xn4Nc13OIjgU';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-const TABLE_ALERTAS  = 'alertas_digemid';
-const TABLE_PERFILES = 'perfiles';
+const $ = id => document.getElementById(id);
+let ALL = [];
+let filtered = [];
+let sortKey = 'fecha_emision', sortAsc = false;
+let page = 0;
+const PAGE_SIZE = 50;
 
-let alertas      = [];
-let usuarios      = [];
-let sortKey       = 'fecha_publicacion';
-let sortDir       = 'desc';
-let currentUser   = null;
-let currentPerfil = null;
+function showErr(msg){ const e=$('err'); e.style.display='block'; e.textContent=msg; }
 
-/* ════════════════════════════════════════════
-   AUTH — login / registro / sesión
-════════════════════════════════════════════ */
-function cambiarTabAuth(tab) {
-  document.getElementById('tabLogin').classList.toggle('active', tab === 'login');
-  document.getElementById('tabSignup').classList.toggle('active', tab === 'signup');
-  document.getElementById('loginForm').classList.toggle('gate-hidden', tab !== 'login');
-  document.getElementById('signupForm').classList.toggle('gate-hidden', tab !== 'signup');
+function showAccessBlocked(){
+  document.querySelector('.wrap').innerHTML = `
+    <div class="err" style="display:block">
+      🔒 Tu cuenta no tiene acceso al módulo PAVS. Pídele a un administrador que te lo habilite
+      desde el panel de Usuarios, o <a href="../">vuelve a Alertas</a>.
+    </div>`;
 }
 
-async function manejarLogin(event) {
-  event.preventDefault();
-  const btn = document.getElementById('loginBtn');
-  const errDiv = document.getElementById('loginError');
-  errDiv.style.display = 'none';
-
-  const email    = document.getElementById('loginEmail').value.trim().toLowerCase();
-  const password = document.getElementById('loginPassword').value;
-
-  btn.disabled = true; btn.textContent = 'Ingresando…';
-  const { error } = await sb.auth.signInWithPassword({ email, password });
-  btn.disabled = false; btn.textContent = 'Ingresar';
-
-  if (error) {
-    errDiv.textContent = '⚠ ' + (error.message === 'Invalid login credentials'
-      ? 'Correo o contraseña incorrectos.' : error.message);
-    errDiv.style.display = 'block';
-  }
-  // onAuthStateChange se encarga de mostrar la app al iniciar sesión con éxito
-}
-
-async function manejarSignup(event) {
-  event.preventDefault();
-  const btn = document.getElementById('signupBtn');
-  const errDiv = document.getElementById('signupError');
-  const okDiv  = document.getElementById('signupOk');
-  errDiv.style.display = 'none'; okDiv.style.display = 'none';
-
-  const nombre   = document.getElementById('signupNombre').value.trim();
-  const email    = document.getElementById('signupEmail').value.trim().toLowerCase();
-  const empresa  = document.getElementById('signupEmpresa').value.trim();
-  const password = document.getElementById('signupPassword').value;
-
-  btn.disabled = true; btn.textContent = 'Creando cuenta…';
-  const { data, error } = await sb.auth.signUp({
-    email, password,
-    options: { data: { nombre, empresa: empresa || null } }
-  });
-  btn.disabled = false; btn.textContent = 'Crear cuenta';
-
-  if (error) {
-    errDiv.textContent = '⚠ ' + error.message;
-    errDiv.style.display = 'block';
-    return;
-  }
-
-  if (data.session) {
-    // Confirmación de correo desactivada en el proyecto → ya quedó logueado
-  } else {
-    okDiv.textContent = '✓ Cuenta creada. Revisa tu correo para confirmar la cuenta antes de iniciar sesión.';
-    okDiv.style.display = 'block';
-    document.getElementById('signupForm').reset();
-  }
-}
-
-function cerrarSesion() {
-  sb.auth.signOut();
-}
-
-async function iniciarSesionGoogle() {
-  const { error } = await sb.auth.signInWithOAuth({
-    provider: 'google',
-    options: { redirectTo: window.location.origin + window.location.pathname }
-  });
-  if (error) alert('No se pudo iniciar sesión con Google: ' + error.message);
-  // Si no hay error, el navegador redirige a Google; al volver, onAuthStateChange
-  // detecta la sesión automáticamente y muestra la app.
-}
-
-async function onLoggedIn(session) {
-  currentUser = session.user;
-
-  const { data: perfil, error } = await sb.from(TABLE_PERFILES).select('*').eq('id', currentUser.id).single();
-  currentPerfil = perfil || null;
-
-  // Marca de último acceso (no bloqueante)
-  sb.from(TABLE_PERFILES).update({ ultimo_acceso: new Date().toISOString() }).eq('id', currentUser.id).then(()=>{});
-
-  document.getElementById('gateOverlay').classList.add('gate-hidden');
-  document.getElementById('rootApp').classList.remove('gate-hidden');
-  document.getElementById('userBadge').classList.remove('gate-hidden');
-
-  const esAdmin = currentPerfil?.rol === 'admin';
-  document.getElementById('whoText').innerHTML =
-    `<b>${currentPerfil?.nombre || currentUser.email}${esAdmin ? '<span class="admin-tag">ADMIN</span>' : ''}</b><span>${currentUser.email}</span>`;
-  document.getElementById('navUsuarios').classList.toggle('gate-hidden', !esAdmin);
-  document.getElementById('alertsTable').classList.toggle('is-admin', esAdmin);
-  document.getElementById('cimaLink').classList.toggle('gate-hidden', !(esAdmin || currentPerfil?.acceso_cima));
-  document.getElementById('pavsLink').classList.remove('gate-hidden');
-  document.getElementById('aemsLink').classList.remove('gate-hidden');
-
-  cargarAlertas();
-}
-
-function onLoggedOut() {
-  currentUser = null;
-  currentPerfil = null;
-  document.getElementById('alertsTable').classList.remove('is-admin');
-  document.getElementById('gateOverlay').classList.remove('gate-hidden');
-  document.getElementById('rootApp').classList.add('gate-hidden');
-  document.getElementById('userBadge').classList.add('gate-hidden');
-  document.getElementById('cimaLink').classList.add('gate-hidden');
-  document.getElementById('pavsLink').classList.add('gate-hidden');
-  document.getElementById('aemsLink').classList.add('gate-hidden');
-  cambiarVista('alertas');
-}
-
-sb.auth.onAuthStateChange((event, session) => {
-  if (event === 'SIGNED_IN' && session) onLoggedIn(session);
-  if (event === 'SIGNED_OUT') onLoggedOut();
-});
-
-(async function initAuth() {
+async function verificarAccesoYcargar(){
   const { data: { session } } = await sb.auth.getSession();
-  if (session) onLoggedIn(session);
-  else onLoggedOut();
-})();
+  if (!session) { window.location.href = '../'; return; }
 
-/* ════════════════════════════════════════════
-   NAV DE VISTAS
-════════════════════════════════════════════ */
-function cambiarVista(vista) {
-  document.getElementById('vistaAlertas').classList.toggle('gate-hidden', vista !== 'alertas');
-  document.getElementById('vistaUsuarios').classList.toggle('gate-hidden', vista !== 'usuarios');
-  document.getElementById('navAlertas').classList.toggle('active', vista === 'alertas');
-  document.getElementById('navUsuarios').classList.toggle('active', vista === 'usuarios');
-  if (vista === 'usuarios' && !usuarios.length) cargarUsuarios();
-}
-
-/* ════════════════════════════════════════════
-   ALERTAS
-════════════════════════════════════════════ */
-async function cargarAlertas() {
-  const pill = document.getElementById('statusPill');
-  pill.className = 'status-pill loading';
-  pill.textContent = 'Cargando…';
-
-  try {
-    const limit = parseInt(document.getElementById('limitSelect')?.value || '50', 10);
-    let query = sb.from(TABLE_ALERTAS).select('*').order('fecha_publicacion', { ascending: false });
-    if (limit > 0) query = query.limit(limit);
-    const { data, error } = await query;
-    if (error) throw error;
-    alertas = data || [];
-
-    pill.className = 'status-pill';
-    pill.textContent = `${alertas.length} alertas · ${new Date().toLocaleTimeString('es-PE')}`;
-    populateTipoFilter();
-    renderTable();
-  } catch (e) {
-    pill.className = 'status-pill error';
-    pill.textContent = 'Error de conexión';
-    document.getElementById('alertsTbody').innerHTML = `
-      <tr><td colspan="11"><div class="state-box">
-        <div class="state-icon">⚠</div>
-        <div>No se pudo conectar a Supabase.<br>${e.message}</div>
-        <button class="retry" onclick="cargarAlertas()">Reintentar</button>
-      </div></td></tr>`;
+  const { data: perfil } = await sb.from('perfiles').select('rol, acceso_pavs').eq('id', session.user.id).single();
+  if (!perfil || (perfil.rol !== 'admin' && !perfil.acceso_pavs)) {
+    showAccessBlocked();
+    return;
   }
+  init();
 }
 
-function tipoClass(tipo) {
-  const t = (tipo || '').toLowerCase();
-  if (t.includes('falsific')) return 'tipo-falsificados';
-  if (t.includes('calidad'))  return 'tipo-calidad';
-  if (t.includes('seguridad')) return 'tipo-seguridad';
-  return 'tipo-general';
+async function fetchAll(){
+  // trae todo en lotes de 1000 (límite por request de PostgREST)
+  let rows = [], from = 0;
+  const BATCH = 1000;
+  while (true){
+    const { data, error } = await sb.from('pavs_alertas')
+      .select('id,anio,mes,fecha_emision,fecha_revision,pais,agencia,tipo_alerta,titulo_alerta,tipo_producto,ifa,reaccion_adversa,enlace,atc_code,atc_actualizado_en,atc_codes(atc_code,atc_name,atc_name_es)')
+      .order('fecha_emision', { ascending:false })
+      .range(from, from + BATCH - 1);
+    if (error) throw error;
+    rows = rows.concat(data);
+    if (data.length < BATCH) break;
+    from += BATCH;
+  }
+  return rows;
 }
 
-function populateTipoFilter() {
-  const sel = document.getElementById('tipoFilter');
-  if (!sel) return;
-  const current = sel.value;
-  const tipos = [...new Set(alertas.map(a => a.tipo_alerta).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
-  sel.innerHTML = `<option value="">Todos los tipos</option>` +
-    tipos.map(t => `<option value="${t}">${t}</option>`).join('');
-  sel.value = tipos.includes(current) ? current : '';
+// ── Catálogo ATC (OMS) — nivel sustancia (7 caracteres) para el selector ──
+let ATC_MAP = new Map();     // "Nombre (CODIGO)" -> {code, name}
+let ATC_BY_CODE = new Map(); // CODIGO -> "Nombre (CODIGO)"
+
+function atcDisplay(entry){
+  const name = entry.atc_name_es || entry.atc_name || entry.atc_code;
+  return `${name} (${entry.atc_code})`;
 }
 
-function sortTable(key) {
-  if (sortKey === key) { sortDir = sortDir === 'asc' ? 'desc' : 'asc'; }
-  else { sortKey = key; sortDir = 'asc'; }
-  renderTable();
-}
-
-function filterTable() { renderTable(); }
-
-function renderTable() {
-  const q    = (document.getElementById('tblSearch')?.value || '').toLowerCase();
-  const urg  = document.getElementById('urgFilter')?.value || '';
-  const tipo = document.getElementById('tipoFilter')?.value || '';
-  const tbody = document.getElementById('alertsTbody');
-
-  let rows = alertas.filter(a => {
-    const matchQ = !q ||
-      (a.titulo||'').toLowerCase().includes(q) ||
-      (a.producto||'').toLowerCase().includes(q) ||
-      (a.titular_registro_sanitario||'').toLowerCase().includes(q) ||
-      (a.numero_lote||'').toLowerCase().includes(q) ||
-      (a.tipo_alerta||'').toLowerCase().includes(q) ||
-      (a.accion_principal||'').toLowerCase().includes(q);
-    const matchUrg  = !urg  || a.urgencia === urg;
-    const matchTipo = !tipo || a.tipo_alerta === tipo;
-    return matchQ && matchUrg && matchTipo;
+async function fetchAtcCatalog(){
+  let rows = [], from = 0;
+  const BATCH = 1000;
+  while (true){
+    const { data, error } = await sb.from('atc_codes')
+      .select('atc_code,atc_name,atc_name_es')
+      .order('atc_name_es', { ascending:true })
+      .range(from, from + BATCH - 1);
+    if (error) throw error;
+    rows = rows.concat(data);
+    if (data.length < BATCH) break;
+    from += BATCH;
+  }
+  // Solo nivel 5 (sustancia activa): códigos de 7 caracteres
+  const nivel5 = rows.filter(r => r.atc_code && r.atc_code.length === 7);
+  nivel5.forEach(e=>{
+    const disp = atcDisplay(e);
+    ATC_MAP.set(disp, { code: e.atc_code, name: e.atc_name_es || e.atc_name });
+    ATC_BY_CODE.set(e.atc_code, disp);
   });
 
-  if (sortKey) {
-    rows = [...rows].sort((x, y) => {
-      const a = (x[sortKey] || '').toString();
-      const b = (y[sortKey] || '').toString();
-      return sortDir === 'asc' ? a.localeCompare(b) : b.localeCompare(a);
-    });
-  }
+  const dl = $('atcDatalist');
+  const frag = document.createDocumentFragment();
+  nivel5.forEach(e=>{
+    const opt = document.createElement('option');
+    opt.value = atcDisplay(e);
+    frag.appendChild(opt);
+  });
+  dl.innerHTML = '';
+  dl.appendChild(frag);
+}
 
-  document.getElementById('tblCount').textContent = `${rows.length} alertas`;
-  renderDashboard(rows);
+function atcCellHtml(r){
+  const currentDisp = r.atc_codes ? atcDisplay(r.atc_codes) : '';
+  const currentCode = r.atc_code || '';
+  const esc = t => (t||'').toString().replace(/</g,'&lt;').replace(/"/g,'&quot;');
+  return `
+    <input type="text" list="atcDatalist" class="atc-input" data-id="${r.id}"
+      data-current="${esc(currentDisp)}" value="${esc(currentDisp)}"
+      placeholder="Buscar principio activo (IFA)...">
+    <div class="atc-row2">
+      <span class="atc-code-badge ${currentCode ? '' : 'empty'}" data-id="${r.id}">${esc(currentCode || '— sin ATC')}</span>
+      <button class="btn-mini save" data-id="${r.id}" disabled title="Guardar clasificación ATC">💾</button>
+      <button class="btn-mini hist" data-id="${r.id}" title="Ver historial de versiones">🕒</button>
+      <span class="atc-saved-flash" data-id="${r.id}"></span>
+    </div>`;
+}
 
-  if (!rows.length) {
-    tbody.innerHTML = `<tr><td colspan="11"><div class="state-box">
-      <div class="state-icon">🔍</div><div>Sin resultados para este filtro.</div>
-    </div></td></tr>`;
+function onAtcInputChange(e){
+  const input = e.target;
+  const id = input.dataset.id;
+  const val = input.value.trim();
+  const badge = document.querySelector(`.atc-code-badge[data-id="${id}"]`);
+  const saveBtn = document.querySelector(`.btn-mini.save[data-id="${id}"]`);
+
+  if (val === ''){
+    input.classList.remove('invalid');
+    input.classList.toggle('dirty', input.dataset.current !== '');
+    badge.textContent = '— sin ATC';
+    badge.classList.add('empty');
+    saveBtn.disabled = input.dataset.current === '';
     return;
   }
 
-  tbody.innerHTML = rows.map(a => {
-    const num    = a.titulo?.match(/N[ºo]\s*[\d-]+/i)?.[0] || '';
-    const titulo = a.titulo?.replace(/ALERTA DIGEMID\s*N[ºo]\s*[\d-]+\s*/i, '') || a.titulo || '—';
-    const urg    = (a.urgencia || '').toLowerCase();
-    const urgBadge = a.urgencia
-      ? `<span class="urgencia-badge urg-${urg}">${a.urgencia}</span>`
-      : `<span class="cell-empty">Sin evaluar</span>`;
-    const accionCell = a.accion_principal
-      ? `<span class="accion-lista">${a.accion_principal}</span>`
-      : `<span class="accion-badge accion-pendiente">— Sin analizar</span>`;
-    const pdfHref = a.url_pdf_github || a.url_pdf_digemid;
-    const pdfCell = pdfHref
-      ? `<a class="pdf-gh-link" href="${pdfHref}" target="_blank" onclick="event.stopPropagation()">${a.url_pdf_github ? '⬡ GitHub' : '📄 PDF'}</a>`
-      : `<span class="cell-empty">Sin PDF</span>`;
-    const digemidCell = a.url_pagina_digemid
-      ? `<a class="digemid-link" href="${a.url_pagina_digemid}" target="_blank" onclick="event.stopPropagation()">🔗 Ver en DIGEMID</a>`
-      : `<span class="cell-empty">Sin link</span>`;
-    const resumenCell = a.resumen_ia
-      ? a.resumen_ia
-      : `<span class="cell-empty">Sin resumen</span>`;
-    const pdfSafe = (pdfHref || '').replace(/'/g, "\\'");
+  const match = ATC_MAP.get(val);
+  if (match){
+    input.classList.remove('invalid');
+    input.classList.toggle('dirty', val !== input.dataset.current);
+    badge.textContent = match.code;
+    badge.classList.remove('empty');
+    saveBtn.disabled = val === input.dataset.current;
+  } else {
+    input.classList.add('invalid');
+    input.classList.remove('dirty');
+    badge.textContent = 'Selecciona de la lista';
+    badge.classList.add('empty');
+    saveBtn.disabled = true;
+  }
+}
 
-    return `<tr class="data-row" onclick="abrirPdf('${pdfSafe}')">
-      <td style="min-width:200px">
-        <span class="cell-num">${num}</span>
-        <span style="font-size:12px;font-weight:600">${titulo}</span>
-      </td>
-      <td style="max-width:160px;font-size:12px">${a.producto || '<span class="cell-empty">No especificado</span>'}</td>
-      <td class="cell-titular">${a.titular_registro_sanitario || '<span class="cell-empty">Sin titular</span>'}</td>
-      <td class="cell-lote col-lote">${loteChips(a.numero_lote)}</td>
-      <td><span class="tipo-badge ${tipoClass(a.tipo_alerta)}">${a.tipo_alerta || 'General'}</span></td>
-      <td>${urgBadge}</td>
-      <td style="max-width:200px">${accionCell}</td>
-      <td class="cell-resumen">${resumenCell}</td>
-      <td class="cell-fecha">${a.fecha_publicacion || '<span class="cell-empty">—</span>'}</td>
-      <td>${digemidCell}</td>
-      <td class="col-admin"><button class="btn-edit-alerta" onclick="event.stopPropagation();abrirEditorAlerta('${a.id}')">✏️ Editar</button></td>
-    </tr>`;
+async function guardarAtc(id){
+  const input = document.querySelector(`.atc-input[data-id="${id}"]`);
+  const val = input.value.trim();
+  const flash = document.querySelector(`.atc-saved-flash[data-id="${id}"]`);
+  const saveBtn = document.querySelector(`.btn-mini.save[data-id="${id}"]`);
+  let code = null;
+  if (val !== ''){
+    const match = ATC_MAP.get(val);
+    if (!match){ flash.textContent = '⚠ selecciona una opción válida'; return; }
+    code = match.code;
+  }
+
+  saveBtn.disabled = true;
+  flash.textContent = 'Guardando…';
+  const { error } = await sb.from('pavs_alertas').update({ atc_code: code }).eq('id', id);
+  if (error){
+    flash.textContent = '⚠ ' + error.message;
+    saveBtn.disabled = false;
+    return;
+  }
+  input.dataset.current = val;
+  input.classList.remove('dirty');
+  flash.textContent = '✓ guardado';
+  setTimeout(()=>{ flash.textContent=''; }, 3000);
+
+  // reflejar en memoria (ALL/filtered) para que persista al re-renderizar/paginar
+  const row = ALL.find(r => r.id === id);
+  if (row){
+    row.atc_code = code;
+    row.atc_codes = code ? { atc_code: code, atc_name: null, atc_name_es: val.replace(/ \([^)]+\)$/,'') } : null;
+  }
+}
+
+async function verHistorial(id, titulo){
+  const modal = $('histModal');
+  $('histTitle').textContent = 'Historial de clasificación ATC';
+  $('histSub').textContent = titulo || '';
+  $('histBody').innerHTML = '<div class="hist-empty">Cargando…</div>';
+  modal.style.display = 'flex';
+
+  const { data, error } = await sb.from('pavs_alertas_atc_historial')
+    .select('atc_code_anterior,atc_code_nuevo,cambiado_por_email,cambiado_en')
+    .eq('pavs_alertas_id', id)
+    .order('cambiado_en', { ascending:false });
+
+  if (error){ $('histBody').innerHTML = `<div class="hist-empty">Error: ${error.message}</div>`; return; }
+  if (!data.length){ $('histBody').innerHTML = '<div class="hist-empty">Sin cambios registrados todavía para esta alerta.</div>'; return; }
+
+  const nombreDe = code => code ? (ATC_BY_CODE.get(code) || code) : '(sin ATC)';
+  $('histBody').innerHTML = data.map(h => `
+    <div class="hist-row">
+      <div class="hist-change">
+        <span class="old">${nombreDe(h.atc_code_anterior)}</span> → <span class="new">${nombreDe(h.atc_code_nuevo)}</span>
+      </div>
+      <div class="hist-meta">${h.cambiado_por_email || 'desconocido'} · ${new Date(h.cambiado_en).toLocaleString('es-PE')}</div>
+    </div>`).join('');
+}
+
+function fillSelect(id, values){
+  const sel = $(id);
+  values.forEach(v=>{
+    const o = document.createElement('option');
+    o.value = v; o.textContent = v;
+    sel.appendChild(o);
+  });
+}
+
+function tagClass(tipo){
+  const t = (tipo||'').toLowerCase();
+  if (t.includes('seguridad')) return 'seguridad';
+  if (t.includes('dhpc')) return 'dhpc';
+  if (t.includes('modificacion')) return 'modificacion';
+  return 'otro';
+}
+
+function updateDashboard(rows){
+  $('sTotal').textContent = rows.length;
+  const anioActual = new Date().getFullYear();
+  $('sAnio').textContent = rows.filter(r=>Number(r.anio)===anioActual).length;
+  $('sAgencias').textContent = new Set(rows.map(r=>r.agencia).filter(Boolean)).size;
+  $('sPaises').textContent = new Set(rows.map(r=>r.pais).filter(Boolean)).size;
+  renderCharts(rows);
+}
+
+function renderCharts(rows){
+  const porAnio = {};
+  const porAgencia = {};
+  rows.forEach(r=>{
+    if (r.anio) porAnio[r.anio] = (porAnio[r.anio]||0) + 1;
+    if (r.agencia) porAgencia[r.agencia] = (porAgencia[r.agencia]||0) + 1;
+  });
+
+  const anios = Object.keys(porAnio).sort();
+  const maxAnio = Math.max(...Object.values(porAnio), 1);
+  $('chartAnio').innerHTML = anios.map(a=>{
+    const c = porAnio[a];
+    const w = Math.round((c/maxAnio)*100);
+    return `<div class="bar-row"><div class="bar-label">${a}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${w}%"></div></div>
+      <div class="bar-count">${c}</div></div>`;
+  }).join('');
+
+  const topAgencias = Object.entries(porAgencia).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  const maxAg = Math.max(...topAgencias.map(x=>x[1]), 1);
+  $('chartAgencia').innerHTML = topAgencias.map(([ag,c])=>{
+    const w = Math.round((c/maxAg)*100);
+    return `<div class="bar-row"><div class="bar-label" title="${ag}">${ag}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${w}%"></div></div>
+      <div class="bar-count">${c}</div></div>`;
   }).join('');
 }
 
-function loteChips(numeroLote) {
-  if (!numeroLote) return '<span class="cell-empty">Sin lote</span>';
-  return numeroLote.split('|').map(l => l.trim()).filter(Boolean)
-    .map(l => `<span class="lote-chip">${l}</span>`).join('');
-}
+function applyFilters(){
+  const q = $('search').value.trim().toLowerCase();
+  const anio = $('anioFilter').value;
+  const pais = $('paisFilter').value;
+  const agencia = $('agenciaFilter').value;
+  const tipo = $('tipoFilter').value;
+  const producto = $('productoFilter').value;
 
-/* ════════════════════════════════════════════
-   DASHBOARD — KPIs y gráficos calculados sobre
-   las filas YA filtradas (mismo `rows` de renderTable)
-════════════════════════════════════════════ */
-function renderDashboard(rows) {
-  // KPIs
-  document.getElementById('kpiTotal').textContent = rows.length;
-  document.getElementById('kpiLote').textContent = rows.filter(a => a.numero_lote).length;
-  document.getElementById('kpiInmediata').textContent = rows.filter(a => a.urgencia === 'INMEDIATA').length;
-
-  const tipoCounts = {};
-  rows.forEach(a => { if (a.tipo_alerta) tipoCounts[a.tipo_alerta] = (tipoCounts[a.tipo_alerta]||0)+1; });
-  const tipoSorted = Object.entries(tipoCounts).sort((x,y) => y[1]-x[1]);
-  document.getElementById('kpiTipoTop').textContent = tipoSorted.length ? tipoSorted[0][0] : '—';
-
-  // Barras por urgencia
-  const urgOrder = [['INMEDIATA','inmediata'], ['PREVENTIVA','preventiva'], ['INFORMATIVA','informativa']];
-  const urgCounts = urgOrder.map(([key,cls]) => [key, cls, rows.filter(a => a.urgencia === key).length]);
-  const urgEl = document.getElementById('chartUrgencia');
-  const urgMax = Math.max(1, ...urgCounts.map(u => u[2]));
-  if (!rows.length) {
-    urgEl.innerHTML = '<div class="dash-empty">Sin datos en este filtro.</div>';
-  } else {
-    urgEl.innerHTML = urgCounts.map(([label, cls, count]) => {
-      const pct = Math.max(6, (count/urgMax)*100);
-      return `<div class="bar-row">
-        <div class="bar-label" title="${label}">${label}</div>
-        <div class="bar-track"><div class="bar-fill ${cls}" style="width:${pct}%"><span>${count}</span></div></div>
-      </div>`;
-    }).join('');
-  }
-
-  // Barras por tipo de alerta (top 5)
-  const tipoEl = document.getElementById('chartTipo');
-  if (!tipoSorted.length) {
-    tipoEl.innerHTML = '<div class="dash-empty">Sin datos en este filtro.</div>';
-  } else {
-    const tipoMax = tipoSorted[0][1];
-    tipoEl.innerHTML = tipoSorted.slice(0, 5).map(([label, count]) => {
-      const pct = Math.max(6, (count/tipoMax)*100);
-      return `<div class="bar-row">
-        <div class="bar-label" title="${label}">${label}</div>
-        <div class="bar-track"><div class="bar-fill" style="width:${pct}%"><span>${count}</span></div></div>
-      </div>`;
-    }).join('');
-  }
-
-  // Donut con vs. sin lote
-  const conLote = rows.filter(a => a.numero_lote).length;
-  const sinLote = rows.length - conLote;
-  const total = rows.length || 1;
-  const pct = conLote / total;
-  const circumference = 2 * Math.PI * 34;
-  const offset = circumference * (1 - pct);
-  document.getElementById('donutLote').innerHTML = `
-    <circle cx="44" cy="44" r="34" fill="none" stroke="#e5e9f0" stroke-width="11"/>
-    <circle cx="44" cy="44" r="34" fill="none" stroke="#cc8800" stroke-width="11"
-      stroke-dasharray="${circumference}" stroke-dashoffset="${offset}"
-      transform="rotate(-90 44 44)" stroke-linecap="round"/>
-    <text x="44" y="40" text-anchor="middle" fill="#1a2030" font-family="IBM Plex Mono, monospace" font-size="15" font-weight="700">${Math.round(pct*100)}%</text>
-    <text x="44" y="54" text-anchor="middle" fill="#8a9ab8" font-family="IBM Plex Sans, sans-serif" font-size="7">con lote</text>
-  `;
-  document.getElementById('donutLoteLegend').innerHTML = `
-    <div class="row"><span class="dot" style="background:#cc8800"></span>Con lote <b>${conLote}</b></div>
-    <div class="row"><span class="dot" style="background:#e5e9f0"></span>Sin lote <b>${sinLote}</b></div>
-  `;
-
-  // Productos más falsificados (respeta el filtro de tipo de alerta activo:
-  // si eliges "Productos Falsificados" en el selector de arriba, este ranking
-  // queda acotado solo a esas alertas)
-  const prodCounts = {};
-  rows.forEach(a => {
-    const p = normalizarProducto(a.producto);
-    if (p) prodCounts[p] = (prodCounts[p] || 0) + 1;
+  filtered = ALL.filter(r=>{
+    if (anio && String(r.anio) !== anio) return false;
+    if (pais && r.pais !== pais) return false;
+    if (agencia && r.agencia !== agencia) return false;
+    if (tipo && r.tipo_alerta !== tipo) return false;
+    if (producto && r.tipo_producto !== producto) return false;
+    if (q){
+      const hay = (r.titulo_alerta+' '+(r.tipo_producto||'')+' '+(r.ifa||'')).toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    return true;
   });
-  const prodSorted = Object.entries(prodCounts).sort((x,y) => y[1]-x[1]);
-  const prodEl = document.getElementById('chartProducto');
-  if (!prodSorted.length) {
-    prodEl.innerHTML = '<div class="dash-empty">Sin productos identificables en este filtro.</div>';
-  } else {
-    const prodMax = prodSorted[0][1];
-    prodEl.innerHTML = prodSorted.slice(0, 10).map(([label, count]) => {
-      const pct = Math.max(6, (count/prodMax)*100);
-      return `<div class="bar-row">
-        <div class="bar-label" title="${label}">${label}</div>
-        <div class="bar-track"><div class="bar-fill" style="width:${pct}%"><span>${count}</span></div></div>
-      </div>`;
-    }).join('');
-  }
-}
 
-// Agrupa nombres de producto parecidos (misma lógica que el dashboard PAVS
-// de referencia): recorta basura típica del scraping ("Descargar", saltos
-// de línea) y se queda con el primer segmento antes de una coma/paréntesis,
-// para que "DOLO CORDRALAN 500mg, caja x10" y "DOLO CORDRALAN (genérico)"
-// cuenten como el mismo producto en el ranking.
-function normalizarProducto(producto) {
-  if (!producto) return null;
-  let p = producto.replace(/\s+/g, ' ').trim();
-  p = p.replace(/Descargar\s*$/i, '').trim();
-  p = p.split(/[,(]/)[0].trim();
-  if (!p) return null;
-  return p.length > 45 ? p.slice(0, 45).trim() + '…' : p;
-}
-
-function abrirPdf(url) {
-  if (url) window.open(url, '_blank');
-}
-
-/* ════════════════════════════════════════════
-   EDICIÓN MANUAL DE ALERTAS (solo admin)
-   Corrige campos generados por IA/heurística que
-   hayan quedado mal clasificados (ej. tipo_alerta).
-════════════════════════════════════════════ */
-let editandoAlertaId = null;
-
-function esAdminActual() {
-  return currentPerfil?.rol === 'admin';
-}
-
-function abrirEditorAlerta(id) {
-  if (!esAdminActual()) return;
-  const a = alertas.find(x => x.id === id);
-  if (!a) return;
-  editandoAlertaId = id;
-
-  document.getElementById('editSubtitulo').textContent = a.titulo || '—';
-  document.getElementById('editProducto').value = a.producto || '';
-  document.getElementById('editTitular').value = a.titular_registro_sanitario || '';
-  document.getElementById('editUrgencia').value = a.urgencia || 'INFORMATIVA';
-  document.getElementById('editAccionPrincipal').value = a.accion_principal || '';
-  document.getElementById('editNumeroLote').value = a.numero_lote || '';
-  document.getElementById('editResumenIa').value = a.resumen_ia || '';
-
-  const tipoSel = document.getElementById('editTipoAlerta');
-  const opciones = Array.from(tipoSel.options).map(o => o.value);
-  if (a.tipo_alerta && opciones.includes(a.tipo_alerta)) {
-    tipoSel.value = a.tipo_alerta;
-    document.getElementById('editTipoAlertaOtroWrap').style.display = 'none';
-    document.getElementById('editTipoAlertaOtro').value = '';
-  } else {
-    tipoSel.value = '__otro__';
-    document.getElementById('editTipoAlertaOtroWrap').style.display = 'block';
-    document.getElementById('editTipoAlertaOtro').value = a.tipo_alerta || '';
-  }
-
-  document.getElementById('editError').style.display = 'none';
-  document.getElementById('editOverlay').classList.remove('gate-hidden');
-}
-
-function cerrarEditorAlerta() {
-  document.getElementById('editOverlay').classList.add('gate-hidden');
-  editandoAlertaId = null;
-}
-
-async function guardarEdicionAlerta(event) {
-  event.preventDefault();
-  if (!esAdminActual() || !editandoAlertaId) return false;
-
-  const btn = document.getElementById('btnGuardarEdicion');
-  const errDiv = document.getElementById('editError');
-  errDiv.style.display = 'none';
-  btn.disabled = true;
-  btn.textContent = 'Guardando…';
-
-  const tipoSel = document.getElementById('editTipoAlerta').value;
-  const tipoFinal = tipoSel === '__otro__'
-    ? document.getElementById('editTipoAlertaOtro').value.trim()
-    : tipoSel;
-
-  const payload = {
-    target_id: editandoAlertaId,
-    p_producto: document.getElementById('editProducto').value.trim(),
-    p_titular_registro_sanitario: document.getElementById('editTitular').value.trim(),
-    p_tipo_alerta: tipoFinal,
-    p_urgencia: document.getElementById('editUrgencia').value,
-    p_accion_principal: document.getElementById('editAccionPrincipal').value.trim(),
-    p_numero_lote: document.getElementById('editNumeroLote').value.trim(),
-    p_resumen_ia: document.getElementById('editResumenIa').value.trim(),
-  };
-
-  const { error } = await sb.rpc('admin_actualizar_alerta_digemid', payload);
-
-  btn.disabled = false;
-  btn.textContent = 'Guardar cambios';
-
-  if (error) {
-    errDiv.textContent = 'No se pudo guardar: ' + error.message;
-    errDiv.style.display = 'block';
-    return false;
-  }
-
-  // Refleja el cambio en memoria sin tener que recargar todo desde Supabase
-  const idx = alertas.findIndex(a => a.id === editandoAlertaId);
-  if (idx !== -1) {
-    alertas[idx] = {
-      ...alertas[idx],
-      producto: payload.p_producto,
-      titular_registro_sanitario: payload.p_titular_registro_sanitario,
-      tipo_alerta: payload.p_tipo_alerta,
-      urgencia: payload.p_urgencia,
-      accion_principal: payload.p_accion_principal,
-      numero_lote: payload.p_numero_lote,
-      resumen_ia: payload.p_resumen_ia,
-    };
-  }
-  populateTipoFilter();
+  sortRows();
+  page = 0;
   renderTable();
-  cerrarEditorAlerta();
-  return false;
+  updateDashboard(filtered);
 }
 
-document.getElementById('editTipoAlerta').addEventListener('change', function () {
-  document.getElementById('editTipoAlertaOtroWrap').style.display = this.value === '__otro__' ? 'block' : 'none';
-});
-
-function exportarCSV() {
-  if (!alertas.length) return;
-  const cols = ['titulo','producto','titular_registro_sanitario','numero_lote','tipo_alerta','urgencia','accion_principal','resumen_ia','fecha_publicacion','url_pdf_digemid','url_pdf_github'];
-  const header = cols.join(',');
-  const esc = v => `"${(v ?? '').toString().replace(/"/g,'""')}"`;
-  const body = alertas.map(a => cols.map(c => esc(a[c])).join(',')).join('\n');
-  const blob = new Blob([header + '\n' + body], { type: 'text/csv;charset=utf-8;' });
-  const link = document.createElement('a');
-  link.href = URL.createObjectURL(blob);
-  link.download = `alertas_digemid_${new Date().toISOString().slice(0,10)}.csv`;
-  link.click();
+function sortRows(){
+  filtered.sort((a,b)=>{
+    let va = a[sortKey], vb = b[sortKey];
+    if (va == null) va = '';
+    if (vb == null) vb = '';
+    if (va < vb) return sortAsc ? -1 : 1;
+    if (va > vb) return sortAsc ? 1 : -1;
+    return 0;
+  });
 }
 
-/* ════════════════════════════════════════════
-   PANEL DE USUARIOS (solo admin — RLS lo garantiza)
-════════════════════════════════════════════ */
-async function cargarUsuarios() {
-  const tbody = document.getElementById('usersTbody');
-  tbody.innerHTML = `<tr><td colspan="8"><div class="state-box"><div class="state-icon">⏳</div><div>Cargando usuarios…</div></div></td></tr>`;
+function renderTable(){
+  $('meta').textContent = `${filtered.length} alerta(s) encontrada(s) de ${ALL.length} totales.`;
 
-  const { data, error } = await sb.from(TABLE_PERFILES).select('*').order('creado_en', { ascending: false });
-  if (error) {
-    tbody.innerHTML = `<tr><td colspan="8"><div class="state-box"><div class="state-icon">⚠</div><div>${error.message}</div></div></td></tr>`;
+  const start = page * PAGE_SIZE;
+  const rows = filtered.slice(start, start + PAGE_SIZE);
+  const tb = $('tbody');
+
+  if (!rows.length){
+    tb.innerHTML = `<tr><td colspan="10"><div class="empty">Sin resultados para el filtro actual.</div></td></tr>`;
+  } else {
+    const esc = t => (t||'').toString().replace(/</g,'&lt;');
+    tb.innerHTML = rows.map(r=>`<tr>
+      <td class="nreg">${esc(r.anio)}</td>
+      <td class="nreg">${esc(r.fecha_emision)}</td>
+      <td>${esc(r.pais)}</td>
+      <td>${esc(r.agencia)}</td>
+      <td><span class="tag ${tagClass(r.tipo_alerta)}">${esc(r.tipo_alerta)}</span></td>
+      <td class="titulo-cell">${esc(r.titulo_alerta)}</td>
+      <td>${esc(r.tipo_producto)}</td>
+      <td>${esc(r.ifa)}</td>
+      <td class="atc-cell">${atcCellHtml(r)}</td>
+      <td class="links">${r.enlace ? `<a href="${esc(r.enlace)}" target="_blank" rel="noopener">Ver fuente ↗</a>` : ''}</td>
+    </tr>`).join('');
+
+    tb.querySelectorAll('.atc-input').forEach(inp=>{
+      inp.addEventListener('input', onAtcInputChange);
+      inp.addEventListener('change', onAtcInputChange);
+    });
+    tb.querySelectorAll('.btn-mini.save').forEach(btn=>{
+      btn.addEventListener('click', ()=> guardarAtc(btn.dataset.id));
+    });
+    tb.querySelectorAll('.btn-mini.hist').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const r = rows.find(x=>x.id===btn.dataset.id) || ALL.find(x=>x.id===btn.dataset.id);
+        verHistorial(btn.dataset.id, r ? r.titulo_alerta : '');
+      });
+    });
+  }
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  $('pageInfo').textContent = `Página ${page+1} de ${totalPages}`;
+  $('prevBtn').disabled = page === 0;
+  $('nextBtn').disabled = page >= totalPages - 1;
+
+  document.querySelectorAll('thead th[data-key]').forEach(th=>{
+    th.classList.toggle('sorted', th.dataset.key === sortKey);
+    th.classList.toggle('asc', th.dataset.key === sortKey && sortAsc);
+  });
+}
+
+function exportCSV(){
+  const cols = ['anio','mes','fecha_emision','fecha_revision','pais','agencia','tipo_alerta','titulo_alerta','tipo_producto','ifa','reaccion_adversa','atc_code','enlace'];
+  const esc = v => `"${(v==null?'':String(v)).replace(/"/g,'""')}"`;
+  const rowVal = (r,c) => {
+    if (c === 'atc_code') return r.atc_code || '';
+    return r[c];
+  };
+  const lines = [cols.join(',')].concat(
+    filtered.map(r=> cols.map(c=>esc(rowVal(r,c))).join(','))
+  );
+  const blob = new Blob(['\uFEFF'+lines.join('\n')], {type:'text/csv;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `pavs_alertas_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+async function init(){
+  try{
+    [ALL] = await Promise.all([ fetchAll(), fetchAtcCatalog() ]);
+  }catch(e){
+    showErr('No se pudo cargar la tabla pavs_alertas (o el catálogo ATC) desde Supabase: ' + e.message);
+    $('meta').textContent = 'Sin datos disponibles.';
     return;
   }
-  usuarios = data || [];
-  document.getElementById('usrCount').textContent = `${usuarios.length} usuarios`;
 
-  const fmt = d => d ? new Date(d).toLocaleString('es-PE', { dateStyle: 'short', timeStyle: 'short' }) : '<span class="cell-empty">Nunca</span>';
-  const esUnoMismo = id => currentUser && id === currentUser.id;
+  const agenciasSet = new Set(ALL.map(r=>r.agencia).filter(Boolean));
+  const paisesSet = new Set(ALL.map(r=>r.pais).filter(Boolean));
 
-  tbody.innerHTML = usuarios.map(u => `
-    <tr>
-      <td style="font-size:12px;font-weight:600">${u.nombre || '<span class="cell-empty">—</span>'}</td>
-      <td style="font-size:12px">${u.email}</td>
-      <td style="font-size:12px">${u.empresa || '<span class="cell-empty">—</span>'}</td>
-      <td><span class="rol-badge rol-${u.rol}">${u.rol}</span></td>
-      <td>
-        <label class="cima-toggle" title="${u.acceso_cima ? 'Acceso CIMA activo' : 'Acceso CIMA desactivado'}">
-          <input type="checkbox" ${u.acceso_cima ? 'checked' : ''} onchange="cambiarAccesoCima('${u.id}', this.checked, this)">
-          <span class="slider"></span>
-        </label>
-      </td>
-      <td class="cell-fecha">${fmt(u.creado_en)}</td>
-      <td class="cell-fecha">${fmt(u.ultimo_acceso)}</td>
-      <td>
-        <button class="btn-delete-user" ${esUnoMismo(u.id) ? 'disabled title="No puedes eliminar tu propia cuenta"' : ''}
-          onclick="eliminarUsuario('${u.id}', '${(u.email||'').replace(/'/g,"\\'")}')">🗑 Eliminar</button>
-      </td>
-    </tr>
-  `).join('');
+  const ultimaFecha = ALL.reduce((max,r)=> r.fecha_emision && r.fecha_emision > max ? r.fecha_emision : max, '');
+  $('lastSync').textContent = ultimaFecha ? `Última alerta: ${ultimaFecha}` : 'Sin datos';
+
+  fillSelect('anioFilter', [...new Set(ALL.map(r=>r.anio).filter(Boolean))].sort((a,b)=>b-a).map(String));
+  fillSelect('paisFilter', [...paisesSet].sort());
+  fillSelect('agenciaFilter', [...agenciasSet].sort());
+  fillSelect('tipoFilter', [...new Set(ALL.map(r=>r.tipo_alerta).filter(Boolean))].sort());
+  fillSelect('productoFilter', [...new Set(ALL.map(r=>r.tipo_producto).filter(Boolean))].sort());
+
+  filtered = ALL.slice();
+  sortRows();
+  renderTable();
+  updateDashboard(filtered);
+
+  document.querySelectorAll('thead th[data-key]').forEach(th=>{
+    th.addEventListener('click', ()=>{
+      const key = th.dataset.key;
+      if (sortKey === key) sortAsc = !sortAsc;
+      else { sortKey = key; sortAsc = false; }
+      sortRows(); page = 0; renderTable();
+    });
+  });
+
+  ['search','anioFilter','paisFilter','agenciaFilter','tipoFilter','productoFilter'].forEach(id=>{
+    $(id).addEventListener('input', applyFilters);
+  });
+  $('refreshBtn').addEventListener('click', init);
+  $('csvBtn').addEventListener('click', exportCSV);
+  $('histClose').addEventListener('click', ()=>{ $('histModal').style.display='none'; });
+  $('histModal').addEventListener('click', (e)=>{ if(e.target.id==='histModal') $('histModal').style.display='none'; });
+  $('prevBtn').addEventListener('click', ()=>{ if(page>0){ page--; renderTable(); } });
+  $('nextBtn').addEventListener('click', ()=>{
+    const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+    if(page < totalPages-1){ page++; renderTable(); }
+  });
 }
 
-async function cambiarAccesoCima(userId, acceso, checkbox) {
-  checkbox.disabled = true;
-  const { error } = await sb.rpc('admin_set_acceso_cima', { target_id: userId, acceso });
-  checkbox.disabled = false;
-  if (error) {
-    alert('No se pudo actualizar el acceso a CIMA: ' + error.message);
-    checkbox.checked = !acceso; // revertir visualmente
-    return;
-  }
-  const u = usuarios.find(x => x.id === userId);
-  if (u) u.acceso_cima = acceso;
-}
-
-async function eliminarUsuario(userId, email) {
-  if (!confirm(`¿Eliminar la cuenta de ${email}? Esta acción no se puede deshacer.`)) return;
-  const { error } = await sb.rpc('admin_delete_usuario', { target_id: userId });
-  if (error) {
-    alert('No se pudo eliminar el usuario: ' + error.message);
-    return;
-  }
-  cargarUsuarios();
-}
+verificarAccesoYcargar();
 </script>
-
-<a class="wa-float" id="waFloat"
-   href="https://wa.me/51926803293?text=Hola%2C%20tengo%20una%20consulta%20sobre%20el%20monitor%20de%20Alertas%20DIGEMID"
-   target="_blank" rel="noopener" title="Consultar por WhatsApp">
-  <svg viewBox="0 0 32 32" fill="#fff"><path d="M16.001 3C9.373 3 4 8.373 4 15c0 2.386.694 4.611 1.894 6.487L4 29l7.694-1.86A11.94 11.94 0 0 0 16.001 27C22.627 27 28 21.627 28 15S22.627 3 16.001 3zm0 21.818c-1.94 0-3.75-.57-5.27-1.55l-.378-.234-4.566 1.104 1.13-4.45-.246-.393A9.77 9.77 0 0 1 5.182 15c0-5.973 4.846-10.818 10.819-10.818S26.818 9.027 26.818 15 21.973 24.818 16.001 24.818zm5.978-8.146c-.328-.164-1.94-.957-2.24-1.066-.301-.109-.52-.164-.739.164-.219.328-.848 1.066-1.04 1.285-.191.219-.383.246-.71.082-.328-.164-1.386-.51-2.64-1.628-.976-.87-1.635-1.946-1.826-2.274-.191-.328-.02-.505.144-.669.148-.147.328-.383.492-.574.164-.191.219-.328.328-.547.109-.219.055-.41-.027-.574-.082-.164-.739-1.78-1.013-2.44-.267-.64-.538-.554-.739-.564l-.63-.011a1.21 1.21 0 0 0-.876.41c-.301.328-1.148 1.121-1.148 2.735s1.175 3.171 1.339 3.39c.164.219 2.312 3.53 5.602 4.949.783.338 1.394.54 1.87.691.786.25 1.5.215 2.065.13.63-.094 1.94-.793 2.213-1.559.273-.766.273-1.422.191-1.559-.082-.137-.301-.219-.629-.383z"/></svg>
-</a>
 </body>
 </html>
