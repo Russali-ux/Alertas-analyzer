@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Monitor Modificatorias DIGEMID — ConkoSafe IA</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+  :root {
+    --navy: #1B5E3E; --teal: #1A8C93; --red: #B3261E; --bg: #F4F6FA;
+    --card: #FFFFFF; --border: #E2E6ED; --text: #1F2937; --muted: #6B7280;
+  }
+  * { box-sizing: border-box; }
+  body { font-family: Arial, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; }
+  header { background: var(--navy); color: #fff; padding: 20px 28px; }
+  header h1 { margin: 0; font-size: 20px; }
+  header p { margin: 4px 0 0; font-size: 13px; color: #C9D3EA; }
+  .container { max-width: 1300px; margin: 0 auto; padding: 24px 20px 60px; }
+  .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px; margin-bottom: 24px; }
+  .kpi { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; text-align: center; }
+  .kpi .label { font-size: 11px; color: var(--muted); font-weight: bold; text-transform: uppercase; letter-spacing: .03em; }
+  .kpi .value { font-size: 26px; font-weight: bold; color: var(--teal); margin-top: 4px; }
+  .kpi .value.inmediata { color: var(--red); }
+  .charts { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 28px; }
+  @media (max-width: 860px) { .charts { grid-template-columns: 1fr; } }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+  .card h2 { margin: 0 0 12px; font-size: 14px; color: var(--navy); }
+  .controls { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+  .controls input, .controls select {
+    padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px;
+  }
+  .controls input { flex: 1; min-width: 220px; }
+  table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  thead th {
+    background: var(--navy); color: #fff; text-align: left; padding: 8px 10px;
+    position: sticky; top: 0; cursor: pointer; user-select: none;
+  }
+  thead th:hover { background: #2C7A52; }
+  tbody td { padding: 7px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tbody tr:nth-child(even) { background: #FAFBFD; }
+  tbody tr:hover { background: #EEF2FA; }
+  .badge { display: inline-block; padding: 1px 8px; border-radius: 10px; font-size: 11px; font-weight: bold; white-space: nowrap; }
+  .badge.INMEDIATA   { background: #FCE4D6; color: var(--red); }
+  .badge.PREVENTIVA  { background: #FFF2CC; color: #ED7D31; }
+  .badge.INFORMATIVA { background: #EBF3FB; color: #2E75B6; }
+  a.src { color: var(--teal); text-decoration: none; font-size: 11px; }
+  a.src:hover { text-decoration: underline; }
+  .table-wrap { max-height: 560px; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px; }
+  .count-note { font-size: 12px; color: var(--muted); margin: 8px 0 0; }
+  .state-note { font-size: 13px; color: var(--muted); padding: 40px; text-align: center; }
+  footer { text-align: center; font-size: 11px; color: var(--muted); padding: 20px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Monitor Modificatorias DIGEMID — Actualizaciones de Seguridad</h1>
+  <p>ConkoSafe IA · Modificaciones al Registro Sanitario (DIGEMID) de tipo seguridad · Datos en vivo desde Supabase</p>
+</header>
+<div class="container">
+
+  <div class="kpis">
+    <div class="kpi"><div class="label">Total modificatorias</div><div class="value" id="kpiTotal">—</div></div>
+    <div class="kpi"><div class="label">Inmediatas</div><div class="value inmediata" id="kpiInmediatas">—</div></div>
+    <div class="kpi"><div class="label">Preventivas</div><div class="value" id="kpiPreventivas">—</div></div>
+    <div class="kpi"><div class="label">Titulares distintos</div><div class="value" id="kpiTitulares">—</div></div>
+    <div class="kpi"><div class="label">Periodo cubierto</div><div class="value" id="kpiRango" style="font-size:16px">—</div></div>
+  </div>
+
+  <div class="charts">
+    <div class="card">
+      <h2>Modificatorias por tipo</h2>
+      <canvas id="chartTipo" height="220"></canvas>
+    </div>
+    <div class="card">
+      <h2>Modificatorias por urgencia</h2>
+      <canvas id="chartUrgencia" height="220"></canvas>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Detalle de modificatorias</h2>
+    <div class="controls">
+      <input type="text" id="buscar" placeholder="Buscar por producto, principio activo, titular o N° de modificación...">
+      <select id="filtroUrgencia">
+        <option value="">Toda urgencia</option>
+        <option value="INMEDIATA">Inmediata</option>
+        <option value="PREVENTIVA">Preventiva</option>
+        <option value="INFORMATIVA">Informativa</option>
+      </select>
+      <select id="filtroTipo"><option value="">Todo tipo</option></select>
+    </div>
+    <div class="table-wrap">
+      <table id="tablaModif">
+        <thead>
+          <tr>
+            <th data-col="fecha_publicacion">Fecha Pub.</th>
+            <th data-col="n_modificacion">N° Modificación</th>
+            <th data-col="producto">Producto / IFA</th>
+            <th data-col="titular_rs">Titular RS</th>
+            <th data-col="tipo_modificacion">Tipo</th>
+            <th data-col="urgencia">Urgencia</th>
+            <th data-col="accion_requerida">Acción Requerida</th>
+            <th data-col="resumen">Resumen IA</th>
+            <th data-col="fuente">Fuente</th>
+          </tr>
+        </thead>
+        <tbody><tr><td colspan="9" class="state-note">Cargando modificatorias desde Supabase…</td></tr></tbody>
+      </table>
+    </div>
+    <p class="count-note" id="contador"></p>
+  </div>
+
+</div>
+<footer>Generado automáticamente por el monitor DIGEMID de Modificatorias (GitHub Actions, Lun/Mié/Vie) · Solo modificatorias tipo seguridad (Art. 6,13,36,37,151 D.S. 016-2011-SA / ICH E2C).</footer>
+
+<script>
+// ---- Configuración Supabase (mismo proyecto que cima/pavs/aems) ----
+const SUPABASE_URL = 'https://ggbnfdaxtsngsjssrwrl.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdnYm5mZGF4dHNuZ3Nqc3Nyd3JsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ4ODAzODIsImV4cCI6MjEwMDQ1NjM4Mn0.126hhMpakcOlzp5KyyWdMU56UjwLwn5Xn4Nc13OIjgU';
+
+let DATA = [];
+
+async function fetchAllModificatorias() {
+  const pageSize = 1000;
+  let from = 0;
+  let all = [];
+  while (true) {
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/modificatorias_digemid?select=n_modificacion,producto,principio_activo,titular_rs,fecha_publicacion,tipo_modificacion,urgencia,accion_requerida,resumen,url_pagina_digemid,url_pdf_digemid&order=fecha_publicacion.desc`,
+      {
+        headers: {
+          apikey: SUPABASE_ANON_KEY,
+          Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+          Range: `${from}-${from + pageSize - 1}`,
+        },
+      }
+    );
+    if (!res.ok) throw new Error(`Supabase ${res.status}: ${await res.text()}`);
+    const batch = await res.json();
+    all = all.concat(batch);
+    if (batch.length < pageSize) break;
+    from += pageSize;
+  }
+  return all;
+}
+
+function renderKpis() {
+  const titulares = new Set(DATA.map(d => (d.titular_rs || '').trim().toLowerCase()).filter(Boolean));
+  const fechas = DATA.map(d => d.fecha_publicacion).filter(Boolean).sort();
+  document.getElementById('kpiTotal').textContent = DATA.length;
+  document.getElementById('kpiInmediatas').textContent = DATA.filter(d => d.urgencia === 'INMEDIATA').length;
+  document.getElementById('kpiPreventivas').textContent = DATA.filter(d => d.urgencia === 'PREVENTIVA').length;
+  document.getElementById('kpiTitulares').textContent = titulares.size;
+  if (fechas.length) {
+    document.getElementById('kpiRango').textContent = `${fechas[0]} – ${fechas[fechas.length - 1]}`;
+  }
+}
+
+function renderCharts() {
+  try {
+    const tipoCounts = {};
+    DATA.forEach(d => { const t = d.tipo_modificacion || 'Sin clasificar'; tipoCounts[t] = (tipoCounts[t] || 0) + 1; });
+    const tipos = Object.entries(tipoCounts).sort((a, b) => b[1] - a[1]);
+
+    const urgOrder = ['INMEDIATA', 'PREVENTIVA', 'INFORMATIVA'];
+    const urgColors = { INMEDIATA: '#B3261E', PREVENTIVA: '#ED7D31', INFORMATIVA: '#2E75B6' };
+    const urgCounts = {};
+    DATA.forEach(d => { const u = d.urgencia || 'Sin dato'; urgCounts[u] = (urgCounts[u] || 0) + 1; });
+    const urgLabels = urgOrder.filter(u => urgCounts[u]).concat(Object.keys(urgCounts).filter(u => !urgOrder.includes(u)));
+
+    new Chart(document.getElementById('chartTipo'), {
+      type: 'bar',
+      data: {
+        labels: tipos.map(t => t[0]),
+        datasets: [{ label: 'Modificatorias', data: tipos.map(t => t[1]), backgroundColor: '#1B5E3E' }]
+      },
+      options: { indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true } } }
+    });
+
+    new Chart(document.getElementById('chartUrgencia'), {
+      type: 'doughnut',
+      data: {
+        labels: urgLabels,
+        datasets: [{ data: urgLabels.map(u => urgCounts[u]), backgroundColor: urgLabels.map(u => urgColors[u] || '#9CA3AF') }]
+      },
+      options: { plugins: { legend: { position: 'bottom' } } }
+    });
+  } catch (e) {
+    console.warn('No se pudieron dibujar los gráficos:', e);
+    document.querySelectorAll('.charts canvas').forEach(c => {
+      c.outerHTML = '<p style="color:#6B7280;font-size:12px">Gráfico no disponible (Chart.js no cargó). La tabla sigue funcionando.</p>';
+    });
+  }
+}
+
+function renderTable() {
+  const tbody = document.querySelector('#tablaModif tbody');
+  const buscar = document.getElementById('buscar');
+  const filtroUrgencia = document.getElementById('filtroUrgencia');
+  const filtroTipo = document.getElementById('filtroTipo');
+  const contador = document.getElementById('contador');
+
+  const tipos = [...new Set(DATA.map(d => d.tipo_modificacion))].filter(Boolean).sort();
+  tipos.forEach(t => {
+    const opt = document.createElement('option');
+    opt.value = t; opt.textContent = t;
+    filtroTipo.appendChild(opt);
+  });
+
+  let sortCol = null, sortDir = 1;
+
+  function render() {
+    const q = buscar.value.toLowerCase();
+    const urgencia = filtroUrgencia.value;
+    const tipo = filtroTipo.value;
+    let rows = DATA.filter(d => {
+      if (urgencia && d.urgencia !== urgencia) return false;
+      if (tipo && d.tipo_modificacion !== tipo) return false;
+      if (!q) return true;
+      return `${d.producto} ${d.principio_activo} ${d.titular_rs} ${d.n_modificacion}`.toLowerCase().includes(q);
+    });
+    if (sortCol) {
+      rows = rows.slice().sort((a, b) => {
+        const va = (a[sortCol] || '').toString().toLowerCase();
+        const vb = (b[sortCol] || '').toString().toLowerCase();
+        return va < vb ? -1 * sortDir : va > vb ? 1 * sortDir : 0;
+      });
+    }
+    tbody.innerHTML = rows.map(d => `
+      <tr>
+        <td>${d.fecha_publicacion || ''}</td>
+        <td>${d.n_modificacion || ''}</td>
+        <td>${d.producto || ''}${d.principio_activo ? `<br><small>${d.principio_activo}</small>` : ''}</td>
+        <td>${d.titular_rs || ''}</td>
+        <td>${d.tipo_modificacion || ''}</td>
+        <td><span class="badge ${d.urgencia || ''}">${d.urgencia || '—'}</span></td>
+        <td>${d.accion_requerida || ''}</td>
+        <td>${d.resumen || ''}</td>
+        <td>
+          ${d.url_pagina_digemid ? `<a class="src" href="${d.url_pagina_digemid}" target="_blank" rel="noopener">Ver publicación ↗</a>` : ''}
+          ${d.url_pdf_digemid ? `<br><a class="src" href="${d.url_pdf_digemid}" target="_blank" rel="noopener">PDF ↗</a>` : ''}
+        </td>
+      </tr>
+    `).join('');
+    contador.textContent = `Mostrando ${rows.length} de ${DATA.length} modificatorias`;
+  }
+
+  document.querySelectorAll('thead th').forEach(th => {
+    th.addEventListener('click', () => {
+      const col = th.dataset.col;
+      sortDir = (sortCol === col) ? -sortDir : 1;
+      sortCol = col;
+      render();
+    });
+  });
+  buscar.addEventListener('input', render);
+  filtroUrgencia.addEventListener('change', render);
+  filtroTipo.addEventListener('change', render);
+  render();
+}
+
+(async function init() {
+  try {
+    DATA = await fetchAllModificatorias();
+    renderKpis();
+    renderCharts();
+    renderTable();
+  } catch (e) {
+    document.querySelector('#tablaModif tbody').innerHTML =
+      `<tr><td colspan="9" class="state-note">Error cargando datos de Supabase: ${e.message}</td></tr>`;
+  }
+})();
+</script>
+</body>
+</html>

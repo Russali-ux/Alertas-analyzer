@@ -1,1069 +1,869 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ConkoSafe IA — Alertas DIGEMID</title>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<title>Sistema de Gestión de Calidad — Conkomerco S.A.C.</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg:      #ffffff;
-  --surface: #f5f7fa;
-  --border:  #d0d7e3;
-  --accent:  #0077cc;
-  --danger:  #e00030;
-  --warn:    #cc8800;
-  --safe:    #00996a;
-  --muted:   #8a9ab8;
-  --text:    #1a2030;
-  --sub:     #5a6a82;
-  --mono:    'IBM Plex Mono', monospace;
-  --sans:    'IBM Plex Sans', Arial, sans-serif;
+  --white:   #ffffff;
+  --bg:      #f5f6fb;
+  --bg2:     #eef0f8;
+  --border:  #e2e5f0;
+  --border2: #d0d5e8;
+  --purple:  #9333ea;
+  --purple2: #7c3aed;
+  --purple3: #6d28d9;
+  --purple-l:#f3e8ff;
+  --purple-m:rgba(147,51,234,0.12);
+  --purple-b:rgba(147,51,234,0.22);
+  --green:   #16a34a;
+  --green-bg:#dcfce7;
+  --amber:   #d97706;
+  --amber-bg:#fef3c7;
+  --blue:    #2563eb;
+  --blue-bg: #dbeafe;
+  --red:     #dc2626;
+  --red-bg:  #fee2e2;
+  --teal:    #0d9488;
+  --teal-bg: #ccfbf1;
+  --text:    #111827;
+  --text2:   #374151;
+  --text3:   #6b7280;
+  --text4:   #9ca3af;
+  --mono:    'JetBrains Mono', monospace;
+  --sans:    'Nunito', sans-serif;
+  --r:       12px;
+  --shadow:  0 1px 4px rgba(100,100,200,0.08);
+  --shadow-md: 0 4px 20px rgba(100,100,200,0.12);
+  --shadow-lg: 0 8px 40px rgba(100,100,200,0.15);
 }
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%}
-body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow:hidden;display:flex;flex-direction:column}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;scroll-padding-top:68px;}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);}
 
-/* ── HEADER (mismo estilo que el Monitor CIMA) ── */
-header{background:linear-gradient(120deg,#1A3A5C,#0077cc);padding:20px 26px;border-bottom:none;display:flex;align-items:center;gap:14px;flex-wrap:wrap;flex-shrink:0}
-.logo-badge{width:40px;height:40px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
-header h1{font-size:20px;font-weight:700;letter-spacing:.2px;color:#fff}
-header p{font-size:12px;color:rgba(255,255,255,.85);margin-top:3px;font-family:var(--mono)}
-.status-pill{font-family:var(--mono);font-size:10px;padding:5px 12px;border-radius:20px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.14);color:#fff;display:flex;align-items:center;gap:6px;text-decoration:none;cursor:pointer}
-.status-pill.error{border-color:#ffb3b3;color:#ffdcdc}
-.status-pill.loading{border-color:rgba(255,255,255,.3);color:rgba(255,255,255,.75)}
-.status-pill::before{content:'';width:6px;height:6px;border-radius:50%;background:currentColor;animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-.user-badge{margin-left:auto;display:flex;align-items:center;gap:8px}
-.user-badge .who{font-family:var(--mono);font-size:10px;color:#fff;text-align:right;line-height:1.3}
-.user-badge .who b{display:block;font-size:11px}
-.user-badge .who span{opacity:.75}
-.admin-tag{background:#ffb020;color:#3a2400;padding:1px 6px;border-radius:4px;font-size:8px;font-weight:700;margin-left:5px;vertical-align:middle}
-.btn-logout{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:8px;padding:6px 12px;font-family:var(--mono);font-size:10px;font-weight:700;cursor:pointer}
-.btn-logout:hover{background:rgba(255,255,255,.24)}
+/* ── TOPBAR ── */
+.topbar{
+  position:sticky;top:0;z-index:300;
+  background:var(--white);border-bottom:1px solid var(--border);
+  box-shadow:var(--shadow-md);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 40px;height:60px;
+}
+.topbar-left{display:flex;align-items:center;gap:16px;}
+.topbar-logo{height:48px;}
+.topbar-sep{width:1px;height:28px;background:var(--border2);}
+.topbar-title{font-size:13px;font-weight:700;color:var(--text);}
+.topbar-sub{font-size:10px;color:var(--text3);font-family:var(--mono);margin-top:1px;}
+.topbar-nav{display:flex;gap:4px;}
+.topbar-nav a{
+  font-size:12px;font-weight:700;color:var(--text3);text-decoration:none;
+  padding:6px 12px;border-radius:8px;transition:all 0.15s;
+}
+.topbar-nav a:hover{background:var(--purple-l);color:var(--purple);}
+.topbar-badges{display:flex;gap:8px;align-items:center;}
+.badge-pill{
+  font-family:var(--mono);font-size:10px;font-weight:700;
+  padding:3px 10px;border-radius:20px;
+  border:1px solid var(--purple-b);background:var(--purple-m);color:var(--purple);
+}
+.badge-pill.green{border-color:rgba(22,163,74,0.3);background:var(--green-bg);color:var(--green);}
 
-/* ── AUTH OVERLAY (login / registro) ── */
-.gate-overlay{position:fixed;inset:0;background:rgba(15,25,40,.55);display:flex;align-items:center;justify-content:center;z-index:50;padding:20px}
-.gate-card{background:#fff;border-radius:14px;max-width:400px;width:100%;padding:28px 26px;box-shadow:0 20px 60px rgba(0,0,0,.25)}
-.gate-card h2{font-size:16px;font-weight:700;margin-bottom:6px}
-.gate-card p.sub{font-size:12px;color:var(--sub);margin-bottom:18px;line-height:1.5}
-.auth-tabs{display:flex;border:1px solid var(--border);border-radius:9px;overflow:hidden;margin-bottom:18px}
-.btn-google{width:100%;display:flex;align-items:center;justify-content:center;gap:9px;background:#fff;color:var(--text);border:1px solid var(--border);border-radius:8px;padding:10px;font-family:var(--sans);font-size:13px;font-weight:600;cursor:pointer;transition:background .2s}
-.btn-google:hover{background:var(--surface)}
-.btn-google svg{width:17px;height:17px;flex-shrink:0}
-.auth-divider{display:flex;align-items:center;gap:10px;margin:16px 0;font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
-.auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:var(--border)}
-.auth-tab{flex:1;background:var(--surface);border:none;padding:9px;font-family:var(--mono);font-size:10px;font-weight:700;color:var(--sub);cursor:pointer;letter-spacing:.5px}
-.auth-tab.active{background:var(--accent);color:#fff}
-.gate-field{margin-bottom:12px}
-.gate-field label{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:5px;font-family:var(--mono)}
-.gate-field input{width:100%;border:1px solid var(--border);border-radius:8px;padding:9px 12px;font-size:13px;font-family:var(--sans);outline:none}
-.gate-field input:focus{border-color:var(--accent)}
-.gate-submit{width:100%;background:var(--accent);color:#fff;border:none;border-radius:8px;padding:11px;font-size:13px;font-weight:700;cursor:pointer;margin-top:6px;transition:opacity .2s}
-.gate-submit:hover{opacity:.9}
-.gate-submit:disabled{opacity:.5;cursor:not-allowed}
-.gate-error{color:var(--danger);font-size:11px;margin-top:10px;display:none}
-.gate-ok{color:var(--safe);font-size:11px;margin-top:10px;display:none;line-height:1.5}
-.gate-hidden{display:none!important}
+/* ── HERO ── */
+.hero{
+  background:linear-gradient(135deg,#7c3aed 0%,#9333ea 50%,#a855f7 100%);
+  padding:28px 40px 24px;
+  display:flex;flex-direction:row;align-items:center;justify-content:space-between;
+  text-align:left;position:relative;overflow:hidden;
+}
+.hero-left{display:flex;flex-direction:column;align-items:flex-start;position:relative;z-index:1;flex:1;}
+.hero-iso{height:140px;width:140px;object-fit:contain;object-position:center;position:relative;z-index:1;flex-shrink:0;margin-left:40px;border-radius:50%;background:white;padding:8px;box-shadow:0 0 0 3px rgba(255,255,255,0.4),0 8px 32px rgba(0,0,0,0.35);}
+.hero::before{
+  content:'';position:absolute;inset:0;
+  background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+.hero-logo{height:44px;filter:brightness(0) invert(1);margin-bottom:20px;position:relative;z-index:1;}
+.hero-title{font-size:32px;font-weight:900;color:white;letter-spacing:-0.02em;line-height:1.15;position:relative;z-index:1;}
+.hero-subtitle{font-size:15px;color:rgba(255,255,255,0.8);margin-top:10px;font-weight:600;position:relative;z-index:1;}
+.hero-meta{
+  display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;justify-content:center;
+  position:relative;z-index:1;
+}
+.hero-meta span{
+  background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);
+  backdrop-filter:blur(8px);
+  color:white;font-size:11px;font-weight:700;
+  padding:5px 14px;border-radius:20px;font-family:var(--mono);
+}
 
-/* ── ROOT LAYOUT ── */
-.root{display:flex;flex-direction:column;flex:1;min-height:0;overflow:hidden}
+/* ── STATS STRIP ── */
+.stats-strip{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  background:var(--white);border-bottom:1px solid var(--border);
+  box-shadow:var(--shadow);
+}
+.stat-cell{
+  padding:18px 24px;display:flex;align-items:center;gap:14px;
+  border-right:1px solid var(--border);transition:background 0.15s;
+  cursor:default;
+}
+.stat-cell:last-child{border-right:none;}
+.stat-cell:hover{background:#faf8ff;}
+.stat-ico{
+  width:44px;height:44px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;
+}
+.s-purple{background:var(--purple-m);}
+.s-green{background:var(--green-bg);}
+.s-amber{background:var(--amber-bg);}
+.s-blue{background:var(--blue-bg);}
+.stat-num{font-size:28px;font-weight:900;color:var(--text);line-height:1;letter-spacing:-0.02em;}
+.stat-lbl{font-size:11px;color:var(--text3);margin-top:3px;font-weight:700;}
 
-/* ── NAV DE VISTAS (Alertas / Usuarios, solo admin) ── */
-.view-nav{display:flex;gap:0;padding:0 20px;border-bottom:1px solid var(--border);background:var(--surface);flex-shrink:0}
-.view-nav button{background:transparent;border:none;border-bottom:2px solid transparent;padding:10px 16px;font-family:var(--mono);font-size:10px;font-weight:700;color:var(--muted);cursor:pointer;letter-spacing:.5px}
-.view-nav button.active{color:var(--accent);border-bottom-color:var(--accent)}
+/* ── QUICK ACCESS STRIP ── */
+.qa-strip{
+  display:flex;gap:12px;padding:16px 40px;
+  background:var(--white);border-bottom:1px solid var(--border);
+  flex-wrap:wrap;
+}
+.qa-card{
+  display:flex;align-items:center;gap:10px;
+  background:var(--bg);border:1px solid var(--border);border-radius:10px;
+  padding:10px 16px;text-decoration:none;
+  transition:all 0.15s;flex:1;min-width:180px;
+}
+.qa-card:hover{background:var(--purple-l);border-color:var(--purple-b);box-shadow:var(--shadow-md);}
+.qa-card:hover .qa-label{color:var(--purple);}
+.qa-icon{font-size:20px;flex-shrink:0;}
+.qa-label{font-size:12px;font-weight:800;color:var(--text2);line-height:1.3;}
+.qa-sub{font-size:10px;color:var(--text4);font-family:var(--mono);font-weight:600;margin-top:2px;}
 
-/* ── TOOLBAR ── */
-.tbl-toolbar{display:flex;align-items:center;gap:10px;padding:12px 20px;border-bottom:1px solid var(--border);background:var(--surface);flex-shrink:0;flex-wrap:wrap}
-.tbl-count{font-family:var(--mono);font-size:11px;color:var(--sub);white-space:nowrap}
-.tbl-filter{flex:1;min-width:200px;border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:12px;outline:none;background:#fff;color:var(--text)}
-.tbl-filter:focus{border-color:var(--accent)}
-.urg-select{border:1px solid var(--border);border-radius:8px;padding:8px 10px;font-family:var(--mono);font-size:10px;font-weight:700;background:#fff;color:var(--sub);outline:none;cursor:pointer}
-.urg-select:focus{border-color:var(--accent)}
-.btn-export,.btn-refresh{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:8px 14px;font-family:var(--mono);font-size:10px;font-weight:700;cursor:pointer;white-space:nowrap;transition:opacity .2s}
-.btn-export:hover,.btn-refresh:hover{opacity:.85}
-.btn-refresh{background:#fff;color:var(--sub);border:1px solid var(--border)}
-.btn-refresh:hover{border-color:var(--accent);color:var(--accent);opacity:1}
+/* ── SECTION WRAPPER ── */
+.section{padding:48px 40px;}
+.section.alt{background:var(--white);}
+.section-header{margin-bottom:28px;}
+.section-eyebrow{
+  font-size:11px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;
+  color:var(--purple);font-family:var(--mono);margin-bottom:6px;
+}
+.section-title{font-size:22px;font-weight:900;color:var(--text);letter-spacing:-0.01em;}
+.section-desc{font-size:13px;color:var(--text3);margin-top:6px;font-weight:600;line-height:1.6;max-width:700px;}
+.divider-line{width:48px;height:3px;background:var(--purple);border-radius:2px;margin-top:10px;}
+.section-img-acc .section-header{cursor:pointer;user-select:none;position:relative;padding-right:28px;}
+.section-img-acc .section-header::after{content:"▾";position:absolute;right:0;top:14px;font-size:24px;color:var(--text4);transition:transform 0.25s;}
+.section-img-acc .section-header.open::after{transform:rotate(180deg);}
+.section-img-acc{padding:20px 40px !important;}
+.section-img-acc .section-header{margin-bottom:0;}
 
-/* ── TABLE ── */
-.tbl-scroll{flex:1;overflow:auto;min-height:0}
-#vistaAlertas,#vistaUsuarios{display:flex;flex-direction:column;flex:1;min-height:0;overflow:hidden}
-.tbl-scroll::-webkit-scrollbar{width:5px;height:5px}
-.tbl-scroll::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
-.alerts-table{width:100%;border-collapse:collapse;font-size:12px}
-.alerts-table th{padding:9px 12px;text-align:left;font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--sub);background:var(--surface);border-bottom:2px solid var(--border);white-space:nowrap;cursor:pointer;user-select:none;position:sticky;top:0;z-index:1}
-.alerts-table th:hover{color:var(--accent)}
-.alerts-table td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:top;color:var(--text)}
-.alerts-table tr.data-row{cursor:pointer;transition:background .15s}
-.alerts-table tr.data-row:hover{background:rgba(0,119,204,.04)}
-.cell-num{font-family:var(--mono);font-size:9px;color:var(--muted);display:block;margin-bottom:2px}
-.cell-fecha{font-family:var(--mono);font-size:10px;color:var(--sub);white-space:nowrap}
-.cell-resumen{max-width:260px;font-size:11px;color:var(--sub);line-height:1.5}
-.cell-titular{max-width:190px;font-size:11px;color:var(--text);line-height:1.4;font-weight:500}
-.cell-empty{color:var(--muted);font-size:11px}
-.tipo-badge{display:inline-block;padding:2px 7px;border-radius:4px;font-family:var(--mono);font-size:9px;font-weight:700;white-space:nowrap}
-.tipo-falsificados{background:rgba(224,0,48,.1);color:var(--danger);border:1px solid rgba(224,0,48,.2)}
-.tipo-calidad{background:rgba(0,153,106,.09);color:var(--safe);border:1px solid rgba(0,153,106,.2)}
-.tipo-seguridad{background:rgba(204,136,0,.1);color:var(--warn);border:1px solid rgba(204,136,0,.2)}
-.tipo-general{background:var(--surface);color:var(--sub);border:1px solid var(--border)}
-.urgencia-badge{display:inline-block;padding:2px 7px;border-radius:4px;font-family:var(--mono);font-size:9px;font-weight:700;white-space:nowrap}
-.urg-inmediata{background:rgba(224,0,48,.1);color:var(--danger);border:1px solid rgba(224,0,48,.2)}
-.urg-preventiva{background:rgba(204,136,0,.1);color:var(--warn);border:1px solid rgba(204,136,0,.2)}
-.urg-informativa{background:rgba(0,119,204,.08);color:var(--accent);border:1px solid rgba(0,119,204,.2)}
-.pdf-gh-link{display:inline-flex;align-items:center;gap:4px;font-family:var(--mono);font-size:9px;font-weight:700;color:#24292e;background:rgba(36,41,46,.07);border:1px solid rgba(36,41,46,.18);border-radius:4px;padding:2px 7px;text-decoration:none}
-.pdf-gh-link:hover{background:rgba(36,41,46,.14)}
-.digemid-link{display:inline-flex;align-items:center;gap:4px;font-family:var(--mono);font-size:9px;font-weight:700;color:var(--accent);background:rgba(0,119,204,.07);border:1px solid rgba(0,119,204,.2);border-radius:4px;padding:2px 7px;text-decoration:none}
-.digemid-link:hover{background:rgba(0,119,204,.14)}
-.accion-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 7px;border-radius:4px;font-family:var(--mono);font-size:9px;font-weight:700;white-space:nowrap}
-.accion-pendiente{background:var(--surface);color:var(--muted);border:1px solid var(--border)}
-.accion-lista{font-size:11px;font-weight:600;color:var(--text)}
-.rol-badge{display:inline-block;padding:2px 7px;border-radius:4px;font-family:var(--mono);font-size:9px;font-weight:700}
-.cima-toggle{position:relative;display:inline-block;width:36px;height:20px;flex-shrink:0}
-.cima-toggle input{opacity:0;width:0;height:0}
-.cima-toggle .slider{position:absolute;inset:0;background:var(--border);border-radius:20px;cursor:pointer;transition:background .2s}
-.cima-toggle .slider::before{content:'';position:absolute;width:16px;height:16px;left:2px;top:2px;background:#fff;border-radius:50%;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.3)}
-.cima-toggle input:checked + .slider{background:var(--safe)}
-.cima-toggle input:checked + .slider::before{transform:translateX(16px)}
-.cima-toggle input:disabled + .slider{opacity:.5;cursor:not-allowed}
-.btn-delete-user{background:rgba(224,0,48,.08);color:var(--danger);border:1px solid rgba(224,0,48,.25);border-radius:6px;padding:5px 10px;font-family:var(--mono);font-size:9px;font-weight:700;cursor:pointer;white-space:nowrap}
-.btn-delete-user:hover{background:rgba(224,0,48,.16)}
-.btn-delete-user:disabled{opacity:.4;cursor:not-allowed}
-.rol-admin{background:rgba(255,176,32,.15);color:#8a5200;border:1px solid rgba(255,176,32,.35)}
-.rol-usuario{background:var(--surface);color:var(--sub);border:1px solid var(--border)}
+/* ── IDENTIFICACION ── */
+.id-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.id-card{
+  background:var(--white);border:1px solid var(--border);border-radius:var(--r);
+  padding:20px 24px;box-shadow:var(--shadow);
+}
+.id-card.full{grid-column:1/-1;}
+.id-card-title{font-size:11px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:var(--purple);margin-bottom:12px;font-family:var(--mono);}
+.id-row{display:flex;gap:8px;padding:7px 0;border-bottom:1px solid var(--border);align-items:flex-start;}
+.id-row:last-child{border-bottom:none;}
+.id-key{font-size:12px;font-weight:700;color:var(--text2);min-width:140px;flex-shrink:0;}
+.id-val{font-size:12px;color:var(--text3);font-weight:600;}
+.id-val a{color:var(--purple);text-decoration:none;font-weight:700;}
+.id-val a:hover{text-decoration:underline;}
+.policy-box{
+  background:linear-gradient(135deg,var(--purple-l),#ede9fe);
+  border:1px solid var(--purple-b);border-radius:var(--r);
+  padding:24px 28px;position:relative;overflow:hidden;
+}
+.policy-box::before{
+  content:'"';position:absolute;top:-10px;left:16px;
+  font-size:100px;color:var(--purple);opacity:0.08;font-family:Georgia,serif;line-height:1;
+}
+.policy-title{font-size:13px;font-weight:800;color:var(--purple);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.05em;}
+.policy-text{font-size:13px;color:var(--text2);line-height:1.7;font-weight:600;}
+.policy-bullets{margin-top:10px;display:flex;flex-direction:column;gap:6px;}
+.policy-bullet{display:flex;gap:8px;align-items:flex-start;font-size:12px;color:var(--text3);font-weight:600;}
+.policy-bullet::before{content:"—";color:var(--purple);font-weight:800;flex-shrink:0;}
+.policy-sign{margin-top:14px;padding-top:12px;border-top:1px solid var(--purple-b);font-size:12px;font-weight:700;color:var(--text2);}
 
-/* ── EMPTY / ERROR STATES ── */
-.state-box{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:60px 24px;color:var(--muted);text-align:center}
-.state-icon{font-size:34px;opacity:.3}
-.state-box .retry{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:7px 16px;font-family:var(--mono);font-size:11px;font-weight:700;cursor:pointer}
+/* ── MISION VISION ── */
+.mv-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.mv-card{
+  background:var(--white);border:1px solid var(--border);border-radius:var(--r);
+  padding:24px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:10px;
+}
+.mv-icon{font-size:28px;}
+.mv-label{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;color:var(--purple);font-family:var(--mono);}
+.mv-text{font-size:13px;color:var(--text2);line-height:1.7;font-weight:600;}
 
-/* ── DASHBOARD (KPIs + gráficos, recalculado según filtros activos) ── */
-.dash-wrap{padding:16px 20px 4px;border-bottom:1px solid var(--border);background:var(--surface);flex-shrink:0}
-.dash-accordion{border:none}
-.dash-accordion summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:6px;padding-bottom:10px}
-.dash-accordion summary::-webkit-details-marker{display:none}
-.dash-accordion summary::before{content:'▸';display:inline-block;font-size:9px;color:var(--muted);transition:transform .15s}
-.dash-accordion[open] summary::before{transform:rotate(90deg)}
-.dash-accordion summary:hover{color:var(--accent)}
-.dash-hint{font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:0}
-.dash-body{padding-top:2px}
-.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
-.kpi{background:#fff;border:1px solid var(--border);border-radius:10px;padding:12px 14px}
-.kpi .n{font-family:var(--mono);font-size:24px;font-weight:700;color:var(--text);line-height:1}
-.kpi .n.danger{color:var(--danger)}
-.kpi .n.warn{color:var(--warn)}
-.kpi .n.accent{color:var(--accent)}
-.kpi .l{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-top:5px}
-.dash-grid{display:grid;grid-template-columns:1.1fr 1fr 0.9fr;gap:10px;margin-bottom:14px}
-.dash-panel{background:#fff;border:1px solid var(--border);border-radius:10px;padding:14px 16px}
-.dash-panel h3{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.6px;color:var(--sub);font-weight:700;margin-bottom:10px}
-.dash-panel-full{margin-bottom:14px}
-.dash-panel-full .bar-label{width:220px}
-.dash-panel-full .bar-fill{background:linear-gradient(90deg,rgba(167,139,250,.4),#a78bfa)}
-.bar-row{display:flex;align-items:center;gap:8px;margin-bottom:7px}
-.bar-label{width:108px;flex-shrink:0;font-size:11px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.bar-track{flex:1;background:var(--surface);border-radius:4px;height:16px;position:relative;overflow:hidden}
-.bar-fill{height:100%;border-radius:4px;display:flex;align-items:center;justify-content:flex-end;padding-right:6px;min-width:20px;background:linear-gradient(90deg,rgba(0,119,204,.35),var(--accent))}
-.bar-fill.inmediata{background:linear-gradient(90deg,rgba(224,0,48,.35),var(--danger))}
-.bar-fill.preventiva{background:linear-gradient(90deg,rgba(204,136,0,.35),var(--warn))}
-.bar-fill.informativa{background:linear-gradient(90deg,rgba(0,119,204,.35),var(--accent))}
-.bar-fill span{font-family:var(--mono);font-size:9px;color:#fff;font-weight:700}
-.dash-empty{color:var(--muted);font-size:11px;padding:14px 0;text-align:center}
-.donut-wrap{display:flex;align-items:center;gap:14px}
-.donut-legend{font-size:10.5px}
-.donut-legend .row{display:flex;align-items:center;gap:6px;margin-bottom:6px}
-.donut-legend .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.donut-legend b{font-family:var(--mono);color:var(--text);margin-left:auto;padding-left:10px}
-.lote-chip{display:inline-block;font-family:var(--mono);font-size:9.5px;background:var(--surface);border:1px solid var(--border);color:#8a5200;padding:1px 6px;border-radius:4px;margin:1px 3px 1px 0;white-space:nowrap}
-.cell-lote{max-width:150px}
-/* Columna N° Lote oculta de la tabla por pedido del cliente (el dato sigue
-   disponible para el buscador, el dashboard y el CSV — solo no se muestra
-   como columna visible). Quitar esta regla para volver a mostrarla. */
-.col-lote{display:none}
+/* ── MAPA DE PROCESOS ── */
+.img-frame{
+  background:var(--white);border:1px solid var(--border);border-radius:var(--r);
+  padding:20px;box-shadow:var(--shadow-md);overflow:hidden;
+}
+.img-frame img{width:70%;height:auto;display:block;border-radius:8px;}
+.img-caption{font-size:11px;color:var(--text4);text-align:center;margin-top:10px;font-style:italic;font-weight:600;}
 
-/* Columna "Editar" — solo visible cuando el usuario logueado es admin
-   (se activa agregando la clase .is-admin a #alertsTable en onLoggedIn) */
-.col-admin{display:none}
-#alertsTable.is-admin .col-admin{display:table-cell}
-.btn-edit-alerta{background:#fff;color:var(--accent);border:1px solid var(--border);border-radius:6px;padding:5px 10px;font-family:var(--mono);font-size:9px;font-weight:700;cursor:pointer;white-space:nowrap}
-.btn-edit-alerta:hover{border-color:var(--accent);background:rgba(0,119,204,.06)}
+/* ── OBJETIVOS ── */
+.obj-img{
+  background:var(--white);border:1px solid var(--border);border-radius:var(--r);
+  padding:20px;box-shadow:var(--shadow-md);
+}
+.obj-img img{width: 50%;height:auto;display:block;border-radius:8px;}
 
-/* ── MODAL DE EDICIÓN MANUAL (solo admin) ── */
-.edit-overlay{position:fixed;inset:0;background:rgba(15,25,40,.55);display:flex;align-items:center;justify-content:center;z-index:70;padding:20px}
-.edit-overlay.gate-hidden{display:none}
-.edit-card{background:#fff;border-radius:14px;max-width:560px;width:100%;max-height:88vh;overflow-y:auto;padding:26px 28px;box-shadow:0 20px 60px rgba(0,0,0,.3)}
-.edit-card h2{font-size:16px;font-weight:700;margin-bottom:4px}
-.edit-card .sub{font-size:11.5px;color:var(--sub);margin-bottom:18px;line-height:1.5}
-.edit-field{margin-bottom:14px}
-.edit-field label{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:5px;font-family:var(--mono)}
-.edit-field input,.edit-field select,.edit-field textarea{width:100%;border:1px solid var(--border);border-radius:8px;padding:9px 12px;font-size:13px;font-family:var(--sans);outline:none;background:#fff;color:var(--text)}
-.edit-field input:focus,.edit-field select:focus,.edit-field textarea:focus{border-color:var(--accent)}
-.edit-field textarea{resize:vertical;min-height:56px;font-family:var(--sans)}
-.edit-actions{display:flex;gap:10px;margin-top:8px}
-.edit-actions button{flex:1;border-radius:8px;padding:10px;font-size:13px;font-weight:700;cursor:pointer;border:1px solid var(--border)}
-.btn-save-edit{background:var(--accent);color:#fff;border-color:var(--accent)}
-.btn-save-edit:hover{opacity:.9}
-.btn-save-edit:disabled{opacity:.5;cursor:not-allowed}
-.btn-cancel-edit{background:#fff;color:var(--sub)}
-.btn-cancel-edit:hover{border-color:var(--sub)}
-.edit-error{color:var(--danger);font-size:11px;margin-top:10px;display:none}
+/* ── INDICADORES ── */
+.ind-img{
+  background:var(--white);border:1px solid var(--border);border-radius:var(--r);
+  padding:20px;box-shadow:var(--shadow-md);overflow-x:auto;
+}
+.ind-img img{width:100%;height:auto;display:block;border-radius:6px;min-width:600px;}
 
-/* ── BOTÓN FLOTANTE DE WHATSAPP ── */
-.wa-float{position:fixed;bottom:22px;right:22px;width:58px;height:58px;background:#25D366;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(0,0,0,.25);z-index:60;text-decoration:none;transition:transform .2s,box-shadow .2s}
-.wa-float:hover{transform:scale(1.08);box-shadow:0 6px 20px rgba(0,0,0,.32)}
-.wa-float svg{width:30px;height:30px}
-.wa-float::before{content:'';position:absolute;inset:0;border-radius:50%;background:#25D366;animation:wa-pulse 2.2s infinite}
-@keyframes wa-pulse{0%{transform:scale(1);opacity:.55}100%{transform:scale(1.7);opacity:0}}
+/* ── DOCUMENTOS ── */
+.main-layout{display:flex;gap:20px;}
+.sidebar{
+  width:240px;min-width:240px;
+  background:var(--white);border:1px solid var(--border);border-radius:var(--r);
+  padding:16px 0;box-shadow:var(--shadow);
+  height:fit-content;position:sticky;top:76px;
+}
+.sb-lbl{font-size:10px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:var(--text4);padding:0 14px 5px;font-family:var(--mono);}
+.sb-div{height:1px;background:var(--border);margin:8px 14px 10px;}
+.nav-item{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:7px 14px;cursor:pointer;border-left:2px solid transparent;
+  transition:background 0.12s;
+}
+.nav-item:hover{background:var(--bg);}
+.nav-item.active{background:var(--purple-m);border-left-color:var(--purple);}
+.nav-left{display:flex;align-items:center;gap:8px;}
+.nav-icon{font-size:12px;width:16px;text-align:center;}
+.nav-label{font-size:12px;color:var(--text2);font-weight:700;}
+.nav-item.active .nav-label{color:var(--purple);}
+.nav-cnt{
+  font-family:var(--mono);font-size:10px;font-weight:700;
+  background:var(--bg2);color:var(--text3);padding:1px 6px;border-radius:10px;
+}
+.nav-item.active .nav-cnt{background:var(--purple-m);color:var(--purple);border:1px solid var(--purple-b);}
+
+.docs-area{flex:1;min-width:0;}
+.docs-controls{
+  background:var(--white);border:1px solid var(--border);border-radius:var(--r);
+  padding:12px 16px;display:flex;gap:10px;align-items:center;
+  margin-bottom:12px;box-shadow:var(--shadow);flex-wrap:wrap;
+}
+.sw{position:relative;flex:1;min-width:180px;}
+.si{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--text4);font-size:12px;}
+.search-input{
+  width:100%;background:var(--bg);border:1px solid var(--border2);
+  border-radius:8px;padding:8px 12px 8px 32px;
+  color:var(--text);font-size:12px;font-family:var(--sans);font-weight:600;
+  outline:none;transition:border 0.15s,box-shadow 0.15s;
+}
+.search-input:focus{border-color:var(--purple);box-shadow:0 0 0 3px var(--purple-m);}
+.search-input::placeholder{color:var(--text4);}
+.fsel{
+  background:var(--bg);border:1px solid var(--border2);border-radius:8px;
+  padding:8px 10px;color:var(--text2);font-size:12px;font-family:var(--sans);
+  font-weight:600;outline:none;cursor:pointer;
+}
+.btn-exp{
+  background:var(--bg);border:1px solid var(--border2);border-radius:8px;
+  padding:8px 12px;color:var(--text2);font-size:11px;font-family:var(--sans);
+  font-weight:700;cursor:pointer;transition:all 0.15s;white-space:nowrap;
+}
+.btn-exp:hover{border-color:var(--purple);color:var(--purple);background:var(--purple-l);}
+.rcnt{font-size:11px;color:var(--text3);font-family:var(--mono);white-space:nowrap;font-weight:600;}
+
+.dept-pills{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px;}
+.dp{
+  padding:3px 10px;border-radius:20px;font-size:11px;cursor:pointer;
+  background:var(--white);color:var(--text3);border:1px solid var(--border2);
+  transition:all 0.15s;white-space:nowrap;font-weight:700;
+}
+.dp:hover{border-color:var(--purple);color:var(--purple);}
+.dp.active{background:var(--purple-m);color:var(--purple);border-color:var(--purple-b);}
+
+/* ACCORDION */
+.accordion{
+  margin-bottom:8px;border-radius:10px;overflow:hidden;
+  border:1px solid var(--border);background:var(--white);box-shadow:var(--shadow);
+}
+.acc-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 16px;cursor:pointer;background:var(--white);
+  transition:background 0.13s;user-select:none;
+}
+.acc-header:hover{background:#faf8ff;}
+.acc-header.open{border-bottom:1px solid var(--border);}
+.acc-left{display:flex;align-items:center;gap:10px;}
+.acc-ico{
+  width:34px;height:34px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:15px;flex-shrink:0;border:1px solid transparent;
+}
+.acc-title{font-size:13px;font-weight:800;color:var(--text);}
+.acc-sub{font-size:10px;color:var(--text3);margin-top:1px;font-family:var(--mono);font-weight:500;}
+.acc-right{display:flex;align-items:center;gap:7px;}
+.acc-cnt{
+  font-family:var(--mono);font-size:11px;font-weight:700;
+  color:var(--purple);background:var(--purple-m);
+  border:1px solid var(--purple-b);padding:2px 9px;border-radius:20px;
+}
+.acc-link{font-size:10px;color:var(--green);background:var(--green-bg);padding:2px 7px;border-radius:20px;font-family:var(--mono);font-weight:700;}
+.acc-chev{color:var(--text4);font-size:10px;transition:transform 0.25s;}
+.acc-header.open .acc-chev{transform:rotate(180deg);}
+.acc-body{max-height:0;overflow:hidden;transition:max-height 0.35s cubic-bezier(0.4,0,0.2,1);}
+.acc-body.open{max-height:6000px;}
+
+/* TABLE */
+.twrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;}
+thead tr{background:var(--bg);}
+th{
+  padding:8px 12px;text-align:left;
+  font-size:9px;font-weight:800;letter-spacing:0.08em;
+  text-transform:uppercase;color:var(--text3);
+  border-bottom:1px solid var(--border);white-space:nowrap;
+}
+tbody tr{border-bottom:1px solid var(--border);transition:background 0.1s;}
+tbody tr:last-child{border-bottom:none;}
+tbody tr:hover{background:#faf8ff;}
+td{padding:9px 12px;font-size:12px;color:var(--text2);vertical-align:middle;font-weight:600;}
+td.code{font-family:var(--mono);font-size:10px;color:var(--purple);font-weight:700;white-space:nowrap;}
+td.nombre{color:var(--text);font-size:12px;max-width:280px;font-weight:700;}
+td.depto{font-size:10px;color:var(--text3);white-space:nowrap;font-weight:700;}
+.bdg{display:inline-flex;align-items:center;padding:2px 7px;border-radius:20px;font-size:9px;font-weight:800;white-space:nowrap;}
+.bdg-g{background:var(--green-bg);color:var(--green);}
+.bdg-x{background:var(--bg2);color:var(--text3);border:1px solid var(--border2);}
+.dlink{
+  display:inline-flex;align-items:center;gap:3px;
+  color:var(--purple);font-size:10px;text-decoration:none;font-weight:800;
+  padding:3px 8px;border-radius:6px;
+  background:var(--purple-m);border:1px solid var(--purple-b);
+  transition:all 0.13s;white-space:nowrap;
+}
+.dlink:hover{background:rgba(147,51,234,0.18);}
+.nolink{font-size:10px;color:var(--text4);font-family:var(--mono);font-weight:500;}
+.acc-empty{padding:24px;text-align:center;color:var(--text3);font-size:12px;font-weight:600;}
+
+/* Icon themes */
+.t-P  {background:#dbeafe;border-color:#bfdbfe;}
+.t-M  {background:#ede9fe;border-color:#ddd6fe;}
+.t-PE {background:#ffedd5;border-color:#fed7aa;}
+.t-PO {background:#ccfbf1;border-color:#99f6e4;}
+.t-PS {background:#fef3c7;border-color:#fde68a;}
+.t-INS{background:#fce7f3;border-color:#fbcfe8;}
+.t-FT {background:#dcfce7;border-color:#bbf7d0;}
+.t-DI {background:#e0e7ff;border-color:#c7d2fe;}
+.t-DE {background:#fee2e2;border-color:#fecaca;}
+
+/* ── FOOTER ── */
+.footer{
+  background:var(--white);border-top:1px solid var(--border);
+  padding:20px 40px;display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:12px;
+}
+.footer-left img{height:24px;filter:grayscale(1);opacity:0.5;}
+.footer-right{font-size:11px;color:var(--text4);font-weight:600;text-align:right;}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+
+@media(max-width:900px){
+  .id-grid,.mv-grid{grid-template-columns:1fr;}
+  .id-card.full{grid-column:auto;}
+  .main-layout{flex-direction:column;}
+  .sidebar{position:static;width:100%;}
+  .stats-strip{grid-template-columns:repeat(2,1fr);}
+  .section{padding:32px 20px;}
+  .topbar{padding:0 20px;}
+  .topbar-nav{display:none;}
+  .hero{padding:40px 20px 32px;}
+  .hero-title{font-size:24px;}
+  .footer{padding:16px 20px;}
+}
 </style>
 </head>
 <body>
 
-<header>
-  <div class="logo-badge">💊</div>
-  <div>
-    <h1>ConkoSafe IA — Alertas DIGEMID</h1>
-    <p>Monitor de alertas sanitarias · Conkomerco Farmacovigilancia</p>
+<!-- TOPBAR -->
+<header class="topbar">
+  <div class="topbar-left">
+    <img loading="lazy" decoding="async" class="topbar-logo" src="data:image/jpeg;base64,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" alt="Conkomerco">
+    <div class="topbar-sep"></div>
+    <div>
+      <div class="topbar-title">Farmacovigilancia y Tecnovigilancia</div>
+      <div class="topbar-sub">Lista Maestra · FT-01 · v04ES</div>
+    </div>
   </div>
-  <a href="cima/" class="status-pill gate-hidden" id="cimaLink" title="Monitor CIMA - Ficha Técnica y Prospecto (AEMPS)">CIMA: Ficha Técnica / Prospecto →</a>
-  <a href="pavs/" class="status-pill gate-hidden" id="pavsLink" title="Monitor PAVS - Alertas de Países de Alta Vigilancia Sanitaria">PAVS: Países de Alta Vigilancia →</a>
-  <a href="aems/" class="status-pill gate-hidden" id="aemsLink" title="Monitor FDA AEMS - Señales de Riesgo (FDA)">FDA AEMS: Señales de Riesgo →</a>
-  <div class="user-badge gate-hidden" id="userBadge">
-    <span class="status-pill loading" id="statusPill">Cargando…</span>
-    <div class="who" id="whoText"></div>
-    <button class="btn-logout" onclick="cerrarSesion()">Salir</button>
+  <nav class="topbar-nav">
+    <a href="#organizacion">Organización</a>
+    <a href="#procesos" onclick="event.preventDefault();document.getElementById('procesos').scrollIntoView({behavior:'smooth',block:'start'});">Procesos</a>
+    <a href="#documentos">Documentos</a>
+  </nav>
+  <div class="topbar-badges">
+    <span class="badge-pill">v04ES</span>
+    <span class="badge-pill green">ISO 9001:2015</span>
   </div>
 </header>
 
-<!-- ── AUTH OVERLAY: LOGIN / REGISTRO (Supabase Auth) ── -->
-<div class="gate-overlay" id="gateOverlay">
-  <div class="gate-card">
-    <button type="button" class="btn-google" onclick="iniciarSesionGoogle()">
-      <svg viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.9 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 6.1 29.5 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20c11 0 19.1-8 19.1-19.5 0-1.3-.1-2.7-.3-4z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 15.9 18.9 13 24 13c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 6.1 29.5 4 24 4c-7.7 0-14.3 4.3-17.7 10.7z"/><path fill="#4CAF50" d="M24 44c5.3 0 10.2-2 13.9-5.4l-6.4-5.4C29.4 34.9 26.8 36 24 36c-5.3 0-9.7-3.1-11.3-7.5l-6.5 5C9.6 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.3 4.3-4.2 5.7l6.4 5.4C41.5 35.9 44 30.3 44 24c0-1.3-.1-2.7-.4-4z"/></svg>
-      Continuar con Google
-    </button>
-    <div class="auth-divider">o</div>
-    <div class="auth-tabs">
-      <button class="auth-tab active" id="tabLogin" onclick="cambiarTabAuth('login')">Iniciar sesión</button>
-      <button class="auth-tab" id="tabSignup" onclick="cambiarTabAuth('signup')">Registrarme</button>
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left">
+    <div class="hero-title" style="font-size:30px;">Sistema de Gestión de Calidad</div>
+    <div class="hero-meta">
+      <span>ISO 9001:2015</span>
+      <span>GAMP5-cat3</span>
+      <span>ALCOA+</span>
     </div>
+  </div>
+  <img loading="lazy" decoding="async" class="hero-iso" src="images/iso_certificado.jpg" alt="ISO 9001 Certified">
+</section>
 
-
-    <!-- LOGIN -->
-    <form id="loginForm" onsubmit="return manejarLogin(event)">
-      <h2>🔒 Acceso al monitor</h2>
-      <p class="sub">Ingresa con tu correo y contraseña registrados.</p>
-      <div class="gate-field">
-        <label>Correo electrónico</label>
-        <input type="email" id="loginEmail" required autocomplete="email" placeholder="nombre@empresa.com">
-      </div>
-      <div class="gate-field">
-        <label>Contraseña</label>
-        <input type="password" id="loginPassword" required autocomplete="current-password" placeholder="••••••••">
-      </div>
-      <button type="submit" class="gate-submit" id="loginBtn">Ingresar</button>
-      <div class="gate-error" id="loginError"></div>
-    </form>
-
-    <!-- SIGNUP -->
-    <form id="signupForm" class="gate-hidden" onsubmit="return manejarSignup(event)">
-      <h2>Crear cuenta</h2>
-      <p class="sub">Regístrate para acceder al dashboard de Alertas DIGEMID.</p>
-      <div class="gate-field">
-        <label>Nombre completo</label>
-        <input type="text" id="signupNombre" required autocomplete="name" placeholder="Ej: Russbelt Aliaga">
-      </div>
-      <div class="gate-field">
-        <label>Correo electrónico</label>
-        <input type="email" id="signupEmail" required autocomplete="email" placeholder="nombre@empresa.com">
-      </div>
-      <div class="gate-field">
-        <label>Empresa (opcional)</label>
-        <input type="text" id="signupEmpresa" autocomplete="organization" placeholder="Ej: Conkomerco">
-      </div>
-      <div class="gate-field">
-        <label>Contraseña</label>
-        <input type="password" id="signupPassword" required minlength="6" autocomplete="new-password" placeholder="Mínimo 6 caracteres">
-      </div>
-      <button type="submit" class="gate-submit" id="signupBtn">Crear cuenta</button>
-      <div class="gate-error" id="signupError"></div>
-      <div class="gate-ok" id="signupOk"></div>
-    </form>
+<!-- STATS -->
+<div class="stats-strip">
+  <div class="stat-cell">
+    <div class="stat-ico s-purple">📄</div>
+    <div><div class="stat-num">234</div><div class="stat-lbl">Total documentos SGC</div></div>
+  </div>
+  <div class="stat-cell">
+    <div class="stat-ico s-green">🔗</div>
+    <div><div class="stat-num">162</div><div class="stat-lbl">Con enlace Drive activo</div></div>
+  </div>
+  <div class="stat-cell">
+    <div class="stat-ico s-amber">🗂️</div>
+    <div><div class="stat-num">9</div><div class="stat-lbl">Categorías documentarias</div></div>
+  </div>
+  <div class="stat-cell">
+    <div class="stat-ico s-blue">🏢</div>
+    <div><div class="stat-num">7</div><div class="stat-lbl">Departamentos</div></div>
   </div>
 </div>
 
-<div class="root gate-hidden" id="rootApp">
-
-  <!-- Nav de vistas (Usuarios solo visible si es admin) -->
-  <div class="view-nav">
-    <button class="active" id="navAlertas" onclick="cambiarVista('alertas')">📋 Alertas</button>
-    <button class="gate-hidden" id="navUsuarios" onclick="cambiarVista('usuarios')">👥 Usuarios</button>
-  </div>
-
-  <!-- ── VISTA: ALERTAS ── -->
-  <div id="vistaAlertas">
-    <div class="tbl-toolbar">
-      <span class="tbl-count" id="tblCount">— alertas</span>
-      <input class="tbl-filter" id="tblSearch"
-        placeholder="🔍 Filtrar por título, producto o tipo..." oninput="filterTable()">
-      <select class="urg-select" id="urgFilter" onchange="filterTable()">
-        <option value="">Todas las urgencias</option>
-        <option value="INMEDIATA">🔴 Inmediata</option>
-        <option value="PREVENTIVA">🟡 Preventiva</option>
-        <option value="INFORMATIVA">🔵 Informativa</option>
-      </select>
-      <select class="urg-select" id="tipoFilter" onchange="filterTable()">
-        <option value="">Todos los tipos</option>
-      </select>
-      <select class="urg-select" id="limitSelect" onchange="cargarAlertas()">
-        <option value="25">Mostrar 25</option>
-        <option value="50" selected>Mostrar 50</option>
-        <option value="100">Mostrar 100</option>
-        <option value="250">Mostrar 250</option>
-        <option value="0">Mostrar todas</option>
-      </select>
-      <button class="btn-refresh" onclick="cargarAlertas()">↻ Actualizar</button>
-      <button class="btn-export" onclick="exportarCSV()">↓ Exportar CSV</button>
+<!-- ACCESOS RÁPIDOS -->
+<div class="qa-strip">
+  <a class="qa-card" href="https://script.google.com/a/macros/conkomerco.com/s/AKfycbxqw31w1aDxt_4dGARFPSX3eQYQvA6dh6KtcQdSIgGUoa5r4CIFBnGa7OiDx9TzDQig/exec" target="_blank" rel="noopener">
+    <div class="qa-icon">📝</div>
+    <div>
+      <div class="qa-label">Generador de Minutas</div>
+      <div class="qa-sub">Apps Script</div>
     </div>
+  </a>
+  <a class="qa-card" href="https://docs.google.com/spreadsheets/d/1VzF4Bgh9Bgrbmkra6X6o0EFqXgCUBU6Tg3T168tt4Sw/edit?usp=sharing" target="_blank" rel="noopener">
+    <div class="qa-icon">📋</div>
+    <div>
+      <div class="qa-label">FT-132 Auditorias</div>
+      <div class="qa-sub">Google</div>
+    </div>
+  </a>
+  <a class="qa-card" href="https://docs.google.com/spreadsheets/d/1CZJQQembLpW3L77Y2pRAtOgGgUqS0H6q97MLvuxqqhk/edit?usp=sharing" target="_blank" rel="noopener">
+    <div class="qa-icon">📊</div>
+    <div>
+      <div class="qa-label">FT-09 Matriz SNC y Mejora Continua</div>
+      <div class="qa-sub">Google</div>
+    </div>
+  </a>
+  <a class="qa-card" href="generador-plantilla-gmail.html" target="_blank" rel="noopener">
+    <div class="qa-icon">✉️</div>
+    <div>
+      <div class="qa-label">Generador plantilla Gmail</div>
+      <div class="qa-sub">HTML</div>
+    </div>
+  </a>
+</div>
 
-    <div class="dash-wrap">
-      <details class="dash-accordion" open>
-        <summary class="dash-hint">📊 Resumen del filtro activo — se recalcula con la búsqueda y los selectores de arriba</summary>
-        <div class="dash-body">
-          <div class="kpis">
-            <div class="kpi"><div class="n" id="kpiTotal">0</div><div class="l">Alertas en el filtro</div></div>
-            <div class="kpi"><div class="n warn" id="kpiLote">0</div><div class="l">Con lote identificado</div></div>
-            <div class="kpi"><div class="n danger" id="kpiInmediata">0</div><div class="l">Urgencia inmediata</div></div>
-            <div class="kpi"><div class="n accent" id="kpiTipoTop">—</div><div class="l">Tipo más frecuente</div></div>
-          </div>
-          <div class="dash-grid">
-            <div class="dash-panel">
-              <h3>Por urgencia</h3>
-              <div id="chartUrgencia"></div>
-            </div>
-            <div class="dash-panel">
-              <h3>Tipos de alerta más frecuentes</h3>
-              <div id="chartTipo"></div>
-            </div>
-            <div class="dash-panel">
-              <h3>Con vs. sin lote reportado</h3>
-              <div class="donut-wrap">
-                <svg id="donutLote" width="88" height="88" viewBox="0 0 88 88"></svg>
-                <div class="donut-legend" id="donutLoteLegend"></div>
-              </div>
-            </div>
-          </div>
-          <div class="dash-panel dash-panel-full">
-            <h3>Productos más falsificados (por Nº de alertas) — según el filtro de tipo de alerta activo</h3>
-            <div id="chartProducto"></div>
-          </div>
+<!-- ORGANIZACIÓN -->
+<section class="section alt" id="organizacion">
+  <div class="section-header">
+    <div class="section-eyebrow">01 · Presentación</div>
+    <div class="section-title"style="font-size:14px;">Organización</div>
+    <div class="divider-line"></div>
+  </div>
+  <div class="id-grid">
+    <div class="id-card full">
+      <div class="policy-box">
+        <div class="policy-title">Política de Calidad</div>
+        <div class="policy-text">Somos una compañía enfocada en la <strong>Seguridad del Paciente</strong> y satisfacción de nuestros clientes; brindamos servicios especializados de Farmacovigilancia y Tecnovigilancia en cumplimiento del marco regulatorio y estándares nacionales e internacionales.</div>
+        <div class="policy-bullets">
+          <div class="policy-bullet">Promovemos el desarrollo profesional y la integración de nuestros colaboradores.</div>
+          <div class="policy-bullet">Empleamos las mejores prácticas de Vigilancia Sanitaria, garantizando la confiabilidad de nuestros servicios.</div>
+          <div class="policy-bullet">Desarrollamos la mejora continua de nuestros procesos estratégicos, operativos y de soporte.</div>
+          <div class="policy-bullet">Cumplimos con los requisitos legales aplicables y mantenemos un SGC basado en ISO 9001:2015.</div>
         </div>
-      </details>
-    </div>
-
-    <div class="tbl-scroll">
-      <table class="alerts-table" id="alertsTable">
-        <thead>
-          <tr>
-            <th onclick="sortTable('titulo')">Título</th>
-            <th onclick="sortTable('producto')">Producto</th>
-            <th onclick="sortTable('titular_registro_sanitario')">Titular impactado</th>
-            <th class="col-lote" onclick="sortTable('numero_lote')">N° Lote</th>
-            <th onclick="sortTable('tipo_alerta')">Tipo de Alerta</th>
-            <th onclick="sortTable('urgencia')">Urgencia</th>
-            <th onclick="sortTable('accion_principal')">Acción Principal</th>
-            <th>Resumen IA</th>
-            <th onclick="sortTable('fecha_publicacion')">Fecha Pub.</th>
-            <th>DIGEMID</th>
-            <th class="col-admin">Editar</th>
-          </tr>
-        </thead>
-        <tbody id="alertsTbody"></tbody>
-      </table>
+        <div class="policy-sign">— July Máita · Gerente General</div>
+      </div>
     </div>
   </div>
+</section>
 
-  <!-- ── VISTA: USUARIOS (solo admin) ── -->
-  <div id="vistaUsuarios" class="gate-hidden">
-    <div class="tbl-toolbar">
-      <span class="tbl-count" id="usrCount">— usuarios</span>
-      <button class="btn-refresh" onclick="cargarUsuarios()">↻ Actualizar</button>
-    </div>
-    <div class="tbl-scroll">
-      <table class="alerts-table" id="usersTable">
-        <thead>
-          <tr>
-            <th>Nombre</th>
-            <th>Correo</th>
-            <th>Empresa</th>
-            <th>Rol</th>
-            <th>Acceso CIMA</th>
-            <th>Registrado</th>
-            <th>Último acceso</th>
-            <th>Acción</th>
-          </tr>
-        </thead>
-        <tbody id="usersTbody"></tbody>
-      </table>
-    </div>
+<!-- MAPA DE PROCESOS -->
+<section class="section section-img-acc" id="procesos">
+  <div class="section-header" onclick="toggleImgSection('procesos')">
+    <div class="section-eyebrow">02 · SGC</div>
+    <div class="section-title" style="font-size:14px;">Mapa de Procesos</div>
+    <div class="section-desc">El SGC de Conkomerco S.A.C. está diseñado con un enfoque basado en procesos y ciclo de mejora anual, alineado a la norma ISO 9001:2015.</div>
+    <div class="divider-line"></div>
+  </div>
+  <div class="acc-body" id="imgbody-procesos">
+  <div class="img-frame">
+    <img decoding="async" data-src="images/mapa-procesos.jpg" alt="Mapa de Procesos Conkomerco SAC" style="width:70%;height:auto;display:block;border-radius:8px;">
+    <div class="img-caption" style="text-align:left;">Gráfico 1. Mapa de Procesos de Conkomerco S.A.C. · Fuente: M-02 Mapa de Procesos y Caracterización</div>
+  </div>
+  </div>
+</section>
+
+<!-- OBJETIVOS -->
+<section class="section alt section-img-acc" id="objetivos">
+  <div class="section-header" onclick="toggleImgSection('objetivos')">
+    <div class="section-eyebrow">03 · Planificación</div>
+    <div class="section-title" style="font-size:14px;">Objetivos de Calidad</div>
+    <div class="section-desc">La Gerencia General ha definido los objetivos estratégicos y operativos del SGC, alineados a la Política de Calidad, gestionados a través del FT-15 Cuadro de Control de Objetivos e Indicadores.</div>
+    <div class="divider-line"></div>
+  </div>
+  <div class="acc-body" id="imgbody-objetivos">
+  <div class="obj-img">
+    <img decoding="async" data-src="images/objetivos.jpg" alt="Objetivos de Calidad SGC" style="width:50%;height:auto;display:block;border-radius:8px;">
+    <div class="img-caption" style="text-align:left;font-size:11px;color:var(--text4);margin-top:10px;font-style:italic;font-weight:600;">Tabla de Objetivos Estratégicos y Operativos · Fuente: FT-15 Cuadro de Control de Objetivos e Indicadores del SGC</div>
+  </div>
+  </div>
+</section>
+
+<!-- INDICADORES -->
+<section class="section section-img-acc" id="indicadores">
+  <div class="section-header" onclick="toggleImgSection('indicadores')">
+    <div class="section-eyebrow">04 · Evaluación</div>
+    <div class="section-title" style="font-size:14px;">Indicadores del SGC</div>
+    <div class="section-desc">Los indicadores permiten el seguimiento, medición y análisis del desempeño de los procesos, gestionados según el procedimiento PR-E-05.</div>
+    <div class="divider-line"></div>
+  </div>
+  <div class="acc-body" id="imgbody-indicadores">
+  <div class="ind-img">
+    <img decoding="async" data-src="images/indicadores.jpg" alt="Indicadores del SGC" style="width:100%;height:auto;display:block;border-radius:6px;">
+    <div class="img-caption" style="text-align:left;font-size:11px;color:var(--text4);margin-top:10px;font-style:italic;font-weight:600;">12 Indicadores del Sistema de Gestión de Calidad · Fuente: FT-15 Cuadro de Control de Objetivos e Indicadores del SGC</div>
+  </div>
+  </div>
+</section>
+
+<!-- DOCUMENTOS -->
+<section class="section alt" id="documentos">
+  <div class="section-header">
+    <div class="section-eyebrow">05 · Repositorio</div>
+    <div class="section-title"style="font-size:14px;">Lista Maestra de Documentos</div>
+    <div class="section-desc">234 documentos del SGC organizados por categoría. Accede directamente a Google Drive desde cada registro.</div>
+    <div class="divider-line"></div>
   </div>
 
-</div><!-- /root -->
+  <div class="main-layout">
+    <!-- Sidebar -->
+    <nav class="sidebar" id="repo-sidebar">
+      <div class="sb-lbl">Categorías</div>
+      <div class="nav-item active" id="nav-todos" onclick="setSF('todos')">
+        <div class="nav-left"><span class="nav-icon">📋</span><span class="nav-label">Todos los documentos</span></div>
+        <span class="nav-cnt" id="sb-cnt-todos">234</span>
+      </div>
+      <div class="sb-div"></div>
+      <div class="sb-lbl">Tipos de documento</div>
+      <div class="nav-item" id="nav-P"    onclick="setSF('P')">   <div class="nav-left"><span class="nav-icon">🗺️</span><span class="nav-label">Planes</span></div>                 <span class="nav-cnt">5</span></div>
+      <div class="nav-item" id="nav-M"    onclick="setSF('M')">   <div class="nav-left"><span class="nav-icon">📘</span><span class="nav-label">Manuales</span></div>                <span class="nav-cnt">3</span></div>
+      <div class="nav-item" id="nav-PR-E" onclick="setSF('PR-E')"><div class="nav-left"><span class="nav-icon">♟️</span><span class="nav-label">Proced. Estratégicos</span></div>   <span class="nav-cnt">5</span></div>
+      <div class="nav-item" id="nav-PR-O" onclick="setSF('PR-O')"><div class="nav-left"><span class="nav-icon">⚙️</span><span class="nav-label">Proced. Operativos</span></div>     <span class="nav-cnt">7</span></div>
+      <div class="nav-item" id="nav-PR-S" onclick="setSF('PR-S')"><div class="nav-left"><span class="nav-icon">🔧</span><span class="nav-label">Proced. de Soporte</span></div>     <span class="nav-cnt">3</span></div>
+      <div class="nav-item" id="nav-INS"  onclick="setSF('INS')"> <div class="nav-left"><span class="nav-icon">📝</span><span class="nav-label">Instructivos</span></div>           <span class="nav-cnt">3</span></div>
+      <div class="nav-item" id="nav-FT"   onclick="setSF('FT')">  <div class="nav-left"><span class="nav-icon">🗂️</span><span class="nav-label">Formatos</span></div>              <span class="nav-cnt">143</span></div>
+      <div class="nav-item" id="nav-DI"   onclick="setSF('DI')">  <div class="nav-left"><span class="nav-icon">🏢</span><span class="nav-label">Docs. Internos</span></div>        <span class="nav-cnt">6</span></div>
+      <div class="nav-item" id="nav-DE"   onclick="setSF('DE')">  <div class="nav-left"><span class="nav-icon">🌐</span><span class="nav-label">Docs. Externos</span></div>        <span class="nav-cnt">59</span></div>
+      <div class="sb-div"></div>
+      <div class="sb-lbl">Acceso rápido</div>
+      <div class="nav-item" id="nav-link"   onclick="setSF('link')">  <div class="nav-left"><span class="nav-icon">🔗</span><span class="nav-label">Con enlace Drive</span></div><span class="nav-cnt">162</span></div>
+      <div class="nav-item" id="nav-nolink" onclick="setSF('nolink')"><div class="nav-left"><span class="nav-icon">⚠️</span><span class="nav-label">Sin enlace</span></div>     <span class="nav-cnt">72</span></div>
+    </nav>
 
-<!-- ── MODAL: EDICIÓN MANUAL DE ALERTA (solo admin) ── -->
-<div class="edit-overlay gate-hidden" id="editOverlay">
-  <div class="edit-card">
-    <h2>✏️ Editar alerta</h2>
-    <p class="sub" id="editSubtitulo">—</p>
-    <form id="editForm" onsubmit="return guardarEdicionAlerta(event)">
-      <div class="edit-field">
-        <label>Producto</label>
-        <input type="text" id="editProducto">
-      </div>
-      <div class="edit-field">
-        <label>Titular del registro sanitario</label>
-        <input type="text" id="editTitular">
-      </div>
-      <div class="edit-field">
-        <label>Tipo de alerta</label>
-        <select id="editTipoAlerta">
-          <option value="Productos Falsificados">Productos Falsificados</option>
-          <option value="Control de Calidad">Control de Calidad</option>
-          <option value="Seguridad">Seguridad</option>
-          <option value="Comercialización Ilegal">Comercialización Ilegal</option>
-          <option value="General">General</option>
-          <option value="__otro__">Otro (escribir abajo)</option>
+    <!-- Docs area -->
+    <div class="docs-area">
+      <!-- Controls -->
+      <div class="docs-controls">
+        <div class="sw">
+          <span class="si">🔍</span>
+          <input class="search-input" id="repo-search" type="text"
+            placeholder="Buscar por código, nombre o departamento..."
+            oninput="repoSearch()">
+        </div>
+        <select class="fsel" id="repo-link-filter" onchange="repoSearch()">
+          <option value="">Todos los accesos</option>
+          <option value="con">Con enlace Drive</option>
+          <option value="sin">Sin enlace</option>
         </select>
-      </div>
-      <div class="edit-field" id="editTipoAlertaOtroWrap" style="display:none">
-        <label>Especificar tipo de alerta</label>
-        <input type="text" id="editTipoAlertaOtro" placeholder="Ej: Retiro Voluntario">
-      </div>
-      <div class="edit-field">
-        <label>Urgencia</label>
-        <select id="editUrgencia">
-          <option value="INMEDIATA">🔴 Inmediata</option>
-          <option value="PREVENTIVA">🟡 Preventiva</option>
-          <option value="INFORMATIVA">🔵 Informativa</option>
+        <select class="fsel" id="repo-estado-filter" onchange="repoSearch()">
+          <option value="">Todos los estados</option>
+          <option value="Culminado">Culminado</option>
+          <option value="Aprobado">Aprobado</option>
+          <option value="En desuso">En desuso</option>
         </select>
+        <button class="btn-exp" id="btn-exp" onclick="repoToggleAll()">▶ Expandir todo</button>
+        <span class="rcnt" id="repo-count">234 documentos</span>
       </div>
-      <div class="edit-field">
-        <label>Acción principal</label>
-        <input type="text" id="editAccionPrincipal">
-      </div>
-      <div class="edit-field">
-        <label>N° de lote</label>
-        <input type="text" id="editNumeroLote" placeholder="Ej: M-2110095EM | 2122942 (separar varios con &quot; | &quot;)">
-      </div>
-      <div class="edit-field">
-        <label>Resumen IA</label>
-        <textarea id="editResumenIa"></textarea>
-      </div>
-      <div class="edit-actions">
-        <button type="button" class="btn-cancel-edit" onclick="cerrarEditorAlerta()">Cancelar</button>
-        <button type="submit" class="btn-save-edit" id="btnGuardarEdicion">Guardar cambios</button>
-      </div>
-      <div class="edit-error" id="editError"></div>
-    </form>
+      <!-- Dept pills -->
+      <div class="dept-pills" id="repo-dept-pills"></div>
+      <!-- Accordions -->
+      <div id="repo-content"></div>
+    </div>
   </div>
-</div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <img loading="lazy" decoding="async" src="data:image/jpeg;base64,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" alt="Conkomerco" style="height:24px;opacity:0.5;filter:grayscale(1);">
+  <div class="footer-right">
+    FT-01 · Lista Maestra de Documentos · v04ES<br>
+    Vigencia: 01-07-2025 → 01-07-2028 · Conkomerco S.A.C. · ISO 9001:2015
+  </div>
+</footer>
+
 
 <script>
-/* ════════════════════════════════════════════
-   SUPABASE — Auth + datos
-════════════════════════════════════════════ */
-const SUPABASE_URL      = 'https://ggbnfdaxtsngsjssrwrl.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdnYm5mZGF4dHNuZ3Nqc3Nyd3JsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ4ODAzODIsImV4cCI6MjEwMDQ1NjM4Mn0.126hhMpakcOlzp5KyyWdMU56UjwLwn5Xn4Nc13OIjgU';
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+(function(){
+var DOCS = [{"tipo": "Planes", "sheet": "P", "codigo": "P-01", "departamento": "Administración y Logística", "nombre": "Plan Estratégico de Negocio", "version": "2.0", "estado": "Culminado", "fecha_aprobacion": "04/10/2024", "fecha_expiracion": "04/10/2027", "ruta": "https://drive.google.com/file/d/1szDlk1JlP-2qDSDuHF6WFmEE4m2W6SW9/view?usp=sharing"}, {"tipo": "Planes", "sheet": "P", "codigo": "P-02", "departamento": "Comercial", "nombre": "Plan Comercial", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "04/10/2021", "fecha_expiracion": "04/10/2024", "ruta": "https://drive.google.com/drive/search?q=plan%20comercial"}, {"tipo": "Planes", "sheet": "P", "codigo": "P-03", "departamento": "Operaciones", "nombre": "Plan Operativo", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "04/10/2021", "fecha_expiracion": "04/10/2024", "ruta": "https://drive.google.com/file/d/1brqxQva53FnWx1KMtRZccASIJ-9NVFK7/view?usp=sharing"}, {"tipo": "Planes", "sheet": "P", "codigo": "P-04", "departamento": "Calidad", "nombre": "Plan de Continuidad de Actividades", "version": "2.0", "estado": "Culminado", "fecha_aprobacion": "03/02/2025", "fecha_expiracion": "03/02/2028", "ruta": "https://drive.google.com/file/d/1RtCtUkRrhhKMWLnRIx56AtiJfW_Gy-Ux/view?usp=sharing"}, {"tipo": "Planes", "sheet": "P", "codigo": "P-05", "departamento": "Operaciones", "nombre": "Plan de comunicaciones con clientes", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "01/07/2025", "fecha_expiracion": "01/07/2028", "ruta": "-"}, {"tipo": "Manuales", "sheet": "M", "codigo": "M-01", "departamento": "Calidad", "nombre": "Manual de Calidad", "version": "4.0", "estado": "Culminado", "fecha_aprobacion": "18/08/2025", "fecha_expiracion": "18/08/2028", "ruta": "https://drive.google.com/file/d/1weWNsbxwPSwPxegIJcFgUT_jlDCu9Xdu/view?usp=sharing"}, {"tipo": "Manuales", "sheet": "M", "codigo": "M-02", "departamento": "Calidad", "nombre": "Manual de Organización y Funciones", "version": "5.0", "estado": "Culminado", "fecha_aprobacion": "10/06/2026", "fecha_expiracion": "10/06/2029", "ruta": "https://drive.google.com/file/d/18v85A-PhpjChgwUoIQHATFi7XvOIYtAq/view?usp=drive_link"}, {"tipo": "Manuales", "sheet": "M", "codigo": "M-03", "departamento": "Calidad", "nombre": "Mapa de Procesos y Caracterización", "version": "2.0", "estado": "Culminado", "fecha_aprobacion": "26/07/2024", "fecha_expiracion": "26/07/2027", "ruta": "https://drive.google.com/file/d/1TEW2gX9Wzuw4dBtbnH9fUCZr-ADYMtx-/view?usp=sharing"}, {"tipo": "Procedimientos Estratégicos", "sheet": "PR-E", "codigo": "PR-E-01", "departamento": "Calidad", "nombre": "Gestion de Documentos", "version": "2.0", "estado": "Culminado", "fecha_aprobacion": "23/09/2023", "fecha_expiracion": "23/09/2026", "ruta": "https://drive.google.com/file/d/1gjDIVQNxE_IkfE0mMO2wDBmDafOYpMvQ/view?usp=drive_link"}, {"tipo": "Procedimientos Estratégicos", "sheet": "PR-E", "codigo": "PR-E-02", "departamento": "Calidad", "nombre": "Gestion de Información Confidencial", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "01/08/2023", "fecha_expiracion": "01/08/2026", "ruta": "https://drive.google.com/file/d/10bVKgRdfsd62DffH8ae2Bga6KPe7MCvB/view?usp=sharing"}, {"tipo": "Procedimientos Estratégicos", "sheet": "PR-E", "codigo": "PR-E-03", "departamento": "Calidad", "nombre": "Acciones Correctivas y Mejora", "version": "3.0", "estado": "Culminado", "fecha_aprobacion": "26/01/2026", "fecha_expiracion": "26/01/2029", "ruta": "https://drive.google.com/file/d/1s9H7l7k7pgRv8VWltz80abtS9qAs1Vwx/view?usp=sharing"}, {"tipo": "Procedimientos Estratégicos", "sheet": "PR-E", "codigo": "PR-E-04", "departamento": "Calidad", "nombre": "Auditoria Interna del SGC", "version": "2.0", "estado": "Culminado", "fecha_aprobacion": "14/07/2023", "fecha_expiracion": "14/07/2026", "ruta": "https://drive.google.com/file/d/1l5CbbAJ5tAZSD0uimDBHa_x6z5KA8_NQ/view?usp=drive_link"}, {"tipo": "Procedimientos Estratégicos", "sheet": "PR-E", "codigo": "PR-E-05", "departamento": "Calidad", "nombre": "Análisis de Datos y Revisión por la Dirección", "version": "1", "estado": "Culminado", "fecha_aprobacion": "01/08/2023", "fecha_expiracion": "01/08/2026", "ruta": "https://drive.google.com/file/d/111qmwUG5SkMOtu16bdB1EkVQZdjf7Hwf/view?usp=sharing"}, {"tipo": "Procedimientos Operativos", "sheet": "PR-O", "codigo": "PR-O-01", "departamento": "Comercial", "nombre": "Gestiòn Comercial", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "25/10/2024", "fecha_expiracion": "25/10/2027", "ruta": "https://drive.google.com/file/d/1BuLXEvmRDSOxOcccsrh8G67iuxRcxcrJ/view?usp=drive_link"}, {"tipo": "Procedimientos Operativos", "sheet": "PR-O", "codigo": "PR-O-02", "departamento": "Operaciones", "nombre": "Consultoría, Auditoría y Capacitaciones", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "06/12/2024", "fecha_expiracion": "06/12/2027", "ruta": "https://drive.google.com/file/d/19X_HbQ_SuL-pHOjcmA1zH6po5Fm7CW_u/view?usp=drive_link"}, {"tipo": "Procedimientos Operativos", "sheet": "PR-O", "codigo": "PR-O-03", "departamento": "Operaciones", "nombre": "Gestión de Unidad de Vigilancia Sanitaria", "version": "5.0", "estado": "Culminado", "fecha_aprobacion": "01/07/2025", "fecha_expiracion": "01/07/2028", "ruta": "https://drive.google.com/file/d/1yYzYevZvhxsSchc40Cta8c_-6poLsgMt/view?usp=drive_link"}, {"tipo": "Procedimientos Operativos", "sheet": "PR-O", "codigo": "PR-O-04", "departamento": "Operaciones", "nombre": "Elaboración de Documentos de Seguridad", "version": "4.0", "estado": "Culminado", "fecha_aprobacion": "26/04/2023", "fecha_expiracion": "26/04/2026", "ruta": "https://drive.google.com/file/d/1ZdkZ8p7GRBTPgCmPH7YnWvFgy893xWmg/view?usp=drive_link"}, {"tipo": "Procedimientos Operativos", "sheet": "PR-O", "codigo": "PR-O-05", "departamento": "Calidad", "nombre": "Servicio al Cliente y Post Venta", "version": "2.0", "estado": "Culminado", "fecha_aprobacion": "21/03/2025", "fecha_expiracion": "21/03/2028", "ruta": "https://drive.google.com/file/d/1wwpBp5QbPBYkmfYIBtO9AIYSgRFMx0tR/view?usp=sharing"}, {"tipo": "Procedimientos Operativos", "sheet": "PR-O", "codigo": "PR-O-06", "departamento": "Comercial", "nombre": "Gestión y Promoción de Eventos Educativos", "version": "2.0", "estado": "Culminado", "fecha_aprobacion": "11/09/2023", "fecha_expiracion": "11/09/2026", "ruta": "https://drive.google.com/file/d/1pnwz13mUdVlCzNKciF9pTHUdtbiT-uFs/view?usp=drive_link"}, {"tipo": "Procedimientos Operativos", "sheet": "PR-O", "codigo": "PR-O-07", "departamento": "Calidad", "nombre": "Autoinspecciones", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "27/04/2023", "fecha_expiracion": "27/04/2026", "ruta": "PR-O-07"}, {"tipo": "Procedimientos de Soporte", "sheet": "PR-S", "codigo": "PR-S-01", "departamento": "Recursos Humanos", "nombre": "Gestión del Recurso Humano", "version": "2.0", "estado": "Culminado", "fecha_aprobacion": "12/09/2023", "fecha_expiracion": "12/09/2026", "ruta": "https://drive.google.com/file/d/1nEKObdGLymQecMOz-Cpro-RoidkAzS2-/view?usp=drive_link"}, {"tipo": "Procedimientos de Soporte", "sheet": "PR-S", "codigo": "PR-S-02", "departamento": "Administración y Logística", "nombre": "Gestión de Proveedores", "version": "2.0", "estado": "Culminado", "fecha_aprobacion": "03/07/2025", "fecha_expiracion": "03/07/2029", "ruta": "https://drive.google.com/file/d/1QYFvYBrvFlvPYVfa6qPsSOs1xRunOheB/view?usp=sharing"}, {"tipo": "Procedimientos de Soporte", "sheet": "PR-S", "codigo": "PR-S-03", "departamento": "Tecnología e Informática", "nombre": "Gestión de Tecnologías e Informática", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "18/08/2021", "fecha_expiracion": "23/08/2024", "ruta": "PR-S-03"}, {"tipo": "Instructivos", "sheet": "INS", "codigo": "INS-01", "departamento": "Calidad", "nombre": "Herramienta AMEF", "version": "2.0", "estado": "Culminado", "fecha_aprobacion": "20/07/2022", "fecha_expiracion": "20/07/2025", "ruta": "INS-01"}, {"tipo": "Instructivos", "sheet": "INS", "codigo": "INS-02", "departamento": "Calidad", "nombre": "INSTRUCTIVO DE FIRMAS DIGITALES", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "23/05/2022", "fecha_expiracion": "23/05/2024", "ruta": "https://drive.google.com/file/d/1cxJEnKgMy6RyK_ysUhPZ8VoGlD88r8A0/view"}, {"tipo": "Instructivos", "sheet": "INS", "codigo": "INS-03", "departamento": "Operaciones", "nombre": "INSTRUCTIVO PARA EL MONITOREO DE LA LITERATURA CIENTÍFICA", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "26/09/2023", "fecha_expiracion": "26/09/2026", "ruta": "https://drive.google.com/file/d/1zCA567w8NO3YSToAVEhhP_mkAe8Twgo0/view?usp=drive_link"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-01", "departamento": "Calidad", "nombre": "Lista Maestra de Documentos", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "23/07/2021", "fecha_expiracion": "23/07/2024", "ruta": "FT-01"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-02", "departamento": "Calidad", "nombre": "Lista de Distribución de Documentos", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "23/07/2021", "fecha_expiracion": "23/07/2024", "ruta": "FT-02"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-03", "departamento": "Calidad", "nombre": "Acuerdo de Confidencialidad", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "06/08/2021", "fecha_expiracion": "09/08/2024", "ruta": "FT-03"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-04", "departamento": "Calidad", "nombre": "Solicitud de actualización de Información", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "06/08/2021", "fecha_expiracion": "09/08/2024", "ruta": "FT-04"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-05", "departamento": "Calidad", "nombre": "Solicitud de borrado de Información", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "06/08/2021", "fecha_expiracion": "09/08/2024", "ruta": "FT-05"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-06", "departamento": "Calidad", "nombre": "Matriz de comunicación interna y externa", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "06/08/2021", "fecha_expiracion": "09/08/2024", "ruta": "FT-06"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-07", "departamento": "Calidad", "nombre": "Formulario de Ingreso de Reclamo", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "05/08/2021", "fecha_expiracion": "09/08/2024", "ruta": "FT-07"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-08", "departamento": "Calidad", "nombre": "Solicitud de Acción Correctiva y Preventiva", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "05/08/2021", "fecha_expiracion": "09/08/2024", "ruta": "FT-08"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-09", "departamento": "Calidad", "nombre": "Matriz de Salidas No Conformes y mejora continua", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "05/08/2021", "fecha_expiracion": "09/08/2024", "ruta": "FT-09"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-10", "departamento": "Calidad", "nombre": "Plan y Programa de Actividades del SGC", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "05/08/2024", "fecha_expiracion": "09/08/2027", "ruta": "FT-10"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-11", "departamento": "Calidad", "nombre": "Plan de Auditoria Interna", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "05/08/2024", "fecha_expiracion": "09/08/2027", "ruta": "FT-11"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-12", "departamento": "Calidad", "nombre": "Acta de Apertura o Cierre de Auditoria", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "05/08/2021", "fecha_expiracion": "09/08/2024", "ruta": "FT-12"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-13", "departamento": "Calidad", "nombre": "Informe de Auditoría Interna", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "05/08/2021", "fecha_expiracion": "09/08/2024", "ruta": "FT-13"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-14", "departamento": "Calidad", "nombre": "Evaluación del Desempeño del Equipo Auditor", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "05/08/2021", "fecha_expiracion": "09/08/2024", "ruta": "FT-14"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-15", "departamento": "Calidad", "nombre": "Cuadro de Control de Objetivos e Indicadores del SGC", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "05/08/2021", "fecha_expiracion": "09/08/2024", "ruta": "FT-15"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-16", "departamento": "Calidad", "nombre": "Reporte de Indicador del SGC", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "05/08/2021", "fecha_expiracion": "09/08/2024", "ruta": "FT-16"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-17", "departamento": "Calidad", "nombre": "Acta de revisión del SGC por la Alta Dirección", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "05/08/2021", "fecha_expiracion": "09/08/2024", "ruta": "FT-17"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-18", "departamento": "Calidad", "nombre": "Matriz de Identificación, Evaluación y Tratamiento de Riesgos", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "11/08/2021", "fecha_expiracion": "16/08/2024", "ruta": "FT-18"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-19", "departamento": "Recursos Humanos", "nombre": "Perfil de Puesto", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "06/08/2021", "fecha_expiracion": "09/08/2024", "ruta": "FT-19"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-20", "departamento": "Recursos Humanos", "nombre": "Listado de Colaboradores", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "06/08/2021", "fecha_expiracion": "09/08/2024", "ruta": "FT-20"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-21", "departamento": "Recursos Humanos", "nombre": "Ficha de Colaborador", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "06/08/2021", "fecha_expiracion": "09/08/2024", "ruta": "FT-21"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-22", "departamento": "Recursos Humanos", "nombre": "Contrato de Trabajo", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "06/08/2021", "fecha_expiracion": "09/08/2024", "ruta": "FT-22"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-23", "departamento": "Recursos Humanos", "nombre": "Plan Anual de Formación y Capacitación", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "06/08/2024", "fecha_expiracion": "09/08/2027", "ruta": "FT-23"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-24", "departamento": "Recursos Humanos", "nombre": "Registro de Entrenamiento", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "06/08/2024", "fecha_expiracion": "09/08/2027", "ruta": "FT-24"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-25", "departamento": "Recursos Humanos", "nombre": "Evaluación del Desempeño", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "06/08/2021", "fecha_expiracion": "09/08/2024", "ruta": "FT-25"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-26", "departamento": "Administración y Logística", "nombre": "Registro, Selección y Evaluación de Proveedores", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "06/08/2021", "fecha_expiracion": "09/08/2024", "ruta": "FT-26"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-27", "departamento": "Tecnología e Informática", "nombre": "Programa de Mantenimiento de Hardware y Software", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "18/08/2021", "fecha_expiracion": "23/08/2024", "ruta": "FT-27"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-28", "departamento": "Tecnología e Informática", "nombre": "Lista de Equipos", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "18/08/2021", "fecha_expiracion": "23/08/2024", "ruta": "FT-28"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-29", "departamento": "Tecnología e Informática", "nombre": "Lista de Programas, Usuarios y Contraseñas", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "18/08/2021", "fecha_expiracion": "23/08/2024", "ruta": "FT-29"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-30", "departamento": "Tecnología e Informática", "nombre": "Acta de Entrega de Equipos y Bienes", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "18/08/2021", "fecha_expiracion": "23/08/2024", "ruta": "FT-30"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-31", "departamento": "Tecnología e Informática", "nombre": "Acta de Entrega de Usuario y Contraseña", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "18/08/2021", "fecha_expiracion": "23/08/2024", "ruta": "FT-31"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-32", "departamento": "Tecnología e Informática", "nombre": "Carta de Entrega de Usuario y Contraseña", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "18/08/2021", "fecha_expiracion": "23/08/2024", "ruta": "FT-32"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-33", "departamento": "Comercial", "nombre": "Seguimiento de Material Promocional y No Promocional", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "27/09/2021", "fecha_expiracion": "27/09/2024", "ruta": "FT-33"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-34", "departamento": "Comercial", "nombre": "Seguimiento de Potenciales Clientes", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "27/09/2021", "fecha_expiracion": "27/09/2024", "ruta": "FT-34"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-35", "departamento": "Comercial", "nombre": "Speech Comercial", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "27/09/2021", "fecha_expiracion": "27/09/2024", "ruta": "FT-35"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-36", "departamento": "Comercial", "nombre": "Solicitud de Información", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "27/09/2021", "fecha_expiracion": "27/09/2024", "ruta": "FT-36"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-37", "departamento": "Comercial", "nombre": "Calculadora de Precios", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "27/09/2021", "fecha_expiracion": "27/09/2024", "ruta": "FT-37"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-38", "departamento": "Todos", "nombre": "Cotización de Servicio", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "25/10/2021", "fecha_expiracion": "25/10/2024", "ruta": "FT-38"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-39", "departamento": "Comercial", "nombre": "Contrato de Servicio", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "26/10/2021", "fecha_expiracion": "26/10/2024", "ruta": "FT-39"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-40", "departamento": "Todos", "nombre": "Hoja Membretada", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "05/10/2021", "fecha_expiracion": "05/10/2024", "ruta": "FT-40"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-41", "departamento": "Todos", "nombre": "Minuta de Reunión", "version": "2.0", "estado": "Culminado", "fecha_aprobacion": "23/05/2023", "fecha_expiracion": "23/05/2026", "ruta": "https://drive.google.com/file/d/1prsvHb5v6bOz0gm2gLuV0gAiqjprv-AR/view?usp=drive_link"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-42", "departamento": "Operaciones", "nombre": "Informe de Consultoría", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "06/12/2021", "fecha_expiracion": "06/12/2024", "ruta": "https://drive.google.com/file/d/1NY4YThXU63wBnF7-pqXlSy4EjSRPQLnH/view?usp=drive_link"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-43", "departamento": "Operaciones", "nombre": "Guía de Auditoría en Farmacovigilancia", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "06/12/2021", "fecha_expiracion": "06/12/2024", "ruta": "https://docs.google.com/spreadsheets/d/1v3HSGOaHGjT8oxZ_rrRAYhrGTud7tpZR/edit#gid=1328948389"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-44", "departamento": "Operaciones", "nombre": "Guía de Auditoría en Tecnovigilancia", "version": "2.0", "estado": "Culminado", "fecha_aprobacion": "01/02/2025", "fecha_expiracion": "01/02/2028", "ruta": "https://drive.google.com/file/d/1FyzuMxoECjhI7u8M_HNuqT788hA_Tugi/view?usp=drive_link"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-45", "departamento": "Operaciones", "nombre": "Informe de Capacitación", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "06/12/2021", "fecha_expiracion": "06/12/2024", "ruta": "https://drive.google.com/file/d/1x82oudQkaB6x0jVjM8BImR5Ja5ElANmn/view?usp=sharing"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-46", "departamento": "Operaciones", "nombre": "Informe de Diagnostico", "version": "3.0", "estado": "Culminado", "fecha_aprobacion": "01/01/2026", "fecha_expiracion": "01/01/2029", "ruta": "https://drive.google.com/file/d/1Sy6A41Ndt21x6S0zeaarb6XCKc7lI-3B/view?usp=drive_link"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-47", "departamento": "Operaciones", "nombre": "Monitoreo de Plan de Trabajo", "version": "3.0", "estado": "Culminado", "fecha_aprobacion": "15/06/2025", "fecha_expiracion": "15/06/2028", "ruta": "https://drive.google.com/file/d/1IjCWaOjfDNwDRrqH1uMHNpoJ_ZLQFXvq/view?usp=drive_link"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-48", "departamento": "Operaciones", "nombre": "Organización, Funciones y Responsabilidades de Farmacovigilancia y/o Tecnovigilancia", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "25/01/2023", "fecha_expiracion": "25/01/2026", "ruta": "https://drive.google.com/file/d/1zaFWEr6RLREOxMvEs83TyEZSOchEF7rb/view?usp=drive_link"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-49", "departamento": "Operaciones", "nombre": "Lista Maestra de Farmacovigilancia y/o Tecnovigilancia", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "01/02/2025", "fecha_expiracion": "01/02/2028", "ruta": "https://drive.google.com/file/d/1pzAjayCE7bueg4dRY7FwumYb_BswcWld/view?usp=drive_link"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-50", "departamento": "Operaciones", "nombre": "Perfil de Puesto", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "01/02/2022", "fecha_expiracion": "45689.0", "ruta": "https://drive.google.com/file/d/1A3QzMQIPIDCsRmemf-7-F1v_0cYTSuX-/view?usp=drive_link"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-51", "departamento": "Operaciones", "nombre": "Información de Contacto y Registro de Firmas", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "01/02/2022", "fecha_expiracion": "06/02/2024", "ruta": "OBSOLETO"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-52", "departamento": "Operaciones", "nombre": "Registro Histórico del Personal", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "01/02/2022", "fecha_expiracion": "06/02/2025", "ruta": "https://drive.google.com/file/d/1MH59Bv8uuBeqUhoQaTZjkqiuiQJDMnyJ/view?usp=drive_link"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-53", "departamento": "Operaciones", "nombre": "Acuerdo de Farmacovigilancia y/o Tecnovigilancia", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "25/01/2023", "fecha_expiracion": "25/01/2026", "ruta": "https://drive.google.com/file/d/1Br7nUcUsgFOe_pRBLRJLJcww5Bf0MfUK/view?usp=drive_link"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-54", "departamento": "Operaciones", "nombre": "Plantillas de Acuerdo Farmacovigilancia / Tecnovigilancia", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "01/02/2024", "fecha_expiracion": "01/02/2027", "ruta": "https://drive.google.com/file/d/17Z-rmPmqulpoVWPCVv2jfbXqJHiD47Lm/view?usp=drive_link"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-55", "departamento": "Operaciones", "nombre": "Plantilla de Acuerdo de Tecnovigilancia", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "01/02/2022", "fecha_expiracion": "01/02/2024", "ruta": "OBSOLETO"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-56", "departamento": "Operaciones", "nombre": "Reporte Mensual", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "01/02/2022", "fecha_expiracion": "01/02/2025", "ruta": "https://drive.google.com/file/d/1X5EhETtjMLCnTbiRSpsDkC9begO4A_rQ/view?usp=sharing"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-57", "departamento": "Operaciones", "nombre": "Interfaces de Contacto", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "01/02/2022", "fecha_expiracion": "01/02/2025", "ruta": "https://drive.google.com/file/d/1N-f3yQhoq2cK_MLj07zlAc-DjP_72ht0/view?usp=drive_link"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-58", "departamento": "Operaciones", "nombre": "Involucramiento del Personal y Entidades Relevantes", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "25/01/2023", "fecha_expiracion": "25/01/2026", "ruta": "https://drive.google.com/file/d/1UIJgRTtStVQww7D48BxcB5W70l3wuix7/view?usp=drive_link"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-59", "departamento": "Operaciones", "nombre": "Plan Anual de Entrenamientos", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "01/02/2022", "fecha_expiracion": "01/02/2025", "ruta": "https://drive.google.com/file/d/1i8VjH48iQzxXTSLNqAdq05mqpjvhWSR8/view?usp=drive_link"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-60", "departamento": "Operaciones", "nombre": "Registro de Entrenamientos", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "01/02/2022", "fecha_expiracion": "06/12/2025", "ruta": "https://drive.google.com/file/d/1qQt-Qwrk7it6ls6oFAWAZMahViEfESVV/view?usp=drive_link"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-61", "departamento": "Operaciones", "nombre": "Evaluación y Mantenimiento de Requerimientos Regulatorios", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "25/01/2023", "fecha_expiracion": "25/01/2026", "ruta": "https://drive.google.com/file/d/1GymkEl7rxnQ6llp8XKIj_6ScTxXzNLRM/view?usp=drive_link"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-62", "departamento": "Operaciones", "nombre": "Listado de Productos", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "01/02/2022", "fecha_expiracion": "01/02/2025", "ruta": "https://drive.google.com/file/d/1UijeV6BRBz8oSJqzyDOrkVxslsxD42BL/view?usp=drive_link"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-63", "departamento": "Operaciones", "nombre": "Registro de Cambios de Información de Seguridad", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "01/02/2022", "fecha_expiracion": "01/02/2025", "ruta": "https://drive.google.com/file/d/1FQODAKZnJEhrbzEhG3IvZxlbFLi07vxz/view?usp=drive_link"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-64", "departamento": "Operaciones", "nombre": "Tabla de Control de Requerimientos por parte de la Autoridad Regulatoria", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "01/02/2022", "fecha_expiracion": "01/02/2025", "ruta": "https://drive.google.com/file/d/1CZzrO2LwMT9KbDVAPQphG3CQ79WoL6_F/view?usp=drive_link"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-65", "departamento": "Operaciones", "nombre": "Monitoreo de Información de Seguridad", "version": "2.0", "estado": "Culminado", "fecha_aprobacion": "25/01/2023", "fecha_expiracion": "25/01/2026", "ruta": "https://drive.google.com/file/d/1P8Z_TcvLYmTlu6o85adcTAjxP6V15yHL/view?usp=drive_link"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-66", "departamento": "Operaciones", "nombre": "Revisión del Funcionamiento de las Fuentes de Monitoreo", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "01/02/2022", "fecha_expiracion": "01/02/2025", "ruta": "https://drive.google.com/file/d/1jpIjfSNr1C0aNLHEsvvCDegexgVZYRAx/view?usp=drive_link"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-67", "departamento": "Operaciones", "nombre": "Registro de Monitoreo de Literatura", "version": "1.0", "estado": "En desuso", "fecha_aprobacion": "06/12/2021", "fecha_expiracion": "06/12/2024", "ruta": "OBSOLETO"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-68", "departamento": "Operaciones", "nombre": "Registro de Monitoreo de Información de Paises de Alta Vigilancia Sanitaria", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "01/02/2022", "fecha_expiracion": "01/02/2025", "ruta": "https://drive.google.com/file/d/1k9Oju6pukFIK495-FA4rbCMxyxggdRtt/view?usp=drive_link"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-69", "departamento": "Operaciones", "nombre": "Registro de Monitoreo de Alertas Nacionales", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "01/02/2022", "fecha_expiracion": "01/02/2025", "ruta": "https://drive.google.com/file/d/1E8vlkerIzKE3wdQ4bh6YEmU7TXWximil/view?usp=drive_link"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-70", "departamento": "Operaciones", "nombre": "Gestión de Reportes de Sospecha de Reacción Adversa y/o Incidentes Adversos", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "25/01/2023", "fecha_expiracion": "25/01/2026", "ruta": "https://drive.google.com/file/d/12RhYGFj1VdjSQJERz28X8nFUAGiWrqvg/view?usp=drive_link"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-71", "departamento": "Operaciones", "nombre": "Tabla de Control de Reportes de Sospecha", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "01/02/2022", "fecha_expiracion": "01/02/2025", "ruta": "https://drive.google.com/file/d/1T-w_pURVYwft61TFNICBW2O7XNbsVVCN/view?usp=drive_link"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-72", "departamento": "Operaciones", "nombre": "Gestión de Señales de Seguridad", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "25/01/2023", "fecha_expiracion": "25/01/2026", "ruta": "https://drive.google.com/file/d/1sbNUS4bxXsXvy3oyVnWHmyTH1PMJ3g53/view?usp=drive_link"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-73", "departamento": "Operaciones", "nombre": "Registro de Gestión de Señales", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "01/02/2022", "fecha_expiracion": "01/02/2025", "ruta": "https://drive.google.com/file/d/1clVO3o2Ur1fUjNVsQ2KvqjVkxwINdZua/view?usp=drive_link"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-74", "departamento": "Operaciones", "nombre": "Gestión de Informes Periódicos de Seguridad", "version": "2.0", "estado": "Culminado", "fecha_aprobacion": "25/01/2023", "fecha_expiracion": "25/01/2026", "ruta": "https://drive.google.com/file/d/15HZ2O8V1pcUZIkZpo4fmhhIZUmTIPAx6/view?usp=drive_link"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-75", "departamento": "Operaciones", "nombre": "Tabla de Control de Informes Periódicos de Seguridad", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "01/02/2022", "fecha_expiracion": "01/02/2025", "ruta": "https://drive.google.com/file/d/1luyzfXn5uLKnkESn0X6oE7DCZEzs5_I_/view?usp=drive_link"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-76", "departamento": "Operaciones", "nombre": "Formato de Informe Periódico de Seguridad para Producto Farmacéutico", "version": "2.0", "estado": "Culminado", "fecha_aprobacion": "14/11/2022", "fecha_expiracion": "14/11/2025", "ruta": "https://drive.google.com/file/d/1vVPOjfxYgmXh3JlO1lYOEqt9SbdNUdfx/view?usp=drive_link"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-77", "departamento": "Operaciones", "nombre": "Formato de Informe Periódico de Seguridad para Dispositivo Médico", "version": "2.0", "estado": "Culminado", "fecha_aprobacion": "14/11/2022", "fecha_expiracion": "14/11/2025", "ruta": "https://drive.google.com/file/d/1avcTcbcNTlllHVWQdXgJ7q9IH3JV1-EN/view?usp=drive_link"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-78", "departamento": "Operaciones", "nombre": "Plan de Gestión de Riesgos y Actividades de Minimización de Riesgos", "version": "2.0", "estado": "Culminado", "fecha_aprobacion": "25/01/2023", "fecha_expiracion": "25/01/2026", "ruta": "https://drive.google.com/file/d/1e8_cgfx9UHK0iMmQf8ziBm1vOP4sSr_o/view?usp=drive_link"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-79", "departamento": "Operaciones", "nombre": "Tabla de Control de Planes de Gestión de Riesgos", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "01/02/2022", "fecha_expiracion": "01/02/2025", "ruta": "https://drive.google.com/file/d/1e8_cgfx9UHK0iMmQf8ziBm1vOP4sSr_o/view?usp=drive_link"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-80", "departamento": "Operaciones", "nombre": "Formato de Plan de Gestión de Riesgo", "version": "2.0", "estado": "Culminado", "fecha_aprobacion": "25/01/2023", "fecha_expiracion": "25/01/2026", "ruta": "https://drive.google.com/file/d/1dJdlPwinyOQ0ZEuCN9XkglwiooP1WluL/view?usp=drive_link"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-81", "departamento": "Operaciones", "nombre": "Tabla de Control de Actividades de Minimización de Riesgos", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "01/02/2022", "fecha_expiracion": "01/02/2025", "ruta": "https://drive.google.com/file/d/1OHwtJYgjk4j-LjPUTlkkFZ02LCn3Zzz_/view?usp=drive_link"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-82", "departamento": "Operaciones", "nombre": "Almacenamiento de Documentos y Continuidad de Actividades", "version": "2.0", "estado": "Culminado", "fecha_aprobacion": "27/01/2023", "fecha_expiracion": "27/01/2026", "ruta": "https://drive.google.com/file/d/1W8v1NsPhttU4OfVdRocxNBNX67uqcHot/view?usp=drive_link"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-83", "departamento": "Operaciones", "nombre": "Registro de Incidentes", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "01/02/2022", "fecha_expiracion": "01/02/2025", "ruta": "https://drive.google.com/file/d/1dV0QJy2XIjyjKN9OAKz3guWoalMU5eFp/view?usp=drive_link"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-84", "departamento": "Operaciones", "nombre": "Monitoreo y Lista de Verificación de Respuesta ante Emergencias", "version": "2.0", "estado": "Culminado", "fecha_aprobacion": "01/02/2022", "fecha_expiracion": "01/02/2025", "ruta": "https://drive.google.com/file/d/1nPp7Oo07tdjaaV0lxr7giG4KjhZPXR8v/view?usp=drive_link"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-85", "departamento": "Operaciones", "nombre": "Manejo de Desviaciones, Auditorías e Inspecciones", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "25/01/2023", "fecha_expiracion": "25/01/2026", "ruta": "https://drive.google.com/file/d/1b_Hxx6UJs-n0VGFHKXOhlXVTNfMV0MDu/view?usp=drive_link"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-86", "departamento": "Operaciones", "nombre": "Guía de Auditoría - Autoinspección", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "01/02/2022", "fecha_expiracion": "01/02/2025", "ruta": "https://drive.google.com/file/d/1_qybU0PDlnZC-fqD5V_JFyyydoLnLnvr/view?usp=drive_link"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-87", "departamento": "Operaciones", "nombre": "Seguimiento de No Conformidades y Potenciales No Conformidades", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "01/02/2022", "fecha_expiracion": "01/02/2025", "ruta": "https://drive.google.com/file/d/1k0wFB_maE9sATxjOxMF82Ca_kyZWHT-z/view?usp=drive_link"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-88", "departamento": "Operaciones", "nombre": "Programa Anual de Autoinspección", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "01/02/2022", "fecha_expiracion": "01/02/2025", "ruta": "https://drive.google.com/file/d/1tlTG2Av8ImLtJx2_ykeflAPHCpwwvdr9/view?usp=drive_link"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-89", "departamento": "Operaciones", "nombre": "Informe de Autoinspección", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "01/02/2022", "fecha_expiracion": "01/02/2025", "ruta": "https://drive.google.com/file/d/19yU8pTKx-BpYyV_2_t6cwxUBPeZMZjs6/view?usp=drive_link"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-90", "departamento": "Operaciones", "nombre": "Gestión de Estudios Post Autorización", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "25/01/2023", "fecha_expiracion": "25/01/2026", "ruta": "https://drive.google.com/file/d/1XJTWqJbKWSPjsRrTwzq6SJwO2eyebh-k/view?usp=drive_link"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-91", "departamento": "Operaciones", "nombre": "Listado de Personal / Control de entrenamiento", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "06/12/2021", "fecha_expiracion": "06/12/2024", "ruta": "https://drive.google.com/file/d/1sLO78cTr12n6nonMOyzFRZO2jBXft1eD/view?usp=drive_link"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-92", "departamento": "Operaciones", "nombre": "Designación de Responsable", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "06/12/2021", "fecha_expiracion": "06/12/2024", "ruta": "https://drive.google.com/file/d/1UrmZ8yPQdDHyASeSGUeGETVT5tNaykC_/view?usp=drive_link"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-93", "departamento": "Operaciones", "nombre": "Solicitud de eReporting", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "06/12/2021", "fecha_expiracion": "06/12/2024", "ruta": "https://drive.google.com/file/d/1PYggs8Ji2vavnUZdIiODwu0l3QxbXc8b/view?usp=drive_link"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-94", "departamento": "Operaciones", "nombre": "Monitoreo de Literatura Nacional e Internacional", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "06/12/2021", "fecha_expiracion": "06/12/2024", "ruta": "OBSOLETO"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-95", "departamento": "Operaciones", "nombre": "Monitoreo de Alertas de Paises de Alta Vigilancia Sanitaria", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "06/12/2021", "fecha_expiracion": "06/12/2024", "ruta": "https://docs.google.com/spreadsheets/d/1_dhdUErWFlKvcygijxq9XtHf5mb4rTqX/edit?usp=drive_link&ouid=107064603921542335132&rtpof=true&sd=true"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-96", "departamento": "Operaciones", "nombre": "Control de Reportes de Sospecha", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "06/12/2021", "fecha_expiracion": "06/12/2024", "ruta": "OBSOLETO"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-97", "departamento": "Operaciones", "nombre": "Control de Señales de Seguridad", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "06/12/2021", "fecha_expiracion": "06/12/2024", "ruta": "OBSOLETO"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-98", "departamento": "Operaciones", "nombre": "Control de Informes Periódicos de Seguridad", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "06/12/2021", "fecha_expiracion": "06/12/2024", "ruta": "OBSOLETO"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-99", "departamento": "Comercial", "nombre": "Programa de actividades", "version": "2.0", "estado": "Culminado", "fecha_aprobacion": "23/08/2023", "fecha_expiracion": "23/08/2026", "ruta": "https://drive.google.com/file/d/1jnjkovaSxZ-TCOsnokcwieals5ayG3b6/view?usp=drive_link"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-100", "departamento": "Comercial", "nombre": "Checklist de Actividades", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "06/12/2021", "fecha_expiracion": "06/12/2024", "ruta": "https://drive.google.com/file/d/1RVVLfjSySC8r81N8oLmW_j_O8gNrfOQj/view?usp=drive_link"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-101", "departamento": "Comercial", "nombre": "Lista de Asistencia", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "06/12/2021", "fecha_expiracion": "06/12/2024", "ruta": "https://drive.google.com/file/d/1lLbfOe-XIsiOlUKudOTQV9oNQKQg4mru/view?usp=drive_link"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-102", "departamento": "Operaciones", "nombre": "Tabla de Control de Reportes SIA", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "06/12/2021", "fecha_expiracion": "06/12/2024", "ruta": "https://docs.google.com/spreadsheets/d/1Y7v3jNC-XnwW5Iipz-2CkhHLum2Rb7wQ/edit?usp=drive_link&ouid=107064603921542335132&rtpof=true&sd=true"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-103", "departamento": "Operaciones", "nombre": "Registro de Acciones de Campo", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "01/02/2022", "fecha_expiracion": "01/02/2025", "ruta": "https://drive.google.com/file/d/1oEKFtHG0I5sMmCfL5pZoq8WSl52ru31-/view?usp=drive_link"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-104", "departamento": "Operaciones", "nombre": "Programación de Informe Periodico de Seguridad", "version": "2.0", "estado": "Culminado", "fecha_aprobacion": "15/06/2022", "fecha_expiracion": "15/06/2024", "ruta": "https://docs.google.com/spreadsheets/d/1GBumCVs4MyaIH1yCSR7rDt8kdI5BAPJe/edit?usp=drive_link&ouid=107064603921542335132&rtpof=true&sd=true"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-105", "departamento": "Operaciones", "nombre": "Programa Anual de Entrenamiento", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "06/12/2021", "fecha_expiracion": "06/12/2024", "ruta": "OBSOLETO"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-106", "departamento": "Operaciones", "nombre": "Registro de Monitoreo de Literatura I", "version": "2.0", "estado": "Culminado", "fecha_aprobacion": "25/01/2023", "fecha_expiracion": "25/01/2026", "ruta": "https://drive.google.com/file/d/1uAWpC0nxxh_VGCELbdzqQVQCZs8lr157/view?usp=drive_link"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-107", "departamento": "Operaciones", "nombre": "Registro de Monitoreo de Literatura II", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "06/12/2021", "fecha_expiracion": "06/12/2024", "ruta": "https://drive.google.com/file/d/1rBPYqAxtKHCFne2J-NzHJIX5Tk4BOtKY/view?usp=drive_link"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-108", "departamento": "Operaciones", "nombre": "Tabla de Control de seguimiento de Señales", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "06/12/2021", "fecha_expiracion": "06/12/2024", "ruta": "https://docs.google.com/spreadsheets/d/17fWKIxoJX244G6b362qO5w8ZHdgqlLv3/edit?usp=drive_link&ouid=107064603921542335132&rtpof=true&sd=true"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-109", "departamento": "Operaciones", "nombre": "Registros de Estudio de Post- Autorización", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "06/12/2021", "fecha_expiracion": "06/12/2024", "ruta": "https://docs.google.com/spreadsheets/d/1jYkntS2l8cp-V9Yl6nGqWs7gR9IH31CR/edit?usp=drive_link&ouid=107064603921542335132&rtpof=true&sd=true"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-110", "departamento": "Operaciones", "nombre": "Protocolo de Farmacovigilancia Activa", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "06/12/2021", "fecha_expiracion": "06/12/2024", "ruta": "https://drive.google.com/file/d/1xBrWO9QEw1x24OLjmkMMlrcZk8ZXKi3k/view?usp=drive_link"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-111", "departamento": "Operaciones", "nombre": "Contratos de Ponencia", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "06/12/2021", "fecha_expiracion": "06/12/2024", "ruta": "https://drive.google.com/file/d/1TG2IJPLPZiU46vmZgXMwyH1Jdf-Pj8p9/view?usp=drive_link"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-112", "departamento": "Operaciones", "nombre": "Informe de Encuesta", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "06/12/2021", "fecha_expiracion": "06/12/2024", "ruta": "https://drive.google.com/file/d/1B3diXbPFGtANv1qVmuQM4g8mNdOSKCq2/view?usp=drive_link"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-113", "departamento": "Operaciones", "nombre": "Informe de implementación", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "15/06/2022", "fecha_expiracion": "15/06/2024", "ruta": "https://drive.google.com/file/d/1TNMmJySxtWw9HYQzJEI2nGuf-eeG7Ry8/view?usp=drive_link"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-114", "departamento": "Operaciones", "nombre": "Formato de Resumén de Seguridad de Producto Farmacéutico", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "14/11/2022", "fecha_expiracion": "14/11/2024", "ruta": "https://drive.google.com/file/d/1l-6TxMInTfqqQusdp5GFXOzf73MvKCRk/view?usp=drive_link"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-115", "departamento": "Operaciones", "nombre": "Lista de Verificación de Resumen de Seguridad de Productos Farmacéuticos", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "14/11/2022", "fecha_expiracion": "14/11/2024", "ruta": "https://drive.google.com/file/d/1Vmi99LqDzdcy7aC8z3XA2ivGaZBw8_B7/view?usp=drive_link"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-116", "departamento": "Operaciones", "nombre": "Lista de Verificación de Informes Periodicos de Seguridad (IPS) de Productos Farmacéuticos", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "14/11/2022", "fecha_expiracion": "14/11/2024", "ruta": "https://drive.google.com/file/d/1o8eFXJvVknN-j0QAl6bCIsZif3_X8CyT/view?usp=drive_link"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-117", "departamento": "Operaciones", "nombre": "Lista de Verficación de Informes Periodicos de Seguridad (IPS) de Dispositivos Médicos", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "14/11/2022", "fecha_expiracion": "14/11/2024", "ruta": "https://drive.google.com/file/d/1IuQVXij6wZc0ZBmaPgjs7KrBa7zJRGIC/view?usp=drive_link"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-118", "departamento": "Operaciones", "nombre": "Lista de Verificación de Planes de Gestión de Riesgos (PGR)", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "14/11/2022", "fecha_expiracion": "14/11/2024", "ruta": "https://drive.google.com/file/d/1-y7GwGY7c3bUf2UVK_5AQi9VW6FKIujp/view?usp=sharing"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-119", "departamento": "Operaciones", "nombre": "Gestión de la Base de Datos de Farmacovigilancia y tecnovigilancia", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "26/04/2023", "fecha_expiracion": "26/04/2026", "ruta": "https://drive.google.com/file/d/1Ot3onNZzQ8cOxqHfETfADMnhvrJjKvjK/view?usp=drive_link"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-120", "departamento": "Operaciones", "nombre": "Instructivo de Uso de la Base de Datos de Farmacovigilancia", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "26/04/2023", "fecha_expiracion": "26/04/2026", "ruta": "https://drive.google.com/file/d/1WlQazeFrSpisCvFuDM7VeR6XCtvgDFQM/view?usp=drive_link"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-121", "departamento": "Operaciones", "nombre": "Registro de Acceso a Base de Datos en Farmacovigilancia", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "26/04/2023", "fecha_expiracion": "26/04/2026", "ruta": "https://drive.google.com/file/d/1SZFey6K1P6BH8QnLA54VQj-1wfwVu3HZ/view?usp=drive_link"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-122", "departamento": "Operaciones", "nombre": "Reporte de Análisis de Tendencia de la Base de Datos", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "26/04/2023", "fecha_expiracion": "26/04/2026", "ruta": "https://drive.google.com/file/d/1aznV4P4HoLlRfdAWztBsIkR_hud8deIp/view?usp=drive_link"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-123", "departamento": "Operaciones", "nombre": "Monitoreo y Lista de verificación del Plan de Continuidad de Actividades.", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "03/02/2023", "fecha_expiracion": "03/02/2026", "ruta": "https://drive.google.com/file/d/1amhaYDFW9w9pf1Tsf5ZsmLLTxFNxH9TQ/view?usp=drive_link"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-124", "departamento": "Operaciones", "nombre": "Validación de los Procesos de Farmacovigilancia y Tecnovigilancia", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "15/03/2023", "fecha_expiracion": "15/03/2026", "ruta": "https://drive.google.com/file/d/16P4h7xpQnSiZG28xiP7nkt2dZ2qw-JtS/view?usp=drive_link"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-125", "departamento": "Operaciones", "nombre": "MATRIZ DE COMUNICACIONES INTERNAS Y EXTERNAS", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "15/03/2023", "fecha_expiracion": "15/03/2026", "ruta": "https://drive.google.com/file/d/1gpJK2YsBau9RjhRu5YfLHzvy5MFlXELm/view?usp=drive_link"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-126", "departamento": "Operaciones", "nombre": "Reporte de Indicadores de la Unidad de Farmacovigilancia y Tecnovigilancia", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "15/03/2023", "fecha_expiracion": "15/03/2026", "ruta": "https://drive.google.com/file/d/1XcCsdvpa0XbMFMYTzrU5D4T0NG2npltS/view?usp=drive_link"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-127", "departamento": "Operaciones", "nombre": "Acta de Revisión del Sistema de Farmacovigilancia y Tecnovigilancia", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "15/03/2023", "fecha_expiracion": "15/03/2026", "ruta": "https://drive.google.com/file/d/1zOrOmVDsdypn54CD9lZw04LfMBx186Gg/view?usp=drive_link"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-128", "departamento": "Operaciones", "nombre": "Informe de Validación de la Base de Datos", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "26/04/2023", "fecha_expiracion": "26/04/2026", "ruta": "https://drive.google.com/file/d/19b3VojQZ3x46dM6RZDmrMcdw3EaiVfh9/view?usp=drive_link"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-129", "departamento": "Operaciones", "nombre": "Identificación de Cambios en la Regulación", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "26/04/2023", "fecha_expiracion": "26/04/2026", "ruta": "https://docs.google.com/spreadsheets/d/1hTLM4IHYTTVYRQ6zFeyyTvCsz6gmdyCT/edit?usp=sharing&ouid=107064603921542335132&rtpof=true&sd=true"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-130", "departamento": "Calidad", "nombre": "Programa Anual de Auditoria", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "27/04/2023", "fecha_expiracion": "27/04/2026", "ruta": "https://drive.google.com/file/d/18MHqHAdip267IFwlf3t9ENkYxo7Dw-K2/view?usp=drive_link"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-131", "departamento": "Calidad", "nombre": "Guía de Auditoría Interna y/o Autoinspección: Operaciones", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "27/04/2023", "fecha_expiracion": "27/04/2026", "ruta": "https://docs.google.com/spreadsheets/d/1uvKlzB21ymkfmhEjM9vihSX1ChFI0NxM/edit?usp=drive_link&ouid=107064603921542335132&rtpof=true&sd=true"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-132", "departamento": "Calidad", "nombre": "Control de Auditorías", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "27/04/2024", "fecha_expiracion": "27/04/2027", "ruta": "https://docs.google.com/spreadsheets/d/1FZT6AUwI9eMnURYq_kdqZencErW-dOEN/edit?usp=drive_web&ouid=118418853804150303045&rtpof=true"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-132", "departamento": "Operaciones", "nombre": "Control Operacional", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "31/08/2023", "fecha_expiracion": "31/08/2026", "ruta": ""}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-133", "departamento": "Recursos Humanos", "nombre": "Contratos Conkomerco", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": null, "fecha_expiracion": null, "ruta": ""}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-134", "departamento": "Operaciones", "nombre": "Matriz de tratamiento e identificación de riesgos en Farmacovigilancia", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": null, "fecha_expiracion": null, "ruta": ""}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-135", "departamento": "Operaciones", "nombre": "Lista de verificación implementación documentaria", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "10/01/2025", "fecha_expiracion": "10/01/2028", "ruta": "https://drive.google.com/file/d/1xRzWP10KJrffvpZP_6-Om37tv8fTpYIA/view?usp=sharing"}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-136", "departamento": "Operaciones", "nombre": "Listado de revistas cientificas", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "11/01/2025", "fecha_expiracion": "11/01/2028", "ruta": ""}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-137", "departamento": "Operaciones", "nombre": "Matriz de KPI", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "01/07/2025", "fecha_expiracion": "01/07/2028", "ruta": ""}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-138", "departamento": "Administración y Logística", "nombre": "Evaluación de criticidad de proveedor", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "01/07/2025", "fecha_expiracion": "01/07/2028", "ruta": ""}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-139", "departamento": "Comercial", "nombre": "Contrato tecnico de servicio", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "01/07/2025", "fecha_expiracion": "01/07/2028", "ruta": ""}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-140", "departamento": "Comercial", "nombre": "Registro de Contratos Comerciales", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "01/07/2025", "fecha_expiracion": "01/07/2028", "ruta": ""}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-141", "departamento": "Comercial", "nombre": "Plantilla de Adenda a contrato", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "01/07/2025", "fecha_expiracion": "01/07/2028", "ruta": ""}, {"tipo": "Formatos", "sheet": "FT", "codigo": "FT-142", "departamento": "Operaciones", "nombre": "Registro de revisión normativa", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "01/07/2025", "fecha_expiracion": "01/07/2028", "ruta": ""}, {"tipo": "Documentos Internos", "sheet": "DI", "codigo": "DI-01", "departamento": "Calidad", "nombre": "Política y Objetivos de la Calidad", "version": "3.0", "estado": "Culminado", "fecha_aprobacion": "14/03/2025", "fecha_expiracion": "14/03/2028", "ruta": "https://drive.google.com/file/d/1D6ivJ2pJKhJKiDK6NLlkUX6ie9upS-01/view?usp=drive_link"}, {"tipo": "Documentos Internos", "sheet": "DI", "codigo": "DI-03", "departamento": "Calidad", "nombre": "Organización de Carpetas", "version": "2.0", "estado": "Culminado", "fecha_aprobacion": "22/11/2021", "fecha_expiracion": "22/11/2024", "ruta": "https://drive.google.com/file/d/1GYYnoxw3a4GuAzo8xKyeFQ5o6QcjNXl-/view?usp=sharing"}, {"tipo": "Documentos Internos", "sheet": "DI", "codigo": "DI-06", "departamento": "Calidad", "nombre": "Reglamento Interno de Trabajo", "version": "2.0", "estado": "Culminado", "fecha_aprobacion": "30/07/2023", "fecha_expiracion": "30/07/2026", "ruta": "https://drive.google.com/file/d/1GYYnoxw3a4GuAzo8xKyeFQ5o6QcjNXl-/view?usp=sharing"}, {"tipo": "Documentos Internos", "sheet": "DI", "codigo": "DI-07", "departamento": "Calidad", "nombre": "Realización de la debida diligencia contra el soborno sobre Terceros", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "10/07/2023", "fecha_expiracion": "10/07/2026", "ruta": "https://drive.google.com/file/d/1GYYnoxw3a4GuAzo8xKyeFQ5o6QcjNXl-/view?usp=sharing"}, {"tipo": "Documentos Internos", "sheet": "DI", "codigo": "DI-09", "departamento": "Calidad", "nombre": "Código de ética", "version": "2.0", "estado": "Culminado", "fecha_aprobacion": "01/02/2024", "fecha_expiracion": "01/02/2027", "ruta": "https://drive.google.com/file/d/158rlNLnkCVR9XfqjTt2wUvAsohPFD8GZ/view?usp=sharing"}, {"tipo": "Documentos Internos", "sheet": "DI", "codigo": "DI-12", "departamento": "Calidad", "nombre": "Política Anticorrupción y Antisoborno", "version": "2.0", "estado": "Culminado", "fecha_aprobacion": "01/02/2024", "fecha_expiracion": "01/02/2027", "ruta": "https://drive.google.com/file/d/1ZE5YrweaAp1tCcwvtA6-j1AB-OohB3U0/view?usp=sharing"}, {"tipo": "Documentos Externos", "sheet": "DE", "codigo": "DE-01", "departamento": "Operaciones", "nombre": "Manual de Buenas Practicas de Farmacovigilancia", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "18/01/2020", "fecha_expiracion": null, "ruta": "https://cdn.www.gob.pe/uploads/document/file/1487962/Resoluci%C3%B3n%20Ministerial%20N%C2%B01053-2020-MINSA.PDF"}, {"tipo": "Documentos Externos", "sheet": "DE", "codigo": "DE-02", "departamento": "Operaciones", "nombre": "DECRETO SUPREMO N°-014-2011-SA", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "27/07/2011", "fecha_expiracion": null, "ruta": "http://www.digemid.minsa.gob.pe/upload/uploaded/pdf/ds014-2011-minsa.pdf"}, {"tipo": "Documentos Externos", "sheet": "DE", "codigo": "DE-03", "departamento": "Operaciones", "nombre": "DECRETO SUPREMO N° 016-2011-SA", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "27/07/2011", "fecha_expiracion": null, "ruta": "https://www.digemid.minsa.gob.pe/upload/uploaded/pdf/ds016-2011-minsa.pdf"}, {"tipo": "Documentos Externos", "sheet": "DE", "codigo": "DE-04", "departamento": "Operaciones", "nombre": "DE LOS DOCUMENTOS REQUERIDOS EN LA INSCRIPCIÓN Y REINSCRIPCIÓN DE PRODUCTOS BIOLÓGICOS: PRODUCTOS BIOTECNOLÓGICOS", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "27/02/2016", "fecha_expiracion": null, "ruta": "https://busquedas.elperuano.pe/normaslegales/decreto-supremo-que-aprueba-el-reglamento-que-regula-la-pres-decreto-supremo-n-011-2023-sa-2178398-1/"}, {"tipo": "Documentos Externos", "sheet": "DE", "codigo": "DE-05", "departamento": "Operaciones", "nombre": "DECRETO SUPREMO N°  016-2011-S.A", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "27/07/2011", "fecha_expiracion": null, "ruta": "https://www.gob.pe/institucion/minsa/normas-legales/243290-016-2011-sa"}, {"tipo": "Documentos Externos", "sheet": "DE", "codigo": "DE-06", "departamento": "Operaciones", "nombre": "DS 016 N°  2011- REGLAMENTO DE REGISTROS DE FARMACOVIGILANCIA Y TECNOVIGILANCIA", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "27/07/2011", "fecha_expiracion": null, "ruta": "https://www.gob.pe/institucion/minsa/normas-legales/243290-016-2011-sa"}, {"tipo": "Documentos Externos", "sheet": "DE", "codigo": "DE-07", "departamento": "Operaciones", "nombre": "DS 016 N°  2011- REGLAMENTO DE REGISTROS DE DISPOSITIVOS", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "27/07/2011", "fecha_expiracion": null, "ruta": "https://www.gob.pe/institucion/minsa/normas-legales/243290-016-2011-sa"}, {"tipo": "Documentos Externos", "sheet": "DE", "codigo": "DE-08", "departamento": "Operaciones", "nombre": "DS 016 N°  2011- REGLAMENTO DE REGISTROS DE MEDICAMENTOS", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "27/07/2011", "fecha_expiracion": null, "ruta": "https://www.gob.pe/institucion/minsa/normas-legales/243290-016-2011-sa"}, {"tipo": "Documentos Externos", "sheet": "DE", "codigo": "DE-09", "departamento": "Operaciones", "nombre": "REGLAMENTO DE ESTABLECIMIENTOS FARMACEUTICOS", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "27/07/2011", "fecha_expiracion": null, "ruta": "https://busquedas.elperuano.pe/normaslegales/decreto-supremo-que-modifica-el-reglamento-de-establecimient-decreto-supremo-n-004-2021-sa-1918578-1/"}, {"tipo": "Documentos Externos", "sheet": "DE", "codigo": "DE-10", "departamento": "Operaciones", "nombre": "DECRETO SUPREMO N°-040-2016-SA", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "12/10/2016", "fecha_expiracion": null, "ruta": "https://busquedas.elperuano.pe/normaslegales/decreto-supremo-que-dicta-disposiciones-para-la-obtencion-de-decreto-supremo-n-040-2016-sa-1441350-1/"}, {"tipo": "Documentos Externos", "sheet": "DE", "codigo": "DE-11", "departamento": "Operaciones", "nombre": "LEY 29316", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "14/01/2009", "fecha_expiracion": null, "ruta": "https://www.gob.pe/institucion/indecopi/normas-legales/1667264-29316"}, {"tipo": "Documentos Externos", "sheet": "DE", "codigo": "DE-11", "departamento": "Operaciones", "nombre": "LEY 29459", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "25/11/2009", "fecha_expiracion": null, "ruta": "https://www.digemid.minsa.gob.pe/UpLoad/UpLoaded/PDF/Ley29459.pdf"}, {"tipo": "Documentos Externos", "sheet": "DE", "codigo": "DE-12", "departamento": "Operaciones", "nombre": "NORMA TECNICA DE SALUD QUE REGULA LAS ACTIVIDADES DE FARMACOVIGILANCIA Y TECNOVIGILANCIA DE PRODUCTOS FARMACEUTICOS, DISPOSITIVOSMEDICOS Y PRODUCTOS SANITARIOS", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "28/07/2016", "fecha_expiracion": null, "ruta": "https://www.gob.pe/institucion/minsa/normas-legales/192066-539-2016-minsa"}, {"tipo": "Documentos Externos", "sheet": "DE", "codigo": "DE-13", "departamento": "Operaciones", "nombre": "NTS N° 123-MINSA/DIGEMID.VOL.01", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "27/07/2016", "fecha_expiracion": null, "ruta": "https://www.gob.pe/institucion/minsa/normas-legales/192066-539-2016-minsa"}, {"tipo": "Documentos Externos", "sheet": "DE", "codigo": "DE-14", "departamento": "Operaciones", "nombre": "REGLAMENTO PARA EL REGISTRO, CONTROL Y VIGILANCIA DE PRODUCTOS FARMACEUTICO, DISPOSITIVOS MEDICOS Y PRODUCTOS SANITARIOS", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "27/07/2011", "fecha_expiracion": null, "ruta": "http://bvs.minsa.gob.pe/local/MINSA/2429.pdf"}, {"tipo": "Documentos Externos", "sheet": "DE", "codigo": "DE-15", "departamento": "Operaciones", "nombre": "1RA MODIFICATORIA DEL REGLAMENTO PARA EL REGISTRO, CONTROL Y VIGILANCIA SANITARIA DE PRODUCTOS FARMACEUTICOS, DISPOSITIVOS MEDICOS Y  PRODUCTOS SANITARIOS", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "22/01/2012", "fecha_expiracion": null, "ruta": "https://busquedas.elperuano.pe/normaslegales/modifican-reglamento-para-el-registro-control-y-vigilancia-decreto-supremo-n-016-2017-sa-1529748-9/"}, {"tipo": "Documentos Externos", "sheet": "DE", "codigo": "DE-16", "departamento": "Operaciones", "nombre": "2RA MODIFICATORIA DEL REGLAMENTO PARA EL REGISTRO, CONTROL Y VIGILANCIA SANITARIA DE PRODUCTOS FARMACEUTICOS, DISPOSITIVOS MEDICOS Y  PRODUCTOS SANITARIOS", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "24/12/2013", "fecha_expiracion": null, "ruta": ""}, {"tipo": "Documentos Externos", "sheet": "DE", "codigo": "DE-17", "departamento": "Operaciones", "nombre": "REGLAMENTO PARA EL REGISTRO, CONTROL Y VIGILANCIA DE PRODUCTOS FARMACEUTICO, DISPOSITIVOS MEDICOS Y PRODUCTOS SANITARIOS", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "27/07/2011", "fecha_expiracion": null, "ruta": ""}, {"tipo": "Documentos Externos", "sheet": "DE", "codigo": "DE-18", "departamento": "Operaciones", "nombre": "MODIFICATORIA DEL REGLAMENTO DE ESTABLECIMIENTOS FARMACEUTICOS A EFECTO DE INCLUIR LA REPUBLICA DE COREA COMO PAIS DEALTA VIGILANCIA", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "21/04/2015", "fecha_expiracion": null, "ruta": "https://sni.org.pe/modifican-reglamento-de-establecimientos-farmaceuticos-a-efecto-de-incluir-a-la-republica-de-corea-como-pais-de-alta-vigilancia-sanitaria/"}, {"tipo": "Documentos Externos", "sheet": "DE", "codigo": "DE-19", "departamento": "Operaciones", "nombre": "DS N° 029-2015", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "12-sep-2015", "fecha_expiracion": null, "ruta": "https://www.digemid.minsa.gob.pe/webDigemid/normas-legales/2015/decreto-supremo-n-029-2015-sa/"}, {"tipo": "Documentos Externos", "sheet": "DE", "codigo": "DE-20", "departamento": "Operaciones", "nombre": "MODIFICATORIA DEL ARTICULO 103 DEL REGLAMENTO DEL REGLAMENTO PARA EL REGISTRO, CONTROL Y VIGILANCIA SANITARIA DE PRODUCTOS FARMACEUTICOS, DISPOSITIVOS MEDICOS, Y PRODUCTOS SANITARIOS Y APRUEBA EL REGLAMENTO QUE REGULA LA PRESENTACION Y CONTENIDO DE LOS DOCUMENTOS REQUERIDOS EN LAINSCRIPCION Y REINSCRIPCION DE PRODUCTOS BIOLOGICOS, PRODUCTOS BIOTECNOLOGICOS.", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "27/02/2016", "fecha_expiracion": null, "ruta": "https://busquedas.elperuano.pe/normaslegales/decreto-supremo-que-modifica-el-articulo-103-del-reglamento-decreto-supremo-n-011-2016-sa-1350195-2/"}, {"tipo": "Documentos Externos", "sheet": "DE", "codigo": "DE-21", "departamento": "Operaciones", "nombre": "6TA MODIFICATORIA DEL DS 016-2017", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "07/06/2017", "fecha_expiracion": null, "ruta": "https://busquedas.elperuano.pe/normaslegales/decreto-supremo-que-modifica-el-reglamento-de-la-ley-general-decreto-supremo-n-016-2017-tr-1551410-4/"}, {"tipo": "Documentos Externos", "sheet": "DE", "codigo": "DE-22", "departamento": "Operaciones", "nombre": "MODIFICATORIA DEL REGISTRO,CONTROL YVIGILANCIA SANITARIA DE PRODUCTOS FARMACEUTICOS, DISPOSITIVOS MEDICOS Y PRODUCTOS SANITARIOS Y REGLAMENTO DE ESTABLECIMIENTOS FARMACEUTICOS A EFECTO DE INCLUIR AIRLANDA COMO PAIS DE ALTA VIGILANCIA SANITARIA.", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "04/12/2017", "fecha_expiracion": null, "ruta": "https://busquedas.elperuano.pe/normaslegales/modifican-el-reglamento-para-el-registro-control-y-vigilanc-decreto-supremo-n-001-2019-sa-1728097-3/"}, {"tipo": "Documentos Externos", "sheet": "DE", "codigo": "DE-23", "departamento": "Operaciones", "nombre": "PRORROGA DE PLAZO ESTABLECIDO EN LA SEGUNDA DISPOSICION COMPLEMENTARIA TRANSITORIA DEL DECRETO SUPREMO N 016-2013-SA", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "21/12/2017", "fecha_expiracion": null, "ruta": "https://busquedas.elperuano.pe/normaslegales/prorrogan-plazo-establecido-en-la-segunda-disposicion-comple-decreto-supremo-n-036-2017-sa-1599656-8/"}, {"tipo": "Documentos Externos", "sheet": "DE", "codigo": "DE-24", "departamento": "Operaciones", "nombre": "REGLAMENTO DE ENSAYOS CLINICOS EN EL PERU", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "30/06/2017", "fecha_expiracion": null, "ruta": "https://ensayosclinicos-repec.ins.gob.pe/regulacion/normatividad-vigente/205-reglamento-de-ensayos-clinicos"}, {"tipo": "Documentos Externos", "sheet": "DE", "codigo": "DE-25", "departamento": "Operaciones", "nombre": "REGLAMENTO DE ENSAYOS CLINICOS EN EL PERU- MINSA", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "2011.0", "fecha_expiracion": null, "ruta": "https://web.ins.gob.pe/es/investigacion-en-salud/normatividad-de-ensayos-clinicos/normatividad-ensayos-clinicos"}, {"tipo": "Documentos Externos", "sheet": "DE", "codigo": "DE-26", "departamento": "Operaciones", "nombre": "LEY N° 29571 - CODIGO DEPROTECCION Y DEFENSA DEL CONSUMIDOR", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "14/08/2010", "fecha_expiracion": null, "ruta": "https://www.indecopi.gob.pe/documents/20195/177451/CodigoDProteccionyDefensaDelConsumidor%5B1%5D.pdf/934ea9ef-fcc9-48b8-9679-3e8e2493354e"}, {"tipo": "Documentos Externos", "sheet": "DE", "codigo": "DE-27", "departamento": "Operaciones", "nombre": "Decreto Supremo N° 013-2014/MINSA-SA DISPOSICIONES REFERIDAS AL SISTEMA PERUANO DE FARMACOVIGILANCIA Y TECNOVIGILANCIA Y TECNOVIGILANCIA", "version": "1.0", "estado": "Aprobado", "fecha_aprobacion": "08/07/2014", "fecha_expiracion": null, "ruta": "https://www.gob.pe/institucion/minsa/normas-legales/197148-013-2014-sa"}, {"tipo": "Documentos Externos", "sheet": "DE", "codigo": "DE-28", "departamento": "Operaciones", "nombre": "DECRETO SUPREMO QUE APRUEBA EL REGLAMENTO DEL LIBRO", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "19/02/2011", "fecha_expiracion": null, "ruta": "https://busquedas.elperuano.pe/normaslegales/decreto-supremo-que-aprueba-el-reglamento-de-la-ley-n-31053-decreto-supremo-n-018-2021-mc-1976380-2/"}, {"tipo": "Documentos Externos", "sheet": "DE", "codigo": "DE-29", "departamento": "Operaciones", "nombre": "MEDIDAS PREVENTIVAS DE FISCALIZACION Y SUPERVICION PARA ENSAYOS CLINICOS", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "18/07/2011", "fecha_expiracion": null, "ruta": "https://cdn.www.gob.pe/uploads/document/file/195719/194440_DECRETO_SUPREMO_N_C2_B0_020-2015-SA.pdf20180904-20266-1bxrb1g.pdf"}, {"tipo": "Documentos Externos", "sheet": "DE", "codigo": "DE-30", "departamento": "Operaciones", "nombre": "REGLAMENTO DE BIOLOGICOS QUE OPTEN POR LA VIA DE SIMILARIDAD", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "01/03/2016", "fecha_expiracion": null, "ruta": "https://members.wto.org/crnattachments/2022/TBT/PER/22_5637_00_s.pdf"}, {"tipo": "Documentos Externos", "sheet": "DE", "codigo": "DE-31", "departamento": "Operaciones", "nombre": "REGLAMENTO DE ESTABLECIMIENTOS FARMACEUTICOS OBLIGATORIO", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "27/06/2011", "fecha_expiracion": null, "ruta": "https://busquedas.elperuano.pe/normaslegales/modifican-reglamento-de-establecimientos-farmaceuticos-decreto-supremo-n-016-2019-sa-1784080-2/"}, {"tipo": "Documentos Externos", "sheet": "DE", "codigo": "DE-32", "departamento": "Operaciones", "nombre": "REGLAMENTO DE ESTABLECIMIENTOS FARMACEUTICOS", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "27/06/2011", "fecha_expiracion": null, "ruta": "https://cdn.www.gob.pe/uploads/document/file/272179/243288_14_-_DS_N_C2_B0_014-2011-SA.pdf20190110-18386-1g9v4p5.pdf"}, {"tipo": "Documentos Externos", "sheet": "DE", "codigo": "DE-33", "departamento": "Operaciones", "nombre": "REGLAMENTO DE ESTABLECIMIENTOS FARMACEUTICOS", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "08/01/2016", "fecha_expiracion": null, "ruta": "-"}, {"tipo": "Documentos Externos", "sheet": "DE", "codigo": "DE-34", "departamento": "Operaciones", "nombre": "DECRETO SUPREMO QUE APRUEBA EL TEXTO UNICO DE PROCEDIMIENTOS ADMINISTRATIVOS- TUPA DEL MINISTERIO DE SALUD OBLIGATORIO", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "08/01/2016", "fecha_expiracion": null, "ruta": "https://busquedas.elperuano.pe/normaslegales/decreto-supremo-que-aprueba-el-texto-unico-de-procedimientos-decreto-supremo-n-018-2022-sa-2113492-1/"}, {"tipo": "Documentos Externos", "sheet": "DE", "codigo": "DE-35", "departamento": "Operaciones", "nombre": "DOCUMENTO DE ORIENTACION PARA LA IDENTIFICACION Y NOTIFICACION DE SOSPECHAS DE REACCIONES ADVERSAS A MEDICAMENTOS U OTROS PRODUCTOS FARMACEUTICOS", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "01/03/2018", "fecha_expiracion": null, "ruta": "http://www.digemid.minsa.gob.pe/upload/uploaded/pdf/farmacovigilancia/documentoorientacionsospechasram.pdf"}, {"tipo": "Documentos Externos", "sheet": "DE", "codigo": "DE-36", "departamento": "Operaciones", "nombre": "DOCUMENTO DE ORIENTACION PARA LA ELABORACION DE LOS INFORMES PERIODICOS DE SEGURIDAD (IPS)", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": null, "fecha_expiracion": null, "ruta": "http://www.digemid.minsa.gob.pe/UpLoad/UpLoaded/PDF/Farmacovigilancia/InstructivoIPS.pdf"}, {"tipo": "Documentos Externos", "sheet": "DE", "codigo": "DE-37", "departamento": "Operaciones", "nombre": "LEY N° 29571 - CODIGO DEPROTECCION Y DEFENSA DEL CONSUMIDOR", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "1-sep-2010", "fecha_expiracion": null, "ruta": "-"}, {"tipo": "Documentos Externos", "sheet": "DE", "codigo": "DE-38", "departamento": "Operaciones", "nombre": "LEY GENERAL DE SALUD LEY N° 26842", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "20/07/1997", "fecha_expiracion": null, "ruta": "https://www.digemid.minsa.gob.pe/upload/uploaded/pdf/leyn26842.pdf"}, {"tipo": "Documentos Externos", "sheet": "DE", "codigo": "DE-39", "departamento": "Operaciones", "nombre": "ALGORITMO DE DECISION PARA LA EVALUACION DE LA RELACION DE CAUSALIDAD DE UNA RAM", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "21-sep-2000", "fecha_expiracion": null, "ruta": "http://www.digemid.minsa.gob.pe/upload/uploaded/pdf/rd813-2000-dg.pdf"}, {"tipo": "Documentos Externos", "sheet": "DE", "codigo": "DE-40", "departamento": "Operaciones", "nombre": "NORMA TECNICA DE SALUD QUE ESTABLECE LOS CRITERIOS ETICOS PARA LA PROMOCION Y PUBLICIDAD DE PRODUCTOS FARMACEUTICOS, DISPOSITIVOS MEDICOS Y PRODUCTOS SANITARIOS", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "08/06/2020", "fecha_expiracion": null, "ruta": ""}, {"tipo": "Documentos Externos", "sheet": "DE", "codigo": "DE-41", "departamento": "Operaciones", "nombre": "Resolución Ministerial N° 1053-2020-MINSA", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "19/12/2020", "fecha_expiracion": null, "ruta": "· https://www.gob.pe/institucion/minsa/normas-legales/1430081-1053-2020-minsa"}, {"tipo": "Documentos Externos", "sheet": "DE", "codigo": "DE-42", "departamento": "Operaciones", "nombre": "Modelo de Informe Periódico de Seguridad (IPS) de Dispositivos Médicos", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": null, "fecha_expiracion": null, "ruta": "http://www.digemid.minsa.gob.pe/UpLoad/UpLoaded/PDF/Farmacovigilancia/ModeloIPS_10-20.pdf"}, {"tipo": "Documentos Externos", "sheet": "DE", "codigo": "DE-43", "departamento": "Operaciones", "nombre": "NORMA TÉCNICA DE SALUD QUE REGULA LA LABORACIÓN DEL PLAN DE GESTIÓN DE RIESGOS DE LOS PRODUCTOS FARMACÉUTICOS", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "28/08/2019", "fecha_expiracion": null, "ruta": "https://cdn.www.gob.pe/uploads/document/file/357494/resolucion-ministerial-n-796-2019-minsa.PDF"}, {"tipo": "Documentos Externos", "sheet": "DE", "codigo": "DE-44", "departamento": "Operaciones", "nombre": "Guía de Auditoría Remota", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "10/08/2020", "fecha_expiracion": null, "ruta": "https://www.gob.pe/institucion/inacal/noticias/287026-inacal-aprueba-guia-peruana-para-la-gestion-de-auditorias-remotas-en-las-organizaciones"}, {"tipo": "Documentos Externos", "sheet": "DE", "codigo": "DE-45", "departamento": "Operaciones", "nombre": "Buenas Prácticas de Farmacovigilancia", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "01/12/2010", "fecha_expiracion": null, "ruta": ""}, {"tipo": "Documentos Externos", "sheet": "DE", "codigo": "DE-46", "departamento": "Operaciones", "nombre": "DECRETO DE URGENCIA QUE MODIFICA LOS DECRETOS DE URGENCIA", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "30/12/2021", "fecha_expiracion": null, "ruta": "https://drive.google.com/drive/folders/1FhdwRlwT1D-zN6YruSPEdGA_rGwZKK77"}, {"tipo": "Documentos Externos", "sheet": "DE", "codigo": "DE-47", "departamento": "Operaciones", "nombre": "Guía de Prevención Covid 19 en el trabajo", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "06/03/2020", "fecha_expiracion": null, "ruta": "https://cdn.www.gob.pe/uploads/document/file/545998/doc04965720200309090043.pdf"}, {"tipo": "Documentos Externos", "sheet": "DE", "codigo": "DE-48", "departamento": "Operaciones", "nombre": "GUÍA DE LA APLICACIÓN DEL TRABAJO REMOTO", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "10/08/2020", "fecha_expiracion": null, "ruta": "https://www.gob.pe/institucion/mtpe/informes-publicaciones/541100-guia-para-la-aplicacion-del-trabajo-remoto"}, {"tipo": "Documentos Externos", "sheet": "DE", "codigo": "DE-49", "departamento": "Operaciones", "nombre": "LEY DE PROTECCIÓN DE DATOS PERSONALES", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "07/01/2017", "fecha_expiracion": null, "ruta": "https://www.gob.pe/institucion/congreso-de-la-republica/normas-legales/243470-29733"}, {"tipo": "Documentos Externos", "sheet": "DE", "codigo": "DE-50", "departamento": "Operaciones", "nombre": "PLAN PARA LA VIGILANCIA , PREVENCIÓN Y CONTROL DE COVID-19 EN EL TRABAJO", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "05/06/2020", "fecha_expiracion": null, "ruta": "https://cdn.www.gob.pe/uploads/document/file/2854494/PLAN%20PARA%20LA%20VIGILANCIA%2C%20PREVENCION%20Y%20CONTROL%20DE%20COVID%20-%2019%20EN%20EL%20TRABAJO.pdf.pdf?v=1645739780"}, {"tipo": "Documentos Externos", "sheet": "DE", "codigo": "DE-51", "departamento": "Operaciones", "nombre": "SISTEMA PERUANO DE FARMACOVIGILANCIA Y TECNOVIGILANCIA", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": null, "fecha_expiracion": null, "ruta": ""}, {"tipo": "Documentos Externos", "sheet": "DE", "codigo": "DE-52", "departamento": "Operaciones", "nombre": "RD N° 354-99-DG-DIGEMID: Sistema Peruano de Farmacovigilancia y Tecnovigilancia.", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "1999.0", "fecha_expiracion": null, "ruta": ""}, {"tipo": "Documentos Externos", "sheet": "DE", "codigo": "DE-53", "departamento": "Operaciones", "nombre": "RD N° 144-16-DG-DIGEMID: Aprueba Formato de Notificación de Sospechas de Reacciones Adversas a medicamentos u otros productos farmacéuticos", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "10/08/2016", "fecha_expiracion": null, "ruta": "https://www.digemid.minsa.gob.pe/Archivos/Normatividad/2016/RD_144.pdf"}, {"tipo": "Documentos Externos", "sheet": "DE", "codigo": "DE-54", "departamento": "Operaciones", "nombre": "Formato de Incidentes", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "15/03/2023", "fecha_expiracion": null, "ruta": ""}, {"tipo": "Documentos Externos", "sheet": "DE", "codigo": "DE-55", "departamento": "Operaciones", "nombre": "Instructivo de eReporting", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "01/03/2020", "fecha_expiracion": null, "ruta": "https://www.digemid.minsa.gob.pe/Archivos/PortalWeb/Informativo/e-Reporting//Instructivo_Profesionales_Salud_V2.pdf"}, {"tipo": "Documentos Externos", "sheet": "DE", "codigo": "DE-56", "departamento": "Operaciones", "nombre": "R.M. N° 132-2015/MINSA; Manual de Buenas Prácticas de almacenamiento de productos farmacéuticos, dispositivos médicos y productos sanitarios en laboratorios, drogerias, almacenes especializados y almacenes aduaneros.", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "02/03/2015", "fecha_expiracion": null, "ruta": "https://www.minsa.gob.pe/Recursos/OTRANS/08Proyectos/2022/RM%20132-2015-MINSA%20BUENAS%20PR%C3%81CTICAS%20DE%20ALMACENAMIENTO.pdf"}, {"tipo": "Documentos Externos", "sheet": "DE", "codigo": "DE-57", "departamento": "Operaciones", "nombre": "R.M. N°833-2015/MINSA; Manual de Buenas Prácticas de Distribución y Transporte de Productos Farmacéutico, Dispositivos Médicos y Productos Sanitarios.", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "23/12/2015", "fecha_expiracion": null, "ruta": "https://www.gob.pe/institucion/minsa/normas-legales/192969-833-2015-minsa"}, {"tipo": "Documentos Externos", "sheet": "DE", "codigo": "DE-58", "departamento": "Calidad", "nombre": "Norma Internacional ISO 9001:2015", "version": "1.0", "estado": "Culminado", "fecha_aprobacion": "15/09/2015", "fecha_expiracion": null, "ruta": "http://www.congresoson.gob.mx:81/Content/ISO/documentos/ISO_9001_2015.pdf"}];
 
-const TABLE_ALERTAS  = 'alertas_digemid';
-const TABLE_PERFILES = 'perfiles';
+var CATS = [
+  {key:"P",    label:"Planes",                      icon:"🗺️", theme:"t-P"  },
+  {key:"M",    label:"Manuales",                    icon:"📘", theme:"t-M"  },
+  {key:"PR-E", label:"Procedimientos Estratégicos", icon:"♟️", theme:"t-PE" },
+  {key:"PR-O", label:"Procedimientos Operativos",   icon:"⚙️", theme:"t-PO" },
+  {key:"PR-S", label:"Procedimientos de Soporte",   icon:"🔧", theme:"t-PS" },
+  {key:"INS",  label:"Instructivos",                icon:"📝", theme:"t-INS"},
+  {key:"FT",   label:"Formatos",                    icon:"🗂️", theme:"t-FT" },
+  {key:"DI",   label:"Documentos Internos",         icon:"🏢", theme:"t-DI" },
+  {key:"DE",   label:"Documentos Externos",         icon:"🌐", theme:"t-DE" }
+];
 
-let alertas      = [];
-let usuarios      = [];
-let sortKey       = 'fecha_publicacion';
-let sortDir       = 'desc';
-let currentUser   = null;
-let currentPerfil = null;
+var state = {
+  sidebarFilter: "todos",
+  deptFilter: "todos",
+  accOpen: {},
+  allExpanded: false
+};
+CATS.forEach(function(c){ state.accOpen[c.key] = false; });
 
-/* ════════════════════════════════════════════
-   AUTH — login / registro / sesión
-════════════════════════════════════════════ */
-function cambiarTabAuth(tab) {
-  document.getElementById('tabLogin').classList.toggle('active', tab === 'login');
-  document.getElementById('tabSignup').classList.toggle('active', tab === 'signup');
-  document.getElementById('loginForm').classList.toggle('gate-hidden', tab !== 'login');
-  document.getElementById('signupForm').classList.toggle('gate-hidden', tab !== 'signup');
-}
-
-async function manejarLogin(event) {
-  event.preventDefault();
-  const btn = document.getElementById('loginBtn');
-  const errDiv = document.getElementById('loginError');
-  errDiv.style.display = 'none';
-
-  const email    = document.getElementById('loginEmail').value.trim().toLowerCase();
-  const password = document.getElementById('loginPassword').value;
-
-  btn.disabled = true; btn.textContent = 'Ingresando…';
-  const { error } = await sb.auth.signInWithPassword({ email, password });
-  btn.disabled = false; btn.textContent = 'Ingresar';
-
-  if (error) {
-    errDiv.textContent = '⚠ ' + (error.message === 'Invalid login credentials'
-      ? 'Correo o contraseña incorrectos.' : error.message);
-    errDiv.style.display = 'block';
-  }
-  // onAuthStateChange se encarga de mostrar la app al iniciar sesión con éxito
-}
-
-async function manejarSignup(event) {
-  event.preventDefault();
-  const btn = document.getElementById('signupBtn');
-  const errDiv = document.getElementById('signupError');
-  const okDiv  = document.getElementById('signupOk');
-  errDiv.style.display = 'none'; okDiv.style.display = 'none';
-
-  const nombre   = document.getElementById('signupNombre').value.trim();
-  const email    = document.getElementById('signupEmail').value.trim().toLowerCase();
-  const empresa  = document.getElementById('signupEmpresa').value.trim();
-  const password = document.getElementById('signupPassword').value;
-
-  btn.disabled = true; btn.textContent = 'Creando cuenta…';
-  const { data, error } = await sb.auth.signUp({
-    email, password,
-    options: { data: { nombre, empresa: empresa || null } }
+// ── Dept pills ──────────────────────────────────────────────────────────────
+function buildDeptPills(){
+  var deps = [];
+  var seen = {};
+  DOCS.forEach(function(d){
+    if(d.departamento && !seen[d.departamento]){
+      seen[d.departamento] = true;
+      deps.push(d.departamento);
+    }
   });
-  btn.disabled = false; btn.textContent = 'Crear cuenta';
-
-  if (error) {
-    errDiv.textContent = '⚠ ' + error.message;
-    errDiv.style.display = 'block';
-    return;
-  }
-
-  if (data.session) {
-    // Confirmación de correo desactivada en el proyecto → ya quedó logueado
-  } else {
-    okDiv.textContent = '✓ Cuenta creada. Revisa tu correo para confirmar la cuenta antes de iniciar sesión.';
-    okDiv.style.display = 'block';
-    document.getElementById('signupForm').reset();
-  }
-}
-
-function cerrarSesion() {
-  sb.auth.signOut();
-}
-
-async function iniciarSesionGoogle() {
-  const { error } = await sb.auth.signInWithOAuth({
-    provider: 'google',
-    options: { redirectTo: window.location.origin + window.location.pathname }
-  });
-  if (error) alert('No se pudo iniciar sesión con Google: ' + error.message);
-  // Si no hay error, el navegador redirige a Google; al volver, onAuthStateChange
-  // detecta la sesión automáticamente y muestra la app.
-}
-
-async function onLoggedIn(session) {
-  currentUser = session.user;
-
-  const { data: perfil, error } = await sb.from(TABLE_PERFILES).select('*').eq('id', currentUser.id).single();
-  currentPerfil = perfil || null;
-
-  // Marca de último acceso (no bloqueante)
-  sb.from(TABLE_PERFILES).update({ ultimo_acceso: new Date().toISOString() }).eq('id', currentUser.id).then(()=>{});
-
-  document.getElementById('gateOverlay').classList.add('gate-hidden');
-  document.getElementById('rootApp').classList.remove('gate-hidden');
-  document.getElementById('userBadge').classList.remove('gate-hidden');
-
-  const esAdmin = currentPerfil?.rol === 'admin';
-  document.getElementById('whoText').innerHTML =
-    `<b>${currentPerfil?.nombre || currentUser.email}${esAdmin ? '<span class="admin-tag">ADMIN</span>' : ''}</b><span>${currentUser.email}</span>`;
-  document.getElementById('navUsuarios').classList.toggle('gate-hidden', !esAdmin);
-  document.getElementById('alertsTable').classList.toggle('is-admin', esAdmin);
-  document.getElementById('cimaLink').classList.toggle('gate-hidden', !(esAdmin || currentPerfil?.acceso_cima));
-  document.getElementById('pavsLink').classList.remove('gate-hidden');
-  document.getElementById('aemsLink').classList.remove('gate-hidden');
-
-  cargarAlertas();
-}
-
-function onLoggedOut() {
-  currentUser = null;
-  currentPerfil = null;
-  document.getElementById('alertsTable').classList.remove('is-admin');
-  document.getElementById('gateOverlay').classList.remove('gate-hidden');
-  document.getElementById('rootApp').classList.add('gate-hidden');
-  document.getElementById('userBadge').classList.add('gate-hidden');
-  document.getElementById('cimaLink').classList.add('gate-hidden');
-  document.getElementById('pavsLink').classList.add('gate-hidden');
-  document.getElementById('aemsLink').classList.add('gate-hidden');
-  cambiarVista('alertas');
-}
-
-sb.auth.onAuthStateChange((event, session) => {
-  if (event === 'SIGNED_IN' && session) onLoggedIn(session);
-  if (event === 'SIGNED_OUT') onLoggedOut();
-});
-
-(async function initAuth() {
-  const { data: { session } } = await sb.auth.getSession();
-  if (session) onLoggedIn(session);
-  else onLoggedOut();
-})();
-
-/* ════════════════════════════════════════════
-   NAV DE VISTAS
-════════════════════════════════════════════ */
-function cambiarVista(vista) {
-  document.getElementById('vistaAlertas').classList.toggle('gate-hidden', vista !== 'alertas');
-  document.getElementById('vistaUsuarios').classList.toggle('gate-hidden', vista !== 'usuarios');
-  document.getElementById('navAlertas').classList.toggle('active', vista === 'alertas');
-  document.getElementById('navUsuarios').classList.toggle('active', vista === 'usuarios');
-  if (vista === 'usuarios' && !usuarios.length) cargarUsuarios();
-}
-
-/* ════════════════════════════════════════════
-   ALERTAS
-════════════════════════════════════════════ */
-async function cargarAlertas() {
-  const pill = document.getElementById('statusPill');
-  pill.className = 'status-pill loading';
-  pill.textContent = 'Cargando…';
-
-  try {
-    const limit = parseInt(document.getElementById('limitSelect')?.value || '50', 10);
-    let query = sb.from(TABLE_ALERTAS).select('*').order('fecha_publicacion', { ascending: false });
-    if (limit > 0) query = query.limit(limit);
-    const { data, error } = await query;
-    if (error) throw error;
-    alertas = data || [];
-
-    pill.className = 'status-pill';
-    pill.textContent = `${alertas.length} alertas · ${new Date().toLocaleTimeString('es-PE')}`;
-    populateTipoFilter();
-    renderTable();
-  } catch (e) {
-    pill.className = 'status-pill error';
-    pill.textContent = 'Error de conexión';
-    document.getElementById('alertsTbody').innerHTML = `
-      <tr><td colspan="11"><div class="state-box">
-        <div class="state-icon">⚠</div>
-        <div>No se pudo conectar a Supabase.<br>${e.message}</div>
-        <button class="retry" onclick="cargarAlertas()">Reintentar</button>
-      </div></td></tr>`;
-  }
-}
-
-function tipoClass(tipo) {
-  const t = (tipo || '').toLowerCase();
-  if (t.includes('falsific')) return 'tipo-falsificados';
-  if (t.includes('calidad'))  return 'tipo-calidad';
-  if (t.includes('seguridad')) return 'tipo-seguridad';
-  return 'tipo-general';
-}
-
-function populateTipoFilter() {
-  const sel = document.getElementById('tipoFilter');
-  if (!sel) return;
-  const current = sel.value;
-  const tipos = [...new Set(alertas.map(a => a.tipo_alerta).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
-  sel.innerHTML = `<option value="">Todos los tipos</option>` +
-    tipos.map(t => `<option value="${t}">${t}</option>`).join('');
-  sel.value = tipos.includes(current) ? current : '';
-}
-
-function sortTable(key) {
-  if (sortKey === key) { sortDir = sortDir === 'asc' ? 'desc' : 'asc'; }
-  else { sortKey = key; sortDir = 'asc'; }
-  renderTable();
-}
-
-function filterTable() { renderTable(); }
-
-function renderTable() {
-  const q    = (document.getElementById('tblSearch')?.value || '').toLowerCase();
-  const urg  = document.getElementById('urgFilter')?.value || '';
-  const tipo = document.getElementById('tipoFilter')?.value || '';
-  const tbody = document.getElementById('alertsTbody');
-
-  let rows = alertas.filter(a => {
-    const matchQ = !q ||
-      (a.titulo||'').toLowerCase().includes(q) ||
-      (a.producto||'').toLowerCase().includes(q) ||
-      (a.titular_registro_sanitario||'').toLowerCase().includes(q) ||
-      (a.numero_lote||'').toLowerCase().includes(q) ||
-      (a.tipo_alerta||'').toLowerCase().includes(q) ||
-      (a.accion_principal||'').toLowerCase().includes(q);
-    const matchUrg  = !urg  || a.urgencia === urg;
-    const matchTipo = !tipo || a.tipo_alerta === tipo;
-    return matchQ && matchUrg && matchTipo;
+  deps.sort(function(a,b){
+    return DOCS.filter(function(d){return d.departamento===b;}).length
+         - DOCS.filter(function(d){return d.departamento===a;}).length;
   });
 
-  if (sortKey) {
-    rows = [...rows].sort((x, y) => {
-      const a = (x[sortKey] || '').toString();
-      const b = (y[sortKey] || '').toString();
-      return sortDir === 'asc' ? a.localeCompare(b) : b.localeCompare(a);
+  var bar = document.getElementById("repo-dept-pills");
+  var html = '<span class="dp active" data-dep="todos">Todos</span>';
+  deps.forEach(function(dep){
+    var n = DOCS.filter(function(d){return d.departamento===dep;}).length;
+    var safe = dep.replace(/"/g,'&quot;');
+    html += '<span class="dp" data-dep="' + safe + '">' + dep + ' (' + n + ')</span>';
+  });
+  bar.innerHTML = html;
+  bar.addEventListener("click", function(e){
+    var el = e.target.closest(".dp");
+    if(!el) return;
+    state.deptFilter = el.getAttribute("data-dep");
+    bar.querySelectorAll(".dp").forEach(function(p){ p.classList.remove("active"); });
+    el.classList.add("active");
+    render();
+  });
+}
+
+// ── Sidebar filter ──────────────────────────────────────────────────────────
+window.setSF = function(key){
+  state.sidebarFilter = key;
+  document.querySelectorAll(".nav-item").forEach(function(el){ el.classList.remove("active"); });
+  var el = document.getElementById("nav-" + key);
+  if(el) el.classList.add("active");
+  // If single category: expand just that one
+  var isCat = CATS.some(function(c){ return c.key === key; });
+  if(isCat){
+    CATS.forEach(function(c){ state.accOpen[c.key] = (c.key === key); });
+  }
+  render();
+};
+
+// ── Filter logic ────────────────────────────────────────────────────────────
+function filterDocs(sheet){
+  var q  = document.getElementById("repo-search").value.toLowerCase().trim();
+  var fl = document.getElementById("repo-link-filter").value;
+  var fe = document.getElementById("repo-estado-filter").value;
+  var sf = state.sidebarFilter;
+  var df = state.deptFilter;
+
+  return DOCS.filter(function(d){
+    if(d.sheet !== sheet) return false;
+    if(sf === "link"   && !d.ruta.startsWith("http")) return false;
+    if(sf === "nolink" &&  d.ruta.startsWith("http")) return false;
+    if(sf !== "todos" && sf !== "link" && sf !== "nolink" && d.sheet !== sf) return false;
+    if(df !== "todos" && d.departamento !== df) return false;
+    if(fl === "con" && !d.ruta.startsWith("http")) return false;
+    if(fl === "sin" &&  d.ruta.startsWith("http")) return false;
+    if(fe && d.estado !== fe) return false;
+    if(q){
+      var hay = (d.codigo + " " + d.nombre + " " + d.departamento).toLowerCase();
+      if(hay.indexOf(q) === -1) return false;
+    }
+    return true;
+  });
+}
+
+function catVisible(key){
+  var sf = state.sidebarFilter;
+  if(sf !== "todos" && sf !== "link" && sf !== "nolink") return key === sf;
+  return true;
+}
+
+// ── Table builder ───────────────────────────────────────────────────────────
+function esc(s){ return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+
+function buildTable(docs){
+  if(!docs.length) return '<div class="acc-empty">Sin documentos para este filtro</div>';
+  var rows = docs.map(function(d){
+    var link = d.ruta && d.ruta.startsWith("http")
+      ? '<a class="dlink" href="' + esc(d.ruta) + '" target="_blank" rel="noopener">🔗 Abrir</a>'
+      : '<span class="nolink">— sin enlace</span>';
+    var badge = (d.estado === "Culminado" || d.estado === "Aprobado")
+      ? '<span class="bdg bdg-g">✓ ' + esc(d.estado) + '</span>'
+      : '<span class="bdg bdg-x">' + esc(d.estado||"") + '</span>';
+    return [
+      '<tr>',
+      '<td class="code">', esc(d.codigo), '</td>',
+      '<td class="nombre">', esc(d.nombre), '</td>',
+      '<td class="depto">', esc(d.departamento||"—"), '</td>',
+      '<td style="font-family:var(--mono);font-size:10px;text-align:center;color:var(--text3);">', esc(d.version), '</td>',
+      '<td>', badge, '</td>',
+      '<td style="font-family:var(--mono);font-size:9px;white-space:nowrap;color:var(--text3);">', esc(d.fecha_aprobacion||"—"), '</td>',
+      '<td style="font-family:var(--mono);font-size:9px;white-space:nowrap;color:var(--text3);">', esc(d.fecha_expiracion||"—"), '</td>',
+      '<td>', link, '</td>',
+      '</tr>'
+    ].join("");
+  }).join("");
+  return [
+    '<div class="twrap"><table>',
+    '<thead><tr>',
+    '<th>Código</th><th>Nombre</th><th>Depto.</th><th>Ver.</th>',
+    '<th>Estado</th><th>F. Aprobación</th><th>F. Expiración</th><th>Acceso</th>',
+    '</tr></thead>',
+    '<tbody>', rows, '</tbody>',
+    '</table></div>'
+  ].join("");
+}
+
+// ── Accordion builder ───────────────────────────────────────────────────────
+function buildAccordion(cat){
+  if(!catVisible(cat.key)) return "";
+  var allDocs  = DOCS.filter(function(d){ return d.sheet === cat.key; });
+  var filtered = filterDocs(cat.key);
+  var q  = document.getElementById("repo-search").value.trim();
+  var df = state.deptFilter;
+  var fl = document.getElementById("repo-link-filter").value;
+  var fe = document.getElementById("repo-estado-filter").value;
+  // Hide if empty after active filter
+  if(filtered.length === 0 && (q || df !== "todos" || fl || fe)) return "";
+  var conLink = allDocs.filter(function(d){ return d.ruta && d.ruta.startsWith("http"); }).length;
+  var isOpen  = state.accOpen[cat.key];
+
+  return [
+    '<div class="accordion" id="acc-', cat.key, '">',
+    '<div class="acc-header ', (isOpen ? "open" : ""), '" data-key="', cat.key, '">',
+      '<div class="acc-left">',
+        '<div class="acc-ico ', cat.theme, '">', cat.icon, '</div>',
+        '<div>',
+          '<div class="acc-title">', cat.label, '</div>',
+          '<div class="acc-sub">', cat.key, ' · ', allDocs.length, ' documentos</div>',
+        '</div>',
+      '</div>',
+      '<div class="acc-right">',
+        (conLink ? '<span class="acc-link">🔗 ' + conLink + '</span>' : ""),
+        '<span class="acc-cnt" id="acnt-', cat.key, '">', filtered.length, '</span>',
+        '<span class="acc-chev">▼</span>',
+      '</div>',
+    '</div>',
+    '<div class="acc-body ', (isOpen ? "open" : ""), '" id="abody-', cat.key, '">',
+      buildTable(filtered),
+    '</div>',
+    '</div>'
+  ].join("");
+}
+
+// ── Render ──────────────────────────────────────────────────────────────────
+function render(){
+  var content = document.getElementById("repo-content");
+  content.innerHTML = CATS.map(buildAccordion).join("");
+
+  // Accordion click delegation
+  content.querySelectorAll(".acc-header").forEach(function(hdr){
+    hdr.addEventListener("click", function(){
+      var key = this.getAttribute("data-key");
+      toggleAcc(key);
     });
-  }
-
-  document.getElementById('tblCount').textContent = `${rows.length} alertas`;
-  renderDashboard(rows);
-
-  if (!rows.length) {
-    tbody.innerHTML = `<tr><td colspan="11"><div class="state-box">
-      <div class="state-icon">🔍</div><div>Sin resultados para este filtro.</div>
-    </div></td></tr>`;
-    return;
-  }
-
-  tbody.innerHTML = rows.map(a => {
-    const num    = a.titulo?.match(/N[ºo]\s*[\d-]+/i)?.[0] || '';
-    const titulo = a.titulo?.replace(/ALERTA DIGEMID\s*N[ºo]\s*[\d-]+\s*/i, '') || a.titulo || '—';
-    const urg    = (a.urgencia || '').toLowerCase();
-    const urgBadge = a.urgencia
-      ? `<span class="urgencia-badge urg-${urg}">${a.urgencia}</span>`
-      : `<span class="cell-empty">Sin evaluar</span>`;
-    const accionCell = a.accion_principal
-      ? `<span class="accion-lista">${a.accion_principal}</span>`
-      : `<span class="accion-badge accion-pendiente">— Sin analizar</span>`;
-    const pdfHref = a.url_pdf_github || a.url_pdf_digemid;
-    const pdfCell = pdfHref
-      ? `<a class="pdf-gh-link" href="${pdfHref}" target="_blank" onclick="event.stopPropagation()">${a.url_pdf_github ? '⬡ GitHub' : '📄 PDF'}</a>`
-      : `<span class="cell-empty">Sin PDF</span>`;
-    const digemidCell = a.url_pagina_digemid
-      ? `<a class="digemid-link" href="${a.url_pagina_digemid}" target="_blank" onclick="event.stopPropagation()">🔗 Ver en DIGEMID</a>`
-      : `<span class="cell-empty">Sin link</span>`;
-    const resumenCell = a.resumen_ia
-      ? a.resumen_ia
-      : `<span class="cell-empty">Sin resumen</span>`;
-    const pdfSafe = (pdfHref || '').replace(/'/g, "\\'");
-
-    return `<tr class="data-row" onclick="abrirPdf('${pdfSafe}')">
-      <td style="min-width:200px">
-        <span class="cell-num">${num}</span>
-        <span style="font-size:12px;font-weight:600">${titulo}</span>
-      </td>
-      <td style="max-width:160px;font-size:12px">${a.producto || '<span class="cell-empty">No especificado</span>'}</td>
-      <td class="cell-titular">${a.titular_registro_sanitario || '<span class="cell-empty">Sin titular</span>'}</td>
-      <td class="cell-lote col-lote">${loteChips(a.numero_lote)}</td>
-      <td><span class="tipo-badge ${tipoClass(a.tipo_alerta)}">${a.tipo_alerta || 'General'}</span></td>
-      <td>${urgBadge}</td>
-      <td style="max-width:200px">${accionCell}</td>
-      <td class="cell-resumen">${resumenCell}</td>
-      <td class="cell-fecha">${a.fecha_publicacion || '<span class="cell-empty">—</span>'}</td>
-      <td>${digemidCell}</td>
-      <td class="col-admin"><button class="btn-edit-alerta" onclick="event.stopPropagation();abrirEditorAlerta('${a.id}')">✏️ Editar</button></td>
-    </tr>`;
-  }).join('');
-}
-
-function loteChips(numeroLote) {
-  if (!numeroLote) return '<span class="cell-empty">Sin lote</span>';
-  return numeroLote.split('|').map(l => l.trim()).filter(Boolean)
-    .map(l => `<span class="lote-chip">${l}</span>`).join('');
-}
-
-/* ════════════════════════════════════════════
-   DASHBOARD — KPIs y gráficos calculados sobre
-   las filas YA filtradas (mismo `rows` de renderTable)
-════════════════════════════════════════════ */
-function renderDashboard(rows) {
-  // KPIs
-  document.getElementById('kpiTotal').textContent = rows.length;
-  document.getElementById('kpiLote').textContent = rows.filter(a => a.numero_lote).length;
-  document.getElementById('kpiInmediata').textContent = rows.filter(a => a.urgencia === 'INMEDIATA').length;
-
-  const tipoCounts = {};
-  rows.forEach(a => { if (a.tipo_alerta) tipoCounts[a.tipo_alerta] = (tipoCounts[a.tipo_alerta]||0)+1; });
-  const tipoSorted = Object.entries(tipoCounts).sort((x,y) => y[1]-x[1]);
-  document.getElementById('kpiTipoTop').textContent = tipoSorted.length ? tipoSorted[0][0] : '—';
-
-  // Barras por urgencia
-  const urgOrder = [['INMEDIATA','inmediata'], ['PREVENTIVA','preventiva'], ['INFORMATIVA','informativa']];
-  const urgCounts = urgOrder.map(([key,cls]) => [key, cls, rows.filter(a => a.urgencia === key).length]);
-  const urgEl = document.getElementById('chartUrgencia');
-  const urgMax = Math.max(1, ...urgCounts.map(u => u[2]));
-  if (!rows.length) {
-    urgEl.innerHTML = '<div class="dash-empty">Sin datos en este filtro.</div>';
-  } else {
-    urgEl.innerHTML = urgCounts.map(([label, cls, count]) => {
-      const pct = Math.max(6, (count/urgMax)*100);
-      return `<div class="bar-row">
-        <div class="bar-label" title="${label}">${label}</div>
-        <div class="bar-track"><div class="bar-fill ${cls}" style="width:${pct}%"><span>${count}</span></div></div>
-      </div>`;
-    }).join('');
-  }
-
-  // Barras por tipo de alerta (top 5)
-  const tipoEl = document.getElementById('chartTipo');
-  if (!tipoSorted.length) {
-    tipoEl.innerHTML = '<div class="dash-empty">Sin datos en este filtro.</div>';
-  } else {
-    const tipoMax = tipoSorted[0][1];
-    tipoEl.innerHTML = tipoSorted.slice(0, 5).map(([label, count]) => {
-      const pct = Math.max(6, (count/tipoMax)*100);
-      return `<div class="bar-row">
-        <div class="bar-label" title="${label}">${label}</div>
-        <div class="bar-track"><div class="bar-fill" style="width:${pct}%"><span>${count}</span></div></div>
-      </div>`;
-    }).join('');
-  }
-
-  // Donut con vs. sin lote
-  const conLote = rows.filter(a => a.numero_lote).length;
-  const sinLote = rows.length - conLote;
-  const total = rows.length || 1;
-  const pct = conLote / total;
-  const circumference = 2 * Math.PI * 34;
-  const offset = circumference * (1 - pct);
-  document.getElementById('donutLote').innerHTML = `
-    <circle cx="44" cy="44" r="34" fill="none" stroke="#e5e9f0" stroke-width="11"/>
-    <circle cx="44" cy="44" r="34" fill="none" stroke="#cc8800" stroke-width="11"
-      stroke-dasharray="${circumference}" stroke-dashoffset="${offset}"
-      transform="rotate(-90 44 44)" stroke-linecap="round"/>
-    <text x="44" y="40" text-anchor="middle" fill="#1a2030" font-family="IBM Plex Mono, monospace" font-size="15" font-weight="700">${Math.round(pct*100)}%</text>
-    <text x="44" y="54" text-anchor="middle" fill="#8a9ab8" font-family="IBM Plex Sans, sans-serif" font-size="7">con lote</text>
-  `;
-  document.getElementById('donutLoteLegend').innerHTML = `
-    <div class="row"><span class="dot" style="background:#cc8800"></span>Con lote <b>${conLote}</b></div>
-    <div class="row"><span class="dot" style="background:#e5e9f0"></span>Sin lote <b>${sinLote}</b></div>
-  `;
-
-  // Productos más falsificados (respeta el filtro de tipo de alerta activo:
-  // si eliges "Productos Falsificados" en el selector de arriba, este ranking
-  // queda acotado solo a esas alertas)
-  const prodCounts = {};
-  rows.forEach(a => {
-    const p = normalizarProducto(a.producto);
-    if (p) prodCounts[p] = (prodCounts[p] || 0) + 1;
   });
-  const prodSorted = Object.entries(prodCounts).sort((x,y) => y[1]-x[1]);
-  const prodEl = document.getElementById('chartProducto');
-  if (!prodSorted.length) {
-    prodEl.innerHTML = '<div class="dash-empty">Sin productos identificables en este filtro.</div>';
-  } else {
-    const prodMax = prodSorted[0][1];
-    prodEl.innerHTML = prodSorted.slice(0, 10).map(([label, count]) => {
-      const pct = Math.max(6, (count/prodMax)*100);
-      return `<div class="bar-row">
-        <div class="bar-label" title="${label}">${label}</div>
-        <div class="bar-track"><div class="bar-fill" style="width:${pct}%"><span>${count}</span></div></div>
-      </div>`;
-    }).join('');
+
+  // Update count
+  var total = 0;
+  CATS.forEach(function(c){ total += filterDocs(c.key).length; });
+  document.getElementById("repo-count").textContent = total + " documentos";
+}
+
+function toggleAcc(key){
+  state.accOpen[key] = !state.accOpen[key];
+  var hdr  = document.querySelector("#acc-" + key + " .acc-header");
+  var body = document.getElementById("abody-" + key);
+  if(hdr)  hdr.classList.toggle("open",  state.accOpen[key]);
+  if(body) body.classList.toggle("open", state.accOpen[key]);
+}
+
+window.toggleImgSection = function(id){
+  var body = document.getElementById("imgbody-" + id);
+  var hdr  = document.querySelector("#" + id + " .section-header");
+  if(!body) return;
+  var img = body.querySelector("img[data-src]");
+  if(img){ img.src = img.getAttribute("data-src"); img.removeAttribute("data-src"); }
+  var isOpen = body.classList.toggle("open");
+  if(hdr) hdr.classList.toggle("open", isOpen);
+};
+
+window.repoSearch = function(){
+  var q  = document.getElementById("repo-search").value.trim();
+  var fl = document.getElementById("repo-link-filter").value;
+  var fe = document.getElementById("repo-estado-filter").value;
+  // Auto-expand all when filtering
+  if(q || fl || fe){
+    CATS.forEach(function(c){ state.accOpen[c.key] = true; });
   }
-}
+  render();
+};
 
-// Agrupa nombres de producto parecidos (misma lógica que el dashboard PAVS
-// de referencia): recorta basura típica del scraping ("Descargar", saltos
-// de línea) y se queda con el primer segmento antes de una coma/paréntesis,
-// para que "DOLO CORDRALAN 500mg, caja x10" y "DOLO CORDRALAN (genérico)"
-// cuenten como el mismo producto en el ranking.
-function normalizarProducto(producto) {
-  if (!producto) return null;
-  let p = producto.replace(/\s+/g, ' ').trim();
-  p = p.replace(/Descargar\s*$/i, '').trim();
-  p = p.split(/[,(]/)[0].trim();
-  if (!p) return null;
-  return p.length > 45 ? p.slice(0, 45).trim() + '…' : p;
-}
+window.repoToggleAll = function(){
+  state.allExpanded = !state.allExpanded;
+  CATS.forEach(function(c){ state.accOpen[c.key] = state.allExpanded; });
+  document.getElementById("btn-exp").textContent = state.allExpanded ? "▲ Colapsar todo" : "▶ Expandir todo";
+  render();
+};
 
-function abrirPdf(url) {
-  if (url) window.open(url, '_blank');
-}
-
-/* ════════════════════════════════════════════
-   EDICIÓN MANUAL DE ALERTAS (solo admin)
-   Corrige campos generados por IA/heurística que
-   hayan quedado mal clasificados (ej. tipo_alerta).
-════════════════════════════════════════════ */
-let editandoAlertaId = null;
-
-function esAdminActual() {
-  return currentPerfil?.rol === 'admin';
-}
-
-function abrirEditorAlerta(id) {
-  if (!esAdminActual()) return;
-  const a = alertas.find(x => x.id === id);
-  if (!a) return;
-  editandoAlertaId = id;
-
-  document.getElementById('editSubtitulo').textContent = a.titulo || '—';
-  document.getElementById('editProducto').value = a.producto || '';
-  document.getElementById('editTitular').value = a.titular_registro_sanitario || '';
-  document.getElementById('editUrgencia').value = a.urgencia || 'INFORMATIVA';
-  document.getElementById('editAccionPrincipal').value = a.accion_principal || '';
-  document.getElementById('editNumeroLote').value = a.numero_lote || '';
-  document.getElementById('editResumenIa').value = a.resumen_ia || '';
-
-  const tipoSel = document.getElementById('editTipoAlerta');
-  const opciones = Array.from(tipoSel.options).map(o => o.value);
-  if (a.tipo_alerta && opciones.includes(a.tipo_alerta)) {
-    tipoSel.value = a.tipo_alerta;
-    document.getElementById('editTipoAlertaOtroWrap').style.display = 'none';
-    document.getElementById('editTipoAlertaOtro').value = '';
-  } else {
-    tipoSel.value = '__otro__';
-    document.getElementById('editTipoAlertaOtroWrap').style.display = 'block';
-    document.getElementById('editTipoAlertaOtro').value = a.tipo_alerta || '';
-  }
-
-  document.getElementById('editError').style.display = 'none';
-  document.getElementById('editOverlay').classList.remove('gate-hidden');
-}
-
-function cerrarEditorAlerta() {
-  document.getElementById('editOverlay').classList.add('gate-hidden');
-  editandoAlertaId = null;
-}
-
-async function guardarEdicionAlerta(event) {
-  event.preventDefault();
-  if (!esAdminActual() || !editandoAlertaId) return false;
-
-  const btn = document.getElementById('btnGuardarEdicion');
-  const errDiv = document.getElementById('editError');
-  errDiv.style.display = 'none';
-  btn.disabled = true;
-  btn.textContent = 'Guardando…';
-
-  const tipoSel = document.getElementById('editTipoAlerta').value;
-  const tipoFinal = tipoSel === '__otro__'
-    ? document.getElementById('editTipoAlertaOtro').value.trim()
-    : tipoSel;
-
-  const payload = {
-    target_id: editandoAlertaId,
-    p_producto: document.getElementById('editProducto').value.trim(),
-    p_titular_registro_sanitario: document.getElementById('editTitular').value.trim(),
-    p_tipo_alerta: tipoFinal,
-    p_urgencia: document.getElementById('editUrgencia').value,
-    p_accion_principal: document.getElementById('editAccionPrincipal').value.trim(),
-    p_numero_lote: document.getElementById('editNumeroLote').value.trim(),
-    p_resumen_ia: document.getElementById('editResumenIa').value.trim(),
-  };
-
-  const { error } = await sb.rpc('admin_actualizar_alerta_digemid', payload);
-
-  btn.disabled = false;
-  btn.textContent = 'Guardar cambios';
-
-  if (error) {
-    errDiv.textContent = 'No se pudo guardar: ' + error.message;
-    errDiv.style.display = 'block';
-    return false;
-  }
-
-  // Refleja el cambio en memoria sin tener que recargar todo desde Supabase
-  const idx = alertas.findIndex(a => a.id === editandoAlertaId);
-  if (idx !== -1) {
-    alertas[idx] = {
-      ...alertas[idx],
-      producto: payload.p_producto,
-      titular_registro_sanitario: payload.p_titular_registro_sanitario,
-      tipo_alerta: payload.p_tipo_alerta,
-      urgencia: payload.p_urgencia,
-      accion_principal: payload.p_accion_principal,
-      numero_lote: payload.p_numero_lote,
-      resumen_ia: payload.p_resumen_ia,
-    };
-  }
-  populateTipoFilter();
-  renderTable();
-  cerrarEditorAlerta();
-  return false;
-}
-
-document.getElementById('editTipoAlerta').addEventListener('change', function () {
-  document.getElementById('editTipoAlertaOtroWrap').style.display = this.value === '__otro__' ? 'block' : 'none';
+// ── Init ────────────────────────────────────────────────────────────────────
+document.addEventListener("DOMContentLoaded", function(){
+  buildDeptPills();
+  render();
 });
 
-function exportarCSV() {
-  if (!alertas.length) return;
-  const cols = ['titulo','producto','titular_registro_sanitario','numero_lote','tipo_alerta','urgencia','accion_principal','resumen_ia','fecha_publicacion','url_pdf_digemid','url_pdf_github'];
-  const header = cols.join(',');
-  const esc = v => `"${(v ?? '').toString().replace(/"/g,'""')}"`;
-  const body = alertas.map(a => cols.map(c => esc(a[c])).join(',')).join('\n');
-  const blob = new Blob([header + '\n' + body], { type: 'text/csv;charset=utf-8;' });
-  const link = document.createElement('a');
-  link.href = URL.createObjectURL(blob);
-  link.download = `alertas_digemid_${new Date().toISOString().slice(0,10)}.csv`;
-  link.click();
-}
-
-/* ════════════════════════════════════════════
-   PANEL DE USUARIOS (solo admin — RLS lo garantiza)
-════════════════════════════════════════════ */
-async function cargarUsuarios() {
-  const tbody = document.getElementById('usersTbody');
-  tbody.innerHTML = `<tr><td colspan="8"><div class="state-box"><div class="state-icon">⏳</div><div>Cargando usuarios…</div></div></td></tr>`;
-
-  const { data, error } = await sb.from(TABLE_PERFILES).select('*').order('creado_en', { ascending: false });
-  if (error) {
-    tbody.innerHTML = `<tr><td colspan="8"><div class="state-box"><div class="state-icon">⚠</div><div>${error.message}</div></div></td></tr>`;
-    return;
-  }
-  usuarios = data || [];
-  document.getElementById('usrCount').textContent = `${usuarios.length} usuarios`;
-
-  const fmt = d => d ? new Date(d).toLocaleString('es-PE', { dateStyle: 'short', timeStyle: 'short' }) : '<span class="cell-empty">Nunca</span>';
-  const esUnoMismo = id => currentUser && id === currentUser.id;
-
-  tbody.innerHTML = usuarios.map(u => `
-    <tr>
-      <td style="font-size:12px;font-weight:600">${u.nombre || '<span class="cell-empty">—</span>'}</td>
-      <td style="font-size:12px">${u.email}</td>
-      <td style="font-size:12px">${u.empresa || '<span class="cell-empty">—</span>'}</td>
-      <td><span class="rol-badge rol-${u.rol}">${u.rol}</span></td>
-      <td>
-        <label class="cima-toggle" title="${u.acceso_cima ? 'Acceso CIMA activo' : 'Acceso CIMA desactivado'}">
-          <input type="checkbox" ${u.acceso_cima ? 'checked' : ''} onchange="cambiarAccesoCima('${u.id}', this.checked, this)">
-          <span class="slider"></span>
-        </label>
-      </td>
-      <td class="cell-fecha">${fmt(u.creado_en)}</td>
-      <td class="cell-fecha">${fmt(u.ultimo_acceso)}</td>
-      <td>
-        <button class="btn-delete-user" ${esUnoMismo(u.id) ? 'disabled title="No puedes eliminar tu propia cuenta"' : ''}
-          onclick="eliminarUsuario('${u.id}', '${(u.email||'').replace(/'/g,"\\'")}')">🗑 Eliminar</button>
-      </td>
-    </tr>
-  `).join('');
-}
-
-async function cambiarAccesoCima(userId, acceso, checkbox) {
-  checkbox.disabled = true;
-  const { error } = await sb.rpc('admin_set_acceso_cima', { target_id: userId, acceso });
-  checkbox.disabled = false;
-  if (error) {
-    alert('No se pudo actualizar el acceso a CIMA: ' + error.message);
-    checkbox.checked = !acceso; // revertir visualmente
-    return;
-  }
-  const u = usuarios.find(x => x.id === userId);
-  if (u) u.acceso_cima = acceso;
-}
-
-async function eliminarUsuario(userId, email) {
-  if (!confirm(`¿Eliminar la cuenta de ${email}? Esta acción no se puede deshacer.`)) return;
-  const { error } = await sb.rpc('admin_delete_usuario', { target_id: userId });
-  if (error) {
-    alert('No se pudo eliminar el usuario: ' + error.message);
-    return;
-  }
-  cargarUsuarios();
-}
+})();
 </script>
 
-<a class="wa-float" id="waFloat"
-   href="https://wa.me/51926803293?text=Hola%2C%20tengo%20una%20consulta%20sobre%20el%20monitor%20de%20Alertas%20DIGEMID"
-   target="_blank" rel="noopener" title="Consultar por WhatsApp">
-  <svg viewBox="0 0 32 32" fill="#fff"><path d="M16.001 3C9.373 3 4 8.373 4 15c0 2.386.694 4.611 1.894 6.487L4 29l7.694-1.86A11.94 11.94 0 0 0 16.001 27C22.627 27 28 21.627 28 15S22.627 3 16.001 3zm0 21.818c-1.94 0-3.75-.57-5.27-1.55l-.378-.234-4.566 1.104 1.13-4.45-.246-.393A9.77 9.77 0 0 1 5.182 15c0-5.973 4.846-10.818 10.819-10.818S26.818 9.027 26.818 15 21.973 24.818 16.001 24.818zm5.978-8.146c-.328-.164-1.94-.957-2.24-1.066-.301-.109-.52-.164-.739.164-.219.328-.848 1.066-1.04 1.285-.191.219-.383.246-.71.082-.328-.164-1.386-.51-2.64-1.628-.976-.87-1.635-1.946-1.826-2.274-.191-.328-.02-.505.144-.669.148-.147.328-.383.492-.574.164-.191.219-.328.328-.547.109-.219.055-.41-.027-.574-.082-.164-.739-1.78-1.013-2.44-.267-.64-.538-.554-.739-.564l-.63-.011a1.21 1.21 0 0 0-.876.41c-.301.328-1.148 1.121-1.148 2.735s1.175 3.171 1.339 3.39c.164.219 2.312 3.53 5.602 4.949.783.338 1.394.54 1.87.691.786.25 1.5.215 2.065.13.63-.094 1.94-.793 2.213-1.559.273-.766.273-1.422.191-1.559-.082-.137-.301-.219-.629-.383z"/></svg>
-</a>
 </body>
 </html>
+
+
+
+
