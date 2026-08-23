@@ -1,7 +1,14 @@
 {
-  "actualizado": "2026-08-22T13:56:24Z",
-  "latest": "cima_20260822.json",
+  "actualizado": "2026-08-23T13:59:01Z",
+  "latest": "cima_20260823.json",
   "fechas": [
+    {
+      "codigo": "20260823",
+      "fecha": "2026-08-23",
+      "total": 824,
+      "archivo": "cima_20260823.json",
+      "excel": "ConkosafeIA_Regulatorio_20260823.xlsx"
+    },
     {
       "codigo": "20260822",
       "fecha": "2026-08-22",
