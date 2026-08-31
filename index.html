@@ -70,6 +70,14 @@ header p{font-size:12px;color:rgba(255,255,255,.85);margin-top:3px;font-family:v
 /* ── ROOT LAYOUT ── */
 .root{display:flex;flex-direction:column;flex:1;min-height:0;overflow:hidden}
 
+/* ── PANEL DE NAVEGACIÓN ENTRE MÓDULOS (links directos a cada dashboard) ── */
+.module-nav{display:flex;align-items:center;gap:8px;padding:12px 20px;background:linear-gradient(180deg,#eef2f8,var(--surface));border-bottom:1px solid var(--border);flex-wrap:wrap;flex-shrink:0}
+.module-tab{display:flex;align-items:center;gap:7px;padding:8px 14px;border-radius:9px;border:1px solid var(--border);background:#fff;color:var(--sub);text-decoration:none;font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.2px;white-space:nowrap;transition:border-color .15s,color .15s,background .15s,transform .1s}
+.module-tab:hover{border-color:var(--accent);color:var(--accent);background:rgba(0,119,204,.06);transform:translateY(-1px)}
+.module-tab.active{background:var(--accent);border-color:var(--accent);color:#fff;cursor:default;pointer-events:none;box-shadow:0 2px 8px rgba(0,119,204,.35)}
+.module-icon{font-size:13px;line-height:1}
+@media(max-width:720px){.module-nav{padding:10px 14px;gap:6px}.module-tab{padding:7px 10px;font-size:10px}}
+
 /* ── NAV DE VISTAS (Alertas / Usuarios, solo admin) ── */
 .view-nav{display:flex;gap:0;padding:0 20px;border-bottom:1px solid var(--border);background:var(--surface);flex-shrink:0}
 .view-nav button{background:transparent;border:none;border-bottom:2px solid transparent;padding:10px 16px;font-family:var(--mono);font-size:10px;font-weight:700;color:var(--muted);cursor:pointer;letter-spacing:.5px}
@@ -225,16 +233,31 @@ header p{font-size:12px;color:rgba(255,255,255,.85);margin-top:3px;font-family:v
     <h1>ConkoSafe IA — Alertas DIGEMID</h1>
     <p>Monitor de alertas sanitarias · Conkomerco Farmacovigilancia</p>
   </div>
-  <a href="cima/" class="status-pill gate-hidden" id="cimaLink" title="Monitor CIMA - Ficha Técnica y Prospecto (AEMPS)">CIMA: Ficha Técnica / Prospecto →</a>
-  <a href="pavs/" class="status-pill gate-hidden" id="pavsLink" title="Monitor PAVS - Alertas de Países de Alta Vigilancia Sanitaria">PAVS: Países de Alta Vigilancia →</a>
-  <a href="aems/" class="status-pill gate-hidden" id="aemsLink" title="Monitor FDA AEMS - Señales de Riesgo (FDA)">FDA AEMS: Señales de Riesgo →</a>
-  <a href="modificatorias/" class="status-pill gate-hidden" id="modificatoriasLink" title="Monitor Modificatorias DIGEMID - Actualizaciones de Seguridad">Modificatorias: Actualizaciones de Seguridad →</a>
   <div class="user-badge gate-hidden" id="userBadge">
     <span class="status-pill loading" id="statusPill">Cargando…</span>
     <div class="who" id="whoText"></div>
     <button class="btn-logout" onclick="cerrarSesion()">Salir</button>
   </div>
 </header>
+
+<!-- ── PANEL DE NAVEGACIÓN ENTRE MÓDULOS (links directos a cada dashboard) ── -->
+<nav class="module-nav gate-hidden" id="moduleNav" aria-label="Módulos ConkoSafe IA">
+  <a class="module-tab active" href="./" title="Monitor de Alertas Sanitarias DIGEMID (estás aquí)">
+    <span class="module-icon">📋</span><span class="module-label">Alertas DIGEMID</span>
+  </a>
+  <a class="module-tab gate-hidden" id="cimaLink" href="cima/" title="Monitor CIMA · Ficha Técnica y Prospecto (AEMPS)">
+    <span class="module-icon">🧪</span><span class="module-label">CIMA · Ficha Técnica</span>
+  </a>
+  <a class="module-tab gate-hidden" id="pavsLink" href="pavs/" title="Monitor PAVS · Países de Alta Vigilancia Sanitaria">
+    <span class="module-icon">🌎</span><span class="module-label">PAVS</span>
+  </a>
+  <a class="module-tab gate-hidden" id="aemsLink" href="aems/" title="Monitor FDA AEMS · Señales de Riesgo">
+    <span class="module-icon">🇺🇸</span><span class="module-label">FDA AEMS</span>
+  </a>
+  <a class="module-tab gate-hidden" id="modificatoriasLink" href="modificatorias/" title="Monitor Modificatorias DIGEMID · Actualizaciones de Seguridad">
+    <span class="module-icon">🔄</span><span class="module-label">Modificatorias</span>
+  </a>
+</nav>
 
 <!-- ── AUTH OVERLAY: LOGIN / REGISTRO (Supabase Auth) ── -->
 <div class="gate-overlay" id="gateOverlay">
@@ -579,6 +602,7 @@ async function onLoggedIn(session) {
   document.getElementById('gateOverlay').classList.add('gate-hidden');
   document.getElementById('rootApp').classList.remove('gate-hidden');
   document.getElementById('userBadge').classList.remove('gate-hidden');
+  document.getElementById('moduleNav').classList.remove('gate-hidden');
 
   const esAdmin = currentPerfil?.rol === 'admin';
   document.getElementById('whoText').innerHTML =
@@ -600,6 +624,7 @@ function onLoggedOut() {
   document.getElementById('gateOverlay').classList.remove('gate-hidden');
   document.getElementById('rootApp').classList.add('gate-hidden');
   document.getElementById('userBadge').classList.add('gate-hidden');
+  document.getElementById('moduleNav').classList.add('gate-hidden');
   document.getElementById('cimaLink').classList.add('gate-hidden');
   document.getElementById('pavsLink').classList.add('gate-hidden');
   document.getElementById('aemsLink').classList.add('gate-hidden');
