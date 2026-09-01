@@ -424,8 +424,10 @@ header p{font-size:12px;color:rgba(255,255,255,.85);margin-top:3px;font-family:v
             <th>Nombre</th>
             <th>Correo</th>
             <th>Empresa</th>
-            <th>Rol</th>
+            <th>Rol / Admin</th>
             <th>Acceso CIMA</th>
+            <th>Acceso PAVS</th>
+            <th>Acceso US FDA AEMS</th>
             <th>Acceso Modificatorias</th>
             <th>Registrado</th>
             <th>Último acceso</th>
@@ -614,8 +616,8 @@ async function onLoggedIn(session) {
   document.getElementById('navUsuarios').classList.toggle('gate-hidden', !esAdmin);
   document.getElementById('alertsTable').classList.toggle('is-admin', esAdmin);
   document.getElementById('cimaLink').classList.toggle('gate-hidden', !(esAdmin || currentPerfil?.acceso_cima));
-  document.getElementById('pavsLink').classList.remove('gate-hidden');
-  document.getElementById('aemsLink').classList.remove('gate-hidden');
+  document.getElementById('pavsLink').classList.toggle('gate-hidden', !(esAdmin || currentPerfil?.acceso_pavs));
+  document.getElementById('aemsLink').classList.toggle('gate-hidden', !(esAdmin || currentPerfil?.acceso_aems));
   document.getElementById('modificatoriasLink').classList.toggle('gate-hidden', !(esAdmin || currentPerfil?.acceso_modificatorias));
 
   cargarAlertas();
@@ -1048,11 +1050,11 @@ function exportarCSV() {
 ════════════════════════════════════════════ */
 async function cargarUsuarios() {
   const tbody = document.getElementById('usersTbody');
-  tbody.innerHTML = `<tr><td colspan="9"><div class="state-box"><div class="state-icon">⏳</div><div>Cargando usuarios…</div></div></td></tr>`;
+  tbody.innerHTML = `<tr><td colspan="11"><div class="state-box"><div class="state-icon">⏳</div><div>Cargando usuarios…</div></div></td></tr>`;
 
   const { data, error } = await sb.from(TABLE_PERFILES).select('*').order('creado_en', { ascending: false });
   if (error) {
-    tbody.innerHTML = `<tr><td colspan="9"><div class="state-box"><div class="state-icon">⚠</div><div>${error.message}</div></div></td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="11"><div class="state-box"><div class="state-icon">⚠</div><div>${error.message}</div></div></td></tr>`;
     return;
   }
   usuarios = data || [];
@@ -1066,10 +1068,28 @@ async function cargarUsuarios() {
       <td style="font-size:12px;font-weight:600">${u.nombre || '<span class="cell-empty">—</span>'}</td>
       <td style="font-size:12px">${u.email}</td>
       <td style="font-size:12px">${u.empresa || '<span class="cell-empty">—</span>'}</td>
-      <td><span class="rol-badge rol-${u.rol}">${u.rol}</span></td>
+      <td>
+        <span class="rol-badge rol-${u.rol}">${u.rol}</span>
+        <label class="cima-toggle" style="margin-left:6px;vertical-align:middle" title="${esUnoMismo(u.id) ? 'No puedes cambiar tu propio rol' : (u.rol==='admin' ? 'Quitar rol de administrador' : 'Hacer administrador')}">
+          <input type="checkbox" ${u.rol==='admin' ? 'checked' : ''} ${esUnoMismo(u.id) ? 'disabled' : ''} onchange="cambiarRol('${u.id}', this.checked, this)">
+          <span class="slider"></span>
+        </label>
+      </td>
       <td>
         <label class="cima-toggle" title="${u.acceso_cima ? 'Acceso CIMA activo' : 'Acceso CIMA desactivado'}">
           <input type="checkbox" ${u.acceso_cima ? 'checked' : ''} onchange="cambiarAccesoCima('${u.id}', this.checked, this)">
+          <span class="slider"></span>
+        </label>
+      </td>
+      <td>
+        <label class="cima-toggle" title="${u.acceso_pavs ? 'Acceso PAVS activo' : 'Acceso PAVS desactivado'}">
+          <input type="checkbox" ${u.acceso_pavs ? 'checked' : ''} onchange="cambiarAccesoPavs('${u.id}', this.checked, this)">
+          <span class="slider"></span>
+        </label>
+      </td>
+      <td>
+        <label class="cima-toggle" title="${u.acceso_aems ? 'Acceso US FDA AEMS activo' : 'Acceso US FDA AEMS desactivado'}">
+          <input type="checkbox" ${u.acceso_aems ? 'checked' : ''} onchange="cambiarAccesoAems('${u.id}', this.checked, this)">
           <span class="slider"></span>
         </label>
       </td>
@@ -1113,6 +1133,53 @@ async function cambiarAccesoModificatorias(userId, acceso, checkbox) {
   }
   const u = usuarios.find(x => x.id === userId);
   if (u) u.acceso_modificatorias = acceso;
+}
+
+async function cambiarAccesoPavs(userId, acceso, checkbox) {
+  checkbox.disabled = true;
+  const { error } = await sb.rpc('admin_set_acceso_pavs', { target_id: userId, acceso });
+  checkbox.disabled = false;
+  if (error) {
+    alert('No se pudo actualizar el acceso a PAVS: ' + error.message);
+    checkbox.checked = !acceso;
+    return;
+  }
+  const u = usuarios.find(x => x.id === userId);
+  if (u) u.acceso_pavs = acceso;
+}
+
+async function cambiarAccesoAems(userId, acceso, checkbox) {
+  checkbox.disabled = true;
+  const { error } = await sb.rpc('admin_set_acceso_aems', { target_id: userId, acceso });
+  checkbox.disabled = false;
+  if (error) {
+    alert('No se pudo actualizar el acceso a US FDA AEMS: ' + error.message);
+    checkbox.checked = !acceso;
+    return;
+  }
+  const u = usuarios.find(x => x.id === userId);
+  if (u) u.acceso_aems = acceso;
+}
+
+async function cambiarRol(userId, hacerAdmin, checkbox) {
+  const nuevoRol = hacerAdmin ? 'admin' : 'usuario';
+  if (!confirm(hacerAdmin
+      ? '¿Otorgar rol de ADMINISTRADOR a este usuario? Tendrá acceso total al panel.'
+      : '¿Quitar el rol de administrador a este usuario?')) {
+    checkbox.checked = !hacerAdmin;
+    return;
+  }
+  checkbox.disabled = true;
+  const { error } = await sb.rpc('admin_set_rol', { target_id: userId, nuevo_rol: nuevoRol });
+  checkbox.disabled = false;
+  if (error) {
+    alert('No se pudo actualizar el rol: ' + error.message);
+    checkbox.checked = !hacerAdmin;
+    return;
+  }
+  const u = usuarios.find(x => x.id === userId);
+  if (u) u.rol = nuevoRol;
+  cargarUsuarios();
 }
 
 async function eliminarUsuario(userId, email) {
