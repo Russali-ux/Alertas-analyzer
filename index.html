@@ -339,6 +339,9 @@ header p{font-size:12px;color:rgba(255,255,255,.85);margin-top:3px;font-family:v
       <select class="urg-select" id="tipoFilter" onchange="filterTable()">
         <option value="">Todos los tipos</option>
       </select>
+      <select class="urg-select" id="anioFilter" onchange="filterTable()">
+        <option value="">Todos los años</option>
+      </select>
       <select class="urg-select" id="limitSelect" onchange="cargarAlertas()">
         <option value="25">Mostrar 25</option>
         <option value="50" selected>Mostrar 50</option>
@@ -673,6 +676,7 @@ async function cargarAlertas() {
     pill.className = 'status-pill';
     pill.textContent = `${alertas.length} alertas · ${new Date().toLocaleTimeString('es-PE')}`;
     populateTipoFilter();
+    populateAnioFilter();
     renderTable();
   } catch (e) {
     pill.className = 'status-pill error';
@@ -704,6 +708,16 @@ function populateTipoFilter() {
   sel.value = tipos.includes(current) ? current : '';
 }
 
+function populateAnioFilter() {
+  const sel = document.getElementById('anioFilter');
+  if (!sel) return;
+  const current = sel.value;
+  const anios = [...new Set(alertas.map(a => a.anio_publicacion).filter(Boolean))].sort((a, b) => b - a);
+  sel.innerHTML = `<option value="">Todos los años</option>` +
+    anios.map(a => `<option value="${a}">${a}</option>`).join('');
+  sel.value = anios.map(String).includes(current) ? current : '';
+}
+
 function sortTable(key) {
   if (sortKey === key) { sortDir = sortDir === 'asc' ? 'desc' : 'asc'; }
   else { sortKey = key; sortDir = 'asc'; }
@@ -716,6 +730,7 @@ function renderTable() {
   const q    = (document.getElementById('tblSearch')?.value || '').toLowerCase();
   const urg  = document.getElementById('urgFilter')?.value || '';
   const tipo = document.getElementById('tipoFilter')?.value || '';
+  const anio = document.getElementById('anioFilter')?.value || '';
   const tbody = document.getElementById('alertsTbody');
 
   let rows = alertas.filter(a => {
@@ -728,7 +743,8 @@ function renderTable() {
       (a.accion_principal||'').toLowerCase().includes(q);
     const matchUrg  = !urg  || a.urgencia === urg;
     const matchTipo = !tipo || a.tipo_alerta === tipo;
-    return matchQ && matchUrg && matchTipo;
+    const matchAnio = !anio || String(a.anio_publicacion) === anio;
+    return matchQ && matchUrg && matchTipo && matchAnio;
   });
 
   if (sortKey) {
