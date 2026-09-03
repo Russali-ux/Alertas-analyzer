@@ -570,6 +570,12 @@ let currentPerfil = null;
    evento se trataba como un login normal y abría el dashboard sin que la
    persona hubiera guardado la nueva contraseña todavía. */
 let enRecuperacion = false;
+/* Clave en localStorage: mientras exista, la sesion actual es de una
+   recuperacion de contrasena TODAVIA NO confirmada. Sin esto, un enlace de
+   recuperacion abierto dos veces (o cerrado sin terminar) dejaba una
+   sesion valida "olvidada" que, en cualquier visita futura, entraba
+   directo al dashboard sin haber cambiado la contrasena. */
+const RECOVERY_PENDIENTE_KEY = 'sb-alertas-digemid-recovery-pendiente';
 
 /* ════════════════════════════════════════════
    AUTH — login / registro / sesión
@@ -596,6 +602,10 @@ function mostrarRecuperar() {
 
 function volverALogin() {
   enRecuperacion = false;
+  if (localStorage.getItem(RECOVERY_PENDIENTE_KEY)) {
+    localStorage.removeItem(RECOVERY_PENDIENTE_KEY);
+    sb.auth.signOut();
+  }
   document.getElementById('recoverForm').classList.add('gate-hidden');
   document.getElementById('newPasswordForm').classList.add('gate-hidden');
   cambiarTabAuth('login');
@@ -630,6 +640,7 @@ async function manejarRecuperar(event) {
    de recuperación que le llegó por correo (evento PASSWORD_RECOVERY). */
 function mostrarFormularioNuevaPassword() {
   enRecuperacion = true;
+  localStorage.setItem(RECOVERY_PENDIENTE_KEY, '1');
   document.getElementById('gateOverlay').classList.remove('gate-hidden');
   document.getElementById('rootApp').classList.add('gate-hidden');
   document.getElementById('authChooser').classList.add('gate-hidden');
@@ -680,6 +691,7 @@ async function manejarNuevaPassword(event) {
   okDiv.style.display = 'block';
   document.getElementById('newPasswordForm').reset();
   enRecuperacion = false;
+  localStorage.removeItem(RECOVERY_PENDIENTE_KEY);
   const { data: { session } } = await sb.auth.getSession();
   if (session) setTimeout(() => onLoggedIn(session), 700);
 }
@@ -820,8 +832,20 @@ function esEnlaceDeRecuperacion() {
 }
 
 (async function initAuth() {
-  if (esEnlaceDeRecuperacion()) { enRecuperacion = true; return; }
+  if (esEnlaceDeRecuperacion()) {
+    enRecuperacion = true;
+    localStorage.setItem(RECOVERY_PENDIENTE_KEY, '1');
+    return;
+  }
   const { data: { session } } = await sb.auth.getSession();
+  if (session && localStorage.getItem(RECOVERY_PENDIENTE_KEY)) {
+    // Sesion de una recuperacion que quedo sin confirmar (enlace reabierto,
+    // pestana cerrada a medias, etc.) -> no la usamos para entrar directo.
+    localStorage.removeItem(RECOVERY_PENDIENTE_KEY);
+    await sb.auth.signOut();
+    onLoggedOut();
+    return;
+  }
   if (session) onLoggedIn(session);
   else onLoggedOut();
 })();
