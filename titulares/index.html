@@ -515,24 +515,55 @@ async function eliminar(id){
 /* ═════════ Alta manual de titular ═════════ */
 function abrirNuevoTitular(){
   const box=document.createElement('div'); box.className='overlay';
-  box.innerHTML=`<div class="modal" style="max-width:440px">
-    <h2>Nuevo titular de registro sanitario</h2>
-    <p class="sub">Se agrega al catálogo y queda disponible para asignar a productos.</p>
+  box.innerHTML=`<div class="modal" style="max-width:500px">
+    <h2>Titulares de registro sanitario</h2>
+    <p class="sub">Crea nuevos titulares o elimina los que ya no uses.</p>
     <div id="ntMsg"></div>
-    <div class="field"><label>Razón social *</label><input class="inp" id="ntRazon" placeholder="Ej. CORVAL SAC"></div>
-    <div class="field"><label>RUC (opcional)</label><input class="inp" id="ntRuc" placeholder="20xxxxxxxxx"></div>
-    <div class="modal-actions"><button class="btn btn-ghost" id="ntCancel">Cancelar</button><button class="btn btn-primary" id="ntSave">Guardar</button></div>
+    <div class="row2">
+      <div class="field" style="margin-bottom:8px"><label>Razón social *</label><input class="inp" id="ntRazon" placeholder="Ej. CORVAL SAC"></div>
+      <div class="field" style="margin-bottom:8px"><label>RUC (opcional)</label><input class="inp" id="ntRuc" placeholder="20xxxxxxxxx"></div>
+    </div>
+    <div style="display:flex;justify-content:flex-end;margin-bottom:6px"><button class="btn btn-primary" id="ntSave">＋ Agregar titular</button></div>
+    <div style="font-family:var(--mono);font-size:10px;color:var(--sub);text-transform:uppercase;letter-spacing:.5px;margin:12px 0 6px">Titulares existentes</div>
+    <div class="tit-box" id="ntLista" style="max-height:260px;overflow:auto"></div>
+    <div class="modal-actions"><button class="btn btn-ghost" id="ntClose">Cerrar</button></div>
   </div>`;
   document.body.appendChild(box);
-  box.querySelector('#ntCancel').onclick=()=>box.remove();
+  box.querySelector('#ntClose').onclick=()=>box.remove();
+  const usos=id=>MEDTIT.filter(x=>x.titular_id===id).length;
+  function pintarLista(){
+    const cont=box.querySelector('#ntLista');
+    if(!TITULARES.length){ cont.innerHTML='<div class="hint">No hay titulares todavía.</div>'; return; }
+    cont.innerHTML=TITULARES.map(t=>{
+      const n=usos(t.id);
+      return `<div class="tit-opt" style="justify-content:space-between">
+        <span>${esc(t.razon_social)} ${n?`<span class="hint">· en ${n} producto(s)</span>`:''}</span>
+        <button class="btn btn-danger" style="padding:3px 9px" data-del="${t.id}" data-name="${esc(t.razon_social)}" data-n="${n}">✕ Eliminar</button>
+      </div>`;
+    }).join('');
+    cont.querySelectorAll('[data-del]').forEach(b=>{
+      b.onclick=async()=>{
+        const id=b.getAttribute('data-del'), name=b.getAttribute('data-name'), n=+b.getAttribute('data-n');
+        if(!confirm('¿Eliminar el titular "'+name+'"?'+(n?'\nSe quitará de '+n+' producto(s) y quedará en blanco en las alertas donde figure.':''))) return;
+        b.disabled=true;
+        const {error}=await sb.from('titulares_registro_sanitario').delete().eq('id',id);
+        if(error){ box.querySelector('#ntMsg').innerHTML='<div class="msg msg-err">'+esc(error.message)+'</div>'; b.disabled=false; return; }
+        box.querySelector('#ntMsg').innerHTML='<div class="msg msg-info">Titular eliminado.</div>';
+        await cargarCatalogos(); pintarLista();
+      };
+    });
+  }
   box.querySelector('#ntSave').onclick=async()=>{
     const razon=box.querySelector('#ntRazon').value.trim();
     if(!razon){ box.querySelector('#ntMsg').innerHTML='<div class="msg msg-err">Escribe la razón social.</div>'; return; }
     const ruc=box.querySelector('#ntRuc').value.trim()||null;
     const {error}=await sb.from('titulares_registro_sanitario').insert({razon_social:razon, ruc});
     if(error){ box.querySelector('#ntMsg').innerHTML='<div class="msg msg-err">'+esc(error.message)+'</div>'; return; }
-    box.remove(); await cargarCatalogos();
+    box.querySelector('#ntRazon').value=''; box.querySelector('#ntRuc').value='';
+    box.querySelector('#ntMsg').innerHTML='<div class="msg msg-info">Titular agregado.</div>';
+    await cargarCatalogos(); pintarLista();
   };
+  pintarLista();
 }
 
 /* ═════════ Alta manual de producto ═════════ */
