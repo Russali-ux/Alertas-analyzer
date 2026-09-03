@@ -171,6 +171,7 @@ tr:hover td{background:rgba(0,119,204,.04)}
     <div class="toolbar">
       <span class="count" id="cntMeds">— productos</span>
       <input class="inp" id="fMeds" placeholder="🔍 Filtrar por producto o principio activo…" style="flex:1;min-width:220px" oninput="renderMeds()">
+      <select class="inp" id="fMedTit" onchange="renderMeds()"><option value="">Todos los titulares</option></select>
       <button class="btn btn-primary gate-hidden admin-only" id="btnNuevoProd" onclick="abrirNuevoProducto()">＋ Nuevo producto</button>
       <button class="btn btn-ghost gate-hidden admin-only" id="btnNuevoTit" onclick="abrirNuevoTitular()">＋ Nuevo titular</button>
       <button class="btn btn-ghost gate-hidden admin-only" id="btnImportar" onclick="document.getElementById('fileExcel').click()">⬆ Importar Excel</button>
@@ -297,6 +298,8 @@ async function cargarCatalogos(){
   const sel=$('mProducto');
   sel.innerHTML='<option value="">— Selecciona un producto —</option>'+
     MEDS.map(x=>`<option value="${x.id}">${esc(x.descripcion_producto)}</option>`).join('');
+  const selFT=$('fMedTit');
+  if(selFT){ const prev=selFT.value; selFT.innerHTML='<option value="">Todos los titulares</option><option value="__none__">— Sin titular asignado —</option>'+TITULARES.map(t=>`<option value="${t.id}">${esc(t.razon_social)}</option>`).join(''); selFT.value=prev; }
   renderMeds();
 }
 function titularesDe(medId){
@@ -345,7 +348,16 @@ function renderAlertas(){
 /* ───────── Vista Portafolio ───────── */
 function renderMeds(){
   const q=($('fMeds')?.value||'').trim().toLowerCase();
-  const rows=MEDS.filter(m=> !q || (m.descripcion_producto+' '+(m.principio_activo||'')).toLowerCase().includes(q));
+  const ft=($('fMedTit')?.value)||'';
+  const rows=MEDS.filter(m=>{
+    if(q && !(m.descripcion_producto+' '+(m.principio_activo||'')).toLowerCase().includes(q)) return false;
+    if(ft){
+      const asign=titularesDe(m.id);
+      if(ft==='__none__'){ if(asign.length) return false; }
+      else if(!asign.some(x=>x.titular_id===ft)) return false;
+    }
+    return true;
+  });
   if($('cntMeds')) $('cntMeds').textContent=`${rows.length} producto(s)`;
   const tb=$('tbMeds'); if(!tb) return;
   tb.innerHTML=rows.map(m=>{
