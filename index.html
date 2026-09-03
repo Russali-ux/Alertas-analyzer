@@ -644,12 +644,24 @@ async function manejarNuevaPassword(event) {
     return;
   }
 
+  /* Confirma que sigue habiendo una sesion de recuperacion activa antes
+     de intentar el cambio; si el enlace ya expiro o fue usado dos veces,
+     avisamos con un mensaje claro en vez del error crudo de Supabase. */
+  const { data: { session: sesionActual } } = await sb.auth.getSession();
+  if (!sesionActual) {
+    errDiv.textContent = '⚠ El enlace de recuperación ya expiró o ya fue usado. Solicita uno nuevo desde "¿Olvidaste tu contraseña?".';
+    errDiv.style.display = 'block';
+    return;
+  }
+
   btn.disabled = true; btn.textContent = 'Guardando…';
   const { error } = await sb.auth.updateUser({ password: p1 });
   btn.disabled = false; btn.textContent = 'Guardar contraseña';
 
   if (error) {
-    errDiv.textContent = '⚠ ' + error.message;
+    errDiv.textContent = '⚠ ' + (error.message === 'Auth session missing!'
+      ? 'El enlace de recuperación ya expiró o ya fue usado. Solicita uno nuevo desde "¿Olvidaste tu contraseña?".'
+      : error.message);
     errDiv.style.display = 'block';
     return;
   }
@@ -778,7 +790,20 @@ sb.auth.onAuthStateChange((event, session) => {
   if (event === 'SIGNED_OUT') onLoggedOut();
 });
 
+/* Si la URL trae un enlace de recuperacion de contraseña (hash o query
+   "type=recovery"), dejamos que el evento PASSWORD_RECOVERY (mas abajo)
+   sea el unico que decida que mostrar. Si dejamos que initAuth tambien
+   llame a onLoggedIn() con esa misma sesion temporal, compiten entre si
+   y la sesion de recuperacion queda en un estado inconsistente (por eso
+   updateUser() fallaba con "Auth session missing").*/
+function esEnlaceDeRecuperacion() {
+  const hash = window.location.hash || '';
+  const search = window.location.search || '';
+  return hash.includes('type=recovery') || search.includes('type=recovery');
+}
+
 (async function initAuth() {
+  if (esEnlaceDeRecuperacion()) return;
   const { data: { session } } = await sb.auth.getSession();
   if (session) onLoggedIn(session);
   else onLoggedOut();
