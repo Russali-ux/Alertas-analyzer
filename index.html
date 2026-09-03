@@ -509,7 +509,16 @@ header p{font-size:12px;color:rgba(255,255,255,.85);margin-top:3px;font-family:v
 ════════════════════════════════════════════ */
 const SUPABASE_URL      = 'https://ggbnfdaxtsngsjssrwrl.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdnYm5mZGF4dHNuZ3Nqc3Nyd3JsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ4ODAzODIsImV4cCI6MjEwMDQ1NjM4Mn0.126hhMpakcOlzp5KyyWdMU56UjwLwn5Xn4Nc13OIjgU';
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+/* storageKey propia: todas las apps de la familia (Alertas DIGEMID, Corval,
+   Cobefar, etc.) viven bajo el mismo dominio github.io y comparten el mismo
+   proyecto Supabase, asi que localStorage se comparte por dominio, no por
+   carpeta. Sin una storageKey distinta, iniciar sesion aqui iniciaba sesion
+   automaticamente en las demas apps. Con esto, la sesion de Alertas DIGEMID
+   es independiente de la de Corval (solo se comunican via las tablas de
+   Supabase, como debe ser). */
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  auth: { storageKey: 'sb-alertas-digemid-auth' }
+});
 
 const TABLE_ALERTAS  = 'alertas_digemid';
 const TABLE_PERFILES = 'perfiles';
