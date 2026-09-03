@@ -6,6 +6,7 @@
 <title>ConkoSafe IA — Alertas por Producto &amp; Titular</title>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 :root{
   --bg:#ffffff; --surface:#f5f7fa; --border:#d0d7e3; --accent:#0077cc; --danger:#e00030;
@@ -170,7 +171,12 @@ tr:hover td{background:rgba(0,119,204,.04)}
     <div class="toolbar">
       <span class="count" id="cntMeds">— productos</span>
       <input class="inp" id="fMeds" placeholder="🔍 Filtrar por producto o principio activo…" style="flex:1;min-width:220px" oninput="renderMeds()">
+      <button class="btn btn-primary gate-hidden admin-only" id="btnNuevoProd" onclick="abrirNuevoProducto()">＋ Nuevo producto</button>
+      <button class="btn btn-ghost gate-hidden admin-only" id="btnNuevoTit" onclick="abrirNuevoTitular()">＋ Nuevo titular</button>
+      <button class="btn btn-ghost gate-hidden admin-only" id="btnImportar" onclick="document.getElementById('fileExcel').click()">⬆ Importar Excel</button>
+      <input type="file" id="fileExcel" accept=".xlsx,.xls,.csv" style="display:none" onchange="importarExcel(event)">
     </div>
+    <div id="importMsg"></div>
     <div class="msg msg-info">Asigna aquí los titulares de cada producto. El titular marcado como <b>principal</b> se autoactiva al registrar una alerta. Solo un administrador puede editar.</div>
     <div class="tbl-wrap">
       <table>
@@ -274,7 +280,7 @@ async function boot(){
   $('userBadge').classList.remove('gate-hidden');
   $('moduleNav').classList.remove('gate-hidden');
   $('rootApp').classList.remove('gate-hidden');
-  if(esAdmin){ $('btnNueva').classList.remove('gate-hidden'); document.querySelectorAll('.colAdmin').forEach(e=>e.classList.remove('gate-hidden')); }
+  if(esAdmin){ $('btnNueva').classList.remove('gate-hidden'); document.querySelectorAll('.colAdmin,.admin-only').forEach(e=>e.classList.remove('gate-hidden')); }
   await Promise.all([cargarCatalogos(), cargarAlertas()]);
 }
 async function cerrarSesion(){ await sb.auth.signOut(); location.href='../'; }
@@ -504,6 +510,144 @@ async function eliminar(id){
   if(error){ alert('Error: '+error.message); return; }
   await cargarAlertas();
 }
+
+
+/* ═════════ Alta manual de titular ═════════ */
+function abrirNuevoTitular(){
+  const box=document.createElement('div'); box.className='overlay';
+  box.innerHTML=`<div class="modal" style="max-width:440px">
+    <h2>Nuevo titular de registro sanitario</h2>
+    <p class="sub">Se agrega al catálogo y queda disponible para asignar a productos.</p>
+    <div id="ntMsg"></div>
+    <div class="field"><label>Razón social *</label><input class="inp" id="ntRazon" placeholder="Ej. CORVAL SAC"></div>
+    <div class="field"><label>RUC (opcional)</label><input class="inp" id="ntRuc" placeholder="20xxxxxxxxx"></div>
+    <div class="modal-actions"><button class="btn btn-ghost" id="ntCancel">Cancelar</button><button class="btn btn-primary" id="ntSave">Guardar</button></div>
+  </div>`;
+  document.body.appendChild(box);
+  box.querySelector('#ntCancel').onclick=()=>box.remove();
+  box.querySelector('#ntSave').onclick=async()=>{
+    const razon=box.querySelector('#ntRazon').value.trim();
+    if(!razon){ box.querySelector('#ntMsg').innerHTML='<div class="msg msg-err">Escribe la razón social.</div>'; return; }
+    const ruc=box.querySelector('#ntRuc').value.trim()||null;
+    const {error}=await sb.from('titulares_registro_sanitario').insert({razon_social:razon, ruc});
+    if(error){ box.querySelector('#ntMsg').innerHTML='<div class="msg msg-err">'+esc(error.message)+'</div>'; return; }
+    box.remove(); await cargarCatalogos();
+  };
+}
+
+/* ═════════ Alta manual de producto ═════════ */
+function abrirNuevoProducto(){
+  const titChecks=TITULARES.map(t=>`<label class="tit-opt"><input type="checkbox" class="npChk" value="${t.id}"> ${esc(t.razon_social)} <span style="margin-left:auto"><input type="radio" name="npPpal" value="${t.id}"> principal</span></label>`).join('') || '<div class="hint">No hay titulares aún. Crea uno con "Nuevo titular".</div>';
+  const box=document.createElement('div'); box.className='overlay';
+  box.innerHTML=`<div class="modal" style="max-width:560px">
+    <h2>Nuevo producto</h2>
+    <p class="sub">Registra un producto del portafolio y (opcional) sus titulares.</p>
+    <div id="npMsg"></div>
+    <div class="field"><label>Producto *</label><input class="inp" id="npProd" placeholder="Ej. GRAVICOR, DIMENHIDRINATO 50 mg/5 mL SOLUCIÓN INYECTABLE"></div>
+    <div class="row2">
+      <div class="field"><label>Principio activo</label><input class="inp" id="npPA" placeholder="Ej. DIMENHIDRINATO"></div>
+      <div class="field"><label>N° Registro Sanitario</label><input class="inp" id="npRS" placeholder="Ej. EN-05155"></div>
+    </div>
+    <div class="field"><label>Titulares</label>
+      <div class="tit-box" id="npTitBox">${titChecks}</div>
+      <div class="hint">Marca los titulares y elige el principal (se autoactiva en las alertas).</div>
+    </div>
+    <div class="modal-actions"><button class="btn btn-ghost" id="npCancel">Cancelar</button><button class="btn btn-primary" id="npSave">Guardar producto</button></div>
+  </div>`;
+  document.body.appendChild(box);
+  box.querySelector('#npCancel').onclick=()=>box.remove();
+  box.querySelector('#npSave').onclick=async()=>{
+    const prod=box.querySelector('#npProd').value.trim();
+    if(!prod){ box.querySelector('#npMsg').innerHTML='<div class="msg msg-err">El nombre del producto es obligatorio.</div>'; return; }
+    const pa=box.querySelector('#npPA').value.trim()||null;
+    const rs=box.querySelector('#npRS').value.trim()||null;
+    const nro=(MEDS.reduce((m,x)=>Math.max(m,x.nro||0),0))+1;
+    const {data,error}=await sb.from('medicamentos').insert({descripcion_producto:prod, principio_activo:pa, nro_registro_sanitario:rs, nro}).select('id').single();
+    if(error){ box.querySelector('#npMsg').innerHTML='<div class="msg msg-err">'+esc(error.message)+'</div>'; return; }
+    const checks=[...box.querySelectorAll('.npChk:checked')].map(c=>c.value);
+    const ppal=box.querySelector('input[name=npPpal]:checked')?.value||checks[0]||null;
+    if(checks.length){
+      await sb.from('medicamento_titulares').insert(checks.map(tid=>({medicamento_id:data.id, titular_id:tid, es_principal:tid===ppal})));
+    }
+    box.remove(); await cargarCatalogos();
+  };
+}
+
+/* ═════════ Importar Excel (Producto, Principio activo, N° Registro Sanitario, Titulares) ═════════ */
+function _norm(x){ return (x==null?'':String(x)).normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().trim(); }
+function _mapCols(headers){
+  const map={};
+  headers.forEach((h,i)=>{
+    const n=_norm(h);
+    if(map.producto==null && (n.includes('producto')||n.includes('descripcion'))) map.producto=i;
+    else if(map.pa==null && n.includes('principio')) map.pa=i;
+    else if(map.rs==null && (n.includes('registro')||n.includes('reg sanit')||n==='rs')) map.rs=i;
+    else if(map.tit==null && n.includes('titular')) map.tit=i;
+  });
+  return map;
+}
+async function _ensureTitular(nombre){
+  const clean=(nombre||'').trim(); if(!clean) return null;
+  let t=TITULARES.find(x=>_norm(x.razon_social)===_norm(clean));
+  if(t) return t.id;
+  const {data,error}=await sb.from('titulares_registro_sanitario').insert({razon_social:clean}).select('id,razon_social').single();
+  if(error){
+    const {data:d2}=await sb.from('titulares_registro_sanitario').select('id,razon_social').ilike('razon_social',clean).limit(1);
+    if(d2&&d2.length){ if(!TITULARES.find(x=>x.id===d2[0].id)) TITULARES.push({id:d2[0].id,razon_social:d2[0].razon_social,activo:true}); return d2[0].id; }
+    return null;
+  }
+  TITULARES.push({id:data.id, razon_social:data.razon_social, activo:true});
+  return data.id;
+}
+async function importarExcel(ev){
+  const file=ev.target.files[0]; ev.target.value='';
+  if(!file) return;
+  const box=$('importMsg'); box.innerHTML='<div class="msg msg-info">Procesando archivo…</div>';
+  try{
+    const buf=await file.arrayBuffer();
+    const wb=XLSX.read(buf,{type:'array'});
+    const ws=wb.Sheets[wb.SheetNames[0]];
+    const rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:''}).filter(r=>r.some(c=>String(c).trim()!==''));
+    if(rows.length<2){ box.innerHTML='<div class="msg msg-warn">El archivo no tiene filas de datos.</div>'; return; }
+    const map=_mapCols(rows[0]);
+    if(map.producto==null){ box.innerHTML='<div class="msg msg-err">No encontré la columna <b>Producto</b>. Usa encabezados: Producto, Principio activo, Número de registro sanitario, Titulares.</div>'; return; }
+    let creados=0, actualizados=0, titLinks=0, saltados=0;
+    for(let i=1;i<rows.length;i++){
+      const r=rows[i];
+      const prod=String(r[map.producto]||'').trim();
+      if(!prod){ saltados++; continue; }
+      const pa=map.pa!=null?(String(r[map.pa]||'').trim()||null):null;
+      const rs=map.rs!=null?(String(r[map.rs]||'').trim()||null):null;
+      const titRaw=map.tit!=null?String(r[map.tit]||'').trim():'';
+      let medId=null;
+      if(rs){ const ex=MEDS.find(m=>_norm(m.nro_registro_sanitario)===_norm(rs)); if(ex) medId=ex.id; }
+      if(medId){
+        await sb.from('medicamentos').update({descripcion_producto:prod, principio_activo:pa, nro_registro_sanitario:rs}).eq('id',medId);
+        actualizados++;
+      }else{
+        const nro=(MEDS.reduce((m,x)=>Math.max(m,x.nro||0),0))+1+creados;
+        const {data,error}=await sb.from('medicamentos').insert({descripcion_producto:prod, principio_activo:pa, nro_registro_sanitario:rs, nro}).select('id,nro').single();
+        if(error){ saltados++; continue; }
+        medId=data.id; MEDS.push({id:medId, nro:data.nro, descripcion_producto:prod, principio_activo:pa, nro_registro_sanitario:rs}); creados++;
+      }
+      if(titRaw){
+        const nombres=titRaw.split(/[,;/|]+/).map(x=>x.trim()).filter(Boolean).slice(0,4);
+        const ids=[];
+        for(const nom of nombres){ const id=await _ensureTitular(nom); if(id&&!ids.includes(id)) ids.push(id); }
+        if(ids.length){
+          await sb.from('medicamento_titulares').delete().eq('medicamento_id',medId);
+          const {error}=await sb.from('medicamento_titulares').insert(ids.map((id,idx)=>({medicamento_id:medId, titular_id:id, es_principal:idx===0})));
+          if(!error) titLinks+=ids.length;
+        }
+      }
+    }
+    await cargarCatalogos();
+    box.innerHTML=`<div class="msg msg-info">✅ Importación lista: ${creados} producto(s) nuevo(s), ${actualizados} actualizado(s), ${titLinks} vínculo(s) de titular.${saltados?' '+saltados+' fila(s) omitida(s).':''}</div>`;
+  }catch(e){
+    box.innerHTML='<div class="msg msg-err">Error al leer el Excel: '+esc(e.message)+'</div>';
+  }
+}
+
 
 boot();
 </script>
