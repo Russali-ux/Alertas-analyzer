@@ -785,6 +785,7 @@ function onLoggedOut() {
   currentPerfil = null;
   document.getElementById('alertsTable').classList.remove('is-admin');
   document.getElementById('gateOverlay').classList.remove('gate-hidden');
+  cambiarTabAuth('login'); // vuelve siempre al formulario de login (no se queda en "nueva contraseña" tras un cambio exitoso)
   document.getElementById('rootApp').classList.add('gate-hidden');
   document.getElementById('userBadge').classList.add('gate-hidden');
   document.getElementById('moduleNav').classList.add('gate-hidden');
