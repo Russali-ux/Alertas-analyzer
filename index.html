@@ -563,11 +563,19 @@ let sortKey       = 'fecha_publicacion';
 let sortDir       = 'desc';
 let currentUser   = null;
 let currentPerfil = null;
+/* true mientras estamos dentro del flujo de "nueva contraseña" tras un
+   enlace de recuperación. Supabase re-valida la sesión guardada cada vez
+   que la pestaña recupera el foco (cambio de pestaña, minimizar, etc.) y
+   vuelve a emitir un evento de sesión activa — sin esta bandera, ese
+   evento se trataba como un login normal y abría el dashboard sin que la
+   persona hubiera guardado la nueva contraseña todavía. */
+let enRecuperacion = false;
 
 /* ════════════════════════════════════════════
    AUTH — login / registro / sesión
 ════════════════════════════════════════════ */
 function cambiarTabAuth(tab) {
+  enRecuperacion = false;
   document.getElementById('authChooser').classList.remove('gate-hidden');
   document.getElementById('tabLogin').classList.toggle('active', tab === 'login');
   document.getElementById('tabSignup').classList.toggle('active', tab === 'signup');
@@ -587,6 +595,7 @@ function mostrarRecuperar() {
 }
 
 function volverALogin() {
+  enRecuperacion = false;
   document.getElementById('recoverForm').classList.add('gate-hidden');
   document.getElementById('newPasswordForm').classList.add('gate-hidden');
   cambiarTabAuth('login');
@@ -620,6 +629,7 @@ async function manejarRecuperar(event) {
 /* Se muestra cuando Supabase detecta que el usuario volvió desde el enlace
    de recuperación que le llegó por correo (evento PASSWORD_RECOVERY). */
 function mostrarFormularioNuevaPassword() {
+  enRecuperacion = true;
   document.getElementById('gateOverlay').classList.remove('gate-hidden');
   document.getElementById('rootApp').classList.add('gate-hidden');
   document.getElementById('authChooser').classList.add('gate-hidden');
@@ -669,6 +679,7 @@ async function manejarNuevaPassword(event) {
   okDiv.textContent = '✓ Contraseña actualizada. Ingresando…';
   okDiv.style.display = 'block';
   document.getElementById('newPasswordForm').reset();
+  enRecuperacion = false;
   const { data: { session } } = await sb.auth.getSession();
   if (session) setTimeout(() => onLoggedIn(session), 700);
 }
@@ -786,6 +797,11 @@ function onLoggedOut() {
 
 sb.auth.onAuthStateChange((event, session) => {
   if (event === 'PASSWORD_RECOVERY') { mostrarFormularioNuevaPassword(); return; }
+  /* Mientras se está eligiendo la nueva contraseña, ignoramos cualquier
+     otro evento de sesión (Supabase revalida y reemite "sesión activa"
+     cada vez que la pestaña recupera el foco) para que no nos saque del
+     formulario y abra el dashboard antes de tiempo. */
+  if (enRecuperacion) return;
   if (event === 'SIGNED_IN' && session) onLoggedIn(session);
   if (event === 'SIGNED_OUT') onLoggedOut();
 });
@@ -803,7 +819,7 @@ function esEnlaceDeRecuperacion() {
 }
 
 (async function initAuth() {
-  if (esEnlaceDeRecuperacion()) return;
+  if (esEnlaceDeRecuperacion()) { enRecuperacion = true; return; }
   const { data: { session } } = await sb.auth.getSession();
   if (session) onLoggedIn(session);
   else onLoggedOut();
