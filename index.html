@@ -732,7 +732,12 @@ async function manejarSignup(event) {
   btn.disabled = true; btn.textContent = 'Creando cuenta…';
   const { data, error } = await sb.auth.signUp({
     email, password,
-    options: { data: { nombre, empresa: empresa || null } }
+    options: {
+      data: { nombre, empresa: empresa || null },
+      // Sin esto, el correo de confirmacion usa el "Site URL" configurado
+      // en Supabase (por defecto localhost:3000) en vez de este sitio.
+      emailRedirectTo: window.location.origin + window.location.pathname
+    }
   });
   btn.disabled = false; btn.textContent = 'Crear cuenta';
 
