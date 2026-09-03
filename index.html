@@ -261,6 +261,9 @@ header p{font-size:12px;color:rgba(255,255,255,.85);margin-top:3px;font-family:v
   <a class="module-tab gate-hidden" id="modificatoriasLink" href="modificatorias/" title="Monitor Modificatorias DIGEMID · Actualizaciones de Seguridad">
     <span class="module-icon">🔄</span><span class="module-label">Modificatorias</span>
   </a>
+  <a class="module-tab gate-hidden" id="titularesLink" href="titulares/" title="Alertas por Producto y Titular">
+    <span class="module-icon">🏷️</span><span class="module-label">Producto &amp; Titular</span>
+  </a>
 </nav>
 
 <!-- ── AUTH OVERLAY: LOGIN / REGISTRO (Supabase Auth) ── -->
@@ -467,6 +470,7 @@ header p{font-size:12px;color:rgba(255,255,255,.85);margin-top:3px;font-family:v
             <th>Acceso PAVS</th>
             <th>Acceso US FDA AEMS</th>
             <th>Acceso Modificatorias</th>
+            <th>Acceso Prod/Titular</th>
             <th>Registrado</th>
             <th>Último acceso</th>
             <th>Acción</th>
@@ -793,6 +797,7 @@ async function onLoggedIn(session) {
   document.getElementById('pavsLink').classList.toggle('gate-hidden', !(esAdmin || currentPerfil?.acceso_pavs));
   document.getElementById('aemsLink').classList.toggle('gate-hidden', !(esAdmin || currentPerfil?.acceso_aems));
   document.getElementById('modificatoriasLink').classList.toggle('gate-hidden', !(esAdmin || currentPerfil?.acceso_modificatorias));
+  document.getElementById('titularesLink').classList.toggle('gate-hidden', !(esAdmin || currentPerfil?.acceso_titulares));
 
   cargarAlertas();
 }
@@ -810,6 +815,7 @@ function onLoggedOut() {
   document.getElementById('pavsLink').classList.add('gate-hidden');
   document.getElementById('aemsLink').classList.add('gate-hidden');
   document.getElementById('modificatoriasLink').classList.add('gate-hidden');
+  document.getElementById('titularesLink').classList.add('gate-hidden');
   cambiarVista('alertas');
 }
 
@@ -1305,6 +1311,12 @@ async function cargarUsuarios() {
           <span class="slider"></span>
         </label>
       </td>
+      <td>
+        <label class="cima-toggle" title="${u.acceso_titulares ? 'Acceso Producto/Titular activo' : 'Acceso Producto/Titular desactivado'}">
+          <input type="checkbox" ${u.acceso_titulares ? 'checked' : ''} onchange="cambiarAccesoTitulares('${u.id}', this.checked, this)">
+          <span class="slider"></span>
+        </label>
+      </td>
       <td class="cell-fecha">${fmt(u.creado_en)}</td>
       <td class="cell-fecha">${fmt(u.ultimo_acceso)}</td>
       <td>
@@ -1339,6 +1351,19 @@ async function cambiarAccesoModificatorias(userId, acceso, checkbox) {
   }
   const u = usuarios.find(x => x.id === userId);
   if (u) u.acceso_modificatorias = acceso;
+}
+
+async function cambiarAccesoTitulares(userId, acceso, checkbox) {
+  checkbox.disabled = true;
+  const { error } = await sb.rpc('admin_set_acceso_titulares', { target_id: userId, acceso });
+  checkbox.disabled = false;
+  if (error) {
+    alert('No se pudo actualizar el acceso a Producto/Titular: ' + error.message);
+    checkbox.checked = !acceso;
+    return;
+  }
+  const u = usuarios.find(x => x.id === userId);
+  if (u) u.acceso_titulares = acceso;
 }
 
 async function cambiarAccesoPavs(userId, acceso, checkbox) {

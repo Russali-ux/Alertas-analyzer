@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ConkoSafe IA — Alertas por Producto &amp; Titular</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{
+  --bg:#ffffff; --surface:#f5f7fa; --border:#d0d7e3; --accent:#0077cc; --danger:#e00030;
+  --warn:#cc8800; --safe:#00996a; --muted:#8a9ab8; --text:#1a2030; --sub:#5a6a82;
+  --mono:'IBM Plex Mono',monospace; --sans:'IBM Plex Sans',Arial,sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow:hidden;display:flex;flex-direction:column}
+
+header{background:linear-gradient(120deg,#1A3A5C,#0077cc);padding:20px 26px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;flex-shrink:0}
+.logo-badge{width:40px;height:40px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
+header h1{font-size:20px;font-weight:700;color:#fff}
+header p{font-size:12px;color:rgba(255,255,255,.85);margin-top:3px;font-family:var(--mono)}
+.user-badge{margin-left:auto;display:flex;align-items:center;gap:8px}
+.user-badge .who{font-family:var(--mono);font-size:10px;color:#fff;text-align:right;line-height:1.3}
+.user-badge .who b{display:block;font-size:11px}
+.user-badge .who span{opacity:.75}
+.admin-tag{background:#ffb020;color:#3a2400;padding:1px 6px;border-radius:4px;font-size:8px;font-weight:700;margin-left:5px;vertical-align:middle}
+.btn-logout{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:8px;padding:6px 12px;font-family:var(--mono);font-size:10px;font-weight:700;cursor:pointer}
+.btn-logout:hover{background:rgba(255,255,255,.24)}
+
+.module-nav{display:flex;align-items:center;gap:8px;padding:12px 20px;background:linear-gradient(180deg,#eef2f8,var(--surface));border-bottom:1px solid var(--border);flex-wrap:wrap;flex-shrink:0}
+.module-tab{display:flex;align-items:center;gap:7px;padding:8px 14px;border-radius:9px;border:1px solid var(--border);background:#fff;color:var(--sub);text-decoration:none;font-family:var(--mono);font-size:11px;font-weight:700;white-space:nowrap;transition:.15s}
+.module-tab:hover{border-color:var(--accent);color:var(--accent);background:rgba(0,119,204,.06);transform:translateY(-1px)}
+.module-tab.active{background:var(--accent);border-color:var(--accent);color:#fff;cursor:default;pointer-events:none;box-shadow:0 2px 8px rgba(0,119,204,.35)}
+.module-icon{font-size:13px;line-height:1}
+@media(max-width:720px){.module-nav{padding:10px 14px;gap:6px}.module-tab{padding:7px 10px;font-size:10px}}
+
+.root{flex:1;overflow:auto;padding:22px 26px 60px}
+.gate-hidden{display:none!important}
+
+.view-nav{display:flex;gap:8px;margin-bottom:16px}
+.view-nav button{background:var(--surface);border:1px solid var(--border);color:var(--sub);border-radius:9px;padding:8px 16px;font-family:var(--mono);font-size:11px;font-weight:700;cursor:pointer}
+.view-nav button.active{background:var(--accent);border-color:var(--accent);color:#fff}
+
+.toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+.count{font-family:var(--mono);font-size:12px;color:var(--sub)}
+input,select,textarea{font-family:var(--sans);font-size:13px}
+.inp{padding:8px 11px;border:1px solid var(--border);border-radius:8px;background:#fff;color:var(--text)}
+.inp:focus{outline:none;border-color:var(--accent)}
+textarea.inp{width:100%;resize:vertical;min-height:60px}
+.btn{border:none;border-radius:8px;padding:9px 16px;font-family:var(--mono);font-size:11px;font-weight:700;cursor:pointer}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{filter:brightness(1.08)}
+.btn-ghost{background:var(--surface);border:1px solid var(--border);color:var(--sub)}
+.btn-danger{background:var(--danger);color:#fff}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+
+table{width:100%;border-collapse:collapse;font-size:12px;background:#fff}
+th{padding:9px 12px;text-align:left;font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--sub);background:var(--surface);border-bottom:2px solid var(--border);white-space:nowrap}
+td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:top}
+tr:hover td{background:rgba(0,119,204,.04)}
+.tbl-wrap{border:1px solid var(--border);border-radius:12px;overflow:auto}
+
+.pill{display:inline-block;font-family:var(--mono);font-size:9px;font-weight:700;padding:2px 8px;border-radius:20px}
+.u-INMEDIATA{background:rgba(224,0,48,.12);color:#b00020;border:1px solid rgba(224,0,48,.3)}
+.u-PREVENTIVA{background:rgba(204,136,0,.14);color:#8a5a00;border:1px solid rgba(204,136,0,.35)}
+.u-INFORMATIVA{background:rgba(0,119,204,.12);color:#065a99;border:1px solid rgba(0,119,204,.3)}
+.tit-chip{display:inline-block;background:rgba(111,66,193,.1);color:#5a2ea6;border:1px solid rgba(111,66,193,.28);border-radius:6px;padding:2px 7px;font-size:10px;font-weight:600;margin:1px 3px 1px 0}
+.est{font-family:var(--mono);font-size:9px;font-weight:700;padding:2px 8px;border-radius:6px}
+.est-registrada{background:var(--surface);color:var(--sub);border:1px solid var(--border)}
+.est-en_gestion{background:rgba(204,136,0,.14);color:#8a5a00}
+.est-cerrada{background:rgba(0,153,106,.12);color:#00734f}
+
+.msg{padding:14px 16px;border-radius:10px;font-size:13px;margin:12px 0}
+.msg-info{background:rgba(0,119,204,.08);border:1px solid rgba(0,119,204,.25);color:#065a99}
+.msg-warn{background:rgba(204,136,0,.1);border:1px solid rgba(204,136,0,.3);color:#8a5a00}
+.msg-err{background:rgba(224,0,48,.08);border:1px solid rgba(224,0,48,.3);color:#b00020}
+
+/* Modal */
+.overlay{position:fixed;inset:0;background:rgba(10,20,35,.55);display:flex;align-items:flex-start;justify-content:center;padding:34px 16px;overflow:auto;z-index:50}
+.modal{background:#fff;border-radius:16px;width:100%;max-width:680px;padding:24px 26px;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.modal h2{font-size:17px;margin-bottom:4px}
+.modal .sub{font-size:12px;color:var(--sub);margin-bottom:18px}
+.field{margin-bottom:15px}
+.field label{display:block;font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--sub);margin-bottom:5px}
+.field .inp,.field select.inp{width:100%}
+.step-tag{display:inline-block;font-family:var(--mono);font-size:9px;font-weight:700;background:var(--accent);color:#fff;border-radius:5px;padding:2px 7px;margin-right:6px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:560px){.row2{grid-template-columns:1fr}}
+.tit-box{border:1px dashed var(--border);border-radius:10px;padding:12px;background:var(--surface)}
+.tit-opt{display:flex;align-items:center;gap:8px;padding:5px 0;font-size:13px}
+.modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px;border-top:1px solid var(--border);padding-top:16px}
+.origen-toggle{display:flex;gap:8px;margin-bottom:14px}
+.origen-toggle button{flex:1;padding:9px;border:1px solid var(--border);background:#fff;color:var(--sub);border-radius:8px;font-family:var(--mono);font-size:11px;font-weight:700;cursor:pointer}
+.origen-toggle button.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.hint{font-size:11px;color:var(--muted);margin-top:4px}
+
+/* login overlay */
+#loginNotice{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:var(--bg);z-index:100}
+#loginNotice .card{max-width:380px;text-align:center;padding:30px;border:1px solid var(--border);border-radius:14px;background:var(--surface)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-badge">🏷️</div>
+  <div>
+    <h1>ConkoSafe IA — Alertas por Producto &amp; Titular</h1>
+    <p>Registro de alertas DIGEMID que impactan el portafolio · Conkomerco Farmacovigilancia</p>
+  </div>
+  <div class="user-badge gate-hidden" id="userBadge">
+    <div class="who" id="whoText"></div>
+    <button class="btn-logout" onclick="cerrarSesion()">Salir</button>
+  </div>
+</header>
+
+<nav class="module-nav gate-hidden" id="moduleNav" aria-label="Módulos ConkoSafe IA">
+  <a class="module-tab" href="../" title="Monitor de Alertas Sanitarias DIGEMID"><span class="module-icon">📋</span><span>Alertas DIGEMID</span></a>
+  <a class="module-tab" href="../cima/" title="Monitor CIMA"><span class="module-icon">🧪</span><span>CIMA · Ficha Técnica</span></a>
+  <a class="module-tab" href="../pavs/" title="Monitor PAVS"><span class="module-icon">🌎</span><span>PAVS</span></a>
+  <a class="module-tab" href="../aems/" title="Monitor FDA AEMS"><span class="module-icon">🇺🇸</span><span>FDA AEMS</span></a>
+  <a class="module-tab" href="../modificatorias/" title="Monitor Modificatorias DIGEMID"><span class="module-icon">🔄</span><span>Modificatorias</span></a>
+  <a class="module-tab active" href="./" title="Alertas por Producto y Titular (estás aquí)"><span class="module-icon">🏷️</span><span>Producto &amp; Titular</span></a>
+</nav>
+
+<div id="loginNotice" class="gate-hidden">
+  <div class="card">
+    <div style="font-size:34px;margin-bottom:10px">🔒</div>
+    <h2 style="font-size:17px;margin-bottom:8px" id="lnTitle">Verificando sesión…</h2>
+    <p style="font-size:13px;color:var(--sub)" id="lnMsg">Un momento.</p>
+    <p style="margin-top:16px"><a href="../" style="color:var(--accent);font-family:var(--mono);font-size:12px">← Volver a Alertas</a></p>
+  </div>
+</div>
+
+<div class="root gate-hidden" id="rootApp">
+
+  <div class="view-nav">
+    <button class="active" id="navAlertas" onclick="cambiarVista('alertas')">📢 Alertas registradas</button>
+    <button id="navPortafolio" onclick="cambiarVista('portafolio')">💊 Portafolio &amp; titulares</button>
+  </div>
+
+  <!-- VISTA ALERTAS -->
+  <div id="vistaAlertas">
+    <div class="toolbar">
+      <span class="count" id="cntAlertas">— alertas</span>
+      <input class="inp" id="fAlertas" placeholder="🔍 Filtrar por producto, título o titular…" style="flex:1;min-width:220px" oninput="renderAlertas()">
+      <select class="inp" id="fUrg" onchange="renderAlertas()">
+        <option value="">Todas las urgencias</option>
+        <option value="INMEDIATA">🔴 Inmediata</option>
+        <option value="PREVENTIVA">🟡 Preventiva</option>
+        <option value="INFORMATIVA">🔵 Informativa</option>
+      </select>
+      <button class="btn btn-ghost" onclick="cargarAlertas()">↻ Actualizar</button>
+      <button class="btn btn-primary gate-hidden" id="btnNueva" onclick="abrirModal()">＋ Nueva alerta</button>
+    </div>
+    <div id="alertasMsg"></div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr>
+          <th>Fecha</th><th>Producto impactado</th><th>Título de la alerta</th>
+          <th>Titular(es)</th><th>Urgencia</th><th>Origen</th><th>Estado</th><th class="gate-hidden colAdmin">Acción</th>
+        </tr></thead>
+        <tbody id="tbAlertas"><tr><td colspan="8" style="text-align:center;color:var(--muted);padding:24px">Cargando…</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- VISTA PORTAFOLIO -->
+  <div id="vistaPortafolio" class="gate-hidden">
+    <div class="toolbar">
+      <span class="count" id="cntMeds">— productos</span>
+      <input class="inp" id="fMeds" placeholder="🔍 Filtrar por producto o principio activo…" style="flex:1;min-width:220px" oninput="renderMeds()">
+    </div>
+    <div class="msg msg-info">Asigna aquí los titulares de cada producto. El titular marcado como <b>principal</b> se autoactiva al registrar una alerta. Solo un administrador puede editar.</div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr>
+          <th>Nº</th><th>Producto</th><th>Principio activo</th><th>Nº Reg. Sanitario</th><th>Titulares asignados</th><th class="gate-hidden colAdmin">Acción</th>
+        </tr></thead>
+        <tbody id="tbMeds"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL NUEVA/EDITAR ALERTA -->
+<div class="overlay gate-hidden" id="modal">
+  <div class="modal">
+    <h2 id="modalTitle">Registrar alerta por producto</h2>
+    <p class="sub">El titular se autoactiva según el producto. Puedes impactar hasta 2 titulares.</p>
+    <div id="modalMsg"></div>
+
+    <div class="field">
+      <label><span class="step-tag">Paso 1</span> Producto impactado</label>
+      <select class="inp" id="mProducto" onchange="onProductoChange()"><option value="">— Selecciona un producto —</option></select>
+    </div>
+
+    <div class="field" id="titularesField" style="display:none">
+      <label><span class="step-tag">Paso 2</span> Titular(es) del registro — máximo 2</label>
+      <div class="tit-box" id="titularesBox"></div>
+      <div class="hint" id="titularesHint"></div>
+    </div>
+
+    <div class="field" id="origenField" style="display:none">
+      <label><span class="step-tag">Paso 3</span> Datos de la alerta</label>
+      <div class="origen-toggle">
+        <button type="button" id="btnOrigDig" class="active" onclick="setOrigen('digemid_vinculada')">🔗 Vincular alerta DIGEMID</button>
+        <button type="button" id="btnOrigMan" onclick="setOrigen('manual')">✍️ Entrada manual</button>
+      </div>
+
+      <div id="origenDigemid">
+        <input class="inp" id="mBuscarDig" placeholder="🔍 Buscar alerta DIGEMID por título o producto…" style="width:100%;margin-bottom:6px" oninput="buscarDigemid()">
+        <select class="inp" id="mAlertaDig" size="5" style="width:100%" onchange="onAlertaDigChange()"></select>
+        <div class="hint">Se autocompletan título, tipo, fecha, urgencia y resumen desde la alerta seleccionada.</div>
+      </div>
+
+      <div id="origenManual" style="display:none">
+        <div class="field"><label>Título de la alerta</label><input class="inp" id="mTitulo" placeholder="Ej. Alerta N° 25-2026 — …"></div>
+        <div class="row2">
+          <div class="field"><label>Tipo de alerta</label><input class="inp" id="mTipo" placeholder="Ej. Producto falsificado"></div>
+          <div class="field"><label>Fecha de publicación</label><input class="inp" type="date" id="mFecha"></div>
+        </div>
+        <div class="field"><label>Urgencia</label>
+          <select class="inp" id="mUrg"><option value="">—</option><option>INMEDIATA</option><option>PREVENTIVA</option><option>INFORMATIVA</option></select>
+        </div>
+        <div class="field"><label>Acción principal</label><input class="inp" id="mAccion" placeholder="Ej. Retiro del mercado"></div>
+        <div class="field"><label>Resumen</label><textarea class="inp" id="mResumen"></textarea></div>
+        <div class="field"><label>URL del PDF (opcional)</label><input class="inp" id="mUrl" placeholder="https://…"></div>
+      </div>
+    </div>
+
+    <div class="field" id="estadoField" style="display:none">
+      <label>Estado del caso</label>
+      <select class="inp" id="mEstado"><option value="registrada">Registrada</option><option value="en_gestion">En gestión</option><option value="cerrada">Cerrada</option></select>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="cerrarModal()">Cancelar</button>
+      <button class="btn btn-primary" id="btnGuardar" onclick="guardarAlerta()">Guardar alerta</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ───────── Supabase ───────── */
+const SUPABASE_URL='https://ggbnfdaxtsngsjssrwrl.supabase.co';
+const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdnYm5mZGF4dHNuZ3Nqc3Nyd3JsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ4ODAzODIsImV4cCI6MjEwMDQ1NjM4Mn0.126hhMpakcOlzp5KyyWdMU56UjwLwn5Xn4Nc13OIjgU';
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+
+const $=id=>document.getElementById(id);
+const esc=t=>(t==null?'':String(t)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+let currentUser=null, esAdmin=false;
+let MEDS=[], TITULARES=[], MEDTIT=[], ALERTAS=[], DIGEMID=[];
+let editId=null, origenActual='digemid_vinculada';
+
+/* ───────── Auth gate ───────── */
+async function boot(){
+  $('loginNotice').classList.remove('gate-hidden');
+  const {data:{session}}=await sb.auth.getSession();
+  if(!session){ $('lnTitle').textContent='Debes iniciar sesión'; $('lnMsg').textContent='Redirigiendo al inicio…'; setTimeout(()=>location.href='../',1200); return; }
+  currentUser=session.user;
+  const {data:perfil}=await sb.from('perfiles').select('nombre,rol,acceso_titulares').eq('id',currentUser.id).single();
+  if(!perfil || (perfil.rol!=='admin' && !perfil.acceso_titulares)){
+    $('lnTitle').textContent='Sin acceso a este módulo';
+    $('lnMsg').textContent='Pídele a un administrador que te habilite el acceso a "Producto & Titular".';
+    return;
+  }
+  esAdmin = perfil.rol==='admin';
+  $('whoText').innerHTML=`<b>${esc(perfil.nombre||currentUser.email)}${esAdmin?'<span class="admin-tag">ADMIN</span>':''}</b><span>${esc(currentUser.email)}</span>`;
+  $('loginNotice').classList.add('gate-hidden');
+  $('userBadge').classList.remove('gate-hidden');
+  $('moduleNav').classList.remove('gate-hidden');
+  $('rootApp').classList.remove('gate-hidden');
+  if(esAdmin){ $('btnNueva').classList.remove('gate-hidden'); document.querySelectorAll('.colAdmin').forEach(e=>e.classList.remove('gate-hidden')); }
+  await Promise.all([cargarCatalogos(), cargarAlertas()]);
+}
+async function cerrarSesion(){ await sb.auth.signOut(); location.href='../'; }
+
+/* ───────── Cargar catálogos ───────── */
+async function cargarCatalogos(){
+  const [m,t,mt]=await Promise.all([
+    sb.from('medicamentos').select('*').order('nro'),
+    sb.from('titulares_registro_sanitario').select('*').eq('activo',true).order('razon_social'),
+    sb.from('medicamento_titulares').select('*')
+  ]);
+  MEDS=m.data||[]; TITULARES=t.data||[]; MEDTIT=mt.data||[];
+  // llena el select de producto del modal
+  const sel=$('mProducto');
+  sel.innerHTML='<option value="">— Selecciona un producto —</option>'+
+    MEDS.map(x=>`<option value="${x.id}">${esc(x.descripcion_producto)}</option>`).join('');
+  renderMeds();
+}
+function titularesDe(medId){
+  return MEDTIT.filter(x=>x.medicamento_id===medId)
+    .map(x=>({...x, titular:TITULARES.find(t=>t.id===x.titular_id)}))
+    .filter(x=>x.titular);
+}
+function nombreTitular(id){ const t=TITULARES.find(x=>x.id===id); return t?t.razon_social:''; }
+function nombreMed(id){ const m=MEDS.find(x=>x.id===id); return m?m.descripcion_producto:''; }
+
+/* ───────── Vista Alertas ───────── */
+async function cargarAlertas(){
+  $('tbAlertas').innerHTML='<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:24px">Cargando…</td></tr>';
+  const {data,error}=await sb.from('alertas_producto_titular').select('*').order('fecha_publicacion',{ascending:false,nullsFirst:false}).order('creado_en',{ascending:false});
+  if(error){ $('alertasMsg').innerHTML=`<div class="msg msg-err">No se pudo cargar: ${esc(error.message)}</div>`; $('tbAlertas').innerHTML=''; return; }
+  $('alertasMsg').innerHTML=''; ALERTAS=data||[]; renderAlertas();
+}
+function renderAlertas(){
+  const q=$('fAlertas').value.trim().toLowerCase(), urg=$('fUrg').value;
+  const rows=ALERTAS.filter(a=>{
+    if(urg && a.urgencia!==urg) return false;
+    if(!q) return true;
+    const hay=(nombreMed(a.medicamento_id)+' '+(a.titulo_alerta||'')+' '+nombreTitular(a.titular_1_id)+' '+nombreTitular(a.titular_2_id)).toLowerCase();
+    return hay.includes(q);
+  });
+  $('cntAlertas').textContent=`${rows.length} alerta(s)`;
+  if(!rows.length){ $('tbAlertas').innerHTML='<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:24px">Sin alertas registradas todavía.</td></tr>'; return; }
+  $('tbAlertas').innerHTML=rows.map(a=>{
+    const tits=[a.titular_1_id,a.titular_2_id].filter(Boolean).map(id=>`<span class="tit-chip">${esc(nombreTitular(id))}</span>`).join('')||'<span style="color:var(--muted)">—</span>';
+    const urgP=a.urgencia?`<span class="pill u-${a.urgencia}">${a.urgencia}</span>`:'—';
+    const orig=a.origen==='digemid_vinculada'?'🔗 DIGEMID':'✍️ Manual';
+    const acc=esAdmin?`<td class="colAdmin"><button class="btn btn-ghost" style="padding:4px 9px" onclick="editar('${a.id}')">Editar</button> <button class="btn btn-danger" style="padding:4px 9px" onclick="eliminar('${a.id}')">✕</button></td>`:'';
+    return `<tr>
+      <td style="font-family:var(--mono);white-space:nowrap">${esc(a.fecha_publicacion||'—')}</td>
+      <td style="min-width:200px">${esc(nombreMed(a.medicamento_id))}</td>
+      <td style="min-width:180px">${esc(a.titulo_alerta||'—')}</td>
+      <td>${tits}</td>
+      <td>${urgP}</td>
+      <td style="font-family:var(--mono);font-size:10px;white-space:nowrap">${orig}</td>
+      <td><span class="est est-${a.estado}">${esc((a.estado||'').replace('_',' '))}</span></td>
+      ${acc}
+    </tr>`;
+  }).join('');
+}
+
+/* ───────── Vista Portafolio ───────── */
+function renderMeds(){
+  const q=($('fMeds')?.value||'').trim().toLowerCase();
+  const rows=MEDS.filter(m=> !q || (m.descripcion_producto+' '+(m.principio_activo||'')).toLowerCase().includes(q));
+  if($('cntMeds')) $('cntMeds').textContent=`${rows.length} producto(s)`;
+  const tb=$('tbMeds'); if(!tb) return;
+  tb.innerHTML=rows.map(m=>{
+    const asign=titularesDe(m.id);
+    const chips=asign.length?asign.map(x=>`<span class="tit-chip">${esc(x.titular.razon_social)}${x.es_principal?' ★':''}</span>`).join(''):'<span style="color:var(--muted)">Sin titular asignado</span>';
+    const acc=esAdmin?`<td class="colAdmin"><button class="btn btn-ghost" style="padding:4px 9px" onclick="editarTitulares('${m.id}')">Asignar</button></td>`:'';
+    return `<tr>
+      <td style="font-family:var(--mono)">${m.nro??''}</td>
+      <td style="min-width:220px">${esc(m.descripcion_producto)}</td>
+      <td>${esc(m.principio_activo||'—')}</td>
+      <td style="font-family:var(--mono);white-space:nowrap">${esc(m.nro_registro_sanitario||'—')}</td>
+      <td>${chips}</td>
+      ${acc}
+    </tr>`;
+  }).join('');
+}
+function cambiarVista(v){
+  $('navAlertas').classList.toggle('active',v==='alertas');
+  $('navPortafolio').classList.toggle('active',v==='portafolio');
+  $('vistaAlertas').classList.toggle('gate-hidden',v!=='alertas');
+  $('vistaPortafolio').classList.toggle('gate-hidden',v!=='portafolio');
+}
+
+/* ───────── Asignar titulares a un producto (admin) ───────── */
+async function editarTitulares(medId){
+  const m=MEDS.find(x=>x.id===medId); if(!m) return;
+  const actuales=titularesDe(medId);
+  const setSel=new Set(actuales.map(x=>x.titular_id));
+  const principalActual=actuales.find(x=>x.es_principal)?.titular_id||null;
+  const html=TITULARES.map(t=>`
+    <label class="tit-opt"><input type="checkbox" value="${t.id}" ${setSel.has(t.id)?'checked':''}> ${esc(t.razon_social)}
+      <span style="margin-left:auto"><input type="radio" name="ppal" value="${t.id}" ${principalActual===t.id?'checked':''}> principal</span>
+    </label>`).join('');
+  const box=document.createElement('div'); box.className='overlay'; box.innerHTML=`
+    <div class="modal" style="max-width:480px">
+      <h2>Titulares de: ${esc(m.descripcion_producto)}</h2>
+      <p class="sub">Marca los titulares y define cuál es el principal (se autoactiva en las alertas).</p>
+      <div class="tit-box" id="asignBox">${html}</div>
+      <div class="modal-actions"><button class="btn btn-ghost" id="cancelAsign">Cancelar</button><button class="btn btn-primary" id="saveAsign">Guardar</button></div>
+    </div>`;
+  document.body.appendChild(box);
+  box.querySelector('#cancelAsign').onclick=()=>box.remove();
+  box.querySelector('#saveAsign').onclick=async()=>{
+    const checks=[...box.querySelectorAll('#asignBox input[type=checkbox]:checked')].map(c=>c.value);
+    const ppal=box.querySelector('#asignBox input[name=ppal]:checked')?.value||null;
+    // borra e inserta de nuevo (simple y consistente)
+    await sb.from('medicamento_titulares').delete().eq('medicamento_id',medId);
+    if(checks.length){
+      const rows=checks.map(tid=>({medicamento_id:medId,titular_id:tid,es_principal:tid===ppal}));
+      const {error}=await sb.from('medicamento_titulares').insert(rows);
+      if(error){ alert('Error: '+error.message); return; }
+    }
+    box.remove(); await cargarCatalogos();
+  };
+}
+
+/* ───────── Modal Nueva / Editar alerta ───────── */
+function abrirModal(){
+  editId=null; $('modalTitle').textContent='Registrar alerta por producto';
+  $('mProducto').value=''; $('titularesField').style.display='none'; $('origenField').style.display='none'; $('estadoField').style.display='none';
+  $('modalMsg').innerHTML=''; limpiarManual(); setOrigen('digemid_vinculada'); $('mEstado').value='registrada';
+  $('modal').classList.remove('gate-hidden');
+}
+function cerrarModal(){ $('modal').classList.add('gate-hidden'); }
+function limpiarManual(){ ['mTitulo','mTipo','mFecha','mAccion','mResumen','mUrl'].forEach(id=>$(id).value=''); $('mUrg').value=''; $('mAlertaDig').innerHTML=''; $('mBuscarDig').value=''; }
+
+function onProductoChange(){
+  const medId=$('mProducto').value;
+  if(!medId){ $('titularesField').style.display='none'; $('origenField').style.display='none'; $('estadoField').style.display='none'; return; }
+  const asign=titularesDe(medId);
+  const box=$('titularesBox'); const hint=$('titularesHint');
+  if(!asign.length){
+    box.innerHTML=`<div class="msg msg-warn" style="margin:0">Este producto no tiene titulares asignados. ${esAdmin?'Asígnalos en la pestaña <b>Portafolio & titulares</b>, o elige uno del catálogo abajo.':'Pide a un administrador que los asigne.'}</div>`;
+    // fallback: permitir elegir del catálogo completo
+    box.innerHTML+=catalogoTitularesHTML([]);
+    hint.textContent='Selecciona hasta 2 titulares del catálogo.';
+  }else{
+    const principal=asign.find(x=>x.es_principal)||asign[0];
+    box.innerHTML=catalogoTitularesHTML(asign.map(x=>x.titular_id), principal.titular_id);
+    hint.textContent = asign.length>1
+      ? `Este producto tiene ${asign.length} titulares. El principal se autoactivó; puedes marcar un 2° (máximo 2).`
+      : 'Titular autoactivado. Este producto tiene un solo titular.';
+  }
+  $('titularesField').style.display='block';
+  $('origenField').style.display='block';
+  $('estadoField').style.display='block';
+  aplicarLimite2();
+}
+function catalogoTitularesHTML(preSel, principal){
+  const lista = (preSel && preSel.length) ? TITULARES.filter(t=>preSel.includes(t.id)) : TITULARES;
+  return lista.map(t=>`<label class="tit-opt"><input type="checkbox" class="titChk" value="${t.id}" ${principal===t.id?'checked':''} onchange="aplicarLimite2()"> ${esc(t.razon_social)}</label>`).join('')
+    + (preSel && preSel.length && preSel.length<TITULARES.length ? `<div class="hint" style="margin-top:6px"><a href="#" onclick="mostrarTodosTitulares(event)">+ Ver todos los titulares del catálogo</a></div>` : '');
+}
+function mostrarTodosTitulares(e){ e.preventDefault(); const sel=titularesSeleccionados(); $('titularesBox').innerHTML=catalogoTitularesHTML([], sel[0]||null); sel.forEach(id=>{const c=$('titularesBox').querySelector(`input[value="${id}"]`); if(c)c.checked=true;}); aplicarLimite2(); }
+function titularesSeleccionados(){ return [...document.querySelectorAll('.titChk:checked')].map(c=>c.value); }
+function aplicarLimite2(){
+  const checked=titularesSeleccionados();
+  document.querySelectorAll('.titChk').forEach(c=>{ c.disabled = !c.checked && checked.length>=2; });
+}
+
+function setOrigen(o){
+  origenActual=o;
+  $('btnOrigDig').classList.toggle('active',o==='digemid_vinculada');
+  $('btnOrigMan').classList.toggle('active',o==='manual');
+  $('origenDigemid').style.display=o==='digemid_vinculada'?'block':'none';
+  $('origenManual').style.display=o==='manual'?'block':'none';
+  if(o==='digemid_vinculada' && !DIGEMID.length) buscarDigemid();
+}
+let digTimer=null;
+async function buscarDigemid(){
+  clearTimeout(digTimer);
+  digTimer=setTimeout(async()=>{
+    const q=$('mBuscarDig').value.trim();
+    let query=sb.from('alertas_digemid').select('id,titulo,producto,tipo_alerta,fecha_publicacion,urgencia,accion_principal,resumen_ia,url_pdf_digemid').order('fecha_publicacion',{ascending:false}).limit(30);
+    if(q) query=query.or(`titulo.ilike.%${q}%,producto.ilike.%${q}%`);
+    const {data}=await query; DIGEMID=data||[];
+    $('mAlertaDig').innerHTML=DIGEMID.map(d=>`<option value="${d.id}">${esc(d.fecha_publicacion||'')} · ${esc((d.producto||d.titulo||'').slice(0,70))}</option>`).join('')||'<option disabled>Sin resultados</option>';
+  },250);
+}
+function onAlertaDigChange(){ /* selección lista para guardar */ }
+
+async function guardarAlerta(){
+  const medId=$('mProducto').value;
+  if(!medId){ $('modalMsg').innerHTML='<div class="msg msg-err">Selecciona un producto.</div>'; return; }
+  const tits=titularesSeleccionados();
+  if(tits.length>2){ $('modalMsg').innerHTML='<div class="msg msg-err">Máximo 2 titulares por alerta.</div>'; return; }
+  const rec={ medicamento_id:medId, origen:origenActual, titular_1_id:tits[0]||null, titular_2_id:tits[1]||null, estado:$('mEstado').value };
+  if(origenActual==='digemid_vinculada'){
+    const digId=$('mAlertaDig').value; const d=DIGEMID.find(x=>x.id===digId);
+    if(!d){ $('modalMsg').innerHTML='<div class="msg msg-err">Selecciona una alerta DIGEMID de la lista.</div>'; return; }
+    Object.assign(rec,{ alerta_digemid_id:d.id, titulo_alerta:d.titulo, tipo_alerta:d.tipo_alerta, fecha_publicacion:d.fecha_publicacion||null, urgencia:d.urgencia||null, accion_principal:d.accion_principal, resumen:d.resumen_ia, url_pdf:d.url_pdf_digemid });
+  }else{
+    Object.assign(rec,{ alerta_digemid_id:null, titulo_alerta:$('mTitulo').value.trim()||null, tipo_alerta:$('mTipo').value.trim()||null, fecha_publicacion:$('mFecha').value||null, urgencia:$('mUrg').value||null, accion_principal:$('mAccion').value.trim()||null, resumen:$('mResumen').value.trim()||null, url_pdf:$('mUrl').value.trim()||null });
+    if(!rec.titulo_alerta){ $('modalMsg').innerHTML='<div class="msg msg-err">Escribe al menos el título de la alerta.</div>'; return; }
+  }
+  $('btnGuardar').disabled=true;
+  let error;
+  if(editId){ ({error}=await sb.from('alertas_producto_titular').update({...rec,actualizado_en:new Date().toISOString()}).eq('id',editId)); }
+  else{ rec.creado_por=currentUser.id; ({error}=await sb.from('alertas_producto_titular').insert(rec)); }
+  $('btnGuardar').disabled=false;
+  if(error){ $('modalMsg').innerHTML=`<div class="msg msg-err">${esc(error.message)}</div>`; return; }
+  cerrarModal(); await cargarAlertas();
+}
+
+async function editar(id){
+  const a=ALERTAS.find(x=>x.id===id); if(!a) return;
+  abrirModal(); editId=id; $('modalTitle').textContent='Editar alerta';
+  $('mProducto').value=a.medicamento_id; onProductoChange();
+  setTimeout(()=>{ // marca titulares
+    document.querySelectorAll('.titChk').forEach(c=>c.checked=false);
+    [a.titular_1_id,a.titular_2_id].filter(Boolean).forEach(tid=>{ let c=$('titularesBox').querySelector(`input[value="${tid}"]`); if(!c){ mostrarTodosTitulares({preventDefault(){}}); c=$('titularesBox').querySelector(`input[value="${tid}"]`);} if(c)c.checked=true; });
+    aplicarLimite2();
+    setOrigen(a.origen);
+    if(a.origen==='manual'){ $('mTitulo').value=a.titulo_alerta||''; $('mTipo').value=a.tipo_alerta||''; $('mFecha').value=a.fecha_publicacion||''; $('mUrg').value=a.urgencia||''; $('mAccion').value=a.accion_principal||''; $('mResumen').value=a.resumen||''; $('mUrl').value=a.url_pdf||''; }
+    else if(a.alerta_digemid_id){ $('mBuscarDig').value=a.titulo_alerta||''; buscarDigemid(); setTimeout(()=>{ $('mAlertaDig').value=a.alerta_digemid_id; },400); }
+    $('mEstado').value=a.estado||'registrada';
+  },60);
+}
+async function eliminar(id){
+  if(!confirm('¿Eliminar esta alerta registrada?')) return;
+  const {error}=await sb.from('alertas_producto_titular').delete().eq('id',id);
+  if(error){ alert('Error: '+error.message); return; }
+  await cargarAlertas();
+}
+
+boot();
+</script>
+</body>
+</html>
