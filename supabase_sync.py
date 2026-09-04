@@ -90,17 +90,17 @@ def subir_a_supabase(df: pd.DataFrame) -> None:
         print("⚠️  No hay registros válidos para subir a Supabase.")
         return
 
-    # Se usa el RPC sync_alertas_digemid (upsert atómico y guardado):
-    # inserta las alertas nuevas y actualiza SOLO las filas que NO fueron
-    # editadas manualmente por un administrador. Esto protege las correcciones
-    # manuales de ser sobrescritas por el scraper cuando corre en paralelo.
+    # Se usa el RPC sync_alertas_digemid (solo-insertar):
+    # inserta ÚNICAMENTE las alertas nuevas (ON CONFLICT DO NOTHING). Las
+    # alertas que ya existen en la tabla NO se tocan -sean editadas manualmente
+    # por el admin o no-, de modo que ni las correcciones manuales ni los datos
+    # ya limpios se sobrescriben en cada corrida del scraper.
     resultado = supabase.rpc(
         "sync_alertas_digemid", {"p": registros_validos}
     ).execute()
     data = resultado.data or {}
-    print(f"✅ Supabase: {data.get('insertados', 0)} nueva(s) alerta(s), "
-          f"{data.get('actualizados', 0)} actualizada(s) "
-          f"(ediciones manuales del admin preservadas).")
+    print(f"✅ Supabase: {data.get('insertados', 0)} nueva(s) alerta(s) insertada(s). "
+          f"Las alertas existentes no se modifican (ediciones manuales y datos previos preservados).")
 
 
 if __name__ == "__main__":

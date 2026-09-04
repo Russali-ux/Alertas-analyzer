@@ -114,6 +114,10 @@ header p{font-size:12px;color:rgba(255,255,255,.85);margin-top:3px;font-family:v
 .cell-fecha{font-family:var(--mono);font-size:10px;color:var(--sub);white-space:nowrap}
 .cell-resumen{max-width:260px;font-size:11px;color:var(--sub);line-height:1.5}
 .cell-titular{max-width:190px;font-size:11px;color:var(--text);line-height:1.4;font-weight:500}
+.cell-just{text-align:justify;text-justify:inter-word;overflow-wrap:anywhere;word-break:break-word}
+.cell-producto{max-width:200px;font-size:12px}
+.cell-accion-w{max-width:200px}
+.edit-flag{display:inline-block;margin-left:6px;padding:1px 6px;border-radius:4px;font-family:var(--mono);font-size:8px;font-weight:700;letter-spacing:.3px;background:rgba(204,136,0,.12);color:var(--warn);border:1px solid rgba(204,136,0,.28);vertical-align:middle;white-space:nowrap}
 .cell-empty{color:var(--muted);font-size:11px}
 .tipo-badge{display:inline-block;padding:2px 7px;border-radius:4px;font-family:var(--mono);font-size:9px;font-weight:700;white-space:nowrap}
 .tipo-falsificados{background:rgba(224,0,48,.1);color:var(--danger);border:1px solid rgba(224,0,48,.2)}
@@ -1001,21 +1005,22 @@ function renderTable() {
       ? a.resumen_ia
       : `<span class="cell-empty">Sin resumen</span>`;
     const pdfSafe = (pdfHref || '').replace(/'/g, "\\'");
+    const editFlag = a.editado_manualmente ? '<span class="edit-flag" title="Editada manualmente por un administrador \u2014 el scraper ya no la modifica">\u270f\ufe0f editada</span>' : '';
 
     return `<tr class="data-row">
       <td class="cell-anio" style="font-weight:700;text-align:center">${(a.fecha_publicacion || '').slice(0,4) || '<span class="cell-empty">—</span>'}</td>
       <td class="cell-fecha">${a.fecha_publicacion || '<span class="cell-empty">—</span>'}</td>
       <td class="cell-alerta" style="min-width:200px" title="Abrir alerta en PDF" onclick="abrirPdf('${pdfSafe}')">
         <span class="cell-num">${num}</span>
-        <span style="font-size:12px;font-weight:600">${titulo}</span>
+        <span style="font-size:12px;font-weight:600">${titulo}</span>${editFlag}
       </td>
-      <td style="max-width:160px;font-size:12px">${a.producto || '<span class="cell-empty">No especificado</span>'}</td>
-      <td class="cell-titular">${a.titular_registro_sanitario || '<span class="cell-empty">Sin titular</span>'}</td>
+      <td class="cell-producto cell-just">${a.producto || '<span class="cell-empty">No especificado</span>'}</td>
+      <td class="cell-titular cell-just">${a.titular_registro_sanitario || '<span class="cell-empty">Sin titular</span>'}</td>
       <td class="cell-lote col-lote">${loteChips(a.numero_lote)}</td>
       <td><span class="tipo-badge ${tipoClass(a.tipo_alerta)}">${a.tipo_alerta || 'General'}</span></td>
       <td>${urgBadge}</td>
-      <td style="max-width:200px">${accionCell}</td>
-      <td class="cell-resumen">${resumenCell}</td>
+      <td class="cell-accion-w cell-just">${accionCell}</td>
+      <td class="cell-resumen cell-just">${resumenCell}</td>
       <td>${digemidCell}</td>
       <td class="col-admin"><button class="btn-edit-alerta" onclick="event.stopPropagation();abrirEditorAlerta('${a.id}')">✏️ Editar</button></td>
     </tr>`;
