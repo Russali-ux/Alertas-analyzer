@@ -404,12 +404,12 @@ function renderMeds(){
   });
   if($('cntMeds')) $('cntMeds').textContent=`${rows.length} producto(s)`;
   const tb=$('tbMeds'); if(!tb) return;
-  tb.innerHTML=rows.map(m=>{
+  tb.innerHTML=rows.map((m,i)=>{
     const asign=titularesDe(m.id);
     const chips=asign.length?asign.map(x=>`<span class="tit-chip">${esc(x.titular.razon_social)}${x.es_principal?' ★':''}</span>`).join(''):'<span style="color:var(--muted)">Sin titular asignado</span>';
     const acc=esAdmin?`<td class="colAdmin"><button class="btn btn-ghost" style="padding:4px 9px" onclick="editarTitulares('${m.id}')">Asignar</button></td>`:'';
     return `<tr>
-      <td style="font-family:var(--mono)">${m.nro??''}</td>
+      <td style="font-family:var(--mono)">${i+1}</td>
       <td style="min-width:220px">${esc(m.descripcion_producto)}</td>
       <td>${esc(m.principio_activo||'—')}</td>
       <td style="font-family:var(--mono);white-space:nowrap">${esc(m.nro_registro_sanitario||'—')}</td>
