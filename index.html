@@ -117,7 +117,7 @@ header p{font-size:12px;color:rgba(255,255,255,.85);margin-top:3px;font-family:v
 .cell-just{text-align:justify;text-justify:inter-word;overflow-wrap:anywhere;word-break:break-word}
 .cell-producto{max-width:200px;font-size:12px}
 .cell-accion-w{max-width:200px}
-.edit-flag{display:inline-block;margin-left:6px;padding:1px 6px;border-radius:4px;font-family:var(--mono);font-size:8px;font-weight:700;letter-spacing:.3px;background:rgba(204,136,0,.12);color:var(--warn);border:1px solid rgba(204,136,0,.28);vertical-align:middle;white-space:nowrap}
+.edit-flag{display:none;margin-left:6px;padding:1px 6px;border-radius:4px;font-family:var(--mono);font-size:8px;font-weight:700;letter-spacing:.3px;background:rgba(204,136,0,.12);color:var(--warn);border:1px solid rgba(204,136,0,.28);vertical-align:middle;white-space:nowrap}
 .cell-empty{color:var(--muted);font-size:11px}
 .tipo-badge{display:inline-block;padding:2px 7px;border-radius:4px;font-family:var(--mono);font-size:9px;font-weight:700;white-space:nowrap}
 .tipo-falsificados{background:rgba(224,0,48,.1);color:var(--danger);border:1px solid rgba(224,0,48,.2)}
@@ -202,6 +202,7 @@ header p{font-size:12px;color:rgba(255,255,255,.85);margin-top:3px;font-family:v
    (se activa agregando la clase .is-admin a #alertsTable en onLoggedIn) */
 .col-admin{display:none}
 #alertsTable.is-admin .col-admin{display:table-cell}
+#alertsTable.is-admin .edit-flag{display:inline-block}
 .btn-edit-alerta{background:#fff;color:var(--accent);border:1px solid var(--border);border-radius:6px;padding:5px 10px;font-family:var(--mono);font-size:9px;font-weight:700;cursor:pointer;white-space:nowrap}
 .btn-edit-alerta:hover{border-color:var(--accent);background:rgba(0,119,204,.06)}
 
