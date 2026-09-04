@@ -183,9 +183,10 @@ th.sortable:hover{color:var(--accent)}
           <th class="sortable" onclick="sortAlertas('urgencia')">Urgencia <span class="sort-ind" data-k="urgencia"></span></th>
           <th class="sortable" onclick="sortAlertas('origen')">Origen <span class="sort-ind" data-k="origen"></span></th>
           <th class="sortable" onclick="sortAlertas('estado')">Estado <span class="sort-ind" data-k="estado"></span></th>
+          <th class="sortable" onclick="sortAlertas('expediente')">Expediente <span class="sort-ind" data-k="expediente"></span></th>
           <th class="gate-hidden colAdmin">Acción</th>
         </tr></thead>
-        <tbody id="tbAlertas"><tr><td colspan="10" style="text-align:center;color:var(--muted);padding:24px">Cargando…</td></tr></tbody>
+        <tbody id="tbAlertas"><tr><td colspan="11" style="text-align:center;color:var(--muted);padding:24px">Cargando…</td></tr></tbody>
       </table>
     </div>
   </div>
@@ -237,7 +238,13 @@ th.sortable:hover{color:var(--accent)}
 
     <div class="field">
       <label>Estado del caso</label>
-      <select class="inp" id="mEstado"><option value="registrada">Registrada</option><option value="en_gestion">En gestión</option><option value="cerrada">Cerrada</option></select>
+      <select class="inp" id="mEstado" onchange="onEstadoChange()"><option value="registrada">Registrada</option><option value="en_gestion">En gestión</option><option value="cerrada">Cerrada</option></select>
+    </div>
+
+    <div class="field" id="expedienteField" style="display:none">
+      <label>Expediente</label>
+      <input class="inp" id="mExpediente" placeholder="Ej. EXP-2026-000123  (o escribe: No Aplica)">
+      <div class="msg msg-warn" style="margin:8px 0 0;padding:10px 12px">⚠️ Para cambiar el estado a <b>Cerrada</b> es obligatorio registrar el <b>expediente</b> (texto y números). Si el caso <b>no requiere</b> expediente, escribe <b>No Aplica</b>.</div>
     </div>
 
     <div class="modal-actions">
@@ -309,7 +316,7 @@ function nombreMed(id){ const m=MEDS.find(x=>x.id===id); return m?m.descripcion_
 
 /* ───────── Vista Alertas ───────── */
 async function cargarAlertas(){
-  $('tbAlertas').innerHTML='<tr><td colspan="10" style="text-align:center;color:var(--muted);padding:24px">Cargando…</td></tr>';
+  $('tbAlertas').innerHTML='<tr><td colspan="11" style="text-align:center;color:var(--muted);padding:24px">Cargando…</td></tr>';
   const {data,error}=await sb.from('alertas_producto_titular').select('*').order('fecha_publicacion',{ascending:false,nullsFirst:false}).order('creado_en',{ascending:false});
   if(error){ $('alertasMsg').innerHTML=`<div class="msg msg-err">No se pudo cargar: ${esc(error.message)}</div>`; $('tbAlertas').innerHTML=''; return; }
   $('alertasMsg').innerHTML=''; ALERTAS=data||[]; renderAlertas();
@@ -332,6 +339,7 @@ function _valAlerta(a,k){
     case 'urgencia': { const r={INMEDIATA:0,PREVENTIVA:1,INFORMATIVA:2}; return r[a.urgencia]!=null?r[a.urgencia]:9; }
     case 'origen': return a.origen||'';
     case 'estado': return a.estado||'';
+    case 'expediente': return a.expediente||'';
     default: return '';
   }
 }
@@ -353,7 +361,7 @@ function renderAlertas(){
   });
   _actualizarIndicadores();
   $('cntAlertas').textContent=`${rows.length} alerta(s)`;
-  if(!rows.length){ $('tbAlertas').innerHTML='<tr><td colspan="10" style="text-align:center;color:var(--muted);padding:24px">Sin alertas registradas todavía.</td></tr>'; return; }
+  if(!rows.length){ $('tbAlertas').innerHTML='<tr><td colspan="11" style="text-align:center;color:var(--muted);padding:24px">Sin alertas registradas todavía.</td></tr>'; return; }
   $('tbAlertas').innerHTML=rows.map(a=>{
     const tits=[a.titular_1_id,a.titular_2_id].filter(Boolean).map(id=>`<span class="tit-chip">${esc(nombreTitular(id))}</span>`).join('')||'<span style="color:var(--muted)">—</span>';
     const urgP=a.urgencia?`<span class="pill u-${a.urgencia}">${a.urgencia}</span>`:'—';
@@ -371,6 +379,7 @@ function renderAlertas(){
       <td>${urgP}</td>
       <td style="font-family:var(--mono);font-size:10px;white-space:nowrap">${orig}</td>
       <td><span class="est est-${a.estado}">${esc((a.estado||'').replace('_',' '))}</span></td>
+      <td style="min-width:120px">${a.expediente?esc(a.expediente):'<span style=\'color:var(--muted)\'>—</span>'}</td>
       ${acc}
     </tr>`;
   }).join('');
@@ -451,11 +460,13 @@ function abrirModal(){
   $('modalSub').textContent='Selecciona una o varias alertas y uno o varios productos. El titular se toma automáticamente del portafolio.';
   selAlertas=new Set(); selProductos=new Set();
   $('modalMsg').innerHTML=''; $('mEstado').value='registrada';
+  $('mExpediente').value=''; onEstadoChange();
   $('mBuscarDig').value=''; $('mBuscarProd').value='';
   renderProdChecks(); buscarDigemid();
   $('modal').classList.remove('gate-hidden');
 }
 function cerrarModal(){ $('modal').classList.add('gate-hidden'); }
+function onEstadoChange(){ $('expedienteField').style.display = ($('mEstado').value==='cerrada') ? 'block' : 'none'; }
 
 /* Titular automático desde el portafolio (principal + 2° si existe, máx 2) */
 function titularesAuto(medId){
@@ -514,12 +525,14 @@ async function guardarAlerta(){
   if(!alertIds.length){ $('modalMsg').innerHTML='<div class="msg msg-err">Selecciona al menos una alerta (Paso 1).</div>'; return; }
   if(!prodIds.length){ $('modalMsg').innerHTML='<div class="msg msg-err">Selecciona al menos un producto (Paso 2).</div>'; return; }
   const estado=$('mEstado').value;
+  const expediente=$('mExpediente').value.trim();
+  if(estado==='cerrada' && !expediente){ $('modalMsg').innerHTML='<div class="msg msg-err">Para cerrar el caso debes registrar el <b>expediente</b>. Si no aplica, escribe <b>No Aplica</b>.</div>'; return; }
   $('btnGuardar').disabled=true;
   try{
     if(editId){
       const digId=alertIds[0], medId=prodIds[0], d=DIGCACHE[digId];
       const [t1,t2]=titularesAuto(medId);
-      const rec={ alerta_digemid_id:digId, medicamento_id:medId, origen:'digemid_vinculada', titular_1_id:t1, titular_2_id:t2, estado, actualizado_en:new Date().toISOString() };
+      const rec={ alerta_digemid_id:digId, medicamento_id:medId, origen:'digemid_vinculada', titular_1_id:t1, titular_2_id:t2, estado, expediente:expediente||null, actualizado_en:new Date().toISOString() };
       if(d) Object.assign(rec,{ titulo_alerta:d.titulo, tipo_alerta:d.tipo_alerta, fecha_publicacion:d.fecha_publicacion||null, urgencia:d.urgencia||null, accion_principal:d.accion_principal, resumen:d.resumen_ia, url_pdf:d.url_pdf_digemid });
       const {error}=await sb.from('alertas_producto_titular').update(rec).eq('id',editId);
       if(error) throw error;
@@ -530,7 +543,7 @@ async function guardarAlerta(){
         for(const medId of prodIds){
           if(existentes.has(digId+'|'+medId)){ dup++; continue; }
           const [t1,t2]=titularesAuto(medId);
-          rows.push({ alerta_digemid_id:digId, medicamento_id:medId, origen:'digemid_vinculada', titular_1_id:t1, titular_2_id:t2, titulo_alerta:d.titulo, tipo_alerta:d.tipo_alerta, fecha_publicacion:d.fecha_publicacion||null, urgencia:d.urgencia||null, accion_principal:d.accion_principal, resumen:d.resumen_ia, url_pdf:d.url_pdf_digemid, estado, creado_por:currentUser.id });
+          rows.push({ alerta_digemid_id:digId, medicamento_id:medId, origen:'digemid_vinculada', titular_1_id:t1, titular_2_id:t2, titulo_alerta:d.titulo, tipo_alerta:d.tipo_alerta, fecha_publicacion:d.fecha_publicacion||null, urgencia:d.urgencia||null, accion_principal:d.accion_principal, resumen:d.resumen_ia, url_pdf:d.url_pdf_digemid, estado, expediente:expediente||null, creado_por:currentUser.id });
         }
       }
       if(!rows.length){ $('modalMsg').innerHTML=`<div class="msg msg-warn">No hay registros nuevos que crear${dup?` (${dup} ya existían)`:''}.</div>`; $('btnGuardar').disabled=false; return; }
@@ -551,6 +564,7 @@ async function editar(id){
   selAlertas=new Set(a.alerta_digemid_id?[a.alerta_digemid_id]:[]);
   selProductos=new Set(a.medicamento_id?[a.medicamento_id]:[]);
   $('mEstado').value=a.estado||'registrada';
+  $('mExpediente').value=a.expediente||''; onEstadoChange();
   if(a.alerta_digemid_id && !DIGCACHE[a.alerta_digemid_id]){
     DIGCACHE[a.alerta_digemid_id]={ id:a.alerta_digemid_id, titulo:a.titulo_alerta, producto:nombreMed(a.medicamento_id), tipo_alerta:a.tipo_alerta, fecha_publicacion:a.fecha_publicacion, urgencia:a.urgencia, accion_principal:a.accion_principal, resumen_ia:a.resumen, url_pdf_digemid:a.url_pdf };
   }
