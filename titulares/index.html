@@ -162,14 +162,9 @@ th.sortable:hover{color:var(--accent)}
       <span class="count" id="cntAlertas">— alertas</span>
       <input class="inp" id="fAlertas" placeholder="🔍 Filtrar por producto, principio activo, tipo, título o titular…" style="flex:1;min-width:220px" oninput="renderAlertas()">
       <button class="btn btn-primary gate-hidden" id="btnNueva" onclick="abrirModal()">＋ Nueva alerta</button>
-      <select class="inp" id="fUrg" onchange="renderAlertas()">
-        <option value="">Todas las urgencias</option>
-        <option value="INMEDIATA">🔴 Inmediata</option>
-        <option value="PREVENTIVA">🟡 Preventiva</option>
-        <option value="INFORMATIVA">🔵 Informativa</option>
-      </select>
       <select class="inp" id="fTit" onchange="onTitularChange()"><option value="">Todos los titulares</option></select>
       <select class="inp" id="fProd" onchange="renderAlertas()"><option value="">Todos los productos</option></select>
+      <select class="inp" id="fTipo" onchange="renderAlertas()"><option value="">Todos los tipos</option></select>
       <button class="btn btn-ghost" onclick="cargarAlertas()">↻ Actualizar</button>
     </div>
     <div id="alertasMsg"></div>
@@ -323,7 +318,7 @@ async function cargarAlertas(){
   $('tbAlertas').innerHTML='<tr><td colspan="11" style="text-align:center;color:var(--muted);padding:24px">Cargando…</td></tr>';
   const {data,error}=await sb.from('alertas_producto_titular').select('*').order('fecha_publicacion',{ascending:false,nullsFirst:false}).order('creado_en',{ascending:false});
   if(error){ $('alertasMsg').innerHTML=`<div class="msg msg-err">No se pudo cargar: ${esc(error.message)}</div>`; $('tbAlertas').innerHTML=''; return; }
-  $('alertasMsg').innerHTML=''; ALERTAS=data||[]; poblarFiltroProductos(); renderAlertas();
+  $('alertasMsg').innerHTML=''; ALERTAS=data||[]; poblarFiltroProductos(); poblarFiltroTipos(); renderAlertas();
 }
 function principioDe(medId){ const m=MEDS.find(x=>x.id===medId); return m?(m.principio_activo||''):''; }
 function tipoClaseP(t){ const x=(t||'').toLowerCase();
@@ -332,6 +327,14 @@ function tipoClaseP(t){ const x=(t||'').toLowerCase();
   if(x.includes('segurid')) return 'tp-seg';
   return 'tp-gen'; }
 function onTitularChange(){ poblarFiltroProductos(); renderAlertas(); }
+function poblarFiltroTipos(){
+  const sel=$('fTipo'); if(!sel) return;
+  const prev=sel.value;
+  const tipos=[...new Set(ALERTAS.map(a=>a.tipo_alerta).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'es'));
+  sel.innerHTML='<option value="">Todos los tipos</option>'+tipos.map(t=>`<option value="${esc(t)}">${esc(t)}</option>`).join('');
+  sel.value = tipos.includes(prev) ? prev : '';
+}
+
 function poblarFiltroProductos(){
   const sel=$('fProd'); if(!sel) return;
   const tit=$('fTit')?.value||'';
@@ -362,11 +365,11 @@ function _actualizarIndicadores(){
   document.querySelectorAll('.sort-ind').forEach(sp=>{ sp.textContent = sp.dataset.k===sortKey ? (sortDir==='asc'?'▲':'▼') : ''; });
 }
 function renderAlertas(){
-  const q=$('fAlertas').value.trim().toLowerCase(), urg=$('fUrg').value, tit=($('fTit')?.value)||'', prod=($('fProd')?.value)||'';
+  const q=$('fAlertas').value.trim().toLowerCase(), tit=($('fTit')?.value)||'', prod=($('fProd')?.value)||'', tipoF=($('fTipo')?.value)||'';
   const rows=ALERTAS.filter(a=>{
-    if(urg && a.urgencia!==urg) return false;
     if(tit && a.titular_1_id!==tit && a.titular_2_id!==tit) return false;
     if(prod && a.medicamento_id!==prod) return false;
+    if(tipoF && a.tipo_alerta!==tipoF) return false;
     if(!q) return true;
     const hay=(nombreMed(a.medicamento_id)+' '+principioDe(a.medicamento_id)+' '+(a.titulo_alerta||'')+' '+(a.tipo_alerta||'')+' '+nombreTitular(a.titular_1_id)+' '+nombreTitular(a.titular_2_id)).toLowerCase();
     return hay.includes(q);
