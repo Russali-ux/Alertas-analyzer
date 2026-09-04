@@ -167,6 +167,7 @@ th.sortable:hover{color:var(--accent)}
         <option value="PREVENTIVA">🟡 Preventiva</option>
         <option value="INFORMATIVA">🔵 Informativa</option>
       </select>
+      <select class="inp" id="fTit" onchange="renderAlertas()"><option value="">Todos los titulares</option></select>
       <button class="btn btn-ghost" onclick="cargarAlertas()">↻ Actualizar</button>
       <button class="btn btn-primary gate-hidden" id="btnNueva" onclick="abrirModal()">＋ Nueva alerta</button>
     </div>
@@ -304,6 +305,8 @@ async function cargarCatalogos(){
   // (el selector de producto del modal se reemplazó por lista multi-selección)
   const selFT=$('fMedTit');
   if(selFT){ const prev=selFT.value; selFT.innerHTML='<option value="">Todos los titulares</option><option value="__none__">— Sin titular asignado —</option>'+TITULARES.map(t=>`<option value="${t.id}">${esc(t.razon_social)}</option>`).join(''); selFT.value=prev; }
+  const selFA=$('fTit');
+  if(selFA){ const prevA=selFA.value; selFA.innerHTML='<option value="">Todos los titulares</option>'+TITULARES.map(t=>`<option value="${t.id}">${esc(t.razon_social)}</option>`).join(''); selFA.value=prevA; }
   renderMeds();
 }
 function titularesDe(medId){
@@ -347,9 +350,10 @@ function _actualizarIndicadores(){
   document.querySelectorAll('.sort-ind').forEach(sp=>{ sp.textContent = sp.dataset.k===sortKey ? (sortDir==='asc'?'▲':'▼') : ''; });
 }
 function renderAlertas(){
-  const q=$('fAlertas').value.trim().toLowerCase(), urg=$('fUrg').value;
+  const q=$('fAlertas').value.trim().toLowerCase(), urg=$('fUrg').value, tit=($('fTit')?.value)||'';
   const rows=ALERTAS.filter(a=>{
     if(urg && a.urgencia!==urg) return false;
+    if(tit && a.titular_1_id!==tit && a.titular_2_id!==tit) return false;
     if(!q) return true;
     const hay=(nombreMed(a.medicamento_id)+' '+principioDe(a.medicamento_id)+' '+(a.titulo_alerta||'')+' '+(a.tipo_alerta||'')+' '+nombreTitular(a.titular_1_id)+' '+nombreTitular(a.titular_2_id)).toLowerCase();
     return hay.includes(q);
