@@ -113,8 +113,8 @@ th.sortable:hover{color:var(--accent)}
 .chk-row:hover{background:rgba(0,119,204,.05)}
 .chk-row input{margin-top:2px;flex-shrink:0}
 /* footer de conteos de filtros */
-.tbl-footer{margin-top:12px;border:1px solid var(--border);border-radius:12px;background:var(--surface);padding:12px 14px;display:flex;flex-direction:column;gap:8px}
-.tbl-footer .footer-line{font-size:12px;color:var(--text)}
+.tbl-footer{margin-top:12px;border:1px solid var(--border);border-radius:12px;background:var(--surface);padding:14px 18px;font-size:17px;color:var(--text)}
+.tbl-footer .footer-line{font-size:17px;color:var(--text)}
 .footer-grp{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
 .footer-lbl{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--sub);min-width:70px}
 .fchip{display:inline-block;font-family:var(--mono);font-size:10px;background:#fff;border:1px solid var(--border);border-radius:20px;padding:2px 9px;color:var(--sub)}
@@ -389,24 +389,7 @@ function renderAlertas(){
   });
   _actualizarIndicadores();
   $('cntAlertas').textContent=`${rows.length} alerta(s)`;
-  (function(){
-    const footer=$('alertasFooter'); if(!footer) return;
-    const byEstado={}, byUrg={}, byTipo={};
-    rows.forEach(a=>{ const e=(a.estado||'—'); byEstado[e]=(byEstado[e]||0)+1;
-      const u=(a.urgencia||'—'); byUrg[u]=(byUrg[u]||0)+1;
-      const t=(a.tipo_alerta||'—'); byTipo[t]=(byTipo[t]||0)+1; });
-    const activos=[];
-    if($('fAlertas').value.trim()) activos.push('texto "'+$('fAlertas').value.trim()+'"');
-    if($('fTit')?.value) activos.push('titular: '+nombreTitular($('fTit').value));
-    if($('fProd')?.value) activos.push('producto: '+nombreMed($('fProd').value));
-    if($('fTipo')?.value) activos.push('tipo: '+$('fTipo').value);
-    const chip=o=>Object.entries(o).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<span class="fchip">${esc((k||'').replace('_',' '))}: <b>${v}</b></span>`).join('');
-    footer.innerHTML=`
-      <div class="footer-line">Mostrando <b>${rows.length}</b> de <b>${ALERTAS.length}</b> alerta(s)${activos.length?` · <b>${activos.length}</b> filtro(s) activo(s): ${esc(activos.join(' · '))}`:' · sin filtros activos'}</div>
-      <div class="footer-grp"><span class="footer-lbl">Estado</span>${chip(byEstado)||'<span class="fchip">—</span>'}</div>
-      <div class="footer-grp"><span class="footer-lbl">Urgencia</span>${chip(byUrg)||'<span class="fchip">—</span>'}</div>
-      <div class="footer-grp"><span class="footer-lbl">Tipo</span>${chip(byTipo)||'<span class="fchip">—</span>'}</div>`;
-  })();
+  { const footer=$('alertasFooter'); if(footer) footer.innerHTML=`Mostrando <b>${rows.length}</b>`; }
   if(!rows.length){ $('tbAlertas').innerHTML='<tr><td colspan="11" style="text-align:center;color:var(--muted);padding:24px">Sin alertas registradas todavía.</td></tr>'; return; }
   $('tbAlertas').innerHTML=rows.map(a=>{
     const tits=[a.titular_1_id,a.titular_2_id].filter(Boolean).map(id=>`<span class="tit-chip">${esc(nombreTitular(id))}</span>`).join('')||'<span style="color:var(--muted)">—</span>';
