@@ -161,16 +161,16 @@ th.sortable:hover{color:var(--accent)}
     <div class="toolbar">
       <span class="count" id="cntAlertas">— alertas</span>
       <input class="inp" id="fAlertas" placeholder="🔍 Filtrar por producto, principio activo, tipo, título o titular…" style="flex:1;min-width:220px" oninput="renderAlertas()">
+      <button class="btn btn-primary gate-hidden" id="btnNueva" onclick="abrirModal()">＋ Nueva alerta</button>
       <select class="inp" id="fUrg" onchange="renderAlertas()">
         <option value="">Todas las urgencias</option>
         <option value="INMEDIATA">🔴 Inmediata</option>
         <option value="PREVENTIVA">🟡 Preventiva</option>
         <option value="INFORMATIVA">🔵 Informativa</option>
       </select>
-      <select class="inp" id="fTit" onchange="renderAlertas()"><option value="">Todos los titulares</option></select>
+      <select class="inp" id="fTit" onchange="onTitularChange()"><option value="">Todos los titulares</option></select>
       <select class="inp" id="fProd" onchange="renderAlertas()"><option value="">Todos los productos</option></select>
       <button class="btn btn-ghost" onclick="cargarAlertas()">↻ Actualizar</button>
-      <button class="btn btn-primary gate-hidden" id="btnNueva" onclick="abrirModal()">＋ Nueva alerta</button>
     </div>
     <div id="alertasMsg"></div>
     <div class="tbl-wrap">
@@ -308,8 +308,6 @@ async function cargarCatalogos(){
   if(selFT){ const prev=selFT.value; selFT.innerHTML='<option value="">Todos los titulares</option><option value="__none__">— Sin titular asignado —</option>'+TITULARES.map(t=>`<option value="${t.id}">${esc(t.razon_social)}</option>`).join(''); selFT.value=prev; }
   const selFA=$('fTit');
   if(selFA){ const prevA=selFA.value; selFA.innerHTML='<option value="">Todos los titulares</option>'+TITULARES.map(t=>`<option value="${t.id}">${esc(t.razon_social)}</option>`).join(''); selFA.value=prevA; }
-  const selFP=$('fProd');
-  if(selFP){ const prevP=selFP.value; selFP.innerHTML='<option value="">Todos los productos</option>'+MEDS.map(m=>`<option value="${m.id}">${esc(m.descripcion_producto)}</option>`).join(''); selFP.value=prevP; }
   renderMeds();
 }
 function titularesDe(medId){
@@ -325,7 +323,7 @@ async function cargarAlertas(){
   $('tbAlertas').innerHTML='<tr><td colspan="11" style="text-align:center;color:var(--muted);padding:24px">Cargando…</td></tr>';
   const {data,error}=await sb.from('alertas_producto_titular').select('*').order('fecha_publicacion',{ascending:false,nullsFirst:false}).order('creado_en',{ascending:false});
   if(error){ $('alertasMsg').innerHTML=`<div class="msg msg-err">No se pudo cargar: ${esc(error.message)}</div>`; $('tbAlertas').innerHTML=''; return; }
-  $('alertasMsg').innerHTML=''; ALERTAS=data||[]; renderAlertas();
+  $('alertasMsg').innerHTML=''; ALERTAS=data||[]; poblarFiltroProductos(); renderAlertas();
 }
 function principioDe(medId){ const m=MEDS.find(x=>x.id===medId); return m?(m.principio_activo||''):''; }
 function tipoClaseP(t){ const x=(t||'').toLowerCase();
@@ -333,6 +331,17 @@ function tipoClaseP(t){ const x=(t||'').toLowerCase();
   if(x.includes('calidad')) return 'tp-cal';
   if(x.includes('segurid')) return 'tp-seg';
   return 'tp-gen'; }
+function onTitularChange(){ poblarFiltroProductos(); renderAlertas(); }
+function poblarFiltroProductos(){
+  const sel=$('fProd'); if(!sel) return;
+  const tit=$('fTit')?.value||'';
+  const prev=sel.value;
+  const ids=new Set();
+  ALERTAS.forEach(a=>{ if(!tit || a.titular_1_id===tit || a.titular_2_id===tit){ if(a.medicamento_id) ids.add(a.medicamento_id); } });
+  const lista=[...ids].map(id=>({id, nombre:nombreMed(id)||''})).sort((x,y)=>x.nombre.localeCompare(y.nombre,'es'));
+  sel.innerHTML='<option value="">Todos los productos</option>'+lista.map(o=>`<option value="${o.id}">${esc(o.nombre)}</option>`).join('');
+  sel.value = lista.some(o=>o.id===prev) ? prev : '';
+}
 function sortAlertas(k){ if(sortKey===k){ sortDir=sortDir==='asc'?'desc':'asc'; } else { sortKey=k; sortDir=(k==='fecha')?'desc':'asc'; } renderAlertas(); }
 function _valAlerta(a,k){
   switch(k){
