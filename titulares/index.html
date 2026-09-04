@@ -96,6 +96,18 @@ tr:hover td{background:rgba(0,119,204,.04)}
 .origen-toggle button.active{background:var(--accent);border-color:var(--accent);color:#fff}
 .hint{font-size:11px;color:var(--muted);margin-top:4px}
 
+/* tipo de alerta (badge) */
+.tipo-badge{display:inline-block;font-family:var(--mono);font-size:8px;font-weight:700;padding:1px 6px;border-radius:5px;white-space:nowrap}
+.tp-falsi{background:rgba(224,0,48,.1);color:#b00020;border:1px solid rgba(224,0,48,.25)}
+.tp-cal{background:rgba(0,153,106,.1);color:#00734f;border:1px solid rgba(0,153,106,.25)}
+.tp-seg{background:rgba(204,136,0,.12);color:#8a5a00;border:1px solid rgba(204,136,0,.3)}
+.tp-gen{background:var(--surface);color:var(--sub);border:1px solid var(--border)}
+/* listas de selección múltiple en el modal */
+.check-list{border:1px solid var(--border);border-radius:8px;max-height:180px;overflow:auto;background:#fff}
+.chk-row{display:flex;align-items:flex-start;gap:8px;padding:6px 10px;font-size:12px;border-bottom:1px solid var(--surface);cursor:pointer}
+.chk-row:last-child{border-bottom:none}
+.chk-row:hover{background:rgba(0,119,204,.05)}
+.chk-row input{margin-top:2px;flex-shrink:0}
 /* login overlay */
 #loginNotice{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:var(--bg);z-index:100}
 #loginNotice .card{max-width:380px;text-align:center;padding:30px;border:1px solid var(--border);border-radius:14px;background:var(--surface)}
@@ -144,7 +156,7 @@ tr:hover td{background:rgba(0,119,204,.04)}
   <div id="vistaAlertas">
     <div class="toolbar">
       <span class="count" id="cntAlertas">— alertas</span>
-      <input class="inp" id="fAlertas" placeholder="🔍 Filtrar por producto, título o titular…" style="flex:1;min-width:220px" oninput="renderAlertas()">
+      <input class="inp" id="fAlertas" placeholder="🔍 Filtrar por producto, principio activo, tipo, título o titular…" style="flex:1;min-width:220px" oninput="renderAlertas()">
       <select class="inp" id="fUrg" onchange="renderAlertas()">
         <option value="">Todas las urgencias</option>
         <option value="INMEDIATA">🔴 Inmediata</option>
@@ -158,10 +170,10 @@ tr:hover td{background:rgba(0,119,204,.04)}
     <div class="tbl-wrap">
       <table>
         <thead><tr>
-          <th>Fecha</th><th>Producto impactado</th><th>Título de la alerta</th>
+          <th>Fecha</th><th>Producto impactado</th><th>Principio activo</th><th>Título de la alerta</th><th>Tipo de alerta</th>
           <th>Titular(es)</th><th>Urgencia</th><th>Origen</th><th>Estado</th><th class="gate-hidden colAdmin">Acción</th>
         </tr></thead>
-        <tbody id="tbAlertas"><tr><td colspan="8" style="text-align:center;color:var(--muted);padding:24px">Cargando…</td></tr></tbody>
+        <tbody id="tbAlertas"><tr><td colspan="10" style="text-align:center;color:var(--muted);padding:24px">Cargando…</td></tr></tbody>
       </table>
     </div>
   </div>
@@ -193,50 +205,25 @@ tr:hover td{background:rgba(0,119,204,.04)}
 <!-- MODAL NUEVA/EDITAR ALERTA -->
 <div class="overlay gate-hidden" id="modal">
   <div class="modal">
-    <h2 id="modalTitle">Registrar alerta por producto</h2>
-    <p class="sub">El titular se autoactiva según el producto. Puedes impactar hasta 2 titulares.</p>
+    <h2 id="modalTitle">Registrar alerta(s) por producto</h2>
+    <p class="sub" id="modalSub">Selecciona una o varias alertas y uno o varios productos. El titular se toma automáticamente del portafolio.</p>
     <div id="modalMsg"></div>
 
     <div class="field">
-      <label><span class="step-tag">Paso 1</span> Producto impactado</label>
-      <select class="inp" id="mProducto" onchange="onProductoChange()"><option value="">— Selecciona un producto —</option></select>
+      <label><span class="step-tag">Paso 1</span> Alerta(s) DIGEMID — selecciona una o varias</label>
+      <input class="inp" id="mBuscarDig" placeholder="🔍 Buscar alerta por título, producto o tipo…" style="width:100%;margin-bottom:6px" oninput="buscarDigemid()">
+      <div class="check-list" id="mAlertasList"></div>
+      <div class="hint" id="mAlertasHint">0 alerta(s) seleccionada(s)</div>
     </div>
 
-    <div class="field" id="titularesField" style="display:none">
-      <label><span class="step-tag">Paso 2</span> Titular(es) del registro — máximo 2</label>
-      <div class="tit-box" id="titularesBox"></div>
-      <div class="hint" id="titularesHint"></div>
+    <div class="field">
+      <label><span class="step-tag">Paso 2</span> Producto(s) por principio activo — selecciona uno o varios</label>
+      <input class="inp" id="mBuscarProd" placeholder="🔍 Buscar por principio activo o producto…" style="width:100%;margin-bottom:6px" oninput="renderProdChecks()">
+      <div class="check-list" id="mProdList"></div>
+      <div class="hint" id="mProdHint">El titular se autoactiva desde el portafolio.</div>
     </div>
 
-    <div class="field" id="origenField" style="display:none">
-      <label><span class="step-tag">Paso 3</span> Datos de la alerta</label>
-      <div class="origen-toggle">
-        <button type="button" id="btnOrigDig" class="active" onclick="setOrigen('digemid_vinculada')">🔗 Vincular alerta DIGEMID</button>
-        <button type="button" id="btnOrigMan" onclick="setOrigen('manual')">✍️ Entrada manual</button>
-      </div>
-
-      <div id="origenDigemid">
-        <input class="inp" id="mBuscarDig" placeholder="🔍 Buscar alerta DIGEMID por título o producto…" style="width:100%;margin-bottom:6px" oninput="buscarDigemid()">
-        <select class="inp" id="mAlertaDig" size="5" style="width:100%" onchange="onAlertaDigChange()"></select>
-        <div class="hint">Se autocompletan título, tipo, fecha, urgencia y resumen desde la alerta seleccionada.</div>
-      </div>
-
-      <div id="origenManual" style="display:none">
-        <div class="field"><label>Título de la alerta</label><input class="inp" id="mTitulo" placeholder="Ej. Alerta N° 25-2026 — …"></div>
-        <div class="row2">
-          <div class="field"><label>Tipo de alerta</label><input class="inp" id="mTipo" placeholder="Ej. Producto falsificado"></div>
-          <div class="field"><label>Fecha de publicación</label><input class="inp" type="date" id="mFecha"></div>
-        </div>
-        <div class="field"><label>Urgencia</label>
-          <select class="inp" id="mUrg"><option value="">—</option><option>INMEDIATA</option><option>PREVENTIVA</option><option>INFORMATIVA</option></select>
-        </div>
-        <div class="field"><label>Acción principal</label><input class="inp" id="mAccion" placeholder="Ej. Retiro del mercado"></div>
-        <div class="field"><label>Resumen</label><textarea class="inp" id="mResumen"></textarea></div>
-        <div class="field"><label>URL del PDF (opcional)</label><input class="inp" id="mUrl" placeholder="https://…"></div>
-      </div>
-    </div>
-
-    <div class="field" id="estadoField" style="display:none">
+    <div class="field">
       <label>Estado del caso</label>
       <select class="inp" id="mEstado"><option value="registrada">Registrada</option><option value="en_gestion">En gestión</option><option value="cerrada">Cerrada</option></select>
     </div>
@@ -261,7 +248,7 @@ const esc=t=>(t==null?'':String(t)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;
 
 let currentUser=null, esAdmin=false;
 let MEDS=[], TITULARES=[], MEDTIT=[], ALERTAS=[], DIGEMID=[];
-let editId=null, origenActual='digemid_vinculada';
+let editId=null; let selAlertas=new Set(), selProductos=new Set(); const DIGCACHE={};
 
 /* ───────── Auth gate ───────── */
 async function boot(){
@@ -294,10 +281,7 @@ async function cargarCatalogos(){
     sb.from('medicamento_titulares').select('*')
   ]);
   MEDS=m.data||[]; TITULARES=t.data||[]; MEDTIT=mt.data||[];
-  // llena el select de producto del modal
-  const sel=$('mProducto');
-  sel.innerHTML='<option value="">— Selecciona un producto —</option>'+
-    MEDS.map(x=>`<option value="${x.id}">${esc(x.descripcion_producto)}</option>`).join('');
+  // (el selector de producto del modal se reemplazó por lista multi-selección)
   const selFT=$('fMedTit');
   if(selFT){ const prev=selFT.value; selFT.innerHTML='<option value="">Todos los titulares</option><option value="__none__">— Sin titular asignado —</option>'+TITULARES.map(t=>`<option value="${t.id}">${esc(t.razon_social)}</option>`).join(''); selFT.value=prev; }
   renderMeds();
@@ -312,30 +296,40 @@ function nombreMed(id){ const m=MEDS.find(x=>x.id===id); return m?m.descripcion_
 
 /* ───────── Vista Alertas ───────── */
 async function cargarAlertas(){
-  $('tbAlertas').innerHTML='<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:24px">Cargando…</td></tr>';
+  $('tbAlertas').innerHTML='<tr><td colspan="10" style="text-align:center;color:var(--muted);padding:24px">Cargando…</td></tr>';
   const {data,error}=await sb.from('alertas_producto_titular').select('*').order('fecha_publicacion',{ascending:false,nullsFirst:false}).order('creado_en',{ascending:false});
   if(error){ $('alertasMsg').innerHTML=`<div class="msg msg-err">No se pudo cargar: ${esc(error.message)}</div>`; $('tbAlertas').innerHTML=''; return; }
   $('alertasMsg').innerHTML=''; ALERTAS=data||[]; renderAlertas();
 }
+function principioDe(medId){ const m=MEDS.find(x=>x.id===medId); return m?(m.principio_activo||''):''; }
+function tipoClaseP(t){ const x=(t||'').toLowerCase();
+  if(x.includes('falsific')) return 'tp-falsi';
+  if(x.includes('calidad')) return 'tp-cal';
+  if(x.includes('segurid')) return 'tp-seg';
+  return 'tp-gen'; }
 function renderAlertas(){
   const q=$('fAlertas').value.trim().toLowerCase(), urg=$('fUrg').value;
   const rows=ALERTAS.filter(a=>{
     if(urg && a.urgencia!==urg) return false;
     if(!q) return true;
-    const hay=(nombreMed(a.medicamento_id)+' '+(a.titulo_alerta||'')+' '+nombreTitular(a.titular_1_id)+' '+nombreTitular(a.titular_2_id)).toLowerCase();
+    const hay=(nombreMed(a.medicamento_id)+' '+principioDe(a.medicamento_id)+' '+(a.titulo_alerta||'')+' '+(a.tipo_alerta||'')+' '+nombreTitular(a.titular_1_id)+' '+nombreTitular(a.titular_2_id)).toLowerCase();
     return hay.includes(q);
   });
   $('cntAlertas').textContent=`${rows.length} alerta(s)`;
-  if(!rows.length){ $('tbAlertas').innerHTML='<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:24px">Sin alertas registradas todavía.</td></tr>'; return; }
+  if(!rows.length){ $('tbAlertas').innerHTML='<tr><td colspan="10" style="text-align:center;color:var(--muted);padding:24px">Sin alertas registradas todavía.</td></tr>'; return; }
   $('tbAlertas').innerHTML=rows.map(a=>{
     const tits=[a.titular_1_id,a.titular_2_id].filter(Boolean).map(id=>`<span class="tit-chip">${esc(nombreTitular(id))}</span>`).join('')||'<span style="color:var(--muted)">—</span>';
     const urgP=a.urgencia?`<span class="pill u-${a.urgencia}">${a.urgencia}</span>`:'—';
     const orig=a.origen==='digemid_vinculada'?'🔗 DIGEMID':'✍️ Manual';
+    const tipoB=a.tipo_alerta?`<span class="tipo-badge ${tipoClaseP(a.tipo_alerta)}">${esc(a.tipo_alerta)}</span>`:'<span style="color:var(--muted)">—</span>';
+    const pa=principioDe(a.medicamento_id);
     const acc=esAdmin?`<td class="colAdmin"><button class="btn btn-ghost" style="padding:4px 9px" onclick="editar('${a.id}')">Editar</button> <button class="btn btn-danger" style="padding:4px 9px" onclick="eliminar('${a.id}')">✕</button></td>`:'';
     return `<tr>
       <td style="font-family:var(--mono);white-space:nowrap">${esc(a.fecha_publicacion||'—')}</td>
       <td style="min-width:200px">${esc(nombreMed(a.medicamento_id))}</td>
-      <td style="min-width:180px">${esc(a.titulo_alerta||'—')}</td>
+      <td style="min-width:140px">${pa?esc(pa):'<span style=\'color:var(--muted)\'>—</span>'}</td>
+      <td style="min-width:170px">${esc(a.titulo_alerta||'—')}</td>
+      <td>${tipoB}</td>
       <td>${tits}</td>
       <td>${urgP}</td>
       <td style="font-family:var(--mono);font-size:10px;white-space:nowrap">${orig}</td>
@@ -416,105 +410,115 @@ async function editarTitulares(medId){
 
 /* ───────── Modal Nueva / Editar alerta ───────── */
 function abrirModal(){
-  editId=null; $('modalTitle').textContent='Registrar alerta por producto';
-  $('mProducto').value=''; $('titularesField').style.display='none'; $('origenField').style.display='none'; $('estadoField').style.display='none';
-  $('modalMsg').innerHTML=''; limpiarManual(); setOrigen('digemid_vinculada'); $('mEstado').value='registrada';
+  editId=null; $('modalTitle').textContent='Registrar alerta(s) por producto';
+  $('modalSub').textContent='Selecciona una o varias alertas y uno o varios productos. El titular se toma automáticamente del portafolio.';
+  selAlertas=new Set(); selProductos=new Set();
+  $('modalMsg').innerHTML=''; $('mEstado').value='registrada';
+  $('mBuscarDig').value=''; $('mBuscarProd').value='';
+  renderProdChecks(); buscarDigemid();
   $('modal').classList.remove('gate-hidden');
 }
 function cerrarModal(){ $('modal').classList.add('gate-hidden'); }
-function limpiarManual(){ ['mTitulo','mTipo','mFecha','mAccion','mResumen','mUrl'].forEach(id=>$(id).value=''); $('mUrg').value=''; $('mAlertaDig').innerHTML=''; $('mBuscarDig').value=''; }
 
-function onProductoChange(){
-  const medId=$('mProducto').value;
-  if(!medId){ $('titularesField').style.display='none'; $('origenField').style.display='none'; $('estadoField').style.display='none'; return; }
+/* Titular automático desde el portafolio (principal + 2° si existe, máx 2) */
+function titularesAuto(medId){
   const asign=titularesDe(medId);
-  const box=$('titularesBox'); const hint=$('titularesHint');
-  if(!asign.length){
-    box.innerHTML=`<div class="msg msg-warn" style="margin:0">Este producto no tiene titulares asignados. ${esAdmin?'Asígnalos en la pestaña <b>Portafolio & titulares</b>, o elige uno del catálogo abajo.':'Pide a un administrador que los asigne.'}</div>`;
-    // fallback: permitir elegir del catálogo completo
-    box.innerHTML+=catalogoTitularesHTML([]);
-    hint.textContent='Selecciona hasta 2 titulares del catálogo.';
-  }else{
-    const principal=asign.find(x=>x.es_principal)||asign[0];
-    box.innerHTML=catalogoTitularesHTML(asign.map(x=>x.titular_id), principal.titular_id);
-    hint.textContent = asign.length>1
-      ? `Este producto tiene ${asign.length} titulares. El principal se autoactivó; puedes marcar un 2° (máximo 2).`
-      : 'Titular autoactivado. Este producto tiene un solo titular.';
-  }
-  $('titularesField').style.display='block';
-  $('origenField').style.display='block';
-  $('estadoField').style.display='block';
-  aplicarLimite2();
-}
-function catalogoTitularesHTML(preSel, principal){
-  const lista = (preSel && preSel.length) ? TITULARES.filter(t=>preSel.includes(t.id)) : TITULARES;
-  return lista.map(t=>`<label class="tit-opt"><input type="checkbox" class="titChk" value="${t.id}" ${principal===t.id?'checked':''} onchange="aplicarLimite2()"> ${esc(t.razon_social)}</label>`).join('')
-    + (preSel && preSel.length && preSel.length<TITULARES.length ? `<div class="hint" style="margin-top:6px"><a href="#" onclick="mostrarTodosTitulares(event)">+ Ver todos los titulares del catálogo</a></div>` : '');
-}
-function mostrarTodosTitulares(e){ e.preventDefault(); const sel=titularesSeleccionados(); $('titularesBox').innerHTML=catalogoTitularesHTML([], sel[0]||null); sel.forEach(id=>{const c=$('titularesBox').querySelector(`input[value="${id}"]`); if(c)c.checked=true;}); aplicarLimite2(); }
-function titularesSeleccionados(){ return [...document.querySelectorAll('.titChk:checked')].map(c=>c.value); }
-function aplicarLimite2(){
-  const checked=titularesSeleccionados();
-  document.querySelectorAll('.titChk').forEach(c=>{ c.disabled = !c.checked && checked.length>=2; });
+  if(!asign.length) return [null,null];
+  const principal=asign.find(x=>x.es_principal)||asign[0];
+  const segundo=asign.find(x=>x.titular_id!==principal.titular_id);
+  return [principal.titular_id, segundo?segundo.titular_id:null];
 }
 
-function setOrigen(o){
-  origenActual=o;
-  $('btnOrigDig').classList.toggle('active',o==='digemid_vinculada');
-  $('btnOrigMan').classList.toggle('active',o==='manual');
-  $('origenDigemid').style.display=o==='digemid_vinculada'?'block':'none';
-  $('origenManual').style.display=o==='manual'?'block':'none';
-  if(o==='digemid_vinculada' && !DIGEMID.length) buscarDigemid();
-}
+/* Paso 1 · Alertas DIGEMID (búsqueda + selección múltiple) */
 let digTimer=null;
 async function buscarDigemid(){
   clearTimeout(digTimer);
   digTimer=setTimeout(async()=>{
     const q=$('mBuscarDig').value.trim();
-    let query=sb.from('alertas_digemid').select('id,titulo,producto,tipo_alerta,fecha_publicacion,urgencia,accion_principal,resumen_ia,url_pdf_digemid').order('fecha_publicacion',{ascending:false}).limit(30);
-    if(q) query=query.or(`titulo.ilike.%${q}%,producto.ilike.%${q}%`);
-    const {data}=await query; DIGEMID=data||[];
-    $('mAlertaDig').innerHTML=DIGEMID.map(d=>`<option value="${d.id}">${esc(d.fecha_publicacion||'')} · ${esc((d.producto||d.titulo||'').slice(0,70))}</option>`).join('')||'<option disabled>Sin resultados</option>';
+    let query=sb.from('alertas_digemid').select('id,titulo,producto,tipo_alerta,fecha_publicacion,urgencia,accion_principal,resumen_ia,url_pdf_digemid').order('fecha_publicacion',{ascending:false,nullsFirst:false}).limit(40);
+    if(q) query=query.or(`titulo.ilike.%${q}%,producto.ilike.%${q}%,tipo_alerta.ilike.%${q}%`);
+    const {data}=await query; (data||[]).forEach(d=>DIGCACHE[d.id]=d);
+    renderAlertaChecks(data||[]);
   },250);
 }
-function onAlertaDigChange(){ /* selección lista para guardar */ }
+function renderAlertaChecks(lista){
+  const cont=$('mAlertasList');
+  if(!lista.length){ cont.innerHTML='<div class="hint" style="padding:8px">Sin resultados.</div>'; }
+  else{
+    cont.innerHTML=lista.map(d=>{
+      const et=d.tipo_alerta?`<span class="tipo-badge ${tipoClaseP(d.tipo_alerta)}">${esc(d.tipo_alerta)}</span>`:'';
+      return `<label class="chk-row"><input type="checkbox" value="${d.id}" ${selAlertas.has(d.id)?'checked':''} onchange="toggleAlerta('${d.id}',this.checked)">
+        <span><b>${esc(d.fecha_publicacion||'')}</b> · ${esc((d.producto||d.titulo||'').slice(0,80))} ${et}</span></label>`;
+    }).join('');
+  }
+  actualizarHintAlertas();
+}
+function toggleAlerta(id,on){ if(on)selAlertas.add(id); else selAlertas.delete(id); actualizarHintAlertas(); }
+function actualizarHintAlertas(){ $('mAlertasHint').textContent=`${selAlertas.size} alerta(s) seleccionada(s)`; }
+
+/* Paso 2 · Productos por principio activo (selección múltiple) */
+function renderProdChecks(){
+  const q=($('mBuscarProd').value||'').trim().toLowerCase();
+  const lista=MEDS.filter(m=> !q || (m.descripcion_producto+' '+(m.principio_activo||'')).toLowerCase().includes(q));
+  const cont=$('mProdList');
+  if(!lista.length){ cont.innerHTML='<div class="hint" style="padding:8px">Sin productos.</div>'; actualizarHintProd(); return; }
+  cont.innerHTML=lista.map(m=>{
+    const auto=titularesAuto(m.id).filter(Boolean).map(id=>esc(nombreTitular(id))).join(', ')||'sin titular en portafolio';
+    return `<label class="chk-row"><input type="checkbox" value="${m.id}" ${selProductos.has(m.id)?'checked':''} onchange="toggleProd('${m.id}',this.checked)">
+      <span>${esc(m.descripcion_producto)} <span class="hint">· ${esc(m.principio_activo||'—')} · 🏷️ ${auto}</span></span></label>`;
+  }).join('');
+  actualizarHintProd();
+}
+function toggleProd(id,on){ if(on)selProductos.add(id); else selProductos.delete(id); actualizarHintProd(); }
+function actualizarHintProd(){ $('mProdHint').textContent=`${selProductos.size} producto(s) · el titular se autoactiva desde el portafolio`; }
 
 async function guardarAlerta(){
-  const medId=$('mProducto').value;
-  if(!medId){ $('modalMsg').innerHTML='<div class="msg msg-err">Selecciona un producto.</div>'; return; }
-  const tits=titularesSeleccionados();
-  if(tits.length>2){ $('modalMsg').innerHTML='<div class="msg msg-err">Máximo 2 titulares por alerta.</div>'; return; }
-  const rec={ medicamento_id:medId, origen:origenActual, titular_1_id:tits[0]||null, titular_2_id:tits[1]||null, estado:$('mEstado').value };
-  if(origenActual==='digemid_vinculada'){
-    const digId=$('mAlertaDig').value; const d=DIGEMID.find(x=>x.id===digId);
-    if(!d){ $('modalMsg').innerHTML='<div class="msg msg-err">Selecciona una alerta DIGEMID de la lista.</div>'; return; }
-    Object.assign(rec,{ alerta_digemid_id:d.id, titulo_alerta:d.titulo, tipo_alerta:d.tipo_alerta, fecha_publicacion:d.fecha_publicacion||null, urgencia:d.urgencia||null, accion_principal:d.accion_principal, resumen:d.resumen_ia, url_pdf:d.url_pdf_digemid });
-  }else{
-    Object.assign(rec,{ alerta_digemid_id:null, titulo_alerta:$('mTitulo').value.trim()||null, tipo_alerta:$('mTipo').value.trim()||null, fecha_publicacion:$('mFecha').value||null, urgencia:$('mUrg').value||null, accion_principal:$('mAccion').value.trim()||null, resumen:$('mResumen').value.trim()||null, url_pdf:$('mUrl').value.trim()||null });
-    if(!rec.titulo_alerta){ $('modalMsg').innerHTML='<div class="msg msg-err">Escribe al menos el título de la alerta.</div>'; return; }
-  }
+  const alertIds=[...selAlertas], prodIds=[...selProductos];
+  if(!alertIds.length){ $('modalMsg').innerHTML='<div class="msg msg-err">Selecciona al menos una alerta (Paso 1).</div>'; return; }
+  if(!prodIds.length){ $('modalMsg').innerHTML='<div class="msg msg-err">Selecciona al menos un producto (Paso 2).</div>'; return; }
+  const estado=$('mEstado').value;
   $('btnGuardar').disabled=true;
-  let error;
-  if(editId){ ({error}=await sb.from('alertas_producto_titular').update({...rec,actualizado_en:new Date().toISOString()}).eq('id',editId)); }
-  else{ rec.creado_por=currentUser.id; ({error}=await sb.from('alertas_producto_titular').insert(rec)); }
+  try{
+    if(editId){
+      const digId=alertIds[0], medId=prodIds[0], d=DIGCACHE[digId];
+      const [t1,t2]=titularesAuto(medId);
+      const rec={ alerta_digemid_id:digId, medicamento_id:medId, origen:'digemid_vinculada', titular_1_id:t1, titular_2_id:t2, estado, actualizado_en:new Date().toISOString() };
+      if(d) Object.assign(rec,{ titulo_alerta:d.titulo, tipo_alerta:d.tipo_alerta, fecha_publicacion:d.fecha_publicacion||null, urgencia:d.urgencia||null, accion_principal:d.accion_principal, resumen:d.resumen_ia, url_pdf:d.url_pdf_digemid });
+      const {error}=await sb.from('alertas_producto_titular').update(rec).eq('id',editId);
+      if(error) throw error;
+    }else{
+      const existentes=new Set(ALERTAS.map(a=>a.alerta_digemid_id+'|'+a.medicamento_id));
+      const rows=[]; let dup=0;
+      for(const digId of alertIds){ const d=DIGCACHE[digId]; if(!d) continue;
+        for(const medId of prodIds){
+          if(existentes.has(digId+'|'+medId)){ dup++; continue; }
+          const [t1,t2]=titularesAuto(medId);
+          rows.push({ alerta_digemid_id:digId, medicamento_id:medId, origen:'digemid_vinculada', titular_1_id:t1, titular_2_id:t2, titulo_alerta:d.titulo, tipo_alerta:d.tipo_alerta, fecha_publicacion:d.fecha_publicacion||null, urgencia:d.urgencia||null, accion_principal:d.accion_principal, resumen:d.resumen_ia, url_pdf:d.url_pdf_digemid, estado, creado_por:currentUser.id });
+        }
+      }
+      if(!rows.length){ $('modalMsg').innerHTML=`<div class="msg msg-warn">No hay registros nuevos que crear${dup?` (${dup} ya existían)`:''}.</div>`; $('btnGuardar').disabled=false; return; }
+      const {error}=await sb.from('alertas_producto_titular').insert(rows);
+      if(error) throw error;
+      $('modalMsg').innerHTML=`<div class="msg msg-info">✅ ${rows.length} registro(s) creado(s)${dup?` · ${dup} ya existían y se omitieron`:''}.</div>`;
+    }
+  }catch(e){ $('modalMsg').innerHTML=`<div class="msg msg-err">${esc(e.message)}</div>`; $('btnGuardar').disabled=false; return; }
   $('btnGuardar').disabled=false;
-  if(error){ $('modalMsg').innerHTML=`<div class="msg msg-err">${esc(error.message)}</div>`; return; }
   cerrarModal(); await cargarAlertas();
 }
 
 async function editar(id){
   const a=ALERTAS.find(x=>x.id===id); if(!a) return;
-  abrirModal(); editId=id; $('modalTitle').textContent='Editar alerta';
-  $('mProducto').value=a.medicamento_id; onProductoChange();
-  setTimeout(()=>{ // marca titulares
-    document.querySelectorAll('.titChk').forEach(c=>c.checked=false);
-    [a.titular_1_id,a.titular_2_id].filter(Boolean).forEach(tid=>{ let c=$('titularesBox').querySelector(`input[value="${tid}"]`); if(!c){ mostrarTodosTitulares({preventDefault(){}}); c=$('titularesBox').querySelector(`input[value="${tid}"]`);} if(c)c.checked=true; });
-    aplicarLimite2();
-    setOrigen(a.origen);
-    if(a.origen==='manual'){ $('mTitulo').value=a.titulo_alerta||''; $('mTipo').value=a.tipo_alerta||''; $('mFecha').value=a.fecha_publicacion||''; $('mUrg').value=a.urgencia||''; $('mAccion').value=a.accion_principal||''; $('mResumen').value=a.resumen||''; $('mUrl').value=a.url_pdf||''; }
-    else if(a.alerta_digemid_id){ $('mBuscarDig').value=a.titulo_alerta||''; buscarDigemid(); setTimeout(()=>{ $('mAlertaDig').value=a.alerta_digemid_id; },400); }
-    $('mEstado').value=a.estado||'registrada';
-  },60);
+  abrirModal(); editId=id;
+  $('modalTitle').textContent='Editar alerta registrada';
+  $('modalSub').textContent='Ajusta la alerta, el producto o el estado. Se actualiza solo este registro.';
+  selAlertas=new Set(a.alerta_digemid_id?[a.alerta_digemid_id]:[]);
+  selProductos=new Set(a.medicamento_id?[a.medicamento_id]:[]);
+  $('mEstado').value=a.estado||'registrada';
+  if(a.alerta_digemid_id && !DIGCACHE[a.alerta_digemid_id]){
+    DIGCACHE[a.alerta_digemid_id]={ id:a.alerta_digemid_id, titulo:a.titulo_alerta, producto:nombreMed(a.medicamento_id), tipo_alerta:a.tipo_alerta, fecha_publicacion:a.fecha_publicacion, urgencia:a.urgencia, accion_principal:a.accion_principal, resumen_ia:a.resumen, url_pdf_digemid:a.url_pdf };
+  }
+  $('mBuscarProd').value=''; renderProdChecks();
+  $('mBuscarDig').value=a.titulo_alerta||''; buscarDigemid();
 }
 async function eliminar(id){
   if(!confirm('¿Eliminar esta alerta registrada?')) return;
@@ -522,7 +526,6 @@ async function eliminar(id){
   if(error){ alert('Error: '+error.message); return; }
   await cargarAlertas();
 }
-
 
 /* ═════════ Alta manual de titular ═════════ */
 function abrirNuevoTitular(){
