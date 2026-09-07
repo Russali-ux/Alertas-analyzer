@@ -63,6 +63,31 @@ def load_json(path: Path, default):
     return json.loads(path.read_text(encoding="utf-8-sig"))
 
 
+def _iter_alerts(raw):
+    """Yield alert dicts from a loaded JSON file, tolerating both list and dict roots.
+
+    Daily snapshots (alertas_YYYYMMDD.json / alertas_latest.json) are lists of
+    alert dicts. The backfill (alertas_backfill_2026_01-52.json) is a dict keyed
+    by week number whose values are alert dicts. Iterating a dict directly would
+    yield its keys (strings), so map dict roots to their values first and skip
+    anything that is not a dict.
+    """
+    if isinstance(raw, dict):
+        raw = raw.values()
+    for alert in raw:
+        if isinstance(alert, dict):
+            yield alert
+
+
+def _normalize_alert(alert: dict) -> dict:
+    """Fill standard keys from backfill aliases so all snapshots share one schema."""
+    if not alert.get("github_pdf_url") and alert.get("url_pdf_github"):
+        alert["github_pdf_url"] = alert["url_pdf_github"]
+    if not alert.get("url") and alert.get("url_pagina_digemid"):
+        alert["url"] = alert["url_pagina_digemid"]
+    return alert
+
+
 def alert_lookup() -> dict[str, dict]:
     lookup: dict[str, dict] = {}
     from urllib.parse import unquote
@@ -73,7 +98,8 @@ def alert_lookup() -> dict[str, dict]:
         alert_files.remove(latest)
         alert_files.append(latest)
     for alert_file in alert_files:
-        for alert in load_json(alert_file, []):
+        for alert in _iter_alerts(load_json(alert_file, [])):
+            alert = _normalize_alert(alert)
             pdf_url = alert.get("github_pdf_url") or ""
             pdf_name = pdf_url.rsplit("/", 1)[-1]
             if pdf_name:
