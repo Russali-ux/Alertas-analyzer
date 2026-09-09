@@ -213,7 +213,7 @@ th.sortable:hover{color:var(--accent)}
     <div class="tbl-wrap">
       <table>
         <thead><tr>
-          <th>Nº</th><th>Producto</th><th>Principio activo</th><th>Nº Reg. Sanitario</th><th>Titulares asignados</th><th class="gate-hidden colAdmin">Acción</th>
+          <th>Nº</th><th>Producto</th><th>Principio activo</th><th>Nº Reg. Sanitario</th><th>Fecha Vencimiento</th><th>Fabricante</th><th>País</th><th>Titulares asignados</th><th class="gate-hidden colAdmin">Acción</th>
         </tr></thead>
         <tbody id="tbMeds"></tbody>
       </table>
@@ -270,6 +270,8 @@ const sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY,{
 
 const $=id=>document.getElementById(id);
 const esc=t=>(t==null?'':String(t)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+/* Fecha ISO (YYYY-MM-DD) → DD/MM/YYYY para mostrar; devuelve '—' si vacía */
+const fmtFecha=v=>{ if(!v) return '—'; const s=String(v).slice(0,10); const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(s); return m?`${m[3]}/${m[2]}/${m[1]}`:esc(s); };
 
 let currentUser=null, esAdmin=false;
 let MEDS=[], TITULARES=[], MEDTIT=[], ALERTAS=[], DIGEMID=[];
@@ -449,6 +451,9 @@ function renderMeds(){
       <td style="min-width:220px">${esc(m.descripcion_producto)}</td>
       <td>${esc(m.principio_activo||'—')}</td>
       <td style="font-family:var(--mono);white-space:nowrap">${esc(m.nro_registro_sanitario||'—')}</td>
+      <td style="font-family:var(--mono);white-space:nowrap">${fmtFecha(m.vcto_registro_sanitario)}</td>
+      <td style="min-width:150px">${esc(m.fabricante||'—')}</td>
+      <td style="white-space:nowrap">${esc(m.pais||'—')}</td>
       <td>${chips}</td>
       ${acc}
     </tr>`;
@@ -685,6 +690,11 @@ function abrirNuevoProducto(){
       <div class="field"><label>Principio activo</label><input class="inp" id="npPA" placeholder="Ej. DIMENHIDRINATO"></div>
       <div class="field"><label>N° Registro Sanitario</label><input class="inp" id="npRS" placeholder="Ej. EN-05155"></div>
     </div>
+    <div class="row2">
+      <div class="field"><label>Fecha Vencimiento (Reg. Sanitario)</label><input class="inp" type="date" id="npVcto"></div>
+      <div class="field"><label>País</label><input class="inp" id="npPais" placeholder="Ej. Perú"></div>
+    </div>
+    <div class="field"><label>Fabricante</label><input class="inp" id="npFab" placeholder="Ej. Laboratorios XYZ S.A."></div>
     <div class="field"><label>Titulares</label>
       <div class="tit-box" id="npTitBox">${titChecks}</div>
       <div class="hint">Marca los titulares y elige el principal (se autoactiva en las alertas).</div>
@@ -698,8 +708,11 @@ function abrirNuevoProducto(){
     if(!prod){ box.querySelector('#npMsg').innerHTML='<div class="msg msg-err">El nombre del producto es obligatorio.</div>'; return; }
     const pa=box.querySelector('#npPA').value.trim()||null;
     const rs=box.querySelector('#npRS').value.trim()||null;
+    const vcto=box.querySelector('#npVcto').value||null;
+    const fab=box.querySelector('#npFab').value.trim()||null;
+    const pais=box.querySelector('#npPais').value.trim()||null;
     const nro=(MEDS.reduce((m,x)=>Math.max(m,x.nro||0),0))+1;
-    const {data,error}=await sb.from('medicamentos').insert({descripcion_producto:prod, principio_activo:pa, nro_registro_sanitario:rs, nro}).select('id').single();
+    const {data,error}=await sb.from('medicamentos').insert({descripcion_producto:prod, principio_activo:pa, nro_registro_sanitario:rs, vcto_registro_sanitario:vcto, fabricante:fab, pais, nro}).select('id').single();
     if(error){ box.querySelector('#npMsg').innerHTML='<div class="msg msg-err">'+esc(error.message)+'</div>'; return; }
     const checks=[...box.querySelectorAll('.npChk:checked')].map(c=>c.value);
     const ppal=box.querySelector('input[name=npPpal]:checked')?.value||checks[0]||null;
@@ -712,13 +725,29 @@ function abrirNuevoProducto(){
 
 /* ═════════ Importar Excel (Producto, Principio activo, N° Registro Sanitario, Titulares) ═════════ */
 function _norm(x){ return (x==null?'':String(x)).normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().trim(); }
+/* Convierte un valor de celda (ISO, dd/mm/aaaa o serial de Excel) a 'YYYY-MM-DD' o null */
+function _toISODate(v){
+  if(v==null||v==='') return null;
+  if(typeof v==='number'){ // serial de Excel (base 1899-12-30)
+    const d=new Date(Math.round((v-25569)*86400*1000));
+    return isNaN(d)?null:d.toISOString().slice(0,10);
+  }
+  const s=String(v).trim();
+  let m=/^(\d{4})-(\d{2})-(\d{2})/.exec(s); if(m) return `${m[1]}-${m[2]}-${m[3]}`;
+  m=/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/.exec(s); // dd/mm/aaaa
+  if(m){ const dd=m[1].padStart(2,'0'), mm=m[2].padStart(2,'0'); return `${m[3]}-${mm}-${dd}`; }
+  const d=new Date(s); return isNaN(d)?null:d.toISOString().slice(0,10);
+}
 function _mapCols(headers){
   const map={};
   headers.forEach((h,i)=>{
     const n=_norm(h);
     if(map.producto==null && (n.includes('producto')||n.includes('descripcion'))) map.producto=i;
     else if(map.pa==null && n.includes('principio')) map.pa=i;
+    else if(map.vcto==null && (n.includes('vencimiento')||n.includes('vcto')||n.includes('caduc'))) map.vcto=i;
     else if(map.rs==null && (n.includes('registro')||n.includes('reg sanit')||n==='rs')) map.rs=i;
+    else if(map.fab==null && n.includes('fabricante')) map.fab=i;
+    else if(map.pais==null && (n==='pais'||n.includes('pais')||n.includes('origen'))) map.pais=i;
     else if(map.tit==null && n.includes('titular')) map.tit=i;
   });
   return map;
@@ -747,7 +776,7 @@ async function importarExcel(ev){
     const rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:''}).filter(r=>r.some(c=>String(c).trim()!==''));
     if(rows.length<2){ box.innerHTML='<div class="msg msg-warn">El archivo no tiene filas de datos.</div>'; return; }
     const map=_mapCols(rows[0]);
-    if(map.producto==null){ box.innerHTML='<div class="msg msg-err">No encontré la columna <b>Producto</b>. Usa encabezados: Producto, Principio activo, Número de registro sanitario, Titulares.</div>'; return; }
+    if(map.producto==null){ box.innerHTML='<div class="msg msg-err">No encontré la columna <b>Producto</b>. Usa encabezados: Producto, Principio activo, N° Registro Sanitario, Fecha Vencimiento, Fabricante, País, Titulares.</div>'; return; }
     let creados=0, actualizados=0, titLinks=0, saltados=0;
     for(let i=1;i<rows.length;i++){
       const r=rows[i];
@@ -755,17 +784,21 @@ async function importarExcel(ev){
       if(!prod){ saltados++; continue; }
       const pa=map.pa!=null?(String(r[map.pa]||'').trim()||null):null;
       const rs=map.rs!=null?(String(r[map.rs]||'').trim()||null):null;
+      const vcto=map.vcto!=null?_toISODate(r[map.vcto]):null;
+      const fab=map.fab!=null?(String(r[map.fab]||'').trim()||null):null;
+      const pais=map.pais!=null?(String(r[map.pais]||'').trim()||null):null;
       const titRaw=map.tit!=null?String(r[map.tit]||'').trim():'';
       let medId=null;
       if(rs){ const ex=MEDS.find(m=>_norm(m.nro_registro_sanitario)===_norm(rs)); if(ex) medId=ex.id; }
       if(medId){
-        await sb.from('medicamentos').update({descripcion_producto:prod, principio_activo:pa, nro_registro_sanitario:rs}).eq('id',medId);
+        await sb.from('medicamentos').update({descripcion_producto:prod, principio_activo:pa, nro_registro_sanitario:rs, vcto_registro_sanitario:vcto, fabricante:fab, pais}).eq('id',medId);
+        const _m=MEDS.find(m=>m.id===medId); if(_m){ _m.descripcion_producto=prod; _m.principio_activo=pa; _m.nro_registro_sanitario=rs; _m.vcto_registro_sanitario=vcto; _m.fabricante=fab; _m.pais=pais; }
         actualizados++;
       }else{
         const nro=(MEDS.reduce((m,x)=>Math.max(m,x.nro||0),0))+1+creados;
-        const {data,error}=await sb.from('medicamentos').insert({descripcion_producto:prod, principio_activo:pa, nro_registro_sanitario:rs, nro}).select('id,nro').single();
+        const {data,error}=await sb.from('medicamentos').insert({descripcion_producto:prod, principio_activo:pa, nro_registro_sanitario:rs, vcto_registro_sanitario:vcto, fabricante:fab, pais, nro}).select('id,nro').single();
         if(error){ saltados++; continue; }
-        medId=data.id; MEDS.push({id:medId, nro:data.nro, descripcion_producto:prod, principio_activo:pa, nro_registro_sanitario:rs}); creados++;
+        medId=data.id; MEDS.push({id:medId, nro:data.nro, descripcion_producto:prod, principio_activo:pa, nro_registro_sanitario:rs, vcto_registro_sanitario:vcto, fabricante:fab, pais}); creados++;
       }
       if(titRaw){
         const nombres=titRaw.split(/[,;/|]+/).map(x=>x.trim()).filter(Boolean).slice(0,4);
