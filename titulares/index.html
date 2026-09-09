@@ -183,6 +183,7 @@ th.sortable:hover{color:var(--accent)}
           <th class="sortable" onclick="sortAlertas('producto')">Producto impactado <span class="sort-ind" data-k="producto"></span></th>
           <th class="sortable" onclick="sortAlertas('principio')">Principio activo <span class="sort-ind" data-k="principio"></span></th>
           <th class="sortable" onclick="sortAlertas('titulo')">Título de la alerta <span class="sort-ind" data-k="titulo"></span></th>
+          <th class="sortable" onclick="sortAlertas('producto_alerta')">Producto <span class="sort-ind" data-k="producto_alerta"></span></th>
           <th class="sortable" onclick="sortAlertas('tipo')">Tipo de alerta <span class="sort-ind" data-k="tipo"></span></th>
           <th class="sortable" onclick="sortAlertas('titular')">Titular(es) <span class="sort-ind" data-k="titular"></span></th>
           <th class="sortable" onclick="sortAlertas('urgencia')">Urgencia <span class="sort-ind" data-k="urgencia"></span></th>
@@ -191,7 +192,7 @@ th.sortable:hover{color:var(--accent)}
           <th class="sortable" onclick="sortAlertas('expediente')">Expediente <span class="sort-ind" data-k="expediente"></span></th>
           <th class="gate-hidden colAdmin">Acción</th>
         </tr></thead>
-        <tbody id="tbAlertas"><tr><td colspan="11" style="text-align:center;color:var(--muted);padding:24px">Cargando…</td></tr></tbody>
+        <tbody id="tbAlertas"><tr><td colspan="12" style="text-align:center;color:var(--muted);padding:24px">Cargando…</td></tr></tbody>
       </table>
     </div>
     <div id="alertasFooter" class="tbl-footer"></div>
@@ -326,8 +327,8 @@ function nombreMed(id){ const m=MEDS.find(x=>x.id===id); return m?m.descripcion_
 
 /* ───────── Vista Alertas ───────── */
 async function cargarAlertas(){
-  $('tbAlertas').innerHTML='<tr><td colspan="11" style="text-align:center;color:var(--muted);padding:24px">Cargando…</td></tr>';
-  const {data,error}=await sb.from('alertas_producto_titular').select('*').order('fecha_publicacion',{ascending:false,nullsFirst:false}).order('creado_en',{ascending:false});
+  $('tbAlertas').innerHTML='<tr><td colspan="12" style="text-align:center;color:var(--muted);padding:24px">Cargando…</td></tr>';
+  const {data,error}=await sb.from('alertas_producto_titular').select('*, alerta:alertas_digemid(producto)').order('fecha_publicacion',{ascending:false,nullsFirst:false}).order('creado_en',{ascending:false});
   if(error){ $('alertasMsg').innerHTML=`<div class="msg msg-err">No se pudo cargar: ${esc(error.message)}</div>`; $('tbAlertas').innerHTML=''; return; }
   $('alertasMsg').innerHTML=''; ALERTAS=data||[]; poblarFiltroProductos(); poblarFiltroTitulos(); poblarFiltroTipos(); renderAlertas();
 }
@@ -372,6 +373,7 @@ function _valAlerta(a,k){
     case 'producto': return nombreMed(a.medicamento_id)||'';
     case 'principio': return principioDe(a.medicamento_id)||'';
     case 'titulo': return a.titulo_alerta||'';
+    case 'producto_alerta': return (a.alerta&&a.alerta.producto)||'';
     case 'tipo': return a.tipo_alerta||'';
     case 'titular': return nombreTitular(a.titular_1_id)||'';
     case 'urgencia': { const r={INMEDIATA:0,PREVENTIVA:1,INFORMATIVA:2}; return r[a.urgencia]!=null?r[a.urgencia]:9; }
@@ -392,7 +394,7 @@ function renderAlertas(){
     if(tituloF && a.titulo_alerta!==tituloF) return false;
     if(tipoF && a.tipo_alerta!==tipoF) return false;
     if(!q) return true;
-    const hay=(nombreMed(a.medicamento_id)+' '+principioDe(a.medicamento_id)+' '+(a.titulo_alerta||'')+' '+(a.tipo_alerta||'')+' '+nombreTitular(a.titular_1_id)+' '+nombreTitular(a.titular_2_id)).toLowerCase();
+    const hay=(nombreMed(a.medicamento_id)+' '+principioDe(a.medicamento_id)+' '+(a.titulo_alerta||'')+' '+((a.alerta&&a.alerta.producto)||'')+' '+(a.tipo_alerta||'')+' '+nombreTitular(a.titular_1_id)+' '+nombreTitular(a.titular_2_id)).toLowerCase();
     return hay.includes(q);
   });
   const _dir=sortDir==='asc'?1:-1;
@@ -403,7 +405,7 @@ function renderAlertas(){
   _actualizarIndicadores();
   $('cntAlertas').textContent=`${rows.length} alerta(s)`;
   { const footer=$('alertasFooter'); if(footer) footer.innerHTML=`Mostrando <b>${rows.length}</b>`; }
-  if(!rows.length){ $('tbAlertas').innerHTML='<tr><td colspan="11" style="text-align:center;color:var(--muted);padding:24px">Sin alertas registradas todavía.</td></tr>'; return; }
+  if(!rows.length){ $('tbAlertas').innerHTML='<tr><td colspan="12" style="text-align:center;color:var(--muted);padding:24px">Sin alertas registradas todavía.</td></tr>'; return; }
   $('tbAlertas').innerHTML=rows.map(a=>{
     const tits=[a.titular_1_id,a.titular_2_id].filter(Boolean).map(id=>`<span class="tit-chip">${esc(nombreTitular(id))}</span>`).join('')||'<span style="color:var(--muted)">—</span>';
     const urgP=a.urgencia?`<span class="pill u-${a.urgencia}">${a.urgencia}</span>`:'—';
@@ -416,6 +418,7 @@ function renderAlertas(){
       <td style="min-width:200px">${esc(nombreMed(a.medicamento_id))}</td>
       <td style="min-width:140px">${pa?esc(pa):'<span style=\'color:var(--muted)\'>—</span>'}</td>
       <td style="min-width:170px">${esc(a.titulo_alerta||'—')}</td>
+      <td style="min-width:160px">${a.alerta&&a.alerta.producto?esc(a.alerta.producto):'<span style=\'color:var(--muted)\'>—</span>'}</td>
       <td>${tipoB}</td>
       <td>${tits}</td>
       <td>${urgP}</td>
