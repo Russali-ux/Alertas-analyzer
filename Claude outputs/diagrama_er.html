@@ -1,0 +1,189 @@
+<title>Modelo ER · Alertas por Titular</title>
+<style>
+  :root{
+    --bg:#f4f6fb; --surface:#fff; --border:#dbe2ee; --text:#1c2530; --sub:#5a6b7f;
+    --accent:#0077cc; --accent2:#6f42c1; --ok:#1f9d55; --warn:#c77700; --mono:'SFMono-Regular',ui-monospace,Menlo,Consolas,monospace;
+  }
+  :root[data-theme="dark"], :root:not([data-theme="light"]){}
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#0f151d; --surface:#161f2b; --border:#26313f; --text:#e6edf5; --sub:#93a3b6; --accent:#4aa3e6; --accent2:#a682e6;
+    }
+  }
+  :root[data-theme="dark"]{ --bg:#0f151d; --surface:#161f2b; --border:#26313f; --text:#e6edf5; --sub:#93a3b6; --accent:#4aa3e6; }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.55}
+  .wrap{max-width:1080px;margin:0 auto;padding:28px 22px 60px}
+  h1{font-size:22px;margin:0 0 4px}
+  .lead{color:var(--sub);font-size:14px;margin:0 0 22px}
+  h2{font-size:15px;margin:30px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--border);letter-spacing:.3px}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+  .mermaid{overflow-x:auto}
+  .flow{display:flex;flex-wrap:wrap;gap:10px;align-items:stretch;margin:6px 0}
+  .step{flex:1;min-width:150px;background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--accent);border-radius:9px;padding:12px 14px}
+  .step .n{font-family:var(--mono);font-size:10px;color:var(--accent);font-weight:700}
+  .step .t{font-weight:700;font-size:13px;margin:3px 0}
+  .step .d{font-size:12px;color:var(--sub)}
+  .rule{background:rgba(199,119,0,.08);border:1px solid rgba(199,119,0,.3);border-radius:9px;padding:12px 14px;font-size:13px}
+  table{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:6px}
+  th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--border);vertical-align:top}
+  th{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.6px;color:var(--sub)}
+  code{font-family:var(--mono);font-size:11.5px;background:var(--bg);padding:1px 5px;border-radius:4px}
+  .pk{color:var(--accent);font-weight:700}
+  .fk{color:var(--accent2);font-weight:700}
+  .badge{display:inline-block;font-family:var(--mono);font-size:9px;font-weight:700;padding:1px 6px;border-radius:4px;background:rgba(0,119,204,.12);color:var(--accent);margin-left:5px}
+</style>
+
+<div class="wrap">
+  <h1>Modelo de datos · Alertas por Producto &amp; Titular</h1>
+  <p class="lead">Módulo nuevo para Alertas-analyzer (Supabase <code>ggbnfdaxtsngsjssrwrl</code>). El admin selecciona primero el producto; el titular se autoactiva y se puede impactar hasta 2 titulares por alerta.</p>
+
+  <h2>Diagrama entidad–relación</h2>
+  <div class="card">
+    <pre class="mermaid">
+erDiagram
+    TITULARES_REGISTRO_SANITARIO ||--o{ MEDICAMENTO_TITULARES : "es titular de"
+    MEDICAMENTOS                 ||--o{ MEDICAMENTO_TITULARES : "tiene titular(es)"
+    MEDICAMENTOS                 ||--o{ ALERTAS_PRODUCTO_TITULAR : "es impactado por"
+    TITULARES_REGISTRO_SANITARIO ||--o{ ALERTAS_PRODUCTO_TITULAR : "titular_1 / titular_2"
+    ALERTAS_DIGEMID              ||--o{ ALERTAS_PRODUCTO_TITULAR : "puede vincularse (opcional)"
+
+    TITULARES_REGISTRO_SANITARIO {
+        uuid id PK
+        text razon_social "UNIQUE, ej. CORVAL SAC"
+        text ruc
+        boolean activo
+        timestamptz creado_en
+    }
+    MEDICAMENTOS {
+        uuid id PK
+        int nro
+        text descripcion_producto
+        text principio_activo
+        text accion_terapeutica
+        text via_administracion
+        text presentacion
+        text tvu
+        text fabricante
+        text nro_registro_sanitario "UNIQUE"
+        date vcto_registro_sanitario
+        text nro_expediente_reinscripcion
+        text condicion_almacenamiento
+    }
+    MEDICAMENTO_TITULARES {
+        uuid id PK
+        uuid medicamento_id FK
+        uuid titular_id FK
+        boolean es_principal
+    }
+    ALERTAS_PRODUCTO_TITULAR {
+        uuid id PK
+        uuid alerta_digemid_id FK "NULL si es manual"
+        text origen "digemid_vinculada | manual"
+        uuid medicamento_id FK
+        uuid titular_1_id FK
+        uuid titular_2_id FK "NULL o distinto de titular_1"
+        text titulo_alerta
+        text tipo_alerta
+        date fecha_publicacion
+        text urgencia "INMEDIATA|PREVENTIVA|INFORMATIVA"
+        text accion_principal
+        text resumen
+        text url_pdf
+        text estado
+        uuid creado_por FK
+        timestamptz creado_en
+    }
+    ALERTAS_DIGEMID {
+        uuid id PK
+        text titulo
+        text producto
+        date fecha_publicacion
+    }
+    </pre>
+  </div>
+
+  <h2>Las 4 tablas</h2>
+
+  <div class="card">
+    <b>titulares_registro_sanitario</b> <span class="badge">catálogo</span>
+    <p style="margin:6px 0;font-size:13px;color:var(--sub)">Titulares del registro sanitario. Se cargan Corval SAC, Cobefar SAC y Perulab SAC.</p>
+    <table><tr><th>Campo</th><th>Tipo</th><th>Nota</th></tr>
+      <tr><td class="pk">id</td><td>uuid</td><td>PK</td></tr>
+      <tr><td>razon_social</td><td>text</td><td>único, obligatorio</td></tr>
+      <tr><td>ruc</td><td>text</td><td>opcional</td></tr>
+      <tr><td>activo</td><td>boolean</td><td>default true</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <b>medicamentos</b> <span class="badge">catálogo</span>
+    <p style="margin:6px 0;font-size:13px;color:var(--sub)">Portafolio de productos (25 cargados desde el Excel DTRSPF001). Campos = columnas del Excel.</p>
+    <table><tr><th>Campo</th><th>Tipo</th><th>Origen Excel</th></tr>
+      <tr><td class="pk">id</td><td>uuid</td><td>PK</td></tr>
+      <tr><td>nro</td><td>int</td><td>Nro.</td></tr>
+      <tr><td>descripcion_producto</td><td>text</td><td>DESCRIPCIÓN DEL PRODUCTO</td></tr>
+      <tr><td>principio_activo</td><td>text</td><td>PRINCIPIO ACTIVO</td></tr>
+      <tr><td>accion_terapeutica</td><td>text</td><td>ACCIÓN TERAPÉUTICA</td></tr>
+      <tr><td>via_administracion</td><td>text</td><td>VÍA DE ADMINISTRACIÓN</td></tr>
+      <tr><td>presentacion</td><td>text</td><td>PRESENTACIÓN</td></tr>
+      <tr><td>tvu</td><td>text</td><td>TVU</td></tr>
+      <tr><td>fabricante</td><td>text</td><td>FABRICANTE</td></tr>
+      <tr><td>nro_registro_sanitario</td><td>text</td><td>Nro. REGISTRO SANITARIO (único)</td></tr>
+      <tr><td>vcto_registro_sanitario</td><td>date</td><td>VCTO. DEL REGISTRO SANITARIO</td></tr>
+      <tr><td>nro_expediente_reinscripcion</td><td>text</td><td>Nro DE EXPEDIENTE DE REINSCRIPCIÓN</td></tr>
+      <tr><td>condicion_almacenamiento</td><td>text</td><td>CONDICIÓN DE ALMACENAMIENTO</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <b>medicamento_titulares</b> <span class="badge">relación N:M</span>
+    <p style="margin:6px 0;font-size:13px;color:var(--sub)">Un medicamento puede tener varios titulares y un titular varios medicamentos. Aquí se define qué titulares posee cada producto (fuente para el autoactivado).</p>
+    <table><tr><th>Campo</th><th>Tipo</th><th>Nota</th></tr>
+      <tr><td class="pk">id</td><td>uuid</td><td>PK</td></tr>
+      <tr><td class="fk">medicamento_id</td><td>uuid</td><td>→ medicamentos</td></tr>
+      <tr><td class="fk">titular_id</td><td>uuid</td><td>→ titulares</td></tr>
+      <tr><td>es_principal</td><td>boolean</td><td>marca el titular por defecto</td></tr>
+      <tr><td colspan="3">UNIQUE(medicamento_id, titular_id)</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <b>alertas_producto_titular</b> <span class="badge">la "hoja" nueva</span>
+    <p style="margin:6px 0;font-size:13px;color:var(--sub)">Cada fila = una alerta DIGEMID que impacta a un producto del portafolio y a 1 o 2 de sus titulares.</p>
+    <table><tr><th>Campo</th><th>Tipo</th><th>Nota</th></tr>
+      <tr><td class="pk">id</td><td>uuid</td><td>PK</td></tr>
+      <tr><td class="fk">alerta_digemid_id</td><td>uuid</td><td>→ alertas_digemid · NULL si es manual</td></tr>
+      <tr><td>origen</td><td>text</td><td>digemid_vinculada | manual</td></tr>
+      <tr><td class="fk">medicamento_id</td><td>uuid</td><td>→ medicamentos (se elige primero)</td></tr>
+      <tr><td class="fk">titular_1_id</td><td>uuid</td><td>→ titulares (autoactivado)</td></tr>
+      <tr><td class="fk">titular_2_id</td><td>uuid</td><td>→ titulares · opcional, ≠ titular_1</td></tr>
+      <tr><td>titulo_alerta / tipo_alerta</td><td>text</td><td>de la alerta</td></tr>
+      <tr><td>fecha_publicacion</td><td>date</td><td></td></tr>
+      <tr><td>urgencia</td><td>text</td><td>INMEDIATA / PREVENTIVA / INFORMATIVA</td></tr>
+      <tr><td>accion_principal / resumen / url_pdf</td><td>text</td><td></td></tr>
+      <tr><td>estado</td><td>text</td><td>registrada / en_gestion / cerrada</td></tr>
+      <tr><td class="fk">creado_por</td><td>uuid</td><td>→ auth.users</td></tr>
+    </table>
+  </div>
+
+  <h2>Regla de negocio: máximo 2 titulares</h2>
+  <div class="rule">
+    Aunque un medicamento tenga <b>más de dos</b> titulares en <code>medicamento_titulares</code>, una alerta solo puede impactar a <b>2 como máximo</b>. Por eso <code>alertas_producto_titular</code> tiene dos columnas fijas (<code>titular_1_id</code>, <code>titular_2_id</code>) en vez de una relación abierta — la estructura garantiza el tope de 2, y un <i>CHECK</i> obliga a que el segundo titular sea distinto del primero.
+  </div>
+
+  <h2>Flujo del admin en la nueva hoja</h2>
+  <div class="flow">
+    <div class="step"><div class="n">PASO 1</div><div class="t">Elegir producto</div><div class="d">Busca y selecciona el medicamento del portafolio impactado.</div></div>
+    <div class="step"><div class="n">PASO 2</div><div class="t">Titular autoactivado</div><div class="d">Se activa automáticamente el titular principal del producto.</div></div>
+    <div class="step"><div class="n">PASO 3</div><div class="t">2do titular (si aplica)</div><div class="d">Si el producto tiene varios titulares, puede añadir un segundo.</div></div>
+    <div class="step"><div class="n">PASO 4</div><div class="t">Datos de la alerta</div><div class="d">Vincula una alerta DIGEMID existente o los escribe manualmente.</div></div>
+    <div class="step"><div class="n">PASO 5</div><div class="t">Guardar</div><div class="d">Se registra en alertas_producto_titular con quién y cuándo.</div></div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>
+  const dark = matchMedia('(prefers-color-scheme: dark)').matches && document.documentElement.getAttribute('data-theme')!=='light';
+  mermaid.initialize({ startOnLoad:true, theme: dark?'dark':'default', er:{useMaxWidth:true} });
+</script>
