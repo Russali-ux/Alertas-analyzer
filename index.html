@@ -266,6 +266,9 @@ header p{font-size:12px;color:rgba(255,255,255,.85);margin-top:3px;font-family:v
   <a class="module-tab gate-hidden" id="modificatoriasLink" href="modificatorias/" title="Monitor Modificatorias DIGEMID · Actualizaciones de Seguridad">
     <span class="module-icon">🔄</span><span class="module-label">Modificatorias</span>
   </a>
+  <a class="module-tab gate-hidden" id="indiaLink" href="india/" title="Monitor India · CDSCO (regulatorio) y PvPI (señales RAM)">
+    <span class="module-icon">🇮🇳</span><span class="module-label">India · CDSCO/PvPI</span>
+  </a>
   <a class="module-tab gate-hidden" id="titularesLink" href="titulares/" title="Alertas por Producto y Titular">
     <span class="module-icon">🏷️</span><span class="module-label">Producto &amp; Titular</span>
   </a>
@@ -803,6 +806,7 @@ async function onLoggedIn(session) {
   document.getElementById('aemsLink').classList.toggle('gate-hidden', !(esAdmin || currentPerfil?.acceso_aems));
   document.getElementById('modificatoriasLink').classList.toggle('gate-hidden', !(esAdmin || currentPerfil?.acceso_modificatorias));
   document.getElementById('titularesLink').classList.toggle('gate-hidden', !(esAdmin || currentPerfil?.acceso_titulares));
+  document.getElementById('indiaLink').classList.toggle('gate-hidden', !(esAdmin || currentPerfil?.acceso_india));
 
   cargarAlertas();
 }
@@ -821,6 +825,7 @@ function onLoggedOut() {
   document.getElementById('aemsLink').classList.add('gate-hidden');
   document.getElementById('modificatoriasLink').classList.add('gate-hidden');
   document.getElementById('titularesLink').classList.add('gate-hidden');
+  document.getElementById('indiaLink').classList.add('gate-hidden');
   cambiarVista('alertas');
 }
 

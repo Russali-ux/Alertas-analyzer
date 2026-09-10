@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Monitor India (CDSCO + PvPI) — ConkoSafe IA</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+  :root {
+    --navy: #1E3A78; --teal: #1A8C93; --red: #B3261E; --bg: #F4F6FA;
+    --card: #FFFFFF; --border: #E2E6ED; --text: #1F2937; --muted: #6B7280;
+    --saffron: #FF9933; --green: #138808;
+  }
+  * { box-sizing: border-box; }
+  body { font-family: Arial, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; }
+  header { background: var(--navy); color: #fff; padding: 20px 28px; display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
+  header h1 { margin: 0; font-size: 20px; }
+  header p { margin: 4px 0 0; font-size: 13px; color: #C9D3EA; }
+  header .back { color: #C9D3EA; text-decoration: none; font-size: 12px; white-space: nowrap; border: 1px solid #3a558f; padding: 6px 12px; border-radius: 6px; }
+  header .back:hover { background: #274a94; color: #fff; }
+  .container { max-width: 1200px; margin: 0 auto; padding: 24px 20px 60px; }
+  /* Toggle CDSCO / PvPI */
+  .source-nav { display: flex; gap: 8px; margin-bottom: 22px; flex-wrap: wrap; }
+  .source-nav button {
+    background: var(--card); border: 1px solid var(--border); border-radius: 8px;
+    padding: 12px 18px; font-size: 13px; font-weight: bold; color: var(--muted);
+    cursor: pointer; display: flex; align-items: center; gap: 8px; transition: all .15s;
+  }
+  .source-nav button .sub { font-weight: normal; font-size: 11px; color: var(--muted); }
+  .source-nav button.active { border-color: var(--teal); color: var(--navy); box-shadow: 0 0 0 2px rgba(26,140,147,.15); }
+  .source-nav button.active .sub { color: var(--teal); }
+  .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px; margin-bottom: 24px; }
+  .kpi { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; text-align: center; }
+  .kpi .label { font-size: 11px; color: var(--muted); font-weight: bold; text-transform: uppercase; letter-spacing: .03em; }
+  .kpi .value { font-size: 26px; font-weight: bold; color: var(--teal); margin-top: 4px; }
+  .charts { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 28px; }
+  @media (max-width: 860px) { .charts { grid-template-columns: 1fr; } }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+  .card h2 { margin: 0 0 12px; font-size: 14px; color: var(--navy); }
+  .controls { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+  .controls input, .controls select {
+    padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px;
+  }
+  .controls input { flex: 1; min-width: 220px; }
+  table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  thead th {
+    background: var(--navy); color: #fff; text-align: left; padding: 8px 10px;
+    position: sticky; top: 0; cursor: pointer; user-select: none;
+  }
+  thead th:hover { background: #274a94; }
+  tbody td { padding: 7px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tbody tr:nth-child(even) { background: #FAFBFD; }
+  tbody tr:hover { background: #EEF2FA; }
+  .badge { display: inline-block; padding: 1px 8px; border-radius: 10px; font-size: 11px; font-weight: bold; }
+  .badge.anio { background: #DCF0F1; color: var(--teal); }
+  .badge.cat-NSQ { background: #FEF3C7; color: #92400E; }
+  .badge.cat-Espurio-Adulterado { background: #FEE2E2; color: #991B1B; }
+  .badge.cat-Retiro { background: #FDE68A; color: #78350F; }
+  .badge.cat-Aviso { background: #DBEAFE; color: #1E40AF; }
+  .badge.cat-RAM { background: #E0E7FF; color: #3730A3; }
+  .badge.cat-Otro { background: #E5E7EB; color: #374151; }
+  a.src { color: var(--teal); text-decoration: none; font-size: 11px; }
+  a.src:hover { text-decoration: underline; }
+  .table-wrap { max-height: 560px; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px; }
+  .count-note { font-size: 12px; color: var(--muted); margin: 8px 0 0; }
+  .state-note { font-size: 13px; color: var(--muted); padding: 40px; text-align: center; }
+  footer { text-align: center; font-size: 11px; color: var(--muted); padding: 20px; }
+  .src-block { display: none; }
+  .src-block.active { display: block; }
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>Monitor India — CDSCO &amp; PvPI</h1>
+    <p>ConkoSafe IA · Alertas regulatorias (CDSCO) y señales de seguridad RAM (PvPI / Indian Pharmacopoeia Commission) · Datos en vivo desde Supabase</p>
+  </div>
+  <a class="back" href="../" title="Volver al panel principal">↩ ConkoSafe IA</a>
+</header>
+<div class="container">
+
+  <div class="source-nav">
+    <button id="btnCdsco" class="active" onclick="cambiarFuente('cdsco')">
+      🏛️ CDSCO <span class="sub">Regulatorio · NSQ / espurios / retiros</span>
+    </button>
+    <button id="btnPvpi" onclick="cambiarFuente('pvpi')">
+      🔬 PvPI <span class="sub">Señales RAM · fármaco + reacción adversa</span>
+    </button>
+  </div>
+
+  <!-- ==================== CDSCO ==================== -->
+  <div class="src-block active" id="blockCdsco">
+    <div class="kpis">
+      <div class="kpi"><div class="label">Alertas totales</div><div class="value" id="cdscoTotal">—</div></div>
+      <div class="kpi"><div class="label">NSQ (calidad no estándar)</div><div class="value" id="cdscoNsq">—</div></div>
+      <div class="kpi"><div class="label">Espurios / adulterados</div><div class="value" id="cdscoEspurio">—</div></div>
+      <div class="kpi"><div class="label">Periodo cubierto</div><div class="value" id="cdscoRango" style="font-size:16px">—</div></div>
+    </div>
+    <div class="charts">
+      <div class="card"><h2>Alertas por año</h2><canvas id="chartCdscoAnio" height="220"></canvas></div>
+      <div class="card"><h2>Alertas por categoría</h2><canvas id="chartCdscoCat" height="220"></canvas></div>
+    </div>
+    <div class="card">
+      <h2>Detalle de alertas CDSCO</h2>
+      <div class="controls">
+        <input type="text" id="cdscoBuscar" placeholder="Buscar por título o categoría…">
+        <select id="cdscoFiltroAnio"><option value="">Todos los años</option></select>
+        <select id="cdscoFiltroCat"><option value="">Todas las categorías</option></select>
+      </div>
+      <div class="table-wrap">
+        <table id="tablaCdsco">
+          <thead>
+            <tr>
+              <th data-col="fecha_publicacion">Fecha</th>
+              <th data-col="titulo">Título</th>
+              <th data-col="categoria">Categoría</th>
+              <th data-col="tipo_producto">Tipo</th>
+              <th data-col="tamano_pdf">PDF</th>
+            </tr>
+          </thead>
+          <tbody><tr><td colspan="5" class="state-note">Cargando alertas CDSCO desde Supabase…</td></tr></tbody>
+        </table>
+      </div>
+      <p class="count-note" id="cdscoContador"></p>
+    </div>
+  </div>
+
+  <!-- ==================== PvPI ==================== -->
+  <div class="src-block" id="blockPvpi">
+    <div class="kpis">
+      <div class="kpi"><div class="label">Señales totales</div><div class="value" id="pvpiTotal">—</div></div>
+      <div class="kpi"><div class="label">Medicamentos distintos</div><div class="value" id="pvpiMeds">—</div></div>
+      <div class="kpi"><div class="label">Reacciones distintas</div><div class="value" id="pvpiReac">—</div></div>
+      <div class="kpi"><div class="label">Periodo cubierto</div><div class="value" id="pvpiRango" style="font-size:16px">—</div></div>
+    </div>
+    <div class="charts">
+      <div class="card"><h2>Señales por año</h2><canvas id="chartPvpiAnio" height="220"></canvas></div>
+      <div class="card"><h2>Top 15 medicamentos con más señales</h2><canvas id="chartPvpiMeds" height="220"></canvas></div>
+    </div>
+    <div class="card">
+      <h2>Detalle de señales PvPI</h2>
+      <div class="controls">
+        <input type="text" id="pvpiBuscar" placeholder="Buscar por medicamento o reacción adversa…">
+        <select id="pvpiFiltroAnio"><option value="">Todos los años</option></select>
+      </div>
+      <div class="table-wrap">
+        <table id="tablaPvpi">
+          <thead>
+            <tr>
+              <th data-col="anio">Año</th>
+              <th data-col="medicamento">Medicamento</th>
+              <th data-col="reaccion_adversa">Reacción adversa</th>
+              <th data-col="url_pdf">Fuente</th>
+            </tr>
+          </thead>
+          <tbody><tr><td colspan="4" class="state-note">Cargando señales PvPI desde Supabase…</td></tr></tbody>
+        </table>
+      </div>
+      <p class="count-note" id="pvpiContador"></p>
+    </div>
+  </div>
+
+</div>
+<footer>
+  Fuentes oficiales: CDSCO (cdsco.gov.in) y PvPI / Indian Pharmacopoeia Commission (ipc.gov.in) ·
+  Actualización automática diaria vía GitHub Actions · Las señales PvPI no implican una relación causal confirmada.
+</footer>
+
+<script>
+// ---- Configuración Supabase (mismo proyecto que cima/pavs/aems) ----
+const SUPABASE_URL = 'https://ggbnfdaxtsngsjssrwrl.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdnYm5mZGF4dHNuZ3Nqc3Nyd3JsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ4ODAzODIsImV4cCI6MjEwMDQ1NjM4Mn0.126hhMpakcOlzp5KyyWdMU56UjwLwn5Xn4Nc13OIjgU';
+
+const esc = (s) => (s == null ? '' : String(s).replace(/[&<>"']/g, c => (
+  { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c])));
+
+async function fetchAll(tabla, select, order) {
+  const pageSize = 1000;
+  let from = 0, all = [];
+  while (true) {
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/${tabla}?select=${select}&order=${order}`,
+      { headers: {
+          apikey: SUPABASE_ANON_KEY,
+          Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+          Range: `${from}-${from + pageSize - 1}`,
+      } }
+    );
+    if (!res.ok) throw new Error(`Supabase ${res.status}: ${await res.text()}`);
+    const batch = await res.json();
+    all = all.concat(batch);
+    if (batch.length < pageSize) break;
+    from += pageSize;
+  }
+  return all;
+}
+
+function tablaGenerica(cfg) {
+  // cfg: { data, tbodySel, buscar, filtros:[{el, col}], columnas(row), campos(row)->string, contador }
+  let sortCol = null, sortDir = 1;
+  const tbody = document.querySelector(cfg.tbodySel);
+  function render() {
+    const q = cfg.buscar.value.toLowerCase();
+    let rows = cfg.data.filter(d => {
+      for (const f of cfg.filtros) {
+        if (f.el.value && String(d[f.col] ?? '') !== f.el.value) return false;
+      }
+      if (!q) return true;
+      return cfg.busca(d).toLowerCase().includes(q);
+    });
+    if (sortCol) {
+      rows = rows.slice().sort((a, b) => {
+        const va = (a[sortCol] ?? '').toString().toLowerCase();
+        const vb = (b[sortCol] ?? '').toString().toLowerCase();
+        return va < vb ? -1 * sortDir : va > vb ? 1 * sortDir : 0;
+      });
+    }
+    tbody.innerHTML = rows.map(cfg.fila).join('') ||
+      `<tr><td colspan="9" class="state-note">Sin resultados.</td></tr>`;
+    cfg.contador.textContent = `Mostrando ${rows.length} de ${cfg.data.length}`;
+  }
+  tbody.closest('table').querySelectorAll('thead th').forEach(th => {
+    th.addEventListener('click', () => {
+      const col = th.dataset.col;
+      sortDir = (sortCol === col) ? -sortDir : 1; sortCol = col; render();
+    });
+  });
+  cfg.buscar.addEventListener('input', render);
+  cfg.filtros.forEach(f => f.el.addEventListener('change', render));
+  render();
+}
+
+function opcionesAnio(selectEl, data, campo) {
+  const anios = [...new Set(data.map(d => d[campo]))].filter(Boolean).sort((a, b) => b - a);
+  anios.forEach(a => {
+    const o = document.createElement('option'); o.value = a; o.textContent = a;
+    selectEl.appendChild(o);
+  });
+  return anios;
+}
+
+/* ======================= CDSCO ======================= */
+async function initCdsco() {
+  const data = await fetchAll(
+    'alertas_cdsco',
+    'titulo,fecha_publicacion,anio_publicacion,categoria,tipo_producto,tamano_pdf,url_pdf',
+    'fecha_publicacion.desc'
+  );
+
+  document.getElementById('cdscoTotal').textContent = data.length;
+  document.getElementById('cdscoNsq').textContent = data.filter(d => d.categoria === 'NSQ').length;
+  document.getElementById('cdscoEspurio').textContent = data.filter(d => d.categoria === 'Espurio-Adulterado').length;
+  const fechas = data.map(d => d.fecha_publicacion).filter(Boolean).sort();
+  if (fechas.length) document.getElementById('cdscoRango').textContent = `${fechas[0]} → ${fechas[fechas.length - 1]}`;
+
+  // charts
+  try {
+    const porAnio = {};
+    data.forEach(d => { if (d.anio_publicacion) porAnio[d.anio_publicacion] = (porAnio[d.anio_publicacion] || 0) + 1; });
+    const anioLabels = Object.keys(porAnio).sort();
+    new Chart(document.getElementById('chartCdscoAnio'), {
+      type: 'bar',
+      data: { labels: anioLabels, datasets: [{ data: anioLabels.map(a => porAnio[a]), backgroundColor: '#1A8C93' }] },
+      options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+    });
+    const porCat = {};
+    data.forEach(d => { const c = d.categoria || 'Otro'; porCat[c] = (porCat[c] || 0) + 1; });
+    const cats = Object.entries(porCat).sort((a, b) => b[1] - a[1]);
+    new Chart(document.getElementById('chartCdscoCat'), {
+      type: 'bar',
+      data: { labels: cats.map(c => c[0]), datasets: [{ data: cats.map(c => c[1]), backgroundColor: '#1E3A78' }] },
+      options: { indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true } } }
+    });
+  } catch (e) {
+    console.warn('Gráficos CDSCO no disponibles:', e);
+    document.querySelectorAll('#blockCdsco canvas').forEach(c => {
+      c.outerHTML = '<p style="color:#6B7280;font-size:12px">Gráfico no disponible.</p>';
+    });
+  }
+
+  opcionesAnio(document.getElementById('cdscoFiltroAnio'), data, 'anio_publicacion');
+  const cats = [...new Set(data.map(d => d.categoria))].filter(Boolean).sort();
+  cats.forEach(c => {
+    const o = document.createElement('option'); o.value = c; o.textContent = c;
+    document.getElementById('cdscoFiltroCat').appendChild(o);
+  });
+
+  tablaGenerica({
+    data,
+    tbodySel: '#tablaCdsco tbody',
+    buscar: document.getElementById('cdscoBuscar'),
+    filtros: [
+      { el: document.getElementById('cdscoFiltroAnio'), col: 'anio_publicacion' },
+      { el: document.getElementById('cdscoFiltroCat'), col: 'categoria' },
+    ],
+    contador: document.getElementById('cdscoContador'),
+    busca: d => `${d.titulo} ${d.categoria} ${d.tipo_producto}`,
+    fila: d => `
+      <tr>
+        <td>${esc(d.fecha_publicacion) || '—'}</td>
+        <td>${esc(d.titulo)}</td>
+        <td><span class="badge cat-${esc((d.categoria || 'Otro').replace(/\s+/g, '-'))}">${esc(d.categoria || 'Otro')}</span></td>
+        <td>${esc(d.tipo_producto || '')}</td>
+        <td>${d.url_pdf ? `<a class="src" href="${esc(d.url_pdf)}" target="_blank" rel="noopener">PDF ${esc(d.tamano_pdf || '')} ↗</a>` : (esc(d.tamano_pdf || ''))}</td>
+      </tr>`
+  });
+}
+
+/* ======================= PvPI ======================= */
+async function initPvpi() {
+  const data = await fetchAll(
+    'pvpi_senales',
+    'medicamento,reaccion_adversa,anio,url_pdf',
+    'anio.desc'
+  );
+
+  document.getElementById('pvpiTotal').textContent = data.length;
+  document.getElementById('pvpiMeds').textContent = new Set(data.map(d => (d.medicamento || '').toLowerCase())).size;
+  document.getElementById('pvpiReac').textContent = new Set(data.map(d => (d.reaccion_adversa || '').toLowerCase())).size;
+  const anios = data.map(d => d.anio).filter(Boolean);
+  if (anios.length) document.getElementById('pvpiRango').textContent = `${Math.min(...anios)} – ${Math.max(...anios)}`;
+
+  try {
+    const porAnio = {};
+    data.forEach(d => { if (d.anio) porAnio[d.anio] = (porAnio[d.anio] || 0) + 1; });
+    const anioLabels = Object.keys(porAnio).sort();
+    new Chart(document.getElementById('chartPvpiAnio'), {
+      type: 'bar',
+      data: { labels: anioLabels, datasets: [{ data: anioLabels.map(a => porAnio[a]), backgroundColor: '#1A8C93' }] },
+      options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+    });
+    const porMed = {};
+    data.forEach(d => { const m = (d.medicamento || '').trim(); if (m) porMed[m] = (porMed[m] || 0) + 1; });
+    const top = Object.entries(porMed).sort((a, b) => b[1] - a[1]).slice(0, 15);
+    new Chart(document.getElementById('chartPvpiMeds'), {
+      type: 'bar',
+      data: { labels: top.map(m => m[0]), datasets: [{ data: top.map(m => m[1]), backgroundColor: '#1E3A78' }] },
+      options: { indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true } } }
+    });
+  } catch (e) {
+    console.warn('Gráficos PvPI no disponibles:', e);
+    document.querySelectorAll('#blockPvpi canvas').forEach(c => {
+      c.outerHTML = '<p style="color:#6B7280;font-size:12px">Gráfico no disponible.</p>';
+    });
+  }
+
+  opcionesAnio(document.getElementById('pvpiFiltroAnio'), data, 'anio');
+
+  tablaGenerica({
+    data,
+    tbodySel: '#tablaPvpi tbody',
+    buscar: document.getElementById('pvpiBuscar'),
+    filtros: [{ el: document.getElementById('pvpiFiltroAnio'), col: 'anio' }],
+    contador: document.getElementById('pvpiContador'),
+    busca: d => `${d.medicamento} ${d.reaccion_adversa}`,
+    fila: d => `
+      <tr>
+        <td><span class="badge anio">${esc(d.anio || '—')}</span></td>
+        <td><strong>${esc(d.medicamento)}</strong></td>
+        <td>${esc(d.reaccion_adversa)}</td>
+        <td>${d.url_pdf ? `<a class="src" href="${esc(d.url_pdf)}" target="_blank" rel="noopener">PDF PvPI ↗</a>` : ''}</td>
+      </tr>`
+  });
+}
+
+/* ======================= Toggle ======================= */
+function cambiarFuente(f) {
+  const esCdsco = f === 'cdsco';
+  document.getElementById('btnCdsco').classList.toggle('active', esCdsco);
+  document.getElementById('btnPvpi').classList.toggle('active', !esCdsco);
+  document.getElementById('blockCdsco').classList.toggle('active', esCdsco);
+  document.getElementById('blockPvpi').classList.toggle('active', !esCdsco);
+}
+
+/* ======================= Init ======================= */
+(async function () {
+  try { await initCdsco(); }
+  catch (e) {
+    document.querySelector('#tablaCdsco tbody').innerHTML =
+      `<tr><td colspan="5" class="state-note">Error cargando CDSCO: ${esc(e.message)}</td></tr>`;
+  }
+  try { await initPvpi(); }
+  catch (e) {
+    document.querySelector('#tablaPvpi tbody').innerHTML =
+      `<tr><td colspan="4" class="state-note">Error cargando PvPI: ${esc(e.message)}</td></tr>`;
+  }
+})();
+</script>
+</body>
+</html>
