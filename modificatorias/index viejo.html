@@ -12,17 +12,9 @@
   }
   * { box-sizing: border-box; }
   body { font-family: Arial, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; }
-  header { background: var(--navy); color: #fff; padding: 20px 28px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+  header { background: var(--navy); color: #fff; padding: 20px 28px; }
   header h1 { margin: 0; font-size: 20px; }
   header p { margin: 4px 0 0; font-size: 13px; color: #C9D3EA; }
-  a.back-home {
-    display: inline-flex; align-items: center; gap: 6px;
-    background: rgba(255,255,255,.12); color: #fff; text-decoration: none;
-    font-size: 13px; font-weight: bold; padding: 8px 14px; border-radius: 8px;
-    border: 1px solid rgba(255,255,255,.3); white-space: nowrap; flex-shrink: 0;
-    transition: background .15s ease;
-  }
-  a.back-home:hover { background: rgba(255,255,255,.24); }
   .container { max-width: 1300px; margin: 0 auto; padding: 24px 20px 60px; }
   .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px; margin-bottom: 24px; }
   .kpi { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; text-align: center; }
@@ -61,11 +53,8 @@
 </head>
 <body>
 <header>
-  <div>
-    <h1>Monitor Modificatorias DIGEMID — Actualizaciones de Seguridad</h1>
-    <p>ConkoSafe IA · Modificaciones al Registro Sanitario (DIGEMID) de tipo seguridad · Datos en vivo desde Supabase</p>
-  </div>
-  <a class="back-home" href="../">&larr; Volver al inicio</a>
+  <h1>Monitor Modificatorias DIGEMID — Actualizaciones de Seguridad</h1>
+  <p>ConkoSafe IA · Modificaciones al Registro Sanitario (DIGEMID) de tipo seguridad · Datos en vivo desde Supabase</p>
 </header>
 <div class="container">
 
