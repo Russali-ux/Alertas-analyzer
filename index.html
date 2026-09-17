@@ -380,6 +380,9 @@ header p{font-size:11.5px;color:rgba(255,255,255,.7);margin-top:2px;font-family:
   <a class="module-tab gate-hidden" id="titularesLink" href="titulares/" title="Alertas por Producto y Titular" data-tip="Alertas por Producto y Titular">
     <span class="module-icon">🏷️</span><span class="module-label">Producto &amp; Titular</span>
   </a>
+  <a class="module-tab gate-hidden" id="bcsLink" href="bcs/" title="Clasificación BCS de Principios Activos (INVIMA / PPB Kenia)" data-tip="Clasificación BCS de Principios Activos">
+    <span class="module-icon">🧬</span><span class="module-label">Clasificación BCS</span>
+  </a>
 </nav>
 
 <!-- ── AUTH OVERLAY: LOGIN / REGISTRO (Supabase Auth) ── -->
@@ -587,6 +590,8 @@ header p{font-size:11.5px;color:rgba(255,255,255,.7);margin-top:2px;font-family:
             <th>Acceso US FDA AEMS</th>
             <th>Acceso Modificatorias</th>
             <th>Acceso Prod/Titular</th>
+            <th>Acceso India</th>
+            <th>Acceso BCS</th>
             <th>Registrado</th>
             <th>Último acceso</th>
             <th>Acción</th>
@@ -916,6 +921,7 @@ async function onLoggedIn(session) {
   document.getElementById('modificatoriasLink').classList.toggle('gate-hidden', !(esAdmin || currentPerfil?.acceso_modificatorias));
   document.getElementById('titularesLink').classList.toggle('gate-hidden', !(esAdmin || currentPerfil?.acceso_titulares));
   document.getElementById('indiaLink').classList.toggle('gate-hidden', !(esAdmin || currentPerfil?.acceso_india));
+  document.getElementById('bcsLink').classList.toggle('gate-hidden', !(esAdmin || currentPerfil?.acceso_bcs));
 
   cargarAlertas();
 }
@@ -935,6 +941,7 @@ function onLoggedOut() {
   document.getElementById('modificatoriasLink').classList.add('gate-hidden');
   document.getElementById('titularesLink').classList.add('gate-hidden');
   document.getElementById('indiaLink').classList.add('gate-hidden');
+  document.getElementById('bcsLink').classList.add('gate-hidden');
   cambiarVista('alertas');
 }
 
@@ -1382,11 +1389,11 @@ function exportarCSV() {
 ════════════════════════════════════════════ */
 async function cargarUsuarios() {
   const tbody = document.getElementById('usersTbody');
-  tbody.innerHTML = `<tr><td colspan="11"><div class="state-box"><div class="state-icon">⏳</div><div>Cargando usuarios…</div></div></td></tr>`;
+  tbody.innerHTML = `<tr><td colspan="14"><div class="state-box"><div class="state-icon">⏳</div><div>Cargando usuarios…</div></div></td></tr>`;
 
   const { data, error } = await sb.from(TABLE_PERFILES).select('*').order('creado_en', { ascending: false });
   if (error) {
-    tbody.innerHTML = `<tr><td colspan="11"><div class="state-box"><div class="state-icon">⚠</div><div>${error.message}</div></div></td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="14"><div class="state-box"><div class="state-icon">⚠</div><div>${error.message}</div></div></td></tr>`;
     return;
   }
   usuarios = data || [];
@@ -1437,6 +1444,18 @@ async function cargarUsuarios() {
           <span class="slider"></span>
         </label>
       </td>
+      <td>
+        <label class="cima-toggle" title="${u.acceso_india ? 'Acceso India activo' : 'Acceso India desactivado'}">
+          <input type="checkbox" ${u.acceso_india ? 'checked' : ''} onchange="cambiarAccesoIndia('${u.id}', this.checked, this)">
+          <span class="slider"></span>
+        </label>
+      </td>
+      <td>
+        <label class="cima-toggle" title="${u.acceso_bcs ? 'Acceso BCS activo' : 'Acceso BCS desactivado'}">
+          <input type="checkbox" ${u.acceso_bcs ? 'checked' : ''} onchange="cambiarAccesoBcs('${u.id}', this.checked, this)">
+          <span class="slider"></span>
+        </label>
+      </td>
       <td class="cell-fecha">${fmt(u.creado_en)}</td>
       <td class="cell-fecha">${fmt(u.ultimo_acceso)}</td>
       <td>
@@ -1484,6 +1503,32 @@ async function cambiarAccesoTitulares(userId, acceso, checkbox) {
   }
   const u = usuarios.find(x => x.id === userId);
   if (u) u.acceso_titulares = acceso;
+}
+
+async function cambiarAccesoIndia(userId, acceso, checkbox) {
+  checkbox.disabled = true;
+  const { error } = await sb.rpc('admin_set_acceso_india', { target_id: userId, acceso });
+  checkbox.disabled = false;
+  if (error) {
+    alert('No se pudo actualizar el acceso a India: ' + error.message);
+    checkbox.checked = !acceso;
+    return;
+  }
+  const u = usuarios.find(x => x.id === userId);
+  if (u) u.acceso_india = acceso;
+}
+
+async function cambiarAccesoBcs(userId, acceso, checkbox) {
+  checkbox.disabled = true;
+  const { error } = await sb.rpc('admin_set_acceso_bcs', { target_id: userId, acceso });
+  checkbox.disabled = false;
+  if (error) {
+    alert('No se pudo actualizar el acceso a Clasificación BCS: ' + error.message);
+    checkbox.checked = !acceso;
+    return;
+  }
+  const u = usuarios.find(x => x.id === userId);
+  if (u) u.acceso_bcs = acceso;
 }
 
 async function cambiarAccesoPavs(userId, acceso, checkbox) {
