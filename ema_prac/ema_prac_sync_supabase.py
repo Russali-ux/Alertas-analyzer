@@ -52,7 +52,22 @@ def cargar(nombre: str) -> list[dict]:
     return json.loads(ruta.read_text(encoding="utf-8"))
 
 
+def deduplicar(filas: list[dict]) -> list[dict]:
+    """Postgres rechaza un INSERT...ON CONFLICT si dos filas del MISMO lote
+    comparten la clave de conflicto ('ON CONFLICT DO UPDATE command cannot
+    affect row a second time', código 21000). Nos quedamos con la última
+    aparición de cada dedupe_key (la más reciente en el JSON) antes de subir."""
+    por_key: dict[str, dict] = {}
+    for fila in filas:
+        por_key[fila["dedupe_key"]] = fila
+    descartadas = len(filas) - len(por_key)
+    if descartadas:
+        print(f"  ⚠️  {descartadas} fila(s) duplicada(s) por dedupe_key, se conserva solo la última")
+    return list(por_key.values())
+
+
 def upsert(tabla: str, filas: list[dict]) -> int:
+    filas = deduplicar(filas)
     if not filas:
         print(f"  {tabla}: nada que subir")
         return 0
