@@ -472,12 +472,106 @@ def build_markdown(data, stats, periodo, generado, excel_name):
     return "\n".join(lines)
 
 
+def _parse_fecha(fecha_str):
+    """Parsea 'dd/mm/YYYY HH:MM' a datetime naive, para ordenar/acumular."""
+    try:
+        return datetime.strptime(fecha_str, "%d/%m/%Y %H:%M")
+    except Exception:
+        return datetime.min
+
+
+def build_acumulado(data_dir, summary_dir):
+    """Fusiona TODOS los cima_YYYYMMDD.json existentes en un único dataset
+    histórico (deduplicado por Nº registro + fecha del cambio) y genera:
+        - cima_acumulado.json  (para el visor web, opción "Todos")
+        - ConkosafeIA_Regulatorio_ACUMULADO.xlsx
+        - cima_ACUMULADO.md
+
+    Cada corrida diaria trae una ventana móvil de N días, así que un mismo
+    cambio aparece repetido en varios archivos diarios mientras sigue dentro
+    de esa ventana: se deduplica por (nreg, fecha) para quedarnos con el
+    histórico único acumulado desde el primer día que se corrió el monitor.
+    """
+    merged = {}
+    for path in sorted(glob.glob(os.path.join(data_dir, "cima_*.json"))):
+        base = os.path.basename(path)
+        if base in ("cima_latest.json", "cima_acumulado.json"):
+            continue
+        if not re.match(r"cima_\d{8}\.json$", base):
+            continue
+        try:
+            with open(path, encoding="utf-8") as f:
+                d = json.load(f)
+        except Exception as e:
+            log(f"No se pudo leer {base} para el acumulado: {e}", "WARN")
+            continue
+        for r in d.get("registros", []):
+            key = (r.get("nreg"), r.get("fecha"))
+            merged[key] = r
+
+    if not merged:
+        log("Sin datos históricos disponibles: no se generó el acumulado.", "WARN")
+        return
+
+    data = sorted(merged.values(), key=lambda r: _parse_fecha(r.get("fecha", "")), reverse=True)
+
+    ft_only  = [r for r in data if r["cat"] == "ft"]
+    p_only   = [r for r in data if r["cat"] == "prosp"]
+    ambos    = [r for r in data if r["cat"] == "both"]
+    top_labs = Counter(r["lab"] for r in data if r["lab"]).most_common(10)
+    stats = {
+        "total": len(data), "solo_ft": len(ft_only),
+        "solo_prosp": len(p_only), "ambos": len(ambos),
+        "top_labs": top_labs,
+    }
+
+    fechas_dt = [f for f in (_parse_fecha(r.get("fecha", "")) for r in data) if f != datetime.min]
+    hoy = datetime.now(timezone.utc)
+    if fechas_dt:
+        desde_dt, hasta_dt = min(fechas_dt), max(fechas_dt)
+        periodo = {
+            "desde": desde_dt.strftime("%d/%m/%Y"),
+            "hasta": hasta_dt.strftime("%d/%m/%Y"),
+            "dias": max((hasta_dt - desde_dt).days, 0),
+        }
+    else:
+        periodo = {"desde": "-", "hasta": "-", "dias": 0}
+    periodo_label = (f"{periodo['desde']} → {periodo['hasta']} "
+                     f"(histórico acumulado, {periodo['dias']} días)")
+
+    excel_name = "ConkosafeIA_Regulatorio_ACUMULADO.xlsx"
+    excel_path = os.path.join(data_dir, excel_name)
+    wb  = openpyxl.Workbook()
+    ws1 = wb.active
+    ws1.title = "FT y Prospecto"
+    fill_sheet(ws1, data, "ACUMULADO HISTÓRICO — Ficha Técnica y/o Prospecto")
+    fill_sheet(wb.create_sheet("Solo Ficha Técnica"), ft_only, "SOLO FICHA TÉCNICA (ACUMULADO)")
+    fill_sheet(wb.create_sheet("Solo Prospecto"),     p_only,  "SOLO PROSPECTO (ACUMULADO)")
+    fill_sheet(wb.create_sheet("FT + Prospecto"),     ambos,   "FT + PROSPECTO (ACUMULADO)")
+    build_resumen_sheet(wb.create_sheet("Resumen"),
+                        len(ft_only), len(p_only), len(ambos), len(data),
+                        periodo_label, top_labs)
+    wb.save(excel_path)
+    log(f"Excel acumulado guardado: {excel_path} ({len(data)} registros únicos)", "OK")
+
+    md_name = "cima_ACUMULADO.md"
+    md = build_markdown(data, stats, periodo, hoy, excel_name)
+    with open(os.path.join(summary_dir, md_name), "w", encoding="utf-8") as f:
+        f.write(md)
+
+    payload = build_json(data, stats, periodo, "ACUMULADO", hoy,
+                         excel_name, f"../summaries/{md_name}")
+    with open(os.path.join(data_dir, "cima_acumulado.json"), "w", encoding="utf-8") as f:
+        json.dump(payload, f, ensure_ascii=False, indent=2)
+    log(f"cima_acumulado.json guardado con {len(data)} registros únicos totales", "OK")
+
+
 def rebuild_index(data_dir):
     """Reconstruye index.json escaneando todos los cima_YYYYMMDD.json presentes."""
     entries = []
     for path in sorted(glob.glob(os.path.join(data_dir, "cima_*.json"))):
         base = os.path.basename(path)
-        if base in ("cima_latest.json",):
+        if base in ("cima_latest.json", "cima_acumulado.json"):
             continue
         m = re.match(r"cima_(\d{8})\.json$", base)
         if not m:
@@ -519,11 +613,24 @@ def parse_args():
                    help="Carpeta de salida para Excel/JSON (default cima/data).")
     p.add_argument("--summary-dir", default="cima/summaries",
                    help="Carpeta de salida para MD (default cima/summaries).")
+    p.add_argument("--solo-acumulado", action="store_true",
+                   help="No descarga nada de CIMA: solo reconstruye index.json "
+                        "y el histórico acumulado a partir de los JSON ya guardados.")
     return p.parse_args()
 
 
 def main():
     args = parse_args()
+
+    data_dir    = args.data_dir
+    summary_dir = args.summary_dir
+    Path(data_dir).mkdir(parents=True, exist_ok=True)
+    Path(summary_dir).mkdir(parents=True, exist_ok=True)
+
+    if args.solo_acumulado:
+        rebuild_index(data_dir)
+        build_acumulado(data_dir, summary_dir)
+        return
 
     hoy = datetime.now(timezone.utc)
     if args.desde:
@@ -543,11 +650,6 @@ def main():
 
     dias = (args.dias if not args.desde
             else (datetime.strptime(fecha_hasta_label, "%d/%m/%Y") - desde_dt).days)
-
-    data_dir    = args.data_dir
-    summary_dir = args.summary_dir
-    Path(data_dir).mkdir(parents=True, exist_ok=True)
-    Path(summary_dir).mkdir(parents=True, exist_ok=True)
 
     raw  = fetch_registro_cambios(fecha_desde, fecha_hasta_dt)
     data = process_records(raw)
@@ -578,6 +680,7 @@ def main():
     log(f"Markdown guardado: {md_name}", "OK")
 
     rebuild_index(data_dir)
+    build_acumulado(data_dir, summary_dir)
 
     print(f"\n===== RESUMEN CIMA =====")
     print(f"Periodo:        {periodo_label}")

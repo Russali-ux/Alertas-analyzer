@@ -179,6 +179,8 @@ async function verificarAccesoYcargar(){
   init();
 }
 
+const ACUMULADO_FILE = 'cima_acumulado.json';
+
 async function init(){
   let idx;
   try{
@@ -196,6 +198,14 @@ async function init(){
     $('meta').textContent='El índice no contiene fechas todavía.';
     return;
   }
+
+  // Opción "Todos" al inicio del selector: histórico acumulado y deduplicado
+  // de todas las corridas diarias, no solo la ventana móvil del día elegido.
+  const optAcum = document.createElement('option');
+  optAcum.value = ACUMULADO_FILE;
+  optAcum.textContent = '🗂 Todos (acumulado)';
+  sel.appendChild(optAcum);
+
   idx.fechas.forEach(f=>{
     const o=document.createElement('option');
     o.value=f.archivo; o.textContent=`${f.fecha}  ·  ${f.total} cambio(s)`;
@@ -203,7 +213,15 @@ async function init(){
   });
   sel.onchange = ()=> loadReport(sel.value);
   ['search','catFilter'].forEach(id=> $(id).oninput = render);
-  loadReport(idx.latest || idx.fechas[0].archivo);
+
+  // Por defecto se abre en la vista acumulada; si aún no existe (primer
+  // deploy antes de la primera corrida del workflow), cae a la más reciente.
+  sel.value = ACUMULADO_FILE;
+  const ok = await loadReport(ACUMULADO_FILE);
+  if(!ok){
+    sel.value = idx.latest || idx.fechas[0].archivo;
+    loadReport(sel.value);
+  }
 }
 
 async function loadReport(file){
@@ -211,7 +229,7 @@ async function loadReport(file){
     const r = await fetch(DATA_DIR+file,{cache:'no-store'});
     if(!r.ok) throw new Error('HTTP '+r.status);
     current = await r.json();
-  }catch(e){ showErr('No se pudo cargar '+file+': '+e.message); return; }
+  }catch(e){ showErr('No se pudo cargar '+file+': '+e.message); return false; }
   $('err').style.display='none';
 
   const s=current.stats;
@@ -219,11 +237,15 @@ async function loadReport(file){
   $('sProsp').textContent=s.solo_prosp; $('sAmbos').textContent=s.ambos;
 
   const p=current.periodo;
-  $('meta').innerHTML = `Periodo: <b>${p.desde} → ${p.hasta}</b> (últimos ${p.dias} días) · `
+  const esAcumulado = current.fecha_codigo === 'ACUMULADO';
+  $('meta').innerHTML = (esAcumulado ? '🗂 <b>Todos los cambios registrados (histórico acumulado)</b> · ' : '')
+    + `Periodo: <b>${p.desde} → ${p.hasta}</b> `
+    + `(${esAcumulado ? 'histórico, ' : 'últimos '}${p.dias} días) · `
     + `Generado: ${current.generado_str}`;
   $('xlsxBtn').href = DATA_DIR + current.excel;
   $('mdBtn').href   = current.markdown;
   render();
+  return true;
 }
 
 function render(){
