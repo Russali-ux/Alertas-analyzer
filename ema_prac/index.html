@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Monitor EMA PRAC — ConkoSafe IA</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+  :root {
+    --navy: #1E3A78; --teal: #1A8C93; --red: #B3261E; --bg: #F4F6FA;
+    --card: #FFFFFF; --border: #E2E6ED; --text: #1F2937; --muted: #6B7280;
+    --eu-blue: #003399; --eu-gold: #FFCC00;
+  }
+  * { box-sizing: border-box; }
+  body { font-family: Arial, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; }
+  header { background: var(--navy); color: #fff; padding: 20px 28px; display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
+  header h1 { margin: 0; font-size: 20px; }
+  header p { margin: 4px 0 0; font-size: 13px; color: #C9D3EA; }
+  header .back { color: #C9D3EA; text-decoration: none; font-size: 12px; white-space: nowrap; border: 1px solid #3a558f; padding: 6px 12px; border-radius: 6px; }
+  header .back:hover { background: #274a94; color: #fff; }
+  .container { max-width: 1200px; margin: 0 auto; padding: 24px 20px 60px; }
+
+  /* Toggle Minutas/Agendas ↔ Recomendaciones */
+  .source-nav { display: flex; gap: 8px; margin-bottom: 22px; flex-wrap: wrap; }
+  .source-nav button {
+    background: var(--card); border: 1px solid var(--border); border-radius: 8px;
+    padding: 12px 18px; font-size: 13px; font-weight: bold; color: var(--muted);
+    cursor: pointer; display: flex; align-items: center; gap: 8px; transition: all .15s;
+  }
+  .source-nav button .sub { font-weight: normal; font-size: 11px; color: var(--muted); }
+  .source-nav button.active { border-color: var(--teal); color: var(--navy); box-shadow: 0 0 0 2px rgba(26,140,147,.15); }
+  .source-nav button.active .sub { color: var(--teal); }
+
+  .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px; margin-bottom: 24px; }
+  .kpi { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; text-align: center; }
+  .kpi .label { font-size: 11px; color: var(--muted); font-weight: bold; text-transform: uppercase; letter-spacing: .03em; }
+  .kpi .value { font-size: 26px; font-weight: bold; color: var(--teal); margin-top: 4px; }
+
+  .charts { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 28px; }
+  @media (max-width: 860px) { .charts { grid-template-columns: 1fr; } }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+  .card h2 { margin: 0 0 12px; font-size: 14px; color: var(--navy); }
+
+  .controls { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+  .controls input, .controls select {
+    padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px;
+  }
+  .controls input { flex: 1; min-width: 220px; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  thead th {
+    background: var(--navy); color: #fff; text-align: left; padding: 8px 10px;
+    position: sticky; top: 0; cursor: pointer; user-select: none;
+  }
+  thead th:hover { background: #274a94; }
+  tbody td { padding: 7px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tbody tr:nth-child(even) { background: #FAFBFD; }
+  tbody tr:hover { background: #EEF2FA; }
+
+  .badge { display: inline-block; padding: 1px 8px; border-radius: 10px; font-size: 11px; font-weight: bold; }
+  .badge.agenda { background: #FEF3C7; color: #92400E; }
+  .badge.minuta { background: #DCF0F1; color: var(--teal); }
+  .badge.recom { background: #DBEAFE; color: #1E40AF; }
+
+  a.src, button.link-btn {
+    color: var(--teal); text-decoration: none; font-size: 11px; background: none; border: none;
+    cursor: pointer; padding: 0; font-family: inherit;
+  }
+  a.src:hover, button.link-btn:hover { text-decoration: underline; }
+  .row-actions { display: flex; flex-direction: column; gap: 4px; }
+
+  .table-wrap { max-height: 560px; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px; }
+  .count-note { font-size: 12px; color: var(--muted); margin: 8px 0 0; }
+  .state-note { font-size: 13px; color: var(--muted); padding: 40px; text-align: center; }
+  footer { text-align: center; font-size: 11px; color: var(--muted); padding: 20px; }
+
+  /* Modal de texto extraído (Markdown) */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(15,23,42,.55); display: none;
+    align-items: center; justify-content: center; z-index: 100; padding: 24px;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal-box {
+    background: #fff; border-radius: 10px; max-width: 800px; width: 100%;
+    max-height: 85vh; display: flex; flex-direction: column; overflow: hidden;
+  }
+  .modal-head { padding: 14px 18px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  .modal-head h3 { margin: 0; font-size: 14px; color: var(--navy); }
+  .modal-head button { background: none; border: none; font-size: 20px; cursor: pointer; color: var(--muted); line-height: 1; }
+  .modal-body { padding: 16px 18px; overflow-y: auto; }
+  .modal-body pre { white-space: pre-wrap; word-break: break-word; font-family: 'Segoe UI', Arial, sans-serif; font-size: 12.5px; line-height: 1.5; margin: 0; }
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>Monitor EMA PRAC — Agendas, Minutas y Recomendaciones</h1>
+    <p>ConkoSafe IA · Pharmacovigilance Risk Assessment Committee (EMA) · Datos en vivo desde Supabase</p>
+  </div>
+  <a class="back" href="../">← Volver al panel principal</a>
+</header>
+<div class="container">
+
+  <div class="source-nav">
+    <button id="btnMinutas" onclick="cambiarFuente('minutas')">
+      🇪🇺 Agendas &amp; Minutas <span class="sub">Reuniones plenarias del PRAC</span>
+    </button>
+    <button id="btnRecom" onclick="cambiarFuente('recom')">
+      ⚠️ Recomendaciones sobre señales <span class="sub">PRAC recommendations on safety signals</span>
+    </button>
+  </div>
+
+  <!-- ── Bloque Agendas & Minutas ── -->
+  <div id="blockMinutas">
+    <div class="kpis">
+      <div class="kpi"><div class="label">Agendas</div><div class="value" id="kpiAgendas">—</div></div>
+      <div class="kpi"><div class="label">Minutas</div><div class="value" id="kpiMinutas">—</div></div>
+      <div class="kpi"><div class="label">Reuniones cubiertas</div><div class="value" id="kpiReuniones">—</div></div>
+      <div class="kpi"><div class="label">Última publicación</div><div class="value" id="kpiUltimaMinuta" style="font-size:16px">—</div></div>
+    </div>
+    <div class="charts">
+      <div class="card">
+        <h2>Documentos por año de publicación</h2>
+        <canvas id="chartMinutasAnio" height="220"></canvas>
+      </div>
+      <div class="card">
+        <h2>Agendas vs. Minutas</h2>
+        <canvas id="chartMinutasTipo" height="220"></canvas>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Detalle de agendas y minutas</h2>
+      <div class="controls">
+        <input type="text" id="buscarMinutas" placeholder="Buscar por título, referencia o fecha de reunión...">
+        <select id="filtroTipo">
+          <option value="">Agendas y minutas</option>
+          <option value="agenda">Solo agendas</option>
+          <option value="minuta">Solo minutas</option>
+        </select>
+      </div>
+      <div class="table-wrap">
+        <table id="tablaMinutas">
+          <thead>
+            <tr>
+              <th data-col="tipo_documento">Tipo</th>
+              <th data-col="fecha_reunion">Reunión</th>
+              <th data-col="referencia">Referencia</th>
+              <th data-col="fecha_publicacion">Publicación</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody><tr><td colspan="5" class="state-note">Cargando desde Supabase…</td></tr></tbody>
+        </table>
+      </div>
+      <p class="count-note" id="contadorMinutas"></p>
+    </div>
+  </div>
+
+  <!-- ── Bloque Recomendaciones ── -->
+  <div id="blockRecom" style="display:none">
+    <div class="kpis">
+      <div class="kpi"><div class="label">Documentos</div><div class="value" id="kpiRecomTotal">—</div></div>
+      <div class="kpi"><div class="label">Reuniones cubiertas</div><div class="value" id="kpiRecomReuniones">—</div></div>
+      <div class="kpi"><div class="label">Periodo cubierto</div><div class="value" id="kpiRecomRango" style="font-size:16px">—</div></div>
+      <div class="kpi"><div class="label">Última publicación</div><div class="value" id="kpiRecomUltima" style="font-size:16px">—</div></div>
+    </div>
+    <div class="charts">
+      <div class="card" style="grid-column: 1 / -1">
+        <h2>Recomendaciones publicadas por año</h2>
+        <canvas id="chartRecomAnio" height="200"></canvas>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Detalle de recomendaciones sobre señales</h2>
+      <div class="controls">
+        <input type="text" id="buscarRecom" placeholder="Buscar por título, referencia o fecha de reunión...">
+      </div>
+      <div class="table-wrap">
+        <table id="tablaRecom">
+          <thead>
+            <tr>
+              <th data-col="fecha_reunion">Reunión</th>
+              <th data-col="referencia">Referencia</th>
+              <th data-col="fecha_publicacion">Publicación</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody><tr><td colspan="4" class="state-note">Cargando desde Supabase…</td></tr></tbody>
+        </table>
+      </div>
+      <p class="count-note" id="contadorRecom"></p>
+    </div>
+  </div>
+
+</div>
+<footer>Generado automáticamente por el scraper semanal EMA PRAC (GitHub Actions) · Fuente: ema.europa.eu · El texto extraído es una conversión automática del PDF original, que prevalece en caso de discrepancia.</footer>
+
+<!-- Modal de texto extraído -->
+<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this) cerrarModal()">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3 id="modalTitulo">Documento</h3>
+      <button onclick="cerrarModal()" aria-label="Cerrar">×</button>
+    </div>
+    <div class="modal-body"><pre id="modalTexto">Cargando…</pre></div>
+  </div>
+</div>
+
+<script>
+// ---- Configuración Supabase (mismo proyecto que cima/pavs/aems/india) ----
+const SUPABASE_URL = 'https://ggbnfdaxtsngsjssrwrl.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdnYm5mZGF4dHNuZ3Nqc3Nyd3JsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ4ODAzODIsImV4cCI6MjEwMDQ1NjM4Mn0.126hhMpakcOlzp5KyyWdMU56UjwLwn5Xn4Nc13OIjgU';
+
+let MINUTAS = [];
+let RECOM = [];
+
+async function fetchAll(tabla, columnas) {
+  const pageSize = 1000;
+  let from = 0;
+  let all = [];
+  while (true) {
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/${tabla}?select=${columnas}&order=fecha_publicacion.desc.nullslast`,
+      {
+        headers: {
+          apikey: SUPABASE_ANON_KEY,
+          Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+          Range: `${from}-${from + pageSize - 1}`,
+        },
+      }
+    );
+    if (!res.ok) throw new Error(`Supabase ${res.status}: ${await res.text()}`);
+    const batch = await res.json();
+    all = all.concat(batch);
+    if (batch.length < pageSize) break;
+    from += pageSize;
+  }
+  return all;
+}
+
+// Trae contenido_md de un solo documento bajo demanda (evita cargar todo el texto de golpe)
+async function fetchTexto(tabla, dedupeKey) {
+  const res = await fetch(
+    `${SUPABASE_URL}/rest/v1/${tabla}?dedupe_key=eq.${encodeURIComponent(dedupeKey)}&select=contenido_md`,
+    { headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` } }
+  );
+  if (!res.ok) throw new Error(`Supabase ${res.status}`);
+  const rows = await res.json();
+  return rows[0]?.contenido_md || '(sin texto extraído)';
+}
+
+function abrirModal(titulo) {
+  document.getElementById('modalTitulo').textContent = titulo;
+  document.getElementById('modalTexto').textContent = 'Cargando…';
+  document.getElementById('modalOverlay').classList.add('open');
+}
+function cerrarModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+}
+async function verTexto(tabla, dedupeKey, titulo) {
+  abrirModal(titulo);
+  try {
+    const texto = await fetchTexto(tabla, dedupeKey);
+    document.getElementById('modalTexto').textContent = texto;
+  } catch (e) {
+    document.getElementById('modalTexto').textContent = `Error cargando el texto: ${e.message}`;
+  }
+}
+
+function fmtFecha(f) {
+  if (!f) return '—';
+  const [y, m, d] = f.split('-');
+  return `${d}/${m}/${y}`;
+}
+
+// ── Vista Agendas & Minutas ──
+function renderKpisMinutas() {
+  const agendas = MINUTAS.filter(d => d.tipo_documento === 'agenda').length;
+  const minutas = MINUTAS.filter(d => d.tipo_documento === 'minuta').length;
+  const reuniones = new Set(MINUTAS.map(d => d.fecha_reunion)).size;
+  const ultima = MINUTAS.map(d => d.fecha_publicacion).filter(Boolean).sort().pop();
+  document.getElementById('kpiAgendas').textContent = agendas;
+  document.getElementById('kpiMinutas').textContent = minutas;
+  document.getElementById('kpiReuniones').textContent = reuniones;
+  document.getElementById('kpiUltimaMinuta').textContent = fmtFecha(ultima);
+}
+
+function renderChartsMinutas() {
+  try {
+    const anioCounts = {};
+    MINUTAS.forEach(d => {
+      const a = (d.fecha_publicacion || '').slice(0, 4);
+      if (a) anioCounts[a] = (anioCounts[a] || 0) + 1;
+    });
+    const anioLabels = Object.keys(anioCounts).sort();
+    new Chart(document.getElementById('chartMinutasAnio'), {
+      type: 'bar',
+      data: { labels: anioLabels, datasets: [{ label: 'Documentos', data: anioLabels.map(a => anioCounts[a]), backgroundColor: '#1A8C93' }] },
+      options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+    });
+
+    const agendas = MINUTAS.filter(d => d.tipo_documento === 'agenda').length;
+    const minutas = MINUTAS.filter(d => d.tipo_documento === 'minuta').length;
+    new Chart(document.getElementById('chartMinutasTipo'), {
+      type: 'doughnut',
+      data: { labels: ['Agendas', 'Minutas'], datasets: [{ data: [agendas, minutas], backgroundColor: ['#FEF3C7'.replace('#FEF3C7', '#F59E0B'), '#1A8C93'] }] },
+      options: { plugins: { legend: { position: 'bottom' } } }
+    });
+  } catch (e) {
+    console.warn('No se pudieron dibujar los gráficos de minutas:', e);
+  }
+}
+
+function renderTablaMinutas() {
+  const tbody = document.querySelector('#tablaMinutas tbody');
+  const buscar = document.getElementById('buscarMinutas');
+  const filtroTipo = document.getElementById('filtroTipo');
+  const contador = document.getElementById('contadorMinutas');
+  let sortCol = 'fecha_publicacion', sortDir = -1;
+
+  function render() {
+    const q = buscar.value.toLowerCase();
+    const tipo = filtroTipo.value;
+    let rows = MINUTAS.filter(d => {
+      if (tipo && d.tipo_documento !== tipo) return false;
+      if (!q) return true;
+      return `${d.titulo} ${d.referencia} ${d.fecha_reunion}`.toLowerCase().includes(q);
+    });
+    rows = rows.slice().sort((a, b) => {
+      const va = (a[sortCol] || '').toString().toLowerCase();
+      const vb = (b[sortCol] || '').toString().toLowerCase();
+      return va < vb ? -1 * sortDir : va > vb ? 1 * sortDir : 0;
+    });
+    tbody.innerHTML = rows.map(d => `
+      <tr>
+        <td><span class="badge ${d.tipo_documento}">${d.tipo_documento === 'agenda' ? 'Agenda' : 'Minuta'}</span></td>
+        <td>${d.fecha_reunion || '—'}</td>
+        <td>${d.referencia || '—'}</td>
+        <td>${fmtFecha(d.fecha_publicacion)}</td>
+        <td class="row-actions">
+          <a class="src" href="${d.url_pdf}" target="_blank" rel="noopener">Ver PDF original ↗</a>
+          <button class="link-btn" onclick='verTexto("ema_prac_minutas", ${JSON.stringify(d.dedupe_key)}, ${JSON.stringify(d.titulo)})'>Ver texto extraído</button>
+        </td>
+      </tr>
+    `).join('');
+    contador.textContent = `Mostrando ${rows.length} de ${MINUTAS.length} documentos`;
+  }
+
+  document.querySelectorAll('#tablaMinutas thead th[data-col]').forEach(th => {
+    th.addEventListener('click', () => {
+      const col = th.dataset.col;
+      sortDir = (sortCol === col) ? -sortDir : 1;
+      sortCol = col;
+      render();
+    });
+  });
+  buscar.addEventListener('input', render);
+  filtroTipo.addEventListener('change', render);
+  render();
+}
+
+// ── Vista Recomendaciones ──
+function renderKpisRecom() {
+  const total = RECOM.length;
+  const reuniones = new Set(RECOM.map(d => d.fecha_reunion)).size;
+  const fechas = RECOM.map(d => d.fecha_publicacion).filter(Boolean).sort();
+  document.getElementById('kpiRecomTotal').textContent = total;
+  document.getElementById('kpiRecomReuniones').textContent = reuniones;
+  if (fechas.length) {
+    document.getElementById('kpiRecomRango').textContent = `${fmtFecha(fechas[0])} – ${fmtFecha(fechas[fechas.length - 1])}`;
+    document.getElementById('kpiRecomUltima').textContent = fmtFecha(fechas[fechas.length - 1]);
+  }
+}
+
+function renderChartsRecom() {
+  try {
+    const anioCounts = {};
+    RECOM.forEach(d => {
+      const a = (d.fecha_publicacion || '').slice(0, 4);
+      if (a) anioCounts[a] = (anioCounts[a] || 0) + 1;
+    });
+    const anioLabels = Object.keys(anioCounts).sort();
+    new Chart(document.getElementById('chartRecomAnio'), {
+      type: 'bar',
+      data: { labels: anioLabels, datasets: [{ label: 'Recomendaciones', data: anioLabels.map(a => anioCounts[a]), backgroundColor: '#1E3A78' }] },
+      options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+    });
+  } catch (e) {
+    console.warn('No se pudo dibujar el gráfico de recomendaciones:', e);
+  }
+}
+
+function renderTablaRecom() {
+  const tbody = document.querySelector('#tablaRecom tbody');
+  const buscar = document.getElementById('buscarRecom');
+  const contador = document.getElementById('contadorRecom');
+  let sortCol = 'fecha_publicacion', sortDir = -1;
+
+  function render() {
+    const q = buscar.value.toLowerCase();
+    let rows = RECOM.filter(d => {
+      if (!q) return true;
+      return `${d.titulo} ${d.referencia} ${d.fecha_reunion}`.toLowerCase().includes(q);
+    });
+    rows = rows.slice().sort((a, b) => {
+      const va = (a[sortCol] || '').toString().toLowerCase();
+      const vb = (b[sortCol] || '').toString().toLowerCase();
+      return va < vb ? -1 * sortDir : va > vb ? 1 * sortDir : 0;
+    });
+    tbody.innerHTML = rows.map(d => `
+      <tr>
+        <td><span class="badge recom">${d.fecha_reunion || '—'}</span></td>
+        <td>${d.referencia || '—'}</td>
+        <td>${fmtFecha(d.fecha_publicacion)}</td>
+        <td class="row-actions">
+          <a class="src" href="${d.url_pdf}" target="_blank" rel="noopener">Ver PDF original ↗</a>
+          <button class="link-btn" onclick='verTexto("ema_prac_recomendaciones", ${JSON.stringify(d.dedupe_key)}, ${JSON.stringify(d.titulo)})'>Ver texto extraído</button>
+        </td>
+      </tr>
+    `).join('');
+    contador.textContent = `Mostrando ${rows.length} de ${RECOM.length} documentos`;
+  }
+
+  document.querySelectorAll('#tablaRecom thead th[data-col]').forEach(th => {
+    th.addEventListener('click', () => {
+      const col = th.dataset.col;
+      sortDir = (sortCol === col) ? -sortDir : 1;
+      sortCol = col;
+      render();
+    });
+  });
+  buscar.addEventListener('input', render);
+  render();
+}
+
+function cambiarFuente(fuente) {
+  const esMinutas = fuente === 'minutas';
+  document.getElementById('btnMinutas').classList.toggle('active', esMinutas);
+  document.getElementById('btnRecom').classList.toggle('active', !esMinutas);
+  document.getElementById('blockMinutas').style.display = esMinutas ? '' : 'none';
+  document.getElementById('blockRecom').style.display = esMinutas ? 'none' : '';
+}
+
+(async function init() {
+  try {
+    const columnas = 'tipo_documento,titulo,fecha_reunion,referencia,fecha_publicacion,url_pdf,dedupe_key';
+    MINUTAS = await fetchAll('ema_prac_minutas', columnas);
+    renderKpisMinutas();
+    renderChartsMinutas();
+    renderTablaMinutas();
+  } catch (e) {
+    document.querySelector('#tablaMinutas tbody').innerHTML =
+      `<tr><td colspan="5" class="state-note">Error cargando datos de Supabase: ${e.message}</td></tr>`;
+  }
+
+  try {
+    const columnas = 'titulo,fecha_reunion,referencia,fecha_publicacion,url_pdf,dedupe_key';
+    RECOM = await fetchAll('ema_prac_recomendaciones', columnas);
+    renderKpisRecom();
+    renderChartsRecom();
+    renderTablaRecom();
+  } catch (e) {
+    document.querySelector('#tablaRecom tbody').innerHTML =
+      `<tr><td colspan="4" class="state-note">Error cargando datos de Supabase: ${e.message}</td></tr>`;
+  }
+
+  cambiarFuente('minutas');
+})();
+</script>
+</body>
+</html>

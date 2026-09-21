@@ -377,6 +377,9 @@ header p{font-size:11.5px;color:rgba(255,255,255,.7);margin-top:2px;font-family:
   <a class="module-tab gate-hidden" id="cimaLink" href="cima/" title="Monitor CIMA · Ficha Técnica y Prospecto (AEMPS)" data-tip="Monitor CIMA">
     <span class="module-icon">🧪</span><span class="module-label">CIMA · Ficha Técnica</span>
   </a>
+  <a class="module-tab gate-hidden" id="emaPracLink" href="ema_prac/" title="Monitor EMA PRAC · Agendas, Minutas y Recomendaciones sobre señales" data-tip="Monitor EMA PRAC">
+    <span class="module-icon">🇪🇺</span><span class="module-label">EMA PRAC</span>
+  </a>
   <a class="module-tab gate-hidden" id="titularesLink" href="titulares/" title="Alertas por Producto y Titular" data-tip="Alertas por Producto y Titular">
     <span class="module-icon">🏷️</span><span class="module-label">Producto &amp; Titular</span>
   </a>
@@ -922,6 +925,7 @@ async function onLoggedIn(session) {
   document.getElementById('titularesLink').classList.toggle('gate-hidden', !(esAdmin || currentPerfil?.acceso_titulares));
   document.getElementById('indiaLink').classList.toggle('gate-hidden', !(esAdmin || currentPerfil?.acceso_india));
   document.getElementById('bcsLink').classList.toggle('gate-hidden', !(esAdmin || currentPerfil?.acceso_bcs));
+  document.getElementById('emaPracLink').classList.toggle('gate-hidden', !(esAdmin || currentPerfil?.acceso_ema_prac));
 
   cargarAlertas();
 }
@@ -942,6 +946,7 @@ function onLoggedOut() {
   document.getElementById('titularesLink').classList.add('gate-hidden');
   document.getElementById('indiaLink').classList.add('gate-hidden');
   document.getElementById('bcsLink').classList.add('gate-hidden');
+  document.getElementById('emaPracLink').classList.add('gate-hidden');
   cambiarVista('alertas');
 }
 

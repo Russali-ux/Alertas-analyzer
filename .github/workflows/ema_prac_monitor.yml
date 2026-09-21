@@ -1,0 +1,51 @@
+name: EMA PRAC (Agendas/Minutas + Recomendaciones) → Supabase
+
+on:
+  schedule:
+    # 08:00 UTC = 03:00 hora de Lima, todos los lunes.
+    # El PRAC se reúne 1 vez al mes; correr semanalmente es margen de sobra
+    # para capturar la publicación de agenda/minuta/recomendaciones sin
+    # sobrecargar el sitio de EMA (el upsert es idempotente, no duplica).
+    - cron: '0 8 * * 1'
+  workflow_dispatch: {}
+
+concurrency:
+  group: ema-prac
+  cancel-in-progress: false
+
+jobs:
+  scrape-y-sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests beautifulsoup4 pymupdf
+
+      - name: Raspar EMA PRAC (agendas, minutas, recomendaciones)
+        run: python ema_prac/scraper_ema_prac.py
+
+      - name: Sync a Supabase
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: python ema_prac/ema_prac_sync_supabase.py
+
+      - name: Commit de los PDF/Markdown/JSON nuevos
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add ema_prac/pdfs ema_prac/md ema_prac/data 2>/dev/null || true
+          if ! git diff --cached --quiet; then
+            git commit -m "chore(ema-prac): actualización automática $(date -u +%F)"
+            git push
+          fi
