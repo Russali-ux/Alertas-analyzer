@@ -1,37 +1,71 @@
 # ConkoSafe IA — Cambios en Ficha Técnica y Prospecto (CIMA / AEMPS)
 
-**Generado:** 21/09/2026 18:54 UTC  
-**Periodo:** 23/06/2026 → 20/09/2026 (últimos 89 días)  
+**Generado:** 22/09/2026 17:45 UTC  
+**Periodo:** 23/06/2026 → 22/09/2026 (últimos 91 días)  
 **Fuente:** [CIMA — AEMPS (registroCambios)](https://cima.aemps.es/cima/rest/registroCambios)
 
 ## Resumen
 
 | Categoría | Cantidad |
 |---|---:|
-| Solo Ficha Técnica | 269 |
-| Solo Prospecto | 600 |
-| FT + Prospecto (ambos) | 1410 |
-| **TOTAL con FT o Prospecto** | **2279** |
+| Solo Ficha Técnica | 272 |
+| Solo Prospecto | 603 |
+| FT + Prospecto (ambos) | 1438 |
+| **TOTAL con FT o Prospecto** | **2313** |
 
 Descarga del detalle completo: `ConkosafeIA_Regulatorio_ACUMULADO.xlsx`
 
 ### Top laboratorios
 
-- Viatris Limited — 120 cambio(s)
+- Viatris Limited — 121 cambio(s)
 - Sandoz Farmaceutica S.A. — 98 cambio(s)
-- Teva Pharma S.L.U. — 89 cambio(s)
+- Teva Pharma S.L.U. — 91 cambio(s)
 - Aurovitas Spain, S.A.U. — 75 cambio(s)
 - Laboratorios Normon S.A. — 74 cambio(s)
-- Laboratorio Stada S.L. — 68 cambio(s)
+- Laboratorio Stada S.L. — 70 cambio(s)
 - Laboratorios Cinfa S.A. — 64 cambio(s)
 - Kern Pharma S.L. — 41 cambio(s)
+- Sun Pharmaceutical Industries (Europe) B.V. — 39 cambio(s)
 - Accord Healthcare S.L.U. — 39 cambio(s)
-- Sun Pharmaceutical Industries (Europe) B.V. — 37 cambio(s)
 
 ## Detalle de cambios
 
 | Nº Registro | Medicamento | Laboratorio | Fecha | Tipo | Cambio | Enlaces |
 |---|---|---|---|---|---|---|
+| 90170 | VALOMINDO 80 MG/1,5 MG COMPRIMIDOS DE LIBERACION MODIFICADA | Krka D.D. Novo Mesto | 22/09/2026 06:56 | MODIFICADO | FT | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/90170/FT_90170.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/90170/FT_90170.html) |
+| 88060 | TREPROSTINILO TILLOMED 10 MG/ML SOLUCION PARA PERFUSION EFG | Tillomed Malta Limited | 22/09/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/88060/FT_88060.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/88060/FT_88060.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/88060/P_88060.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/88060/P_88060.html) |
+| 88061 | TREPROSTINILO TILLOMED 1 MG/ML SOLUCION PARA PERFUSION EFG | Tillomed Malta Limited | 22/09/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/88061/FT_88061.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/88061/FT_88061.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/88061/P_88061.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/88061/P_88061.html) |
+| 88062 | TREPROSTINILO TILLOMED 2,5 MG/ML SOLUCION PARA PERFUSION EFG | Tillomed Malta Limited | 22/09/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/88062/FT_88062.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/88062/FT_88062.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/88062/P_88062.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/88062/P_88062.html) |
+| 88063 | TREPROSTINILO TILLOMED 5 MG/ML SOLUCION PARA PERFUSION EFG | Tillomed Malta Limited | 22/09/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/88063/FT_88063.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/88063/FT_88063.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/88063/P_88063.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/88063/P_88063.html) |
+| 89696 | VALOMINDO 160 MG/1,5 MG COMPRIMIDOS DE LIBERACION MODIFICADA | Krka D.D. Novo Mesto | 22/09/2026 06:56 | MODIFICADO | FT | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/89696/FT_89696.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/89696/FT_89696.html) |
+| 91268 | TEDUGLUTIDA CIPLA 5 MG POLVO Y DISOLVENTE PARA SOLUCION INYECTABLE | Cipla Europe | 22/09/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/91268/FT_91268.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/91268/FT_91268.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/91268/P_91268.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91268/P_91268.html) |
+| 91607 | TERIFLUNOMIDA STADAFARMA 7 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Laboratorio Stada S.L. | 22/09/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/91607/FT_91607.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/91607/FT_91607.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/91607/P_91607.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91607/P_91607.html) |
+| 91608 | TERIFLUNOMIDA STADAFARMA 14 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Laboratorio Stada S.L. | 22/09/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/91608/FT_91608.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/91608/FT_91608.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/91608/P_91608.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91608/P_91608.html) |
+| 45946 | RUSCUS LLORENS POMADA RECTAL | Laboratorios Llorens S.L. | 22/09/2026 06:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/45946/P_45946.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/45946/P_45946.html) |
+| 70299 | SECUFEN 5 MICROGRAMOS/ML SOLUCION INYECTABLE EFG | Altan Pharmaceuticals S.A. | 22/09/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/70299/FT_70299.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/70299/FT_70299.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/70299/P_70299.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/70299/P_70299.html) |
+| 70301 | SECUFEN 50 MICROGRAMOS/ML SOLUCION INYECTABLE EFG | Altan Pharmaceuticals S.A. | 22/09/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/70301/FT_70301.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/70301/FT_70301.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/70301/P_70301.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/70301/P_70301.html) |
+| 89273 | RIVAXA 10 MG COMPRIMIDOS RECUBIERTOS CON PELÍCULA EFG | Glenmark Pharmaceuticals S.R.O. | 22/09/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/89273/FT_89273.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/89273/FT_89273.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/89273/P_89273.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/89273/P_89273.html) |
+| 91609 | OSMOLAX POLVO PARA SOLUCION ORAL EN SOBRE | Lainco S.A. | 22/09/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/91609/FT_91609.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/91609/FT_91609.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/91609/P_91609.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91609/P_91609.html) |
+| 73478 | OLANZAPINA TEVAGEN 10 mg COMPRIMIDOS BUCODISPERSABLES EFG | Teva Pharma S.L.U. | 22/09/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/73478/FT_73478.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/73478/FT_73478.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/73478/P_73478.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/73478/P_73478.html) |
+| 73482 | OLANZAPINA TEVAGEN 5 mg COMPRIMIDOS BUCODISPERSABLES EFG | Teva Pharma S.L.U. | 22/09/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/73482/FT_73482.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/73482/FT_73482.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/73482/P_73482.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/73482/P_73482.html) |
+| 91239 | MACITENTAN VIATRIS 10 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Viatris Limited | 22/09/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/91239/FT_91239.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/91239/FT_91239.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/91239/P_91239.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91239/P_91239.html) |
+| 91606 | IBUPROFENO/CAFEINA TEVA 400 MG/100 MG COMPRIMIDOS RECUBIERTOS CON PELICULA | Teva B.V. | 22/09/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/91606/FT_91606.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/91606/FT_91606.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/91606/P_91606.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91606/P_91606.html) |
+| 59391 | DOLIFEN DICLOFENACO 11,6 MG/G GEL | Faes Farma S.A. | 22/09/2026 06:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/59391/FT_59391.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/59391/FT_59391.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/59391/P_59391.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/59391/P_59391.html) |
+| 91610 | DIDROGESTERONA CIPLA 10 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Cipla Europe | 22/09/2026 06:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/91610/FT_91610.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/91610/FT_91610.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/91610/P_91610.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91610/P_91610.html) |
+| 90517 | DEXAMETASONA ORBIT PHARMA 1 MG COMPRIMIDOS EFG | Orbit Pharma Limited | 22/09/2026 06:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/90517/FT_90517.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/90517/FT_90517.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/90517/P_90517.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/90517/P_90517.html) |
+| 90518 | DEXAMETASONA ORBIT PHARMA 4 MG COMPRIMIDOS EFG | Orbit Pharma Limited | 22/09/2026 06:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/90518/FT_90518.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/90518/FT_90518.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/90518/P_90518.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/90518/P_90518.html) |
+| 1252011002 | CENRIFKI 60 MG COMPRIMIDOS RECUBIERTOS CON PELICULA | Sanofi Winthrop Industrie | 22/09/2026 06:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/1252011002/FT_1252011002.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/1252011002/FT_1252011002.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/1252011002/P_1252011002.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/1252011002/P_1252011002.html) |
+| 61069 | CORTAFRIOL C POLVO PARA SOLUCION ORAL | Opella Healthcare Spain S.L. | 22/09/2026 06:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/61069/FT_61069.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/61069/FT_61069.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/61069/P_61069.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/61069/P_61069.html) |
+| 1221709017 | BIMERVAX XFG.1.1 EMULSION INYECTABLE EN JERINGA PRECARGADA | Hipra Human Health S.L. | 22/09/2026 06:55 | MODIFICADO | FT | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/1221709017/FT_1221709017.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/1221709017/FT_1221709017.html) |
+| 61201 | CAMPRAL 333 mg COMPRIMIDOS RECUBIERTOS | Merck Sante | 22/09/2026 06:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/61201/FT_61201.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/61201/FT_61201.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/61201/P_61201.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/61201/P_61201.html) |
+| 70999 | BERTANEL 20 mg/1 ml SOLUCION INYECTABLE EN JERINGA PRECARGADA | Ebewe Pharma Ges.M.B.H. Nfg.Kg | 22/09/2026 06:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/70999/FT_70999.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/70999/FT_70999.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/70999/P_70999.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/70999/P_70999.html) |
+| 71787 | BERTANEL 25 mg/1,25 ml SOLUCION INYECTABLE EN JERINGA PRECARGADA | Ebewe Pharma Ges.M.B.H. Nfg.Kg | 22/09/2026 06:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/71787/FT_71787.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/71787/FT_71787.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/71787/P_71787.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/71787/P_71787.html) |
+| 71788 | BERTANEL 30 mg/1,5 ml SOLUCION INYECTABLE EN JERINGA PRECARGADA | Ebewe Pharma Ges.M.B.H. Nfg.Kg | 22/09/2026 06:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/71788/FT_71788.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/71788/FT_71788.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/71788/P_71788.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/71788/P_71788.html) |
+| 81031 | BOSENTAN SUN 125 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Sun Pharmaceutical Industries (Europe) B.V. | 22/09/2026 06:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/81031/FT_81031.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/81031/FT_81031.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/81031/P_81031.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/81031/P_81031.html) |
+| 81032 | BOSENTAN SUN 62,5 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Sun Pharmaceutical Industries (Europe) B.V. | 22/09/2026 06:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/81032/FT_81032.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/81032/FT_81032.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/81032/P_81032.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/81032/P_81032.html) |
+| 91198 | BRILAM 20 MG COMPRIMIDOS | Menarini International Operations Luxembourg S.A. | 22/09/2026 06:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/91198/P_91198.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91198/P_91198.html) |
+| 91199 | BRILAM 20 MG COMPRIMIDOS BUCODISPERSABLES | Menarini International Operations Luxembourg S.A. | 22/09/2026 06:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/91199/P_91199.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91199/P_91199.html) |
+| 90339 | APREMILAST KRKA 30 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Krka D.D. Novo Mesto | 22/09/2026 06:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/90339/FT_90339.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/90339/FT_90339.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/90339/P_90339.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/90339/P_90339.html) |
 | 91607 | TERIFLUNOMIDA STADAFARMA 7 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Laboratorio Stada S.L. | 20/09/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/91607/FT_91607.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/91607/FT_91607.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/91607/P_91607.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91607/P_91607.html) |
 | 91608 | TERIFLUNOMIDA STADAFARMA 14 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Laboratorio Stada S.L. | 20/09/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/91608/FT_91608.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/91608/FT_91608.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/91608/P_91608.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91608/P_91608.html) |
 | 91609 | OSMOLAX POLVO PARA SOLUCION ORAL EN SOBRE | Lainco S.A. | 20/09/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/91609/FT_91609.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/91609/FT_91609.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/91609/P_91609.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91609/P_91609.html) |
