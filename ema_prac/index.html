@@ -67,7 +67,21 @@
     cursor: pointer; padding: 0; font-family: inherit;
   }
   a.src:hover, button.link-btn:hover { text-decoration: underline; }
-  .row-actions { display: flex; flex-direction: column; gap: 4px; }
+  .row-actions { display: flex; flex-direction: column; gap: 4px; align-items: flex-start; white-space: nowrap; }
+  .row-actions button.link-btn { text-align: left; }
+
+  /* Señales HALMED dentro de la tabla de recomendaciones */
+  #tablaRecom tbody tr.grupo-inicio td { border-top: 2px solid #CBD5E1; }
+  #tablaRecom tbody tr:nth-child(even) { background: transparent; }
+  #tablaRecom tbody tr.grupo-par td { background: #FAFBFD; }
+  #tablaRecom td.inn { max-width: 230px; }
+  #tablaRecom td.inn .clamp { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  #tablaRecom td.senal { max-width: 260px; }
+  .badge.si { background: #FEE2E2; color: #991B1B; }
+  .badge.no { background: #E5E7EB; color: #374151; }
+  .nota { cursor: help; color: var(--muted); font-size: 11px; margin-left: 3px; }
+  .sin-senales { color: var(--muted); font-style: italic; }
+  .fuente-halmed { font-size: 11px; color: var(--muted); margin: 6px 0 0; }
 
   .table-wrap { max-height: 560px; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px; }
   .count-note { font-size: 12px; color: var(--muted); margin: 8px 0 0; }
@@ -107,9 +121,6 @@
     </button>
     <button id="btnRecom" onclick="cambiarFuente('recom')">
       ⚠️ Recomendaciones sobre señales <span class="sub">PRAC recommendations on safety signals</span>
-    </button>
-    <button id="btnSenales" onclick="cambiarFuente('senales')">
-      🧬 Moléculas &amp; señales <span class="sub">Detalle extraído de cada recomendación</span>
     </button>
   </div>
 
@@ -166,6 +177,8 @@
       <div class="kpi"><div class="label">Reuniones cubiertas</div><div class="value" id="kpiRecomReuniones">—</div></div>
       <div class="kpi"><div class="label">Periodo cubierto</div><div class="value" id="kpiRecomRango" style="font-size:16px">—</div></div>
       <div class="kpi"><div class="label">Última publicación</div><div class="value" id="kpiRecomUltima" style="font-size:16px">—</div></div>
+      <div class="kpi"><div class="label">Señales en estas reuniones</div><div class="value" id="kpiSenales">—</div></div>
+      <div class="kpi"><div class="label">Titular debe actualizar PI</div><div class="value" id="kpiSenalesSi" style="color:#991B1B">—</div></div>
     </div>
     <div class="charts">
       <div class="card" style="grid-column: 1 / -1">
@@ -176,68 +189,36 @@
     <div class="card">
       <h2>Detalle de recomendaciones sobre señales</h2>
       <div class="controls">
-        <input type="text" id="buscarRecom" placeholder="Buscar por título, referencia o fecha de reunión...">
+        <input type="text" id="buscarRecom" placeholder="Buscar por INN, señal, referencia o fecha de reunión...">
+        <select id="filtroAccion">
+          <option value="">Acción para titular: todas</option>
+          <option value="Sí">Sí — actualizar información del producto</option>
+          <option value="No">No</option>
+        </select>
       </div>
       <div class="table-wrap">
         <table id="tablaRecom">
           <thead>
             <tr>
-              <th data-col="fecha_reunion">Reunión</th>
+              <th data-col="reunion_inicio">Reunión</th>
+              <th>INN</th>
+              <th>Señal</th>
+              <th title="Action for MAH: update of the product information">Acción para Titular: actualizar</th>
               <th data-col="referencia">Referencia</th>
               <th data-col="fecha_publicacion">Publicación</th>
               <th>Acciones</th>
             </tr>
           </thead>
-          <tbody><tr><td colspan="4" class="state-note">Cargando desde Supabase…</td></tr></tbody>
+          <tbody><tr><td colspan="7" class="state-note">Cargando desde Supabase…</td></tr></tbody>
         </table>
       </div>
       <p class="count-note" id="contadorRecom"></p>
-    </div>
-  </div>
-
-  <!-- ── Bloque Moléculas & señales ── -->
-  <div id="blockSenales" style="display:none">
-    <div class="kpis">
-      <div class="kpi"><div class="label">Señales registradas</div><div class="value" id="kpiSenalesTotal">—</div></div>
-      <div class="kpi"><div class="label">Moléculas distintas</div><div class="value" id="kpiSenalesMoleculas">—</div></div>
-      <div class="kpi"><div class="label">Reuniones cubiertas</div><div class="value" id="kpiSenalesReuniones">—</div></div>
-      <div class="kpi"><div class="label">Periodo cubierto</div><div class="value" id="kpiSenalesRango" style="font-size:16px">—</div></div>
-    </div>
-    <div class="card">
-      <h2>Top 15 moléculas con más señales</h2>
-      <canvas id="chartSenalesMoleculas" height="220"></canvas>
-    </div>
-    <div class="card">
-      <h2>Detalle molécula / señal</h2>
-      <div class="controls">
-        <input type="text" id="buscarSenales" placeholder="Buscar por molécula, señal o EPITT...">
-        <select id="filtroSeccion">
-          <option value="">Toda sección</option>
-          <option value="actualizacion_producto">Actualización de producto</option>
-          <option value="tabla">Información suplementaria / otras</option>
-        </select>
-      </div>
-      <div class="table-wrap">
-        <table id="tablaSenales">
-          <thead>
-            <tr>
-              <th data-col="molecula">Molécula</th>
-              <th data-col="senal">Señal</th>
-              <th data-col="epitt_no">EPITT</th>
-              <th data-col="fecha_reunion">Reunión</th>
-              <th data-col="fecha_publicacion">Publicación</th>
-              <th>Fuente</th>
-            </tr>
-          </thead>
-          <tbody><tr><td colspan="6" class="state-note">Cargando desde Supabase…</td></tr></tbody>
-        </table>
-      </div>
-      <p class="count-note" id="contadorSenales"></p>
+      <p class="fuente-halmed" id="fuenteHalmed"></p>
     </div>
   </div>
 
 </div>
-<footer>Generado automáticamente por el scraper semanal EMA PRAC (GitHub Actions) · Fuente: ema.europa.eu · El texto extraído es una conversión automática del PDF original, que prevalece en caso de discrepancia. La extracción molécula/señal es automática (best-effort) y puede ser menos precisa en documentos anteriores a 2022.</footer>
+<footer>Generado automáticamente por el scraper semanal EMA PRAC (GitHub Actions) · Fuentes: ema.europa.eu y halmed.hr (lista de señales PRAC) · El texto extraído es una conversión automática del PDF original, que prevalece en caso de discrepancia.</footer>
 
 <!-- Modal de texto extraído -->
 <div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this) cerrarModal()">
@@ -257,15 +238,16 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 
 let MINUTAS = [];
 let RECOM = [];
-let SENALES = [];
+let HALMED = [];          // señales de la lista acumulada HALMED
+let HALMED_POR_REUNION = {}; // reunion_inicio (YYYY-MM-DD) -> [señales]
 
-async function fetchAll(tabla, columnas) {
+async function fetchAll(tabla, columnas, orden = 'fecha_publicacion.desc.nullslast') {
   const pageSize = 1000;
   let from = 0;
   let all = [];
   while (true) {
     const res = await fetch(
-      `${SUPABASE_URL}/rest/v1/${tabla}?select=${columnas}&order=fecha_publicacion.desc.nullslast`,
+      `${SUPABASE_URL}/rest/v1/${tabla}?select=${columnas}&order=${orden}`,
       {
         headers: {
           apikey: SUPABASE_ANON_KEY,
@@ -405,6 +387,40 @@ function renderTablaMinutas() {
 }
 
 // ── Vista Recomendaciones ──
+// Fecha de inicio (YYYY-MM-DD) a partir del texto de la reunión. Misma lógica que
+// parsear_reunion() de scraper_halmed_senales.py: es la llave de unión con HALMED.
+const MESES = ['january','february','march','april','may','june','july','august','september','october','november','december'];
+function claveReunion(texto) {
+  const t = texto || '';
+  const pad = n => String(n).padStart(2, '0');
+  let m = t.match(/(\d{1,2})\s*(?:([A-Za-z]+)\s*)?[-–—]\s*(\d{1,2})\s+([A-Za-z]+),?\s+(\d{4})/);
+  if (m && MESES.includes(m[4].toLowerCase())) {
+    const mesFin = MESES.indexOf(m[4].toLowerCase()) + 1;
+    const idxIni = m[2] ? MESES.indexOf(m[2].toLowerCase()) : -1;
+    const mesIni = idxIni >= 0 ? idxIni + 1 : mesFin;
+    const anio = mesIni > mesFin ? +m[5] - 1 : +m[5];
+    return `${anio}-${pad(mesIni)}-${pad(+m[1])}`;
+  }
+  m = t.match(/(\d{1,2})\s+([A-Za-z]+),?\s+(\d{4})/);
+  if (m && MESES.includes(m[2].toLowerCase())) return `${m[3]}-${pad(MESES.indexOf(m[2].toLowerCase()) + 1)}-${pad(+m[1])}`;
+  return null;
+}
+
+function esc(v) {
+  return String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
+function indexarHalmed() {
+  HALMED_POR_REUNION = {};
+  HALMED.forEach(s => {
+    if (!s.reunion_inicio) return;
+    (HALMED_POR_REUNION[s.reunion_inicio] ||= []).push(s);
+  });
+  Object.values(HALMED_POR_REUNION).forEach(l =>
+    l.sort((a, b) => (a.accion_titular === 'Sí' ? 0 : 1) - (b.accion_titular === 'Sí' ? 0 : 1) || a.inn.localeCompare(b.inn)));
+  RECOM.forEach(d => { d.reunion_inicio = claveReunion(d.fecha_reunion); });
+}
+
 function renderKpisRecom() {
   const total = RECOM.length;
   const reuniones = new Set(RECOM.map(d => d.fecha_reunion)).size;
@@ -415,6 +431,9 @@ function renderKpisRecom() {
     document.getElementById('kpiRecomRango').textContent = `${fmtFecha(fechas[0])} – ${fmtFecha(fechas[fechas.length - 1])}`;
     document.getElementById('kpiRecomUltima').textContent = fmtFecha(fechas[fechas.length - 1]);
   }
+  const senales = RECOM.flatMap(d => HALMED_POR_REUNION[d.reunion_inicio] || []);
+  document.getElementById('kpiSenales').textContent = HALMED.length ? senales.length : '—';
+  document.getElementById('kpiSenalesSi').textContent = HALMED.length ? senales.filter(s => s.accion_titular === 'Sí').length : '—';
 }
 
 function renderChartsRecom() {
@@ -438,32 +457,61 @@ function renderChartsRecom() {
 function renderTablaRecom() {
   const tbody = document.querySelector('#tablaRecom tbody');
   const buscar = document.getElementById('buscarRecom');
+  const filtroAccion = document.getElementById('filtroAccion');
   const contador = document.getElementById('contadorRecom');
   let sortCol = 'fecha_publicacion', sortDir = -1;
 
+  const actualizado = HALMED.map(s => s.fuente_actualizado).filter(Boolean).sort().pop();
+  document.getElementById('fuenteHalmed').innerHTML = HALMED.length
+    ? `Columnas INN, Señal y Acción para Titular: lista acumulada de señales PRAC publicada por <a class="src" href="https://halmed.hr/en/Lijekovi/Arbitrazni-postupci-PSUSA-postupci-i-PRAC-signali-upute-za-prijavu-izmjena-/Upute-za-prijavu-izmjena-na-temelju-preporuka-PRAC-a-nakon-ocjene-sigurnosnih-signala/" target="_blank" rel="noopener">HALMED ↗</a>${actualizado ? ` (actualizada el ${fmtFecha(actualizado)})` : ''}. Incluye todas las señales discutidas en la reunión, no solo las que generaron recomendación.`
+    : 'Aún no hay datos de señales HALMED en Supabase (ejecuta el workflow EMA PRAC).';
+
   function render() {
-    const q = buscar.value.toLowerCase();
-    let rows = RECOM.filter(d => {
-      if (!q) return true;
-      return `${d.titulo} ${d.referencia} ${d.fecha_reunion}`.toLowerCase().includes(q);
-    });
-    rows = rows.slice().sort((a, b) => {
-      const va = (a[sortCol] || '').toString().toLowerCase();
-      const vb = (b[sortCol] || '').toString().toLowerCase();
+    const q = buscar.value.toLowerCase().trim();
+    const acc = filtroAccion.value;
+    let grupos = RECOM.map(d => {
+      const todas = HALMED_POR_REUNION[d.reunion_inicio] || [];
+      const matchDoc = !q || `${d.titulo} ${d.referencia} ${d.fecha_reunion}`.toLowerCase().includes(q);
+      const senales = todas.filter(s =>
+        (!acc || s.accion_titular === acc) &&
+        (matchDoc || `${s.inn} ${s.senal}`.toLowerCase().includes(q)));
+      const visible = (acc || (!matchDoc && q)) ? senales.length > 0 : true;
+      return { d, senales, visible };
+    }).filter(g => g.visible);
+
+    grupos.sort((a, b) => {
+      const va = (a.d[sortCol] || '').toString().toLowerCase();
+      const vb = (b.d[sortCol] || '').toString().toLowerCase();
       return va < vb ? -1 * sortDir : va > vb ? 1 * sortDir : 0;
     });
-    tbody.innerHTML = rows.map(d => `
-      <tr>
-        <td><span class="badge recom">${d.fecha_reunion || '—'}</span></td>
-        <td>${d.referencia || '—'}</td>
-        <td>${fmtFecha(d.fecha_publicacion)}</td>
-        <td class="row-actions">
-          <a class="src" href="${d.url_pdf}" target="_blank" rel="noopener">Ver PDF original ↗</a>
-          <button class="link-btn" onclick='verTexto("ema_prac_recomendaciones", ${JSON.stringify(d.dedupe_key)}, ${JSON.stringify(d.titulo)})'>Ver texto extraído</button>
-        </td>
-      </tr>
-    `).join('');
-    contador.textContent = `Mostrando ${rows.length} de ${RECOM.length} documentos`;
+
+    let nSenales = 0;
+    tbody.innerHTML = grupos.map(({ d, senales }, gi) => {
+      const n = Math.max(senales.length, 1);
+      nSenales += senales.length;
+      const cls = `grupo-inicio ${gi % 2 ? 'grupo-par' : ''}`;
+      const celdasSenal = s => s ? `
+          <td class="inn"><div class="clamp" title="${esc(s.inn)}">${esc(s.inn)}</div></td>
+          <td class="senal">${esc(s.senal)}</td>
+          <td><span class="badge ${s.accion_titular === 'Sí' ? 'si' : 'no'}">${esc(s.accion_titular || '—')}</span>${
+            s.nota_texto ? `<span class="nota" title="${esc(s.nota_texto)}">ⓘ</span>` : ''}</td>`
+        : `<td colspan="3" class="sin-senales">${HALMED.length ? 'Sin señales asociadas en la lista HALMED' : '—'}</td>`;
+      const primera = `
+        <tr class="${cls}">
+          <td rowspan="${n}"><span class="badge recom">${esc(d.fecha_reunion || '—')}</span></td>
+          ${celdasSenal(senales[0])}
+          <td rowspan="${n}">${esc(d.referencia || '—')}</td>
+          <td rowspan="${n}">${fmtFecha(d.fecha_publicacion)}</td>
+          <td rowspan="${n}"><div class="row-actions">
+            <a class="src" href="${esc(d.url_pdf)}" target="_blank" rel="noopener">Ver PDF original ↗</a>
+            <button class="link-btn" onclick='verTexto("ema_prac_recomendaciones", ${JSON.stringify(d.dedupe_key)}, ${JSON.stringify(d.titulo).replace(/'/g, "&#39;")})'>Ver texto extraído</button>
+          </div></td>
+        </tr>`;
+      const resto = senales.slice(1).map(s => `<tr class="${gi % 2 ? 'grupo-par' : ''}">${celdasSenal(s)}</tr>`).join('');
+      return primera + resto;
+    }).join('') || `<tr><td colspan="7" class="state-note">Sin resultados</td></tr>`;
+
+    contador.textContent = `Mostrando ${grupos.length} de ${RECOM.length} documentos · ${nSenales} señales`;
   }
 
   document.querySelectorAll('#tablaRecom thead th[data-col]').forEach(th => {
@@ -475,105 +523,16 @@ function renderTablaRecom() {
     });
   });
   buscar.addEventListener('input', render);
-  render();
-}
-
-// ── Vista Moléculas & señales ──
-function renderKpisSenales() {
-  const total = SENALES.length;
-  const moleculas = new Set(SENALES.map(d => d.molecula.toLowerCase())).size;
-  const reuniones = new Set(SENALES.map(d => d.fecha_reunion)).size;
-  const fechas = SENALES.map(d => d.fecha_publicacion).filter(Boolean).sort();
-  document.getElementById('kpiSenalesTotal').textContent = total;
-  document.getElementById('kpiSenalesMoleculas').textContent = moleculas;
-  document.getElementById('kpiSenalesReuniones').textContent = reuniones;
-  if (fechas.length) {
-    document.getElementById('kpiSenalesRango').textContent = `${fmtFecha(fechas[0])} – ${fmtFecha(fechas[fechas.length - 1])}`;
-  }
-}
-
-function renderChartSenales() {
-  try {
-    const cuentaPorMolecula = {};
-    SENALES.forEach(d => {
-      const m = d.molecula;
-      cuentaPorMolecula[m] = (cuentaPorMolecula[m] || 0) + 1;
-    });
-    const top = Object.entries(cuentaPorMolecula)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 15);
-    new Chart(document.getElementById('chartSenalesMoleculas'), {
-      type: 'bar',
-      data: {
-        labels: top.map(([m]) => m.length > 30 ? m.slice(0, 30) + '…' : m),
-        datasets: [{ label: 'Nº de señales', data: top.map(([, n]) => n), backgroundColor: '#1E3A78' }],
-      },
-      options: {
-        indexAxis: 'y',
-        plugins: { legend: { display: false } },
-        scales: { x: { beginAtZero: true } },
-      },
-    });
-  } catch (e) {
-    console.warn('No se pudo dibujar el gráfico de moléculas:', e);
-  }
-}
-
-function renderTablaSenales() {
-  const tbody = document.querySelector('#tablaSenales tbody');
-  const buscar = document.getElementById('buscarSenales');
-  const filtroSeccion = document.getElementById('filtroSeccion');
-  const contador = document.getElementById('contadorSenales');
-  let sortCol = 'fecha_publicacion', sortDir = -1;
-
-  function render() {
-    const q = buscar.value.toLowerCase();
-    const seccion = filtroSeccion.value;
-    let rows = SENALES.filter(d => {
-      if (seccion && d.seccion !== seccion) return false;
-      if (!q) return true;
-      return `${d.molecula} ${d.senal} ${d.epitt_no || ''}`.toLowerCase().includes(q);
-    });
-    rows = rows.slice().sort((a, b) => {
-      const va = (a[sortCol] || '').toString().toLowerCase();
-      const vb = (b[sortCol] || '').toString().toLowerCase();
-      return va < vb ? -1 * sortDir : va > vb ? 1 * sortDir : 0;
-    });
-    tbody.innerHTML = rows.slice(0, 500).map(d => `
-      <tr>
-        <td>${d.molecula}</td>
-        <td>${d.senal}</td>
-        <td>${d.epitt_no || '—'}</td>
-        <td>${d.fecha_reunion || '—'}</td>
-        <td>${fmtFecha(d.fecha_publicacion)}</td>
-        <td><a class="src" href="${d.url_pdf}" target="_blank" rel="noopener">Ver PDF ↗</a></td>
-      </tr>
-    `).join('');
-    contador.textContent = rows.length > 500
-      ? `Mostrando 500 de ${rows.length} señales (refina la búsqueda para ver más)`
-      : `Mostrando ${rows.length} de ${SENALES.length} señales`;
-  }
-
-  document.querySelectorAll('#tablaSenales thead th[data-col]').forEach(th => {
-    th.addEventListener('click', () => {
-      const col = th.dataset.col;
-      sortDir = (sortCol === col) ? -sortDir : 1;
-      sortCol = col;
-      render();
-    });
-  });
-  buscar.addEventListener('input', render);
-  filtroSeccion.addEventListener('change', render);
+  filtroAccion.addEventListener('change', render);
   render();
 }
 
 function cambiarFuente(fuente) {
-  document.getElementById('btnMinutas').classList.toggle('active', fuente === 'minutas');
-  document.getElementById('btnRecom').classList.toggle('active', fuente === 'recom');
-  document.getElementById('btnSenales').classList.toggle('active', fuente === 'senales');
-  document.getElementById('blockMinutas').style.display = fuente === 'minutas' ? '' : 'none';
-  document.getElementById('blockRecom').style.display = fuente === 'recom' ? '' : 'none';
-  document.getElementById('blockSenales').style.display = fuente === 'senales' ? '' : 'none';
+  const esMinutas = fuente === 'minutas';
+  document.getElementById('btnMinutas').classList.toggle('active', esMinutas);
+  document.getElementById('btnRecom').classList.toggle('active', !esMinutas);
+  document.getElementById('blockMinutas').style.display = esMinutas ? '' : 'none';
+  document.getElementById('blockRecom').style.display = esMinutas ? 'none' : '';
 }
 
 (async function init() {
@@ -591,23 +550,19 @@ function cambiarFuente(fuente) {
   try {
     const columnas = 'titulo,fecha_reunion,referencia,fecha_publicacion,url_pdf,dedupe_key';
     RECOM = await fetchAll('ema_prac_recomendaciones', columnas);
+    try {
+      HALMED = await fetchAll('ema_prac_halmed_senales',
+        'inn,senal,reunion,reunion_inicio,accion_titular,nota_texto,fuente_actualizado', 'reunion_inicio.desc,inn.asc');
+    } catch (e) {
+      console.warn('No se pudieron cargar las señales HALMED:', e);
+    }
+    indexarHalmed();
     renderKpisRecom();
     renderChartsRecom();
     renderTablaRecom();
   } catch (e) {
     document.querySelector('#tablaRecom tbody').innerHTML =
-      `<tr><td colspan="4" class="state-note">Error cargando datos de Supabase: ${e.message}</td></tr>`;
-  }
-
-  try {
-    const columnas = 'molecula,senal,epitt_no,seccion,fecha_reunion,referencia,fecha_publicacion,url_pdf,dedupe_key';
-    SENALES = await fetchAll('ema_prac_senales', columnas);
-    renderKpisSenales();
-    renderChartSenales();
-    renderTablaSenales();
-  } catch (e) {
-    document.querySelector('#tablaSenales tbody').innerHTML =
-      `<tr><td colspan="6" class="state-note">Error cargando datos de Supabase: ${e.message}</td></tr>`;
+      `<tr><td colspan="7" class="state-note">Error cargando datos de Supabase: ${e.message}</td></tr>`;
   }
 
   cambiarFuente('minutas');

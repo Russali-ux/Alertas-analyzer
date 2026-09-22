@@ -1,0 +1,304 @@
+# PRAC recommendations on signals adopted at the 30 September-3 October 2019 PRAC meeting
+
+Fuente: https://www.ema.europa.eu/en/documents/prac-recommendation/prac-recommendations-signals-adopted-30-september-3-october-2019-prac-meeting_en.pdf
+
+---
+
+Official address Domenico Scarlattilaan 6 ● 1083 HS Amsterdam ● The Netherlands 
+An agency of the European Union 
+Address for visits and deliveries Refer to www.ema.europa.eu/how-to-find-us 
+Send us a question Go to www.ema.europa.eu/contact Telephone +31 (0)88 781 6000 
+© European Medicines Agency, 2019. Reproduction is authorised provided the source is acknowledged. 
+ 
+28 October 20191 
+EMA/PRAC/532014/2019 
+Pharmacovigilance Risk Assessment Committee (PRAC) 
+PRAC recommendations on signals 
+Adopted at the 30 September-3 October 2019 PRAC meeting 
+This document provides an overview of the recommendations adopted by the Pharmacovigilance Risk 
+Assessment Committee (PRAC) on the signals discussed during the meeting of 30 September-3 
+October 2019 (including the signal European Pharmacovigilance Issues Tracking Tool [EPITT]2 
+reference numbers). 
+PRAC recommendations to provide supplementary information are directly actionable by the concerned 
+marketing authorisation holders (MAHs). PRAC recommendations for regulatory action (e.g. 
+amendment of the product information) are submitted to the Committee for Medicinal Products for 
+Human Use (CHMP) for endorsement when the signal concerns Centrally Authorised Products (CAPs), 
+and to the Co-ordination Group for Mutual Recognition and Decentralised Procedures – Human (CMDh) 
+for information in the case of Nationally Authorised Products (NAPs). Thereafter, MAHs are expected to 
+take action according to the PRAC recommendations. 
+When appropriate, the PRAC may also recommend the conduct of additional analyses by the Agency or 
+Member States. 
+MAHs are reminded that in line with Article 16(3) of Regulation No (EU) 726/2004 and Article 23(3) of 
+Directive 2001/83/EC, they shall ensure that their product information is kept up to date with the 
+current scientific knowledge including the conclusions of the assessment and recommendations 
+published on the European Medicines Agency (EMA) website (currently acting as the EU medicines 
+webportal). 
+For CAPs, at the time of publication, PRAC recommendations for update of product information have 
+been agreed by the CHMP at their plenary meeting (14-17 October 2019) and corresponding variations 
+will be assessed by the CHMP. 
+For nationally authorised medicinal products, it is the responsibility of the National Competent 
+Authorities (NCAs) of the Member States to oversee that PRAC recommendations on signals are 
+adhered to. 
+ 
+1 Intended publication date. The actual publication date can be checked on the webpage dedicated to PRAC 
+recommendations on safety signals. 
+2 The relevant EPITT reference number should be used in any communication related to a signal. 
+
+PRAC recommendations on signals 
+EMA/PRAC/532014/2019 
+Page 2/6 
+ 
+Variations for CAPs are handled according to established EMA procedures. MAHs are referred to the 
+available guidance. Variations for NAPs (including via mutual recognition and decentralised procedures) 
+are handled at national level in accordance with the provisions of the Member States. 
+ 
+The timeline recommended by PRAC for submission of variations following signal assessment is 
+applicable to both innovator and generic medicinal products, unless otherwise specified. 
+For procedural aspects related to the handling of PRAC recommendations on signals (e.g. submission 
+requirements, contact points, etc.) please refer to the Questions and Answers on signal management. 
+
+PRAC recommendations on signals 
+EMA/PRAC/532014/2019 
+Page 3/6 
+ 
+1. Recommendations for update of the product information3 
+1.1. Durvalumab – Myasthenia gravis 
+Authorisation procedure 
+Centralised 
+EPITT No 
+19451 
+PRAC rapporteur(s) 
+David Olsen (NO) 
+Date of adoption 
+3 October 2019 
+ 
+Recommendation [see also section 3] 
+Based on the available evidence it is considered that there is an association between durvalumab and 
+myasthenia gravis events, therefore, the PRAC has agreed that the MAH (Astra Zeneca) for the 
+durvalumab containing product (IMFINZI), should submit a variation within 2 months, to amend the 
+Product Information as described below (new text underlined): 
+ 
+Summary of product characteristics 
+4.2. Posology and method of administration 
+ 
+Adverse reactions 
+Severity a 
+IMFINZI treatment 
+modification 
+Corticosteroid 
+treatment unless 
+otherwise specified 
+Other immune-
+mediated adverse 
+reactions 
+Grade 3 
+Withhold dose 
+Consider initial dose of 
+1 mg/kg/day to 4 
+mg/kg/day prednisone 
+or equivalent followed 
+by taper 
+Grade 4 
+Permanently 
+discontinue d 
+ 
+c) Permanently discontinue IMFINZI if the adverse reaction does not resolve to ≤ Grade 1 within 30 
+days or if there are signs of respiratory insufficiency. 
+d) For myasthenia gravis, if there are signs of muscular weakness or respiratory insufficiency, IMFINZI 
+should be permanently discontinued. 
+ 
+4.4. Special warnings and precautions for use 
+Other immune-mediated adverse reactions 
+Given the mechanism of action of IMFINZI, other potential immune-mediated adverse reactions may 
+occur. The following immune-related adverse reactions were reported in less than 1% of patients 
+treated with IMFINZI monotherapy in clinical trials (n = 1889): myasthenia gravis, myocarditis, 
+myositis, polymyositis. Patients should be monitored for signs and symptoms and managed as 
+recommended in section 4.2. 
+ 
+4.8. Undesirable effects 
+Nervous system disorders 
+Rare: Myasthenia gravis 
+ 
+ 
+3 Translations in all official EU languages of the new product information adopted by PRAC are also available to MAHs on the 
+EMA website. 
+
+PRAC recommendations on signals 
+EMA/PRAC/532014/2019 
+Page 4/6 
+ 
+Package leaflet 
+2. Warnings and precautions 
+Your doctor may delay the next dose of IMFINZI or stop your treatment with IMFINZI, if you have: 
+• 
+Inflammation or problems of the muscles: symptoms may include muscle pain, or weakness or 
+rapid fatigue of the muscles; 
+ 
+ 
+4. Possible side effects 
+Rare: a condition in which the muscles become weak and there is a rapid fatigue of the muscles 
+(myasthenia gravis). 
+ 
+ 
+1.2. Lithium – Drug-induced lichenoid reaction 
+Authorisation procedure 
+Non-centralised 
+EPITT No 
+19389 
+PRAC rapporteur(s) 
+Martin Huber (DE) 
+Date of adoption 
+3 October 2019 
+ 
+Recommendation 
+Having considered the available evidence, the PRAC has agreed that the MAH(s) of lithium-containing 
+medicinal products should submit a variation within 2 months, to amend the product information as 
+described below (new text underlined): 
+ 
+Summary of product characteristics 
+4.8. Undesirable effects 
+Tabulated list of adverse reactions 
+Skin and subcutaneous tissue disorders 
+Frequency not known: lichenoid drug reaction 
+ 
+Package leaflet 
+4. Possible side effects 
+Frequency not known: eruption of the skin or mucous membranes (lichenoid drug reaction) 
+ 
+ 
+ 
+
+PRAC recommendations on signals 
+EMA/PRAC/532014/2019 
+Page 5/6 
+ 
+2. Recommendations for submission of supplementary 
+information 
+INN 
+Signal (EPITT No) 
+PRAC 
+Rapporteur 
+Action for MAH 
+MAH 
+Bevacizumab 
+Guillain–Barré 
+syndrome (GBS) 
+(19472) 
+ 
+Hans 
+Christian 
+Siersted 
+(DK) 
+Supplementary 
+information requested 
+(submission by 11 
+December 2019) 
+Roche 
+Registration 
+GmbH 
+Nivolumab 
+Haemophagocytic 
+lymphohistiocytosis 
+(19467) 
+Brigitte 
+Keller-
+Stanislaws
+ki (DE) 
+Supplementary 
+information requested 
+(submission by 11 
+December 2019) 
+Bristol-Myers 
+Squibb Pharma 
+EEIG 
+Vismodegib 
+Pancreatitis (19470) 
+Annika 
+Folin (SE) 
+Supplementary 
+information requested 
+(submission by 11 
+December 2019) 
+Roche 
+Registration 
+GmbH 
+3. Other recommendations 
+INN 
+Signal (EPITT No) 
+PRAC 
+Rapporteur 
+Action for MAH 
+MAH 
+Direct acting 
+antivirals 
+(DAAV)4 
+Autoimmune hepatitis 
+(19395) 
+Ana Sofia 
+Martins 
+(PT) 
+Routine 
+pharmacovigilance 
+AbbVie 
+Deutschland 
+GmbH Co. KG, 
+Gilead Sciences 
+Ireland UC, 
+Merck Sharp & 
+Dohme B.V. 
+Durvalumab 
+Myasthenia gravis 
+(19451) 
+David 
+Olsen (NO) 
+ See section 1.1 
+ Assess in the next 
+PSUR (submission by 8 
+January 2020) 
+ Update the RMP 
+AstraZeneca AB 
+Hormone 
+replacement 
+therapy (HRT)5 
+New information on the 
+known risk of breast 
+cancer (19482) 
+Menno van 
+der Elst 
+(NL) 
+No action at this stage 
+Not applicable 
+Indapamide 
+Choroidal effusion 
+(19468) 
+Martin 
+Huber (DE) 
+No action at this stage 
+Not applicable 
+ 
+4 Dasabuvir; elbasvir, grazoprevir; glecaprevir, pibrentasvir; ledipasvir, sofosbuvir; ombitasvir, pariteprevir, ritonavir; 
+sofosbuvir; sofosbuvir, velpatasvir; sofosbuvir, velpatasvir, voxilaprevir 
+5 Chlorotrianisene; conjugated estrogens; conjugated estrogens, bazedoxifene; dienestrol; diethylstilbestrol; estradiol; 
+estradiol, norethisterone; estriol; estrone; ethinylestradiol; methallenestril; moxestrol; promestriene; tibolone 
+
+PRAC recommendations on signals 
+EMA/PRAC/532014/2019 
+Page 6/6 
+ 
+INN 
+Signal (EPITT No) 
+PRAC 
+Rapporteur 
+Action for MAH 
+MAH 
+Sebelipase alfa 
+Nephrotic syndrome 
+(19410) 
+Ulla 
+Wändel 
+Liminga 
+(SE) 
+Routine 
+pharmacovigilance 
+Alexion Europe 
+SAS
