@@ -108,6 +108,9 @@
     <button id="btnRecom" onclick="cambiarFuente('recom')">
       ⚠️ Recomendaciones sobre señales <span class="sub">PRAC recommendations on safety signals</span>
     </button>
+    <button id="btnSenales" onclick="cambiarFuente('senales')">
+      🧬 Moléculas &amp; señales <span class="sub">Detalle extraído de cada recomendación</span>
+    </button>
   </div>
 
   <!-- ── Bloque Agendas & Minutas ── -->
@@ -192,8 +195,49 @@
     </div>
   </div>
 
+  <!-- ── Bloque Moléculas & señales ── -->
+  <div id="blockSenales" style="display:none">
+    <div class="kpis">
+      <div class="kpi"><div class="label">Señales registradas</div><div class="value" id="kpiSenalesTotal">—</div></div>
+      <div class="kpi"><div class="label">Moléculas distintas</div><div class="value" id="kpiSenalesMoleculas">—</div></div>
+      <div class="kpi"><div class="label">Reuniones cubiertas</div><div class="value" id="kpiSenalesReuniones">—</div></div>
+      <div class="kpi"><div class="label">Periodo cubierto</div><div class="value" id="kpiSenalesRango" style="font-size:16px">—</div></div>
+    </div>
+    <div class="card">
+      <h2>Top 15 moléculas con más señales</h2>
+      <canvas id="chartSenalesMoleculas" height="220"></canvas>
+    </div>
+    <div class="card">
+      <h2>Detalle molécula / señal</h2>
+      <div class="controls">
+        <input type="text" id="buscarSenales" placeholder="Buscar por molécula, señal o EPITT...">
+        <select id="filtroSeccion">
+          <option value="">Toda sección</option>
+          <option value="actualizacion_producto">Actualización de producto</option>
+          <option value="tabla">Información suplementaria / otras</option>
+        </select>
+      </div>
+      <div class="table-wrap">
+        <table id="tablaSenales">
+          <thead>
+            <tr>
+              <th data-col="molecula">Molécula</th>
+              <th data-col="senal">Señal</th>
+              <th data-col="epitt_no">EPITT</th>
+              <th data-col="fecha_reunion">Reunión</th>
+              <th data-col="fecha_publicacion">Publicación</th>
+              <th>Fuente</th>
+            </tr>
+          </thead>
+          <tbody><tr><td colspan="6" class="state-note">Cargando desde Supabase…</td></tr></tbody>
+        </table>
+      </div>
+      <p class="count-note" id="contadorSenales"></p>
+    </div>
+  </div>
+
 </div>
-<footer>Generado automáticamente por el scraper semanal EMA PRAC (GitHub Actions) · Fuente: ema.europa.eu · El texto extraído es una conversión automática del PDF original, que prevalece en caso de discrepancia.</footer>
+<footer>Generado automáticamente por el scraper semanal EMA PRAC (GitHub Actions) · Fuente: ema.europa.eu · El texto extraído es una conversión automática del PDF original, que prevalece en caso de discrepancia. La extracción molécula/señal es automática (best-effort) y puede ser menos precisa en documentos anteriores a 2022.</footer>
 
 <!-- Modal de texto extraído -->
 <div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this) cerrarModal()">
@@ -213,6 +257,7 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 
 let MINUTAS = [];
 let RECOM = [];
+let SENALES = [];
 
 async function fetchAll(tabla, columnas) {
   const pageSize = 1000;
@@ -433,12 +478,102 @@ function renderTablaRecom() {
   render();
 }
 
+// ── Vista Moléculas & señales ──
+function renderKpisSenales() {
+  const total = SENALES.length;
+  const moleculas = new Set(SENALES.map(d => d.molecula.toLowerCase())).size;
+  const reuniones = new Set(SENALES.map(d => d.fecha_reunion)).size;
+  const fechas = SENALES.map(d => d.fecha_publicacion).filter(Boolean).sort();
+  document.getElementById('kpiSenalesTotal').textContent = total;
+  document.getElementById('kpiSenalesMoleculas').textContent = moleculas;
+  document.getElementById('kpiSenalesReuniones').textContent = reuniones;
+  if (fechas.length) {
+    document.getElementById('kpiSenalesRango').textContent = `${fmtFecha(fechas[0])} – ${fmtFecha(fechas[fechas.length - 1])}`;
+  }
+}
+
+function renderChartSenales() {
+  try {
+    const cuentaPorMolecula = {};
+    SENALES.forEach(d => {
+      const m = d.molecula;
+      cuentaPorMolecula[m] = (cuentaPorMolecula[m] || 0) + 1;
+    });
+    const top = Object.entries(cuentaPorMolecula)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 15);
+    new Chart(document.getElementById('chartSenalesMoleculas'), {
+      type: 'bar',
+      data: {
+        labels: top.map(([m]) => m.length > 30 ? m.slice(0, 30) + '…' : m),
+        datasets: [{ label: 'Nº de señales', data: top.map(([, n]) => n), backgroundColor: '#1E3A78' }],
+      },
+      options: {
+        indexAxis: 'y',
+        plugins: { legend: { display: false } },
+        scales: { x: { beginAtZero: true } },
+      },
+    });
+  } catch (e) {
+    console.warn('No se pudo dibujar el gráfico de moléculas:', e);
+  }
+}
+
+function renderTablaSenales() {
+  const tbody = document.querySelector('#tablaSenales tbody');
+  const buscar = document.getElementById('buscarSenales');
+  const filtroSeccion = document.getElementById('filtroSeccion');
+  const contador = document.getElementById('contadorSenales');
+  let sortCol = 'fecha_publicacion', sortDir = -1;
+
+  function render() {
+    const q = buscar.value.toLowerCase();
+    const seccion = filtroSeccion.value;
+    let rows = SENALES.filter(d => {
+      if (seccion && d.seccion !== seccion) return false;
+      if (!q) return true;
+      return `${d.molecula} ${d.senal} ${d.epitt_no || ''}`.toLowerCase().includes(q);
+    });
+    rows = rows.slice().sort((a, b) => {
+      const va = (a[sortCol] || '').toString().toLowerCase();
+      const vb = (b[sortCol] || '').toString().toLowerCase();
+      return va < vb ? -1 * sortDir : va > vb ? 1 * sortDir : 0;
+    });
+    tbody.innerHTML = rows.slice(0, 500).map(d => `
+      <tr>
+        <td>${d.molecula}</td>
+        <td>${d.senal}</td>
+        <td>${d.epitt_no || '—'}</td>
+        <td>${d.fecha_reunion || '—'}</td>
+        <td>${fmtFecha(d.fecha_publicacion)}</td>
+        <td><a class="src" href="${d.url_pdf}" target="_blank" rel="noopener">Ver PDF ↗</a></td>
+      </tr>
+    `).join('');
+    contador.textContent = rows.length > 500
+      ? `Mostrando 500 de ${rows.length} señales (refina la búsqueda para ver más)`
+      : `Mostrando ${rows.length} de ${SENALES.length} señales`;
+  }
+
+  document.querySelectorAll('#tablaSenales thead th[data-col]').forEach(th => {
+    th.addEventListener('click', () => {
+      const col = th.dataset.col;
+      sortDir = (sortCol === col) ? -sortDir : 1;
+      sortCol = col;
+      render();
+    });
+  });
+  buscar.addEventListener('input', render);
+  filtroSeccion.addEventListener('change', render);
+  render();
+}
+
 function cambiarFuente(fuente) {
-  const esMinutas = fuente === 'minutas';
-  document.getElementById('btnMinutas').classList.toggle('active', esMinutas);
-  document.getElementById('btnRecom').classList.toggle('active', !esMinutas);
-  document.getElementById('blockMinutas').style.display = esMinutas ? '' : 'none';
-  document.getElementById('blockRecom').style.display = esMinutas ? 'none' : '';
+  document.getElementById('btnMinutas').classList.toggle('active', fuente === 'minutas');
+  document.getElementById('btnRecom').classList.toggle('active', fuente === 'recom');
+  document.getElementById('btnSenales').classList.toggle('active', fuente === 'senales');
+  document.getElementById('blockMinutas').style.display = fuente === 'minutas' ? '' : 'none';
+  document.getElementById('blockRecom').style.display = fuente === 'recom' ? '' : 'none';
+  document.getElementById('blockSenales').style.display = fuente === 'senales' ? '' : 'none';
 }
 
 (async function init() {
@@ -462,6 +597,17 @@ function cambiarFuente(fuente) {
   } catch (e) {
     document.querySelector('#tablaRecom tbody').innerHTML =
       `<tr><td colspan="4" class="state-note">Error cargando datos de Supabase: ${e.message}</td></tr>`;
+  }
+
+  try {
+    const columnas = 'molecula,senal,epitt_no,seccion,fecha_reunion,referencia,fecha_publicacion,url_pdf,dedupe_key';
+    SENALES = await fetchAll('ema_prac_senales', columnas);
+    renderKpisSenales();
+    renderChartSenales();
+    renderTablaSenales();
+  } catch (e) {
+    document.querySelector('#tablaSenales tbody').innerHTML =
+      `<tr><td colspan="6" class="state-note">Error cargando datos de Supabase: ${e.message}</td></tr>`;
   }
 
   cambiarFuente('minutas');

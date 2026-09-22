@@ -127,16 +127,39 @@ def preparar_recomendaciones(regs: list[dict]) -> list[dict]:
     return out
 
 
+def preparar_senales(regs: list[dict]) -> list[dict]:
+    out = []
+    for r in regs:
+        molecula = (r.get("molecula") or "").strip()
+        senal = (r.get("senal") or "").strip()
+        if not molecula or not senal or not r.get("dedupe_key"):
+            continue
+        out.append({
+            "molecula": molecula,
+            "senal": senal,
+            "epitt_no": r.get("epitt_no"),
+            "seccion": r.get("seccion"),
+            "fecha_reunion": r.get("fecha_reunion"),
+            "referencia": r.get("referencia"),
+            "fecha_publicacion": r.get("fecha_publicacion"),
+            "url_pdf": r.get("url_pdf"),
+            "dedupe_key": r["dedupe_key"],
+        })
+    return out
+
+
 def main() -> None:
     print("→ Sincronizando módulo EMA PRAC a Supabase")
 
     minutas = preparar_minutas(cargar("ema_prac_minutas.json"))
     recomendaciones = preparar_recomendaciones(cargar("ema_prac_recomendaciones.json"))
+    senales = preparar_senales(cargar("ema_prac_senales.json"))
 
     n1 = upsert("ema_prac_minutas", minutas)
     n2 = upsert("ema_prac_recomendaciones", recomendaciones)
+    n3 = upsert("ema_prac_senales", senales)
 
-    print(f"\n✓ Listo — Minutas/Agendas: {n1} · Recomendaciones: {n2}")
+    print(f"\n✓ Listo — Minutas/Agendas: {n1} · Recomendaciones: {n2} · Señales molécula/reacción: {n3}")
 
 
 if __name__ == "__main__":

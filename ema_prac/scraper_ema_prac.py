@@ -70,12 +70,17 @@ HEADERS = {
     "Accept-Language": "en-GB,en;q=0.9",
 }
 
-# Nº de páginas a recorrer por corrida. El PRAC se reúne 1 vez al mes y cada
-# página del listado trae ~3 documentos, así que 3 páginas (~9 documentos)
-# es más que suficiente para no perder nada entre corridas mensuales; al ser
-# upsert idempotente por dedupe_key, repasar páginas ya vistas no duplica nada.
-MAX_PAGINAS_AGENDA = 3
-MAX_PAGINAS_MINUTA = 3
+# Nº de páginas a recorrer por corrida. IMPORTANTE: el listado de agendas y
+# minutas usa un pager de Drupal Views basado en AJAX; pedir la página N por
+# querystring (?page=,N,0) solo funciona de forma fiable para N=0 (a veces
+# N=1, mostrando comportamiento inconsistente en pruebas), y para N>=2 el
+# sitio ignora el parámetro y devuelve otra vez la página 0 — sin ejecutar
+# JavaScript no hay forma confiable de pedir páginas más profundas. Como el
+# PRAC se reúne 1 vez al mes, la página 0 (los 3 documentos más recientes de
+# cada listado) es suficiente para un monitor que corre semanalmente: cada
+# agenda/minuta nueva pasa por la página 0 antes de quedar desplazada.
+MAX_PAGINAS_AGENDA = 1
+MAX_PAGINAS_MINUTA = 1
 REQUEST_DELAY = 2  # segundos entre requests, cortesía con el servidor de EMA
 
 session = requests.Session()
@@ -177,6 +182,90 @@ def extraer_texto_pdf(path: Path) -> str:
         return normalizar_texto("\n".join(p.get_text("text") for p in doc))
 
 
+def extraer_senales(ruta_pdf: Path) -> list[dict]:
+    """Extrae pares (molécula, señal) de un PDF de 'PRAC recommendations on
+    signals'. Combina dos estrategias:
+
+    1. Sección 1 ('Recommendations for update of the product information'):
+       cada ítem tiene un encabezado con el formato
+       'N.N.  <molécula(s)> – <señal>' seguido de 'Authorisation procedure'.
+    2. Secciones 2 y 3 (tablas 'INN | Signal (EPITT No) | ...'): se usa la
+       detección de tablas nativa de PyMuPDF (find_tables) y se separa el
+       número EPITT del nombre de la señal con una regex.
+
+    Best-effort: el formato de estos PDF ha cambiado ligeramente con los años
+    (documentos anteriores a ~2023 pueden dar resultados más ruidosos); un
+    fallo aislado en una tabla no debe interrumpir el resto de la extracción.
+    """
+    senales: list[dict] = []
+    try:
+        doc = fitz.open(ruta_pdf)
+    except Exception:
+        return senales
+
+    texto = "\n".join(p.get_text("text") for p in doc)
+    patron_seccion1 = re.compile(
+        r"\d+\.\d+\.\s+(.+?)\s+[\u2013\u2014]\s+(.+?)\n\s*Authorisation procedure",
+        re.DOTALL,
+    )
+    for m in patron_seccion1.finditer(texto):
+        molecula = re.sub(r"\s+", " ", m.group(1)).strip()
+        senal = re.sub(r"\s+", " ", m.group(2)).strip()
+        senales.append({"molecula": molecula, "senal": senal, "epitt": None, "seccion": "actualizacion_producto"})
+
+    for pagina in doc:
+        try:
+            tablas = pagina.find_tables()
+        except Exception:
+            continue
+        for t in tablas.tables:
+            try:
+                filas = t.extract()
+            except Exception:
+                continue
+            if not filas or not filas[0]:
+                continue
+            cabecera = [(c or "").lower() for c in filas[0]]
+            if not any("inn" in c for c in cabecera):
+                continue  # no es la tabla de señales
+            for fila in filas[1:]:
+                inn = (fila[0] or "").replace("\n", " ").strip()
+                sig = (fila[1] or "").replace("\n", " ").strip()
+                if not inn or not sig:
+                    continue
+                m = re.match(r"^(.*?)\s*\((\d{4,7})\)", sig)
+                if m:
+                    senales.append({"molecula": inn, "senal": m.group(1).strip(), "epitt": m.group(2), "seccion": "tabla"})
+                else:
+                    senales.append({"molecula": inn, "senal": sig, "epitt": None, "seccion": "tabla"})
+
+    doc.close()
+
+    # dedupe por (molécula, señal) — la sección 3 suele repetir ítems ya
+    # listados en la sección 1
+    vistos: set[tuple[str, str]] = set()
+    unicos = []
+    for s in senales:
+        k = (s["molecula"].lower(), s["senal"].lower())
+        if k in vistos:
+            continue
+        vistos.add(k)
+        unicos.append(s)
+
+    # Filtro de calidad: en documentos sin la etiqueta 'Authorisation
+    # procedure' (frecuente antes de ~2022), el regex de la sección 1 puede
+    # capturar un bloque de texto largo en vez de un nombre de molécula/señal
+    # real; y algunas filas de tabla mal detectadas repiten el mismo texto en
+    # molécula y señal. Se descartan aquí antes de devolver el resultado.
+    limpio = [
+        s for s in unicos
+        if len(s["molecula"]) <= 150
+        and len(s["senal"]) <= 250
+        and s["molecula"].strip().lower() != s["senal"].strip().lower()
+    ]
+    return limpio
+
+
 def descargar_y_convertir(url_pdf: str, titulo: str) -> tuple[Path, Path, bool]:
     """Descarga el PDF (si no existe ya) y genera su .md. Devuelve
     (ruta_pdf, ruta_md, es_nuevo)."""
@@ -271,13 +360,16 @@ def raspar_recomendaciones() -> list[dict]:
     return [i for i in items if i["titulo"].lower().startswith("prac recommendations on signals")]
 
 
-def procesar_recomendaciones(items: list[dict]) -> list[dict]:
+def procesar_recomendaciones(items: list[dict]) -> tuple[list[dict], list[dict]]:
+    """Devuelve (registros_documentos, registros_senales)."""
     registros = []
+    registros_senales = []
     for item in items:
         fecha_reunion = extraer_fecha_reunion(
             item["titulo"], "PRAC recommendations on signals adopted at the ", " PRAC meeting"
         )
-        _, ruta_md, _ = descargar_y_convertir(item["url_pdf"], item["titulo"])
+        ruta_pdf, ruta_md, _ = descargar_y_convertir(item["url_pdf"], item["titulo"])
+        dedupe_doc = md5(item["referencia"], item["titulo"])
         registros.append({
             "titulo": item["titulo"],
             "fecha_reunion": fecha_reunion,
@@ -285,9 +377,22 @@ def procesar_recomendaciones(items: list[dict]) -> list[dict]:
             "fecha_publicacion": item["fecha_publicacion"],
             "url_pdf": item["url_pdf"],
             "contenido_md": ruta_md.read_text(encoding="utf-8")[:500_000],
-            "dedupe_key": md5(item["referencia"], item["titulo"]),
+            "dedupe_key": dedupe_doc,
         })
-    return registros
+
+        for s in extraer_senales(ruta_pdf):
+            registros_senales.append({
+                "molecula": s["molecula"],
+                "senal": s["senal"],
+                "epitt_no": s["epitt"],
+                "seccion": s["seccion"],
+                "fecha_reunion": fecha_reunion,
+                "referencia": item["referencia"],
+                "fecha_publicacion": item["fecha_publicacion"],
+                "url_pdf": item["url_pdf"],
+                "dedupe_key": md5(item["referencia"], s["molecula"], s["senal"], s["epitt"] or ""),
+            })
+    return registros, registros_senales
 
 
 # ─────────────────────────────────────────────────────────────────
@@ -300,7 +405,7 @@ def main() -> None:
     print("→ Raspando PRAC recommendations on safety signals ...")
     recomendaciones = raspar_recomendaciones()
     print(f"  {len(recomendaciones)} documento(s) de recomendaciones encontrados")
-    registros_recomendaciones = procesar_recomendaciones(recomendaciones)
+    registros_recomendaciones, registros_senales = procesar_recomendaciones(recomendaciones)
 
     (DATA_DIR / "ema_prac_minutas.json").write_text(
         json.dumps(registros_minutas, ensure_ascii=False, indent=2), encoding="utf-8"
@@ -308,8 +413,12 @@ def main() -> None:
     (DATA_DIR / "ema_prac_recomendaciones.json").write_text(
         json.dumps(registros_recomendaciones, ensure_ascii=False, indent=2), encoding="utf-8"
     )
+    (DATA_DIR / "ema_prac_senales.json").write_text(
+        json.dumps(registros_senales, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
     print(f"✓ Listo — {len(registros_minutas)} agendas/minutas, "
-          f"{len(registros_recomendaciones)} recomendaciones")
+          f"{len(registros_recomendaciones)} recomendaciones, "
+          f"{len(registros_senales)} señales (molécula/reacción) detectadas")
 
 
 if __name__ == "__main__":
