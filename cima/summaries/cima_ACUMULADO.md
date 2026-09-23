@@ -1,17 +1,17 @@
 # ConkoSafe IA — Cambios en Ficha Técnica y Prospecto (CIMA / AEMPS)
 
-**Generado:** 22/09/2026 17:45 UTC  
-**Periodo:** 23/06/2026 → 22/09/2026 (últimos 91 días)  
+**Generado:** 23/09/2026 17:58 UTC  
+**Periodo:** 23/06/2026 → 23/09/2026 (últimos 92 días)  
 **Fuente:** [CIMA — AEMPS (registroCambios)](https://cima.aemps.es/cima/rest/registroCambios)
 
 ## Resumen
 
 | Categoría | Cantidad |
 |---|---:|
-| Solo Ficha Técnica | 272 |
-| Solo Prospecto | 603 |
-| FT + Prospecto (ambos) | 1438 |
-| **TOTAL con FT o Prospecto** | **2313** |
+| Solo Ficha Técnica | 279 |
+| Solo Prospecto | 608 |
+| FT + Prospecto (ambos) | 1447 |
+| **TOTAL con FT o Prospecto** | **2334** |
 
 Descarga del detalle completo: `ConkosafeIA_Regulatorio_ACUMULADO.xlsx`
 
@@ -20,18 +20,39 @@ Descarga del detalle completo: `ConkosafeIA_Regulatorio_ACUMULADO.xlsx`
 - Viatris Limited — 121 cambio(s)
 - Sandoz Farmaceutica S.A. — 98 cambio(s)
 - Teva Pharma S.L.U. — 91 cambio(s)
-- Aurovitas Spain, S.A.U. — 75 cambio(s)
-- Laboratorios Normon S.A. — 74 cambio(s)
+- Aurovitas Spain, S.A.U. — 76 cambio(s)
+- Laboratorios Normon S.A. — 75 cambio(s)
 - Laboratorio Stada S.L. — 70 cambio(s)
 - Laboratorios Cinfa S.A. — 64 cambio(s)
 - Kern Pharma S.L. — 41 cambio(s)
-- Sun Pharmaceutical Industries (Europe) B.V. — 39 cambio(s)
-- Accord Healthcare S.L.U. — 39 cambio(s)
+- Accord Healthcare S.L.U. — 40 cambio(s)
+- Tarbis Farma S.L. — 39 cambio(s)
 
 ## Detalle de cambios
 
 | Nº Registro | Medicamento | Laboratorio | Fecha | Tipo | Cambio | Enlaces |
 |---|---|---|---|---|---|---|
+| BE271232 | EBASTEL FORTE FLAS 20 MG LIOFILIZADOS ORALES | Almirall S.A. | 23/09/2026 06:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/BE271232/P_BE271232.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/BE271232/P_BE271232.html) |
+| 90305 | VANGOZYR 125 MG CAPSULAS DURAS | Mabo Farma S.A. | 23/09/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/90305/FT_90305.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/90305/FT_90305.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/90305/P_90305.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/90305/P_90305.html) |
+| 89274 | RIVAXA 20 MG COMPRIMIDOS RECUBIERTOS CON PELÍCULA EFG | Glenmark Pharmaceuticals S.R.O. | 23/09/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/89274/FT_89274.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/89274/FT_89274.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/89274/P_89274.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/89274/P_89274.html) |
+| 89276 | RIVAXA 15 MG COMPRIMIDOS RECUBIERTOS CON PELÍCULA EFG | Glenmark Pharmaceuticals S.R.O. | 23/09/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/89276/FT_89276.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/89276/FT_89276.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/89276/P_89276.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/89276/P_89276.html) |
+| 91611 | PRUCALOPRIDA TARBIS 1 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Tarbis Farma S.L. | 23/09/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/91611/FT_91611.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/91611/FT_91611.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/91611/P_91611.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91611/P_91611.html) |
+| 91612 | PRUCALOPRIDA TARBIS 2 MG COMPRIMIDOS RECUBIERTOS CON PELÍCULA EFG | Tarbis Farma S.L. | 23/09/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/91612/FT_91612.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/91612/FT_91612.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/91612/P_91612.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91612/P_91612.html) |
+| 49550 | MUCOACTIOL 50 MG/ML SOLUCIÓN ORAL | Laboratorios Ern S.A. | 23/09/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/49550/FT_49550.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/49550/FT_49550.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/49550/P_49550.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/49550/P_49550.html) |
+| 76285 | LEVETIRACETAM NORMON 100 MG/ML CONCENTRADO PARA SOLUCION PARA PERFUSION EFG | Laboratorios Normon S.A. | 23/09/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/76285/FT_76285.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/76285/FT_76285.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/76285/P_76285.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/76285/P_76285.html) |
+| 82909 | MAG3 RADIOPHARMACY 1 MG EQUIPO DE REACTIVOS PARA PREPARACION RADIOFARMACEUTICA EFG | Medi-Radiopharma Kft. | 23/09/2026 06:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/82909/P_82909.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/82909/P_82909.html) |
+| 91037 | LIRAGLUTIDA DR. REDDYS 6 MG/ML SOLUCION INYECTABLE EN PLUMA PRECARGADA | Reddy Pharma Iberia S.A. | 23/09/2026 06:56 | MODIFICADO | FT | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/91037/FT_91037.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/91037/FT_91037.html) |
+| 85641 | GEMCITABINA HIKMA 1000 MG CONCENTRADO PARA SOLUCION PARA PERFUSION | Hikma Farmaceutica (Portugal) S.A. | 23/09/2026 06:56 | MODIFICADO | FT | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/85641/FT_85641.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/85641/FT_85641.html) |
+| 85642 | GEMCITABINA HIKMA 200 MG CONCENTRADO PARA SOLUCION PARA PERFUSION | Hikma Farmaceutica (Portugal) S.A. | 23/09/2026 06:56 | MODIFICADO | FT | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/85642/FT_85642.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/85642/FT_85642.html) |
+| 85643 | GEMCITABINA HIKMA 2000 MG CONCENTRADO PARA SOLUCION PARA PERFUSION | Hikma Farmaceutica (Portugal) S.A. | 23/09/2026 06:56 | MODIFICADO | FT | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/85643/FT_85643.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/85643/FT_85643.html) |
+| 89739 | CICLOFOSFAMIDA ACCORD 200 MG/ML CONCENTRADO PARA SOLUCION INYECTABLE Y PARA PERFUSION | Accord Healthcare S.L.U. | 23/09/2026 06:55 | MODIFICADO | FT | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/89739/FT_89739.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/89739/FT_89739.html) |
+| 46247 | ACTITHIOL MUCOLITICO INFANTIL 20 MG/ML SOLUCIÓN ORAL | Laboratorios Ern S.A. | 23/09/2026 06:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/46247/FT_46247.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/46247/FT_46247.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/46247/P_46247.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/46247/P_46247.html) |
+| 90078 | AZERIX 137 MICROGRAMOS/50 MICROGRAMOS/APLICACION SUSPENSION PARA PULVERIZACION NASAL | Especialidades Farmaceuticas Centrum S.A. | 23/09/2026 06:55 | MODIFICADO | FT | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/90078/FT_90078.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/90078/FT_90078.html) |
+| 91502 | AMFOTERICINA B LIPOSOMAL HIKMA 50 MG POLVO PARA CONCENTRADO PARA DISPERSION PARA PERFUSION | Hikma Farmaceutica (Portugal) S.A. | 23/09/2026 06:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/91502/P_91502.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91502/P_91502.html) |
+| 91613 | ACIDO FOLICO AUROVITAS 5 MG COMPRIMIDOS | Aurovitas Spain, S.A.U. | 23/09/2026 06:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/91613/FT_91613.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/91613/FT_91613.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/91613/P_91613.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91613/P_91613.html) |
+| 91494 | BRESALTYN 137 MICROGRAMOS/50 MICROGRAMOS/APLICACION SUSPENSION PARA PULVERIZACION NASAL | Mabo Farma S.A. | 23/09/2026 06:55 | MODIFICADO | FT | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/91494/FT_91494.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/91494/FT_91494.html) |
+| 64452 | KALPRESS 160 mg COMPRIMIDOS RECUBIERTOS CON PELICULA | Novartis Farmaceutica S.A. | 23/09/2026 06:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/64452/P_64452.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/64452/P_64452.html) |
+| 64453 | KALPRESS 80 mg COMPRIMIDOS RECUBIERTOS CON PELICULA | Novartis Farmaceutica S.A. | 23/09/2026 06:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/64453/P_64453.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/64453/P_64453.html) |
 | 90170 | VALOMINDO 80 MG/1,5 MG COMPRIMIDOS DE LIBERACION MODIFICADA | Krka D.D. Novo Mesto | 22/09/2026 06:56 | MODIFICADO | FT | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/90170/FT_90170.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/90170/FT_90170.html) |
 | 88060 | TREPROSTINILO TILLOMED 10 MG/ML SOLUCION PARA PERFUSION EFG | Tillomed Malta Limited | 22/09/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/88060/FT_88060.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/88060/FT_88060.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/88060/P_88060.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/88060/P_88060.html) |
 | 88061 | TREPROSTINILO TILLOMED 1 MG/ML SOLUCION PARA PERFUSION EFG | Tillomed Malta Limited | 22/09/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/88061/FT_88061.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/88061/FT_88061.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/88061/P_88061.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/88061/P_88061.html) |
