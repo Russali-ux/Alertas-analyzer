@@ -1,17 +1,17 @@
 # ConkoSafe IA — Cambios en Ficha Técnica y Prospecto (CIMA / AEMPS)
 
-**Generado:** 23/09/2026 17:58 UTC  
-**Periodo:** 23/06/2026 → 23/09/2026 (últimos 92 días)  
+**Generado:** 24/09/2026 18:00 UTC  
+**Periodo:** 23/06/2026 → 24/09/2026 (últimos 93 días)  
 **Fuente:** [CIMA — AEMPS (registroCambios)](https://cima.aemps.es/cima/rest/registroCambios)
 
 ## Resumen
 
 | Categoría | Cantidad |
 |---|---:|
-| Solo Ficha Técnica | 279 |
-| Solo Prospecto | 608 |
-| FT + Prospecto (ambos) | 1447 |
-| **TOTAL con FT o Prospecto** | **2334** |
+| Solo Ficha Técnica | 295 |
+| Solo Prospecto | 609 |
+| FT + Prospecto (ambos) | 1463 |
+| **TOTAL con FT o Prospecto** | **2367** |
 
 Descarga del detalle completo: `ConkosafeIA_Regulatorio_ACUMULADO.xlsx`
 
@@ -20,10 +20,10 @@ Descarga del detalle completo: `ConkosafeIA_Regulatorio_ACUMULADO.xlsx`
 - Viatris Limited — 121 cambio(s)
 - Sandoz Farmaceutica S.A. — 98 cambio(s)
 - Teva Pharma S.L.U. — 91 cambio(s)
+- Laboratorios Cinfa S.A. — 78 cambio(s)
+- Laboratorios Normon S.A. — 77 cambio(s)
 - Aurovitas Spain, S.A.U. — 76 cambio(s)
-- Laboratorios Normon S.A. — 75 cambio(s)
 - Laboratorio Stada S.L. — 70 cambio(s)
-- Laboratorios Cinfa S.A. — 64 cambio(s)
 - Kern Pharma S.L. — 41 cambio(s)
 - Accord Healthcare S.L.U. — 40 cambio(s)
 - Tarbis Farma S.L. — 39 cambio(s)
@@ -32,6 +32,39 @@ Descarga del detalle completo: `ConkosafeIA_Regulatorio_ACUMULADO.xlsx`
 
 | Nº Registro | Medicamento | Laboratorio | Fecha | Tipo | Cambio | Enlaces |
 |---|---|---|---|---|---|---|
+| 78671 | VANCOMICINA MIP 1000 MG POLVO PARA SOLUCION PARA PERFUSION EFG | Mip Pharma Gmbh | 24/09/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/78671/FT_78671.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/78671/FT_78671.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/78671/P_78671.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/78671/P_78671.html) |
+| 78672 | VANCOMICINA MIP 500 MG POLVO PARA SOLUCION PARA PERFUSION EFG | Mip Pharma Gmbh | 24/09/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/78672/FT_78672.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/78672/FT_78672.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/78672/P_78672.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/78672/P_78672.html) |
+| 14517 | OPTALIDON 500 MG/75MG SUPOSITORIOS | Perrigo Espana S.A. | 24/09/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/14517/FT_14517.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/14517/FT_14517.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/14517/P_14517.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/14517/P_14517.html) |
+| 89098 | PIRFENIDONA UMEDICA 267 MG COMPRIMIDOS RECUBIERTOS CON PELÍCULA EFG | Umedica Netherlands B.V. | 24/09/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/89098/FT_89098.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/89098/FT_89098.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/89098/P_89098.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/89098/P_89098.html) |
+| 89099 | PIRFENIDONA UMEDICA 801 MG COMPRIMIDOS RECUBIERTOS CON PELÍCULA EFG | Umedica Netherlands B.V. | 24/09/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/89099/FT_89099.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/89099/FT_89099.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/89099/P_89099.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/89099/P_89099.html) |
+| 90207 | LINAGLIPTINA/METFORMINA PHAROS 2,5 MG/1.000 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Pharos Pharmaceutical Oriented Services Ltd. | 24/09/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/90207/FT_90207.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/90207/FT_90207.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/90207/P_90207.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/90207/P_90207.html) |
+| 90208 | LINAGLIPTINA/METFORMINA PHAROS 2,5 MG/850 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Pharos Pharmaceutical Oriented Services Ltd. | 24/09/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/90208/FT_90208.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/90208/FT_90208.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/90208/P_90208.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/90208/P_90208.html) |
+| 76285 | LEVETIRACETAM NORMON 100 MG/ML CONCENTRADO PARA SOLUCION PARA PERFUSION EFG | Laboratorios Normon S.A. | 24/09/2026 06:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/76285/FT_76285.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/76285/FT_76285.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/76285/P_76285.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/76285/P_76285.html) |
+| 90323 | ESCITALOPRAM IPCA 10 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Ipca Produtos Farmacêuticos Unipessoal Lda | 24/09/2026 06:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/90323/FT_90323.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/90323/FT_90323.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/90323/P_90323.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/90323/P_90323.html) |
+| 90324 | ESCITALOPRAM IPCA 20 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Ipca Produtos Farmacêuticos Unipessoal Lda | 24/09/2026 06:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/90324/FT_90324.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/90324/FT_90324.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/90324/P_90324.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/90324/P_90324.html) |
+| 90325 | ESCITALOPRAM IPCA 5 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Ipca Produtos Farmacêuticos Unipessoal Lda | 24/09/2026 06:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/90325/FT_90325.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/90325/FT_90325.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/90325/P_90325.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/90325/P_90325.html) |
+| 88693 | DABIGATRAN ETEXILATO CINFA 75 MG CAPSULAS DURAS EFG | Laboratorios Cinfa S.A. | 24/09/2026 06:55 | MODIFICADO | FT | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/88693/FT_88693.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/88693/FT_88693.html) |
+| 91217 | BUSCOPRESC 10 MG COMPRIMIDOS RECUBIERTOS | Opella Healthcare Spain S.L. | 24/09/2026 06:55 | MODIFICADO | FT | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/91217/FT_91217.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/91217/FT_91217.html) |
+| 77100 | BACTYFLOX 500 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Mabo Farma S.A. | 24/09/2026 06:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/77100/P_77100.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/77100/P_77100.html) |
+| 68070 | PANTOPRAZOL RECORDATI 40 mg COMPRIMIDOS GASTRORRESISTENTES EFG | Casen Recordati S.L. | 24/09/2026 06:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/68070/FT_68070.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/68070/FT_68070.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/68070/P_68070.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/68070/P_68070.html) |
+| 72514 | GALANTAMINA NORMON 4 mg/ml SOLUCION ORAL EFG | Laboratorios Normon S.A. | 24/09/2026 06:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/72514/FT_72514.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/72514/FT_72514.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/72514/P_72514.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/72514/P_72514.html) |
+| 62764 | OMEPRAZOL CINFAMED 20 mg CAPSULAS DURAS GASTRORESISTENTES EFG | Laboratorios Cinfa S.A. | 24/09/2026 06:55 | MODIFICADO | FT | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/62764/FT_62764.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/62764/FT_62764.html) |
+| 65570 | OMEPRAZOL CINFAMED 40 mg CAPSULAS DURAS GASTRORRESISTENTES | Laboratorios Cinfa S.A. | 24/09/2026 06:55 | MODIFICADO | FT | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/65570/FT_65570.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/65570/FT_65570.html) |
+| 85116 | OLANZAPINA CINFA 10 MG CAPSULAS DURAS EFG | Laboratorios Cinfa S.A. | 24/09/2026 06:55 | MODIFICADO | FT | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/85116/FT_85116.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/85116/FT_85116.html) |
+| 85117 | OLANZAPINA CINFA 15 MG CAPSULAS DURAS EFG | Laboratorios Cinfa S.A. | 24/09/2026 06:55 | MODIFICADO | FT | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/85117/FT_85117.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/85117/FT_85117.html) |
+| 85118 | OLANZAPINA CINFA 20 MG CAPSULAS DURAS EFG | Laboratorios Cinfa S.A. | 24/09/2026 06:55 | MODIFICADO | FT | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/85118/FT_85118.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/85118/FT_85118.html) |
+| 85119 | OLANZAPINA CINFA 2,5 MG CAPSULAS DURAS EFG | Laboratorios Cinfa S.A. | 24/09/2026 06:55 | MODIFICADO | FT | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/85119/FT_85119.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/85119/FT_85119.html) |
+| 85120 | OLANZAPINA CINFA 5 MG CAPSULAS DURAS EFG | Laboratorios Cinfa S.A. | 24/09/2026 06:55 | MODIFICADO | FT | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/85120/FT_85120.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/85120/FT_85120.html) |
+| 85154 | OLANZAPINA CINFA 7.5 MG CAPSULAS DURAS EFG | Laboratorios Cinfa S.A. | 24/09/2026 06:55 | MODIFICADO | FT | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/85154/FT_85154.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/85154/FT_85154.html) |
+| 61413 | MINURIN 4 MICROGRAMOS/ML SOLUCIÓN INYECTABLE | Ferring S.A.U. | 24/09/2026 06:55 | MODIFICADO | FT | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/61413/FT_61413.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/61413/FT_61413.html) |
+| 68116 | METAMIZOL CINFA 575 mg CAPSULAS DURAS EFG | Laboratorios Cinfa S.A. | 24/09/2026 06:55 | MODIFICADO | FT | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/68116/FT_68116.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/68116/FT_68116.html) |
+| 80224 | MICOFENOLATO DE MOFETILO CINFA 250 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Laboratorios Cinfa S.A. | 24/09/2026 06:55 | MODIFICADO | FT | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/80224/FT_80224.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/80224/FT_80224.html) |
+| 80225 | MICOFENOLATO DE MOFETILO CINFA 500 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Laboratorios Cinfa S.A. | 24/09/2026 06:55 | MODIFICADO | FT | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/80225/FT_80225.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/80225/FT_80225.html) |
+| 82778 | JIAX SEMANAL 2 MG/ML SOLUCIÓN ORAL | Laboratorios Gebro Pharma S.A. | 24/09/2026 06:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/82778/FT_82778.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/82778/FT_82778.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/82778/P_82778.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/82778/P_82778.html) |
+| 63034 | GRACIAL COMPRIMIDOS | Aspen Pharma Trading Limited | 24/09/2026 06:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/63034/FT_63034.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/63034/FT_63034.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/63034/P_63034.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/63034/P_63034.html) |
+| 88691 | DABIGATRAN ETEXILATO CINFA 150 MG CAPSULAS DURAS EFG | Laboratorios Cinfa S.A. | 24/09/2026 06:55 | MODIFICADO | FT | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/88691/FT_88691.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/88691/FT_88691.html) |
+| 88692 | DABIGATRAN ETEXILATO CINFA 110 MG CAPSULAS DURAS EFG | Laboratorios Cinfa S.A. | 24/09/2026 06:55 | MODIFICADO | FT | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/88692/FT_88692.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/88692/FT_88692.html) |
+| 61382 | ANGITUSS 6MG/ML JARABE | Alfasigma Espana S.L. | 24/09/2026 06:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/61382/FT_61382.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/61382/FT_61382.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/61382/P_61382.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/61382/P_61382.html) |
 | BE271232 | EBASTEL FORTE FLAS 20 MG LIOFILIZADOS ORALES | Almirall S.A. | 23/09/2026 06:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/BE271232/P_BE271232.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/BE271232/P_BE271232.html) |
 | 90305 | VANGOZYR 125 MG CAPSULAS DURAS | Mabo Farma S.A. | 23/09/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/90305/FT_90305.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/90305/FT_90305.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/90305/P_90305.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/90305/P_90305.html) |
 | 89274 | RIVAXA 20 MG COMPRIMIDOS RECUBIERTOS CON PELÍCULA EFG | Glenmark Pharmaceuticals S.R.O. | 23/09/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/89274/FT_89274.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/89274/FT_89274.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/89274/P_89274.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/89274/P_89274.html) |
