@@ -1,17 +1,28 @@
-name: EMA PRAC (Agendas/Minutas + Recomendaciones + Señales HALMED) → Supabase
+name: EMA (PRAC + HALMED semanal · Noticias cada 5 días) → Supabase
 
 on:
   schedule:
-    # 08:00 UTC = 03:00 hora de Lima, todos los lunes.
-    # El PRAC se reúne 1 vez al mes; correr semanalmente es margen de sobra
-    # para capturar la publicación de agenda/minuta/recomendaciones sin
-    # sobrecargar el sitio de EMA (el upsert es idempotente, no duplica).
+    # PRAC: 08:00 UTC = 03:00 Lima, todos los lunes. El PRAC se reúne 1 vez
+    # al mes; semanal es margen de sobra (el upsert es idempotente).
     - cron: '0 8 * * 1'
-  workflow_dispatch: {}
+    # Noticias EMA (News JSON data file): 09:00 UTC = 04:00 Lima, cada 5 días
+    # del mes (1, 6, 11, 16, 21, 26, 31). Al cambiar de mes el intervalo puede
+    # acortarse a 1-5 días; es una limitación del cron de GitHub.
+    - cron: '0 9 */5 * *'
+  workflow_dispatch:
+    inputs:
+      fuente:
+        description: 'Qué fuente ejecutar'
+        type: choice
+        options: [todo, prac, noticias]
+        default: todo
 
 concurrency:
   group: ema-prac
   cancel-in-progress: false
+
+permissions:
+  contents: write
 
 jobs:
   scrape-y-sync:
@@ -20,6 +31,23 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      # Decide qué correr según el disparador:
+      #   cron de lunes      -> prac
+      #   cron cada 5 días   -> noticias
+      #   manual             -> lo elegido en el input (por defecto todo)
+      - name: Determinar fuente
+        id: f
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            FUENTE="${{ inputs.fuente }}"
+          elif [ "${{ github.event.schedule }}" = "0 9 */5 * *" ]; then
+            FUENTE="noticias"
+          else
+            FUENTE="prac"
+          fi
+          echo "fuente=${FUENTE:-todo}" >> "$GITHUB_OUTPUT"
+          echo "Fuente a ejecutar: ${FUENTE:-todo}"
 
       - name: Configurar Python
         uses: actions/setup-python@v5
@@ -32,21 +60,27 @@ jobs:
           pip install requests beautifulsoup4 pymupdf openpyxl
 
       - name: Raspar EMA PRAC (agendas, minutas, recomendaciones)
-        run: python ema_prac/scraper_ema_prac.py
+        if: steps.f.outputs.fuente != 'noticias'
+        run: python ema_prac/scraper_ema_prac.py --fuente prac
 
       # Lista acumulada de señales PRAC publicada por HALMED (INN / Señal /
-      # Acción para el titular). El nombre del .xlsx cambia cada mes, el script
-      # lo localiza en la página índice. Si HALMED falla, no bloquea el resto:
-      # el sync sube el último JSON commiteado (upsert idempotente).
+      # Acción para el titular). Si HALMED falla, no bloquea el resto.
       - name: Descargar lista de señales PRAC (HALMED)
+        if: steps.f.outputs.fuente != 'noticias'
         continue-on-error: true
         run: python ema_prac/scraper_halmed_senales.py
+
+      # News JSON data file de EMA (página "Download website data in JSON
+      # data format"). El script localiza el enlace y descarga el JSON completo.
+      - name: Descargar Noticias EMA (News JSON)
+        if: steps.f.outputs.fuente != 'prac'
+        run: python ema_prac/scraper_ema_prac.py --fuente noticias
 
       - name: Sync a Supabase
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-        run: python ema_prac/ema_prac_sync_supabase.py
+        run: python ema_prac/ema_prac_sync_supabase.py --fuente ${{ steps.f.outputs.fuente }}
 
       - name: Commit de los PDF/Markdown/JSON nuevos
         run: |
@@ -54,6 +88,9 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add ema_prac/pdfs ema_prac/md ema_prac/data 2>/dev/null || true
           if ! git diff --cached --quiet; then
-            git commit -m "chore(ema-prac): actualización automática $(date -u +%F)"
+            git commit -m "chore(ema): actualización automática ${{ steps.f.outputs.fuente }} $(date -u +%F)"
+            # Si el lunes coincide con un día de noticias, la otra corrida pudo
+            # haber empujado antes: rebase para no fallar el push.
+            git pull --rebase origin "${GITHUB_REF_NAME}"
             git push
           fi

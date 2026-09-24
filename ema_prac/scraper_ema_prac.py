@@ -17,9 +17,19 @@ Por cada PDF nuevo (que no exista ya en ema_prac/pdfs/):
   - Se extrae el texto con PyMuPDF y se guarda como Markdown en ema_prac/md/
   - Se arma un registro para Supabase (dedupe_key = md5(referencia|titulo))
 
+Tercera fuente (independiente de los PDF):
+  3. Noticias EMA — "News JSON data file" publicado en
+     https://www.ema.europa.eu/en/about-us/about-website/download-website-data-json-data-format
+     Se localiza el enlace en esa página (fallback a la URL conocida), se
+     descarga el JSON completo (~3900 noticias) y se normaliza para Supabase
+     (dedupe_key = md5(news_url)). Conserva la fecha "primera_deteccion" de
+     cada noticia a partir del JSON previo commiteado, para saber cuáles son
+     nuevas en cada corrida.
+
 Salidas (consumidas luego por ema_prac_sync_supabase.py):
   ema_prac/data/ema_prac_minutas.json          (agendas + minutas)
   ema_prac/data/ema_prac_recomendaciones.json  (PRAC recommendations on signals)
+  ema_prac/data/ema_noticias.json              (News JSON data file de EMA)
 
 NOTA sobre el HTML de EMA: las clases CSS "reference-number", "first-published"
 y "last-updated" vienen concatenadas sin espacio con "fw-normal" (bug de su
@@ -29,16 +39,20 @@ class="label"> en su lugar (ver `_valor_por_label`).
 
 Uso local:
   pip install requests beautifulsoup4 pymupdf --break-system-packages
-  python3 ema_prac/scraper_ema_prac.py
+  python3 ema_prac/scraper_ema_prac.py                     # todo (PRAC + noticias)
+  python3 ema_prac/scraper_ema_prac.py --fuente prac       # solo agendas/minutas/recomendaciones
+  python3 ema_prac/scraper_ema_prac.py --fuente noticias   # solo News JSON (workflow cada 5 días)
 """
 
 from __future__ import annotations
 
+import argparse
 import hashlib
 import json
 import re
 import sys
 import time
+from datetime import datetime, timezone
 from pathlib import Path
 from urllib.parse import urljoin
 
@@ -53,6 +67,10 @@ SIGNALS_PAGE = (
     "pharmacovigilance-post-authorisation/signal-management/"
     "prac-recommendations-safety-signals"
 )
+# Noticias EMA: página "Download website data in JSON data format" y URL
+# conocida del archivo (fallback si cambia el maquetado de la página).
+JSON_DATA_PAGE = f"{BASE_URL}/en/about-us/about-website/download-website-data-json-data-format"
+NEWS_JSON_FALLBACK = f"{BASE_URL}/en/documents/report/news-json-report_en.json"
 
 ROOT = Path(__file__).resolve().parent
 PDF_DIR = ROOT / "pdfs"
@@ -396,7 +414,100 @@ def procesar_recomendaciones(items: list[dict]) -> tuple[list[dict], list[dict]]
 
 
 # ─────────────────────────────────────────────────────────────────
-def main() -> None:
+# Noticias EMA (News JSON data file)
+# ─────────────────────────────────────────────────────────────────
+def localizar_news_json() -> str:
+    """Busca en la página de descargas JSON el enlace del 'News JSON data file'.
+    Si no lo encuentra (o la página falla), usa la URL conocida."""
+    try:
+        soup = get_soup(JSON_DATA_PAGE)
+        for a in soup.select("a[href]"):
+            href = a["href"]
+            texto = a.get_text(" ", strip=True).lower()
+            if "news-json" in href.lower() or ("news" in texto and "json" in texto):
+                url = urljoin(BASE_URL, href)
+                if url.lower().endswith(".json"):
+                    return url
+        print("  ⚠️  No se encontró el enlace 'News JSON' en la página; uso la URL conocida")
+    except requests.RequestException as exc:
+        print(f"  ⚠️  No se pudo leer {JSON_DATA_PAGE} ({exc}); uso la URL conocida")
+    return NEWS_JSON_FALLBACK
+
+
+def _fecha_iso(ddmmaaaa: str | None) -> str | None:
+    """'18/09/2026' -> '2026-09-18' (None si viene vacío o con otro formato)."""
+    m = re.fullmatch(r"(\d{1,2})/(\d{1,2})/(\d{4})", (ddmmaaaa or "").strip())
+    return f"{m[3]}-{int(m[2]):02d}-{int(m[1]):02d}" if m else None
+
+
+def _lista(texto: str | None) -> str:
+    """Normaliza listas separadas por ';': quita vacíos, espacios y repetidos
+    (el JSON de EMA trae casos como 'Human;Human'), respetando el orden."""
+    return ";".join(dict.fromkeys(x.strip() for x in (texto or "").split(";") if x.strip()))
+
+
+def raspar_noticias() -> list[dict]:
+    url = localizar_news_json()
+    print(f"  Descargando {url}")
+    r = session.get(url, timeout=120, headers={"Accept": "application/json"})
+    r.raise_for_status()
+    payload = r.json()
+    datos = payload.get("data", payload) if isinstance(payload, dict) else payload
+    meta = payload.get("meta", {}) if isinstance(payload, dict) else {}
+    if not isinstance(datos, list) or not datos:
+        raise ValueError("El News JSON de EMA no trae una lista de noticias en 'data'")
+    print(f"  {len(datos)} noticias en el archivo (meta: {meta})")
+
+    # Fecha de primera detección: se conserva la del JSON previo (commiteado)
+    ruta = DATA_DIR / "ema_noticias.json"
+    previas: dict[str, str] = {}
+    if ruta.exists():
+        try:
+            previas = {n["dedupe_key"]: n.get("primera_deteccion")
+                       for n in json.loads(ruta.read_text(encoding="utf-8"))}
+        except (ValueError, KeyError):
+            previas = {}
+    hoy = datetime.now(timezone.utc).date().isoformat()
+
+    registros: list[dict] = []
+    vistos: set[str] = set()
+    for n in datos:
+        url_noticia = (n.get("news_url") or "").strip()
+        titulo = (n.get("title") or "").strip()
+        if not url_noticia or not titulo:
+            continue
+        key = md5(url_noticia)
+        if key in vistos:
+            continue
+        vistos.add(key)
+        registros.append({
+            "titulo": titulo,
+            "nota_prensa": (n.get("press_release") or "").strip().lower() == "yes",
+            "medicamentos": _lista(n.get("related_medicine_referral")) or None,
+            "categorias": _lista(n.get("categories")) or None,
+            "temas": _lista(n.get("topics")) or None,
+            "resumen": (n.get("news_summary") or "").strip() or None,
+            "fecha_publicacion": _fecha_iso(n.get("first_published_date")),
+            "fecha_actualizacion": _fecha_iso(n.get("last_updated_date")),
+            "url": url_noticia,
+            "primera_deteccion": previas.get(key) or hoy,
+            "fuente_timestamp": meta.get("timestamp"),
+            "dedupe_key": key,
+        })
+
+    registros.sort(key=lambda x: x["fecha_publicacion"] or "", reverse=True)
+    nuevas = [x for x in registros if x["dedupe_key"] not in previas]
+    if previas:
+        print(f"  {len(nuevas)} noticia(s) nueva(s) respecto a la corrida anterior")
+        for x in nuevas[:20]:
+            print(f"    + {x['fecha_publicacion']}  {x['titulo'][:110]}")
+    else:
+        print("  Primera carga: todas las noticias se marcan con la fecha de hoy")
+    return registros
+
+
+# ─────────────────────────────────────────────────────────────────
+def ejecutar_prac() -> None:
     print("→ Raspando agendas y minutas del PRAC ...")
     agendas, minutas = raspar_agendas_y_minutas()
     print(f"  {len(agendas)} agenda(s), {len(minutas)} minuta(s) encontradas en las últimas páginas")
@@ -421,9 +532,29 @@ def main() -> None:
           f"{len(registros_senales)} señales (molécula/reacción) detectadas")
 
 
+def ejecutar_noticias() -> None:
+    print("→ Descargando Noticias EMA (News JSON data file) ...")
+    registros = raspar_noticias()
+    (DATA_DIR / "ema_noticias.json").write_text(
+        json.dumps(registros, ensure_ascii=False, indent=1), encoding="utf-8"
+    )
+    print(f"✓ Noticias EMA — {len(registros)} registros guardados en data/ema_noticias.json")
+
+
+def main() -> None:
+    ap = argparse.ArgumentParser(description="Scraper EMA: PRAC + Noticias")
+    ap.add_argument("--fuente", choices=("todo", "prac", "noticias"), default="todo",
+                    help="qué fuente raspar (por defecto: todo)")
+    fuente = ap.parse_args().fuente
+    if fuente in ("todo", "prac"):
+        ejecutar_prac()
+    if fuente in ("todo", "noticias"):
+        ejecutar_noticias()
+
+
 if __name__ == "__main__":
     try:
         main()
-    except requests.HTTPError as exc:
-        print(f"✗ Error HTTP: {exc}", file=sys.stderr)
+    except (requests.RequestException, ValueError) as exc:
+        print(f"✗ Error: {exc}", file=sys.stderr)
         sys.exit(1)

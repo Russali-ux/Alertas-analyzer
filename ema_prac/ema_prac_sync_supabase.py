@@ -9,6 +9,8 @@ Sube (upsert) los JSON generados por scraper_ema_prac.py a Supabase.
 - Lee ema_prac/data/ema_prac_recomendaciones.json  -> tabla public.ema_prac_recomendaciones
 - Lee ema_prac/data/ema_prac_halmed_senales.json   -> tabla public.ema_prac_halmed_senales
   (INN / Señal / Acción para el titular, desde la lista acumulada de HALMED)
+- Lee ema_prac/data/ema_noticias.json              -> tabla public.ema_noticias
+  (News JSON data file de EMA, refrescado cada 5 días)
 
 Usa la SERVICE_ROLE key (bypassa RLS) y hace upsert idempotente con
 on_conflict=dedupe_key + Prefer: resolution=merge-duplicates (mismo patrón
@@ -20,11 +22,14 @@ Variables de entorno requeridas (GitHub Secrets):
   SUPABASE_SERVICE_ROLE_KEY    service_role key (secreta, NUNCA en el cliente)
 
 Uso local:
-  python3 ema_prac/ema_prac_sync_supabase.py
+  python3 ema_prac/ema_prac_sync_supabase.py                    # todo
+  python3 ema_prac/ema_prac_sync_supabase.py --fuente prac      # minutas/recom/HALMED
+  python3 ema_prac/ema_prac_sync_supabase.py --fuente noticias  # solo ema_noticias
 """
 
 from __future__ import annotations
 
+import argparse
 import json
 import os
 import sys
@@ -68,7 +73,7 @@ def deduplicar(filas: list[dict]) -> list[dict]:
     return list(por_key.values())
 
 
-def upsert(tabla: str, filas: list[dict]) -> int:
+def upsert(tabla: str, filas: list[dict], lote: int = LOTE) -> int:
     filas = deduplicar(filas)
     if not filas:
         print(f"  {tabla}: nada que subir")
@@ -81,11 +86,11 @@ def upsert(tabla: str, filas: list[dict]) -> int:
         "Prefer": "resolution=merge-duplicates,return=minimal",
     }
     total = 0
-    for i in range(0, len(filas), LOTE):
-        chunk = filas[i:i + LOTE]
+    for i in range(0, len(filas), lote):
+        chunk = filas[i:i + lote]
         r = requests.post(url, headers=headers, data=json.dumps(chunk), timeout=120)
         if r.status_code not in (200, 201, 204):
-            print(f"  ✗ {tabla} lote {i // LOTE + 1}: {r.status_code} {r.text[:300]}", file=sys.stderr)
+            print(f"  ✗ {tabla} lote {i // lote + 1}: {r.status_code} {r.text[:300]}", file=sys.stderr)
             r.raise_for_status()
         total += len(chunk)
         print(f"  {tabla}: {total}/{len(filas)} upsert")
@@ -143,17 +148,42 @@ def preparar_halmed(regs: list[dict]) -> list[dict]:
     ]
 
 
+CAMPOS_NOTICIAS = (
+    "titulo", "nota_prensa", "medicamentos", "categorias", "temas", "resumen",
+    "fecha_publicacion", "fecha_actualizacion", "url", "primera_deteccion",
+    "fuente_timestamp", "dedupe_key",
+)
+
+
+def preparar_noticias(regs: list[dict]) -> list[dict]:
+    return [
+        {k: r.get(k) for k in CAMPOS_NOTICIAS}
+        for r in regs
+        if r.get("dedupe_key") and (r.get("titulo") or "").strip()
+    ]
+
+
 def main() -> None:
-    print("→ Sincronizando módulo EMA PRAC a Supabase")
+    ap = argparse.ArgumentParser(description="Sync EMA PRAC + Noticias a Supabase")
+    ap.add_argument("--fuente", choices=("todo", "prac", "noticias"), default="todo")
+    fuente = ap.parse_args().fuente
+    print(f"→ Sincronizando módulo EMA a Supabase (fuente: {fuente})")
+    resumen = []
 
-    minutas = preparar_minutas(cargar("ema_prac_minutas.json"))
-    recomendaciones = preparar_recomendaciones(cargar("ema_prac_recomendaciones.json"))
+    if fuente in ("todo", "prac"):
+        minutas = preparar_minutas(cargar("ema_prac_minutas.json"))
+        recomendaciones = preparar_recomendaciones(cargar("ema_prac_recomendaciones.json"))
+        n1 = upsert("ema_prac_minutas", minutas)
+        n2 = upsert("ema_prac_recomendaciones", recomendaciones)
+        n3 = upsert("ema_prac_halmed_senales", preparar_halmed(cargar("ema_prac_halmed_senales.json")))
+        resumen.append(f"Minutas/Agendas: {n1} · Recomendaciones: {n2} · Señales HALMED: {n3}")
 
-    n1 = upsert("ema_prac_minutas", minutas)
-    n2 = upsert("ema_prac_recomendaciones", recomendaciones)
-    n3 = upsert("ema_prac_halmed_senales", preparar_halmed(cargar("ema_prac_halmed_senales.json")))
+    if fuente in ("todo", "noticias"):
+        # Filas livianas (sin contenido_md): lotes de 500 bastan y aceleran ~3900 filas
+        n4 = upsert("ema_noticias", preparar_noticias(cargar("ema_noticias.json")), lote=500)
+        resumen.append(f"Noticias EMA: {n4}")
 
-    print(f"\n✓ Listo — Minutas/Agendas: {n1} · Recomendaciones: {n2} · Señales HALMED: {n3}")
+    print("\n✓ Listo — " + " · ".join(resumen))
 
 
 if __name__ == "__main__":
