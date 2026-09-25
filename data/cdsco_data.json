@@ -1,5 +1,15 @@
 [
   {
+    "titulo": "LIST OF REGISTRED BA-BE STUDY CENTRE & BIO-ANALYTICAL LABORATORY under NDCT Rules 2019",
+    "fecha_publicacion": "2026-09-18",
+    "categoria": "Otro",
+    "tipo_producto": "Medicamento",
+    "tamano_pdf": "337 KB",
+    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MTQ2ODY=",
+    "fuente": "CDSCO",
+    "seccion_origen": "Alertas"
+  },
+  {
     "titulo": "Circular to all State/UT Licensing Authorities regarding recent revised GST rate Structure",
     "fecha_publicacion": "2025-10-08",
     "categoria": "Aviso",
@@ -50,12 +60,12 @@
     "seccion_origen": "Alertas"
   },
   {
-    "titulo": "Revise list drug alert May-2025",
+    "titulo": "List of spurious Drugs  for the month of June-2025",
     "fecha_publicacion": "2025-07-18",
-    "categoria": "Otro",
+    "categoria": "Espurio-Adulterado",
     "tipo_producto": "Medicamento",
-    "tamano_pdf": "167 KB",
-    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MTI5NjA=",
+    "tamano_pdf": "127 KB",
+    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MTI5NTk=",
     "fuente": "CDSCO",
     "seccion_origen": "Alertas"
   },
@@ -70,22 +80,12 @@
     "seccion_origen": "Alertas"
   },
   {
-    "titulo": "List of spurious Drugs  for the month of June-2025",
+    "titulo": "Revise list drug alert May-2025",
     "fecha_publicacion": "2025-07-18",
-    "categoria": "Espurio-Adulterado",
+    "categoria": "Otro",
     "tipo_producto": "Medicamento",
-    "tamano_pdf": "127 KB",
-    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MTI5NTk=",
-    "fuente": "CDSCO",
-    "seccion_origen": "Alertas"
-  },
-  {
-    "titulo": "STATE NSQ ALERT FOR THE MONTH OF MAY-2025",
-    "fecha_publicacion": "2025-06-20",
-    "categoria": "NSQ",
-    "tipo_producto": "Medicamento",
-    "tamano_pdf": "426 KB",
-    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MTI4NDY=",
+    "tamano_pdf": "167 KB",
+    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MTI5NjA=",
     "fuente": "CDSCO",
     "seccion_origen": "Alertas"
   },
@@ -100,32 +100,22 @@
     "seccion_origen": "Alertas"
   },
   {
+    "titulo": "STATE NSQ ALERT FOR THE MONTH OF MAY-2025",
+    "fecha_publicacion": "2025-06-20",
+    "categoria": "NSQ",
+    "tipo_producto": "Medicamento",
+    "tamano_pdf": "426 KB",
+    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MTI4NDY=",
+    "fuente": "CDSCO",
+    "seccion_origen": "Alertas"
+  },
+  {
     "titulo": "NSQ ALERT FOR THE MONTH OF MAY-2025",
     "fecha_publicacion": "2025-06-20",
     "categoria": "NSQ",
     "tipo_producto": "Medicamento",
     "tamano_pdf": "197 KB",
     "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MTI4NDc=",
-    "fuente": "CDSCO",
-    "seccion_origen": "Alertas"
-  },
-  {
-    "titulo": "LIST OF REGISTRED BA-BE STUDY CENTRE & BIO-ANALYTICAL LABORATORY under NDCT Rules 2019",
-    "fecha_publicacion": "2025-06-20",
-    "categoria": "Otro",
-    "tipo_producto": "Medicamento",
-    "tamano_pdf": "633 KB",
-    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MTI4NjI=",
-    "fuente": "CDSCO",
-    "seccion_origen": "Alertas"
-  },
-  {
-    "titulo": "Not Of Standard of Quality (NSQ) ALERT FOR THE MONTH OF April-2025",
-    "fecha_publicacion": "2025-05-20",
-    "categoria": "NSQ",
-    "tipo_producto": "Medicamento",
-    "tamano_pdf": "152 KB",
-    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MTI3Mzg=",
     "fuente": "CDSCO",
     "seccion_origen": "Alertas"
   },
@@ -150,42 +140,22 @@
     "seccion_origen": "Alertas"
   },
   {
+    "titulo": "Not Of Standard of Quality (NSQ) ALERT FOR THE MONTH OF April-2025",
+    "fecha_publicacion": "2025-05-20",
+    "categoria": "NSQ",
+    "tipo_producto": "Medicamento",
+    "tamano_pdf": "152 KB",
+    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MTI3Mzg=",
+    "fuente": "CDSCO",
+    "seccion_origen": "Alertas"
+  },
+  {
     "titulo": "State NSQ Alert For The Month April-2025",
     "fecha_publicacion": "2025-05-20",
     "categoria": "NSQ",
     "tipo_producto": "Medicamento",
     "tamano_pdf": "345 KB",
     "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MTI3Mzk=",
-    "fuente": "CDSCO",
-    "seccion_origen": "Alertas"
-  },
-  {
-    "titulo": "Revise list drug alert January-2025",
-    "fecha_publicacion": "2025-04-18",
-    "categoria": "Otro",
-    "tipo_producto": "Medicamento",
-    "tamano_pdf": "108 KB",
-    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MTI2NzE=",
-    "fuente": "CDSCO",
-    "seccion_origen": "Alertas"
-  },
-  {
-    "titulo": "NOT OF STANDARD QUALITY (NSQ) ALERT FOR THE MONTH OF MARCH-2025",
-    "fecha_publicacion": "2025-04-18",
-    "categoria": "NSQ",
-    "tipo_producto": "Medicamento",
-    "tamano_pdf": "178 KB",
-    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MTI2Njk=",
-    "fuente": "CDSCO",
-    "seccion_origen": "Alertas"
-  },
-  {
-    "titulo": "Revise list drug alert November-2024",
-    "fecha_publicacion": "2025-04-18",
-    "categoria": "Otro",
-    "tipo_producto": "Medicamento",
-    "tamano_pdf": "107 KB",
-    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MTI2NzA=",
     "fuente": "CDSCO",
     "seccion_origen": "Alertas"
   },
@@ -200,12 +170,42 @@
     "seccion_origen": "Alertas"
   },
   {
+    "titulo": "NOT OF STANDARD QUALITY (NSQ) ALERT FOR THE MONTH OF MARCH-2025",
+    "fecha_publicacion": "2025-04-18",
+    "categoria": "NSQ",
+    "tipo_producto": "Medicamento",
+    "tamano_pdf": "178 KB",
+    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MTI2Njk=",
+    "fuente": "CDSCO",
+    "seccion_origen": "Alertas"
+  },
+  {
     "titulo": "List of Drugs Medical Devices Vaccine and Cosmetics declared as Spurious for the Month of March- 2025",
     "fecha_publicacion": "2025-04-18",
     "categoria": "Espurio-Adulterado",
     "tipo_producto": "Dispositivo médico",
     "tamano_pdf": "119 KB",
     "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MTI2Njc=",
+    "fuente": "CDSCO",
+    "seccion_origen": "Alertas"
+  },
+  {
+    "titulo": "Revise list drug alert January-2025",
+    "fecha_publicacion": "2025-04-18",
+    "categoria": "Otro",
+    "tipo_producto": "Medicamento",
+    "tamano_pdf": "108 KB",
+    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MTI2NzE=",
+    "fuente": "CDSCO",
+    "seccion_origen": "Alertas"
+  },
+  {
+    "titulo": "Revise list drug alert November-2024",
+    "fecha_publicacion": "2025-04-18",
+    "categoria": "Otro",
+    "tipo_producto": "Medicamento",
+    "tamano_pdf": "107 KB",
+    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MTI2NzA=",
     "fuente": "CDSCO",
     "seccion_origen": "Alertas"
   },
@@ -220,22 +220,22 @@
     "seccion_origen": "Alertas"
   },
   {
-    "titulo": "List of Drugs, Medical Devices, Vaccine and Cosmetics declared as Spurious for the Month of February-2025",
-    "fecha_publicacion": "2025-03-29",
-    "categoria": "Espurio-Adulterado",
-    "tipo_producto": "Dispositivo médico",
-    "tamano_pdf": "164 KB",
-    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MTI2MTI=",
-    "fuente": "CDSCO",
-    "seccion_origen": "Alertas"
-  },
-  {
     "titulo": "NSQ ALERT FOR THE MONTH OF Feb-2025",
     "fecha_publicacion": "2025-03-29",
     "categoria": "NSQ",
     "tipo_producto": "Medicamento",
     "tamano_pdf": "156 KB",
     "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MTI2MTM=",
+    "fuente": "CDSCO",
+    "seccion_origen": "Alertas"
+  },
+  {
+    "titulo": "List of Drugs, Medical Devices, Vaccine and Cosmetics declared as Spurious for the Month of February-2025",
+    "fecha_publicacion": "2025-03-29",
+    "categoria": "Espurio-Adulterado",
+    "tipo_producto": "Dispositivo médico",
+    "tamano_pdf": "164 KB",
+    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MTI2MTI=",
     "fuente": "CDSCO",
     "seccion_origen": "Alertas"
   },
@@ -260,22 +260,22 @@
     "seccion_origen": "Alertas"
   },
   {
-    "titulo": "Drug Alert for the Month of December 2024",
-    "fecha_publicacion": "2025-01-24",
-    "categoria": "Otro",
-    "tipo_producto": "Medicamento",
-    "tamano_pdf": "490 KB",
-    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MTIzOTM=",
-    "fuente": "CDSCO",
-    "seccion_origen": "Alertas"
-  },
-  {
     "titulo": "State Drug Alert for the Month of December 2024",
     "fecha_publicacion": "2025-01-24",
     "categoria": "Otro",
     "tipo_producto": "Medicamento",
     "tamano_pdf": "613 KB",
     "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MTIzOTQ=",
+    "fuente": "CDSCO",
+    "seccion_origen": "Alertas"
+  },
+  {
+    "titulo": "Drug Alert for the Month of December 2024",
+    "fecha_publicacion": "2025-01-24",
+    "categoria": "Otro",
+    "tipo_producto": "Medicamento",
+    "tamano_pdf": "490 KB",
+    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MTIzOTM=",
     "fuente": "CDSCO",
     "seccion_origen": "Alertas"
   },
@@ -290,16 +290,6 @@
     "seccion_origen": "Alertas"
   },
   {
-    "titulo": "State Drug Alert for the Month of November 2024",
-    "fecha_publicacion": "2024-12-27",
-    "categoria": "Otro",
-    "tipo_producto": "Medicamento",
-    "tamano_pdf": "721 KB",
-    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MTIyOTA=",
-    "fuente": "CDSCO",
-    "seccion_origen": "Alertas"
-  },
-  {
     "titulo": "List of Drugs Medical Devices Vaccine and Cosmetics declared as Spurious for the Month of November 2024",
     "fecha_publicacion": "2024-12-27",
     "categoria": "Espurio-Adulterado",
@@ -310,12 +300,12 @@
     "seccion_origen": "Alertas"
   },
   {
-    "titulo": "List of Drugs Medical Devices Vaccine and Cosmetics declared as Spurious for the Month of October 2024",
-    "fecha_publicacion": "2024-11-29",
-    "categoria": "Espurio-Adulterado",
-    "tipo_producto": "Dispositivo médico",
-    "tamano_pdf": "380 KB",
-    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MTIyMDM=",
+    "titulo": "State Drug Alert for the Month of November 2024",
+    "fecha_publicacion": "2024-12-27",
+    "categoria": "Otro",
+    "tipo_producto": "Medicamento",
+    "tamano_pdf": "721 KB",
+    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MTIyOTA=",
     "fuente": "CDSCO",
     "seccion_origen": "Alertas"
   },
@@ -330,32 +320,22 @@
     "seccion_origen": "Alertas"
   },
   {
+    "titulo": "List of Drugs Medical Devices Vaccine and Cosmetics declared as Spurious for the Month of October 2024",
+    "fecha_publicacion": "2024-11-29",
+    "categoria": "Espurio-Adulterado",
+    "tipo_producto": "Dispositivo médico",
+    "tamano_pdf": "380 KB",
+    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MTIyMDM=",
+    "fuente": "CDSCO",
+    "seccion_origen": "Alertas"
+  },
+  {
     "titulo": "State Drug Alert for the Month of  October 2024",
     "fecha_publicacion": "2024-11-29",
     "categoria": "Otro",
     "tipo_producto": "Medicamento",
     "tamano_pdf": "832 KB",
     "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MTIyMDI=",
-    "fuente": "CDSCO",
-    "seccion_origen": "Alertas"
-  },
-  {
-    "titulo": "List of Drugs Medical Devices Vaccine and Cosmetics declared as Spurious for the Month of September 2024",
-    "fecha_publicacion": "2024-10-24",
-    "categoria": "Espurio-Adulterado",
-    "tipo_producto": "Dispositivo médico",
-    "tamano_pdf": "493 KB",
-    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MTIwODI=",
-    "fuente": "CDSCO",
-    "seccion_origen": "Alertas"
-  },
-  {
-    "titulo": "State Drug Alert for the Month of September 2024",
-    "fecha_publicacion": "2024-10-24",
-    "categoria": "Otro",
-    "tipo_producto": "Medicamento",
-    "tamano_pdf": "405 KB",
-    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MTIwODM=",
     "fuente": "CDSCO",
     "seccion_origen": "Alertas"
   },
@@ -370,12 +350,22 @@
     "seccion_origen": "Alertas"
   },
   {
-    "titulo": "State Drug Alert for the Month of August 2024",
-    "fecha_publicacion": "2024-09-20",
+    "titulo": "State Drug Alert for the Month of September 2024",
+    "fecha_publicacion": "2024-10-24",
     "categoria": "Otro",
     "tipo_producto": "Medicamento",
-    "tamano_pdf": "370 KB",
-    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MTIwMTI=",
+    "tamano_pdf": "405 KB",
+    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MTIwODM=",
+    "fuente": "CDSCO",
+    "seccion_origen": "Alertas"
+  },
+  {
+    "titulo": "List of Drugs Medical Devices Vaccine and Cosmetics declared as Spurious for the Month of September 2024",
+    "fecha_publicacion": "2024-10-24",
+    "categoria": "Espurio-Adulterado",
+    "tipo_producto": "Dispositivo médico",
+    "tamano_pdf": "493 KB",
+    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MTIwODI=",
     "fuente": "CDSCO",
     "seccion_origen": "Alertas"
   },
@@ -386,6 +376,16 @@
     "tipo_producto": "Dispositivo médico",
     "tamano_pdf": "169 KB",
     "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MTIwMTE=",
+    "fuente": "CDSCO",
+    "seccion_origen": "Alertas"
+  },
+  {
+    "titulo": "State Drug Alert for the Month of August 2024",
+    "fecha_publicacion": "2024-09-20",
+    "categoria": "Otro",
+    "tipo_producto": "Medicamento",
+    "tamano_pdf": "370 KB",
+    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MTIwMTI=",
     "fuente": "CDSCO",
     "seccion_origen": "Alertas"
   },
@@ -410,16 +410,6 @@
     "seccion_origen": "Alertas"
   },
   {
-    "titulo": "NSQ ALERT FOR THE MONTH OF JUlY-2024",
-    "fecha_publicacion": "2024-08-22",
-    "categoria": "NSQ",
-    "tipo_producto": "Medicamento",
-    "tamano_pdf": "452 KB",
-    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MTE2MDA=",
-    "fuente": "CDSCO",
-    "seccion_origen": "Alertas"
-  },
-  {
     "titulo": "STATE NSQ ALERT FOR THE MONTH OF July-2024",
     "fecha_publicacion": "2024-08-22",
     "categoria": "NSQ",
@@ -430,12 +420,12 @@
     "seccion_origen": "Alertas"
   },
   {
-    "titulo": "State NSQ ALERT FOR THE MONTH OF JUNE 2024",
-    "fecha_publicacion": "2024-07-19",
+    "titulo": "NSQ ALERT FOR THE MONTH OF JUlY-2024",
+    "fecha_publicacion": "2024-08-22",
     "categoria": "NSQ",
     "tipo_producto": "Medicamento",
-    "tamano_pdf": "536 KB",
-    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MTE0Njc=",
+    "tamano_pdf": "452 KB",
+    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MTE2MDA=",
     "fuente": "CDSCO",
     "seccion_origen": "Alertas"
   },
@@ -446,6 +436,16 @@
     "tipo_producto": "Medicamento",
     "tamano_pdf": "312 KB",
     "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MTE0Njg=",
+    "fuente": "CDSCO",
+    "seccion_origen": "Alertas"
+  },
+  {
+    "titulo": "State NSQ ALERT FOR THE MONTH OF JUNE 2024",
+    "fecha_publicacion": "2024-07-19",
+    "categoria": "NSQ",
+    "tipo_producto": "Medicamento",
+    "tamano_pdf": "536 KB",
+    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MTE0Njc=",
     "fuente": "CDSCO",
     "seccion_origen": "Alertas"
   },
@@ -470,22 +470,22 @@
     "seccion_origen": "Alertas"
   },
   {
-    "titulo": "NOT OF STANDARD QUALITY ALERT FOR THE MONTH OF APRIL 2024",
-    "fecha_publicacion": "2024-05-17",
-    "categoria": "NSQ",
-    "tipo_producto": "Medicamento",
-    "tamano_pdf": "694 KB",
-    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MTEyNTY=",
-    "fuente": "CDSCO",
-    "seccion_origen": "Alertas"
-  },
-  {
     "titulo": "SPURIOUS ALERT FOR THE MONTH OF APRIL 2024",
     "fecha_publicacion": "2024-05-17",
     "categoria": "Espurio-Adulterado",
     "tipo_producto": "Medicamento",
     "tamano_pdf": "418 KB",
     "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MTEyNTU=",
+    "fuente": "CDSCO",
+    "seccion_origen": "Alertas"
+  },
+  {
+    "titulo": "NOT OF STANDARD QUALITY ALERT FOR THE MONTH OF APRIL 2024",
+    "fecha_publicacion": "2024-05-17",
+    "categoria": "NSQ",
+    "tipo_producto": "Medicamento",
+    "tamano_pdf": "694 KB",
+    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MTEyNTY=",
     "fuente": "CDSCO",
     "seccion_origen": "Alertas"
   },
@@ -500,22 +500,22 @@
     "seccion_origen": "Alertas"
   },
   {
-    "titulo": "Drug Alert for the Month of Revised Jan 2024",
-    "fecha_publicacion": "2024-03-20",
-    "categoria": "Otro",
-    "tipo_producto": "Medicamento",
-    "tamano_pdf": "452 KB",
-    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MTEwMTQ=",
-    "fuente": "CDSCO",
-    "seccion_origen": "Alertas"
-  },
-  {
     "titulo": "Drug Alert for the Month of February 2024",
     "fecha_publicacion": "2024-03-20",
     "categoria": "Otro",
     "tipo_producto": "Medicamento",
     "tamano_pdf": "402 KB",
     "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MTEwMTM=",
+    "fuente": "CDSCO",
+    "seccion_origen": "Alertas"
+  },
+  {
+    "titulo": "Drug Alert for the Month of Revised Jan 2024",
+    "fecha_publicacion": "2024-03-20",
+    "categoria": "Otro",
+    "tipo_producto": "Medicamento",
+    "tamano_pdf": "452 KB",
+    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MTEwMTQ=",
     "fuente": "CDSCO",
     "seccion_origen": "Alertas"
   },
@@ -530,22 +530,22 @@
     "seccion_origen": "Alertas"
   },
   {
-    "titulo": "Drug Alert for the Month of Revised Dec 2023",
-    "fecha_publicacion": "2024-02-21",
-    "categoria": "Otro",
-    "tipo_producto": "Medicamento",
-    "tamano_pdf": "389 KB",
-    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MTA5NDA=",
-    "fuente": "CDSCO",
-    "seccion_origen": "Alertas"
-  },
-  {
     "titulo": "Drug Alert for the Month of Revised March 2023",
     "fecha_publicacion": "2024-02-21",
     "categoria": "Otro",
     "tipo_producto": "Medicamento",
     "tamano_pdf": "491 KB",
     "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MTA5NDE=",
+    "fuente": "CDSCO",
+    "seccion_origen": "Alertas"
+  },
+  {
+    "titulo": "Drug Alert for the Month of Revised Dec 2023",
+    "fecha_publicacion": "2024-02-21",
+    "categoria": "Otro",
+    "tipo_producto": "Medicamento",
+    "tamano_pdf": "389 KB",
+    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MTA5NDA=",
     "fuente": "CDSCO",
     "seccion_origen": "Alertas"
   },
@@ -570,22 +570,22 @@
     "seccion_origen": "Alertas"
   },
   {
-    "titulo": "Drug Alert for the Month of May â 2022 Revised",
-    "fecha_publicacion": "2023-12-20",
-    "categoria": "Otro",
-    "tipo_producto": "Medicamento",
-    "tamano_pdf": "467 KB",
-    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MTA3ODU=",
-    "fuente": "CDSCO",
-    "seccion_origen": "Alertas"
-  },
-  {
     "titulo": "Drug Alert for the Month of November 2023",
     "fecha_publicacion": "2023-12-20",
     "categoria": "Otro",
     "tipo_producto": "Medicamento",
     "tamano_pdf": "550 KB",
     "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MTA3ODQ=",
+    "fuente": "CDSCO",
+    "seccion_origen": "Alertas"
+  },
+  {
+    "titulo": "Drug Alert for the Month of May â 2022 Revised",
+    "fecha_publicacion": "2023-12-20",
+    "categoria": "Otro",
+    "tipo_producto": "Medicamento",
+    "tamano_pdf": "467 KB",
+    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MTA3ODU=",
     "fuente": "CDSCO",
     "seccion_origen": "Alertas"
   },
@@ -1600,36 +1600,6 @@
     "seccion_origen": "Alertas"
   },
   {
-    "titulo": "NOC update list of Medical Devices 2015",
-    "fecha_publicacion": "2018-10-10",
-    "categoria": "Otro",
-    "tipo_producto": "Dispositivo médico",
-    "tamano_pdf": "162 KB",
-    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MjAzOQ==",
-    "fuente": "CDSCO",
-    "seccion_origen": "Alertas"
-  },
-  {
-    "titulo": "NOC update list of Medical Devices 2018",
-    "fecha_publicacion": "2018-10-10",
-    "categoria": "Otro",
-    "tipo_producto": "Dispositivo médico",
-    "tamano_pdf": "225 KB",
-    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MjA0Mg==",
-    "fuente": "CDSCO",
-    "seccion_origen": "Alertas"
-  },
-  {
-    "titulo": "NOC update list of Medical Devices 2017",
-    "fecha_publicacion": "2018-10-10",
-    "categoria": "Otro",
-    "tipo_producto": "Dispositivo médico",
-    "tamano_pdf": "914 KB",
-    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MjA0MQ==",
-    "fuente": "CDSCO",
-    "seccion_origen": "Alertas"
-  },
-  {
     "titulo": "NOC update list of Medical Devices 2016",
     "fecha_publicacion": "2018-10-10",
     "categoria": "Otro",
@@ -1640,22 +1610,12 @@
     "seccion_origen": "Alertas"
   },
   {
-    "titulo": "NOC update list of Medical Devices 2014",
+    "titulo": "NOC of Medical Devices 2011",
     "fecha_publicacion": "2018-10-10",
     "categoria": "Otro",
     "tipo_producto": "Dispositivo médico",
-    "tamano_pdf": "79 KB",
-    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MjAzOA==",
-    "fuente": "CDSCO",
-    "seccion_origen": "Alertas"
-  },
-  {
-    "titulo": "NOC update list of Medical Devices 2013",
-    "fecha_publicacion": "2018-10-10",
-    "categoria": "Otro",
-    "tipo_producto": "Dispositivo médico",
-    "tamano_pdf": "95 KB",
-    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MjAzNw==",
+    "tamano_pdf": "91 KB",
+    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MjAzNQ==",
     "fuente": "CDSCO",
     "seccion_origen": "Alertas"
   },
@@ -1670,12 +1630,52 @@
     "seccion_origen": "Alertas"
   },
   {
-    "titulo": "NOC of Medical Devices 2011",
+    "titulo": "NOC update list of Medical Devices 2018",
     "fecha_publicacion": "2018-10-10",
     "categoria": "Otro",
     "tipo_producto": "Dispositivo médico",
-    "tamano_pdf": "91 KB",
-    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MjAzNQ==",
+    "tamano_pdf": "225 KB",
+    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MjA0Mg==",
+    "fuente": "CDSCO",
+    "seccion_origen": "Alertas"
+  },
+  {
+    "titulo": "NOC update list of Medical Devices 2013",
+    "fecha_publicacion": "2018-10-10",
+    "categoria": "Otro",
+    "tipo_producto": "Dispositivo médico",
+    "tamano_pdf": "95 KB",
+    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MjAzNw==",
+    "fuente": "CDSCO",
+    "seccion_origen": "Alertas"
+  },
+  {
+    "titulo": "NOC update list of Medical Devices 2014",
+    "fecha_publicacion": "2018-10-10",
+    "categoria": "Otro",
+    "tipo_producto": "Dispositivo médico",
+    "tamano_pdf": "79 KB",
+    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MjAzOA==",
+    "fuente": "CDSCO",
+    "seccion_origen": "Alertas"
+  },
+  {
+    "titulo": "NOC update list of Medical Devices 2017",
+    "fecha_publicacion": "2018-10-10",
+    "categoria": "Otro",
+    "tipo_producto": "Dispositivo médico",
+    "tamano_pdf": "914 KB",
+    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MjA0MQ==",
+    "fuente": "CDSCO",
+    "seccion_origen": "Alertas"
+  },
+  {
+    "titulo": "NOC update list of Medical Devices 2015",
+    "fecha_publicacion": "2018-10-10",
+    "categoria": "Otro",
+    "tipo_producto": "Dispositivo médico",
+    "tamano_pdf": "162 KB",
+    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MjAzOQ==",
     "fuente": "CDSCO",
     "seccion_origen": "Alertas"
   },
@@ -1745,7 +1745,7 @@
     "categoria": "NSQ",
     "tipo_producto": "Dispositivo médico",
     "tamano_pdf": "390KB",
-    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MTcxNw==",
+    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MTcxNg==",
     "fuente": "CDSCO",
     "seccion_origen": "Alertas"
   },
@@ -1786,16 +1786,6 @@
     "tipo_producto": "Medicamento",
     "tamano_pdf": "177 KB",
     "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MTc5Nw==",
-    "fuente": "CDSCO",
-    "seccion_origen": "Alertas"
-  },
-  {
-    "titulo": "Oxytocin Drug Alert",
-    "fecha_publicacion": "2018-05-01",
-    "categoria": "Otro",
-    "tipo_producto": "Medicamento",
-    "tamano_pdf": "41KB",
-    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MTQ1OQ==",
     "fuente": "CDSCO",
     "seccion_origen": "Alertas"
   },
@@ -1900,22 +1890,22 @@
     "seccion_origen": "Alertas"
   },
   {
-    "titulo": "Drug Alert list for month of  January 2018",
-    "fecha_publicacion": "2018-02-05",
-    "categoria": "Otro",
-    "tipo_producto": "Medicamento",
-    "tamano_pdf": "310 KB",
-    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MjI5Ng==",
-    "fuente": "CDSCO",
-    "seccion_origen": "Alertas"
-  },
-  {
     "titulo": "NOT OF STANDARD QUALITY ALERT FOR THE MONTH OF JAN-2018",
     "fecha_publicacion": "2018-02-05",
     "categoria": "NSQ",
     "tipo_producto": "Medicamento",
     "tamano_pdf": "201 KB",
     "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MTE4Nzg=",
+    "fuente": "CDSCO",
+    "seccion_origen": "Alertas"
+  },
+  {
+    "titulo": "Drug Alert list for month of  January 2018",
+    "fecha_publicacion": "2018-02-05",
+    "categoria": "Otro",
+    "tipo_producto": "Medicamento",
+    "tamano_pdf": "310 KB",
+    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MjI5Ng==",
     "fuente": "CDSCO",
     "seccion_origen": "Alertas"
   },
@@ -1936,6 +1926,16 @@
     "tipo_producto": "Medicamento",
     "tamano_pdf": "196kb",
     "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MTc4",
+    "fuente": "CDSCO",
+    "seccion_origen": "Alertas"
+  },
+  {
+    "titulo": "IVD Diagnostic Kit Alert for Mediclone D",
+    "fecha_publicacion": "2018-01-01",
+    "categoria": "Otro",
+    "tipo_producto": "Dispositivo médico",
+    "tamano_pdf": "144kb",
+    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MTc2",
     "fuente": "CDSCO",
     "seccion_origen": "Alertas"
   },
@@ -2050,16 +2050,6 @@
     "seccion_origen": "Alertas"
   },
   {
-    "titulo": "IVD Diagnostic Kit Alert for Mediclone D",
-    "fecha_publicacion": "2017-06-27",
-    "categoria": "Otro",
-    "tipo_producto": "Dispositivo médico",
-    "tamano_pdf": "144 KB",
-    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MzI2MA==",
-    "fuente": "CDSCO",
-    "seccion_origen": "Alertas"
-  },
-  {
     "titulo": "Drug Alert list for month of May 2017",
     "fecha_publicacion": "2017-06-07",
     "categoria": "Otro",
@@ -2070,22 +2060,22 @@
     "seccion_origen": "Alertas"
   },
   {
-    "titulo": "MEDICAL DEVICE ALERT FOR \" Beacon Tip Torcon NB Advantage Catheter",
-    "fecha_publicacion": "2017-06-02",
-    "categoria": "Otro",
-    "tipo_producto": "Dispositivo médico",
-    "tamano_pdf": "1125 KB",
-    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MzI2Mg==",
-    "fuente": "CDSCO",
-    "seccion_origen": "Alertas"
-  },
-  {
     "titulo": "Medical Devices alert 02.06.2017",
     "fecha_publicacion": "2017-06-02",
     "categoria": "Otro",
     "tipo_producto": "Dispositivo médico",
     "tamano_pdf": "1125 KB",
     "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MzE0Ng==",
+    "fuente": "CDSCO",
+    "seccion_origen": "Alertas"
+  },
+  {
+    "titulo": "MEDICAL DEVICE ALERT FOR \" Beacon Tip Torcon NB Advantage Catheter",
+    "fecha_publicacion": "2017-06-02",
+    "categoria": "Otro",
+    "tipo_producto": "Dispositivo médico",
+    "tamano_pdf": "1125 KB",
+    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MzI2Mg==",
     "fuente": "CDSCO",
     "seccion_origen": "Alertas"
   },
@@ -2560,6 +2550,16 @@
     "seccion_origen": "Alertas"
   },
   {
+    "titulo": "Surveillance of Drugs Manufactured in the Country by CDSCO",
+    "fecha_publicacion": "2014-05-01",
+    "categoria": "Otro",
+    "tipo_producto": "Medicamento",
+    "tamano_pdf": "30KB",
+    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MTQ1Ng==",
+    "fuente": "CDSCO",
+    "seccion_origen": "Alertas"
+  },
+  {
     "titulo": "Drugs Alert for the month of March 2014",
     "fecha_publicacion": "2014-04-09",
     "categoria": "Otro",
@@ -2610,12 +2610,22 @@
     "seccion_origen": "Alertas"
   },
   {
-    "titulo": "Documents to be submitted for Bioequivalence Study for export applications",
+    "titulo": "Guidelines for taking action on samples of drugs declared spurious or not of standard",
     "fecha_publicacion": "2014-01-04",
-    "categoria": "Otro",
+    "categoria": "Espurio-Adulterado",
     "tipo_producto": "Medicamento",
-    "tamano_pdf": "283 KB",
-    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MzIzNQ==",
+    "tamano_pdf": "193 KB",
+    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MzI1OA==",
+    "fuente": "CDSCO",
+    "seccion_origen": "Alertas"
+  },
+  {
+    "titulo": "Guidance document for approval of ba/be noc for export purpose as per schedule y & test licence in form 11 of drugs and cosmetics rules, 1945",
+    "fecha_publicacion": "2014-01-04",
+    "categoria": "Aviso",
+    "tipo_producto": "Cosmético",
+    "tamano_pdf": "934 KB",
+    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MzIzOQ==",
     "fuente": "CDSCO",
     "seccion_origen": "Alertas"
   },
@@ -2640,42 +2650,12 @@
     "seccion_origen": "Alertas"
   },
   {
-    "titulo": "Document required for approval of BA-BE center",
+    "titulo": "MEDICAL DEVICE ALERT FOR PRODUCT \"HT Connect Peripheral Guidewire",
     "fecha_publicacion": "2014-01-04",
     "categoria": "Otro",
-    "tipo_producto": "Medicamento",
-    "tamano_pdf": "58 KB",
-    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MzIzOA==",
-    "fuente": "CDSCO",
-    "seccion_origen": "Alertas"
-  },
-  {
-    "titulo": "Surveillance of Drugs Manufactured in the Country by CDSCO",
-    "fecha_publicacion": "2014-01-04",
-    "categoria": "Otro",
-    "tipo_producto": "Medicamento",
-    "tamano_pdf": "30 KB",
-    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MzI1OQ==",
-    "fuente": "CDSCO",
-    "seccion_origen": "Alertas"
-  },
-  {
-    "titulo": "Guidance Document for BA/BE NOC Applications for Export Purpose (Draft 2014)",
-    "fecha_publicacion": "2014-01-04",
-    "categoria": "Aviso",
-    "tipo_producto": "Medicamento",
-    "tamano_pdf": "294 KB",
-    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MzIzNw==",
-    "fuente": "CDSCO",
-    "seccion_origen": "Alertas"
-  },
-  {
-    "titulo": "System of preliminary scrutiny by C.D.S.C.O at the time of receipt of application for approval of Fixed Dose Combinations ( 27 Jul 2012 )",
-    "fecha_publicacion": "2014-01-04",
-    "categoria": "Otro",
-    "tipo_producto": "Medicamento",
-    "tamano_pdf": "198 KB",
-    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MzI1MQ==",
+    "tipo_producto": "Dispositivo médico",
+    "tamano_pdf": "241 KB",
+    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MzI2Ng==",
     "fuente": "CDSCO",
     "seccion_origen": "Alertas"
   },
@@ -2690,12 +2670,22 @@
     "seccion_origen": "Alertas"
   },
   {
-    "titulo": "Guidance document for approval of ba/be noc for export purpose as per schedule y & test licence in form 11 of drugs and cosmetics rules, 1945",
+    "titulo": "Oxytocin Drug Alert",
     "fecha_publicacion": "2014-01-04",
-    "categoria": "Aviso",
-    "tipo_producto": "Cosmético",
-    "tamano_pdf": "934 KB",
-    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MzIzOQ==",
+    "categoria": "Otro",
+    "tipo_producto": "Medicamento",
+    "tamano_pdf": "41 KB",
+    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MzI1NA==",
+    "fuente": "CDSCO",
+    "seccion_origen": "Alertas"
+  },
+  {
+    "titulo": "Revised Checklist for Pre-screening of BA/BE Applications (Draft 2014) effective from 1st Feb 2014",
+    "fecha_publicacion": "2014-01-04",
+    "categoria": "Otro",
+    "tipo_producto": "Medicamento",
+    "tamano_pdf": "327 KB",
+    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MzIzNg==",
     "fuente": "CDSCO",
     "seccion_origen": "Alertas"
   },
@@ -2730,22 +2720,32 @@
     "seccion_origen": "Alertas"
   },
   {
-    "titulo": "MEDICAL DEVICE ALERT FOR PRODUCT \"HT Connect Peripheral Guidewire",
+    "titulo": "Documents to be submitted for Bioequivalence Study for export applications",
     "fecha_publicacion": "2014-01-04",
     "categoria": "Otro",
-    "tipo_producto": "Dispositivo médico",
-    "tamano_pdf": "241 KB",
-    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MzI2Ng==",
+    "tipo_producto": "Medicamento",
+    "tamano_pdf": "283 KB",
+    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MzIzNQ==",
     "fuente": "CDSCO",
     "seccion_origen": "Alertas"
   },
   {
-    "titulo": "Revised Checklist for Pre-screening of BA/BE Applications (Draft 2014) effective from 1st Feb 2014",
+    "titulo": "Document required for approval of BA-BE center",
     "fecha_publicacion": "2014-01-04",
     "categoria": "Otro",
     "tipo_producto": "Medicamento",
-    "tamano_pdf": "327 KB",
-    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MzIzNg==",
+    "tamano_pdf": "58 KB",
+    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MzIzOA==",
+    "fuente": "CDSCO",
+    "seccion_origen": "Alertas"
+  },
+  {
+    "titulo": "System of preliminary scrutiny by C.D.S.C.O at the time of receipt of application for approval of Fixed Dose Combinations ( 27 Jul 2012 )",
+    "fecha_publicacion": "2014-01-04",
+    "categoria": "Otro",
+    "tipo_producto": "Medicamento",
+    "tamano_pdf": "198 KB",
+    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MzI1MQ==",
     "fuente": "CDSCO",
     "seccion_origen": "Alertas"
   },
@@ -2770,12 +2770,12 @@
     "seccion_origen": "Alertas"
   },
   {
-    "titulo": "Guidelines for taking action on samples of drugs declared spurious or not of standard",
+    "titulo": "Guidance Document for BA/BE NOC Applications for Export Purpose (Draft 2014)",
     "fecha_publicacion": "2014-01-04",
-    "categoria": "Espurio-Adulterado",
+    "categoria": "Aviso",
     "tipo_producto": "Medicamento",
-    "tamano_pdf": "193 KB",
-    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MzI1OA==",
+    "tamano_pdf": "294 KB",
+    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MzIzNw==",
     "fuente": "CDSCO",
     "seccion_origen": "Alertas"
   },
@@ -2820,22 +2820,22 @@
     "seccion_origen": "Alertas"
   },
   {
-    "titulo": "ECHELON Endoscopic Liner Cutter Reloads Black(ECR60T)",
-    "fecha_publicacion": "2013-12-10",
-    "categoria": "Otro",
-    "tipo_producto": "Medicamento",
-    "tamano_pdf": "268kb",
-    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MTk3",
-    "fuente": "CDSCO",
-    "seccion_origen": "Alertas"
-  },
-  {
     "titulo": "ONYX Liquid Embolic System",
     "fecha_publicacion": "2013-12-10",
     "categoria": "Otro",
     "tipo_producto": "Medicamento",
     "tamano_pdf": "266kb",
     "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MTky",
+    "fuente": "CDSCO",
+    "seccion_origen": "Alertas"
+  },
+  {
+    "titulo": "ECHELON Endoscopic Liner Cutter Reloads Black(ECR60T)",
+    "fecha_publicacion": "2013-12-10",
+    "categoria": "Otro",
+    "tipo_producto": "Medicamento",
+    "tamano_pdf": "268kb",
+    "url_pdf": "https://cdsco.gov.in/opencms/opencms/system/modules/CDSCO.WEB/elements/download_file_division.jsp?num_id=MTk3",
     "fuente": "CDSCO",
     "seccion_origen": "Alertas"
   },
