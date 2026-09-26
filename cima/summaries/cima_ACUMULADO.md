@@ -1,17 +1,17 @@
 # ConkoSafe IA — Cambios en Ficha Técnica y Prospecto (CIMA / AEMPS)
 
-**Generado:** 25/09/2026 18:08 UTC  
-**Periodo:** 23/06/2026 → 25/09/2026 (últimos 94 días)  
+**Generado:** 26/09/2026 17:29 UTC  
+**Periodo:** 23/06/2026 → 26/09/2026 (últimos 95 días)  
 **Fuente:** [CIMA — AEMPS (registroCambios)](https://cima.aemps.es/cima/rest/registroCambios)
 
 ## Resumen
 
 | Categoría | Cantidad |
 |---|---:|
-| Solo Ficha Técnica | 295 |
-| Solo Prospecto | 621 |
-| FT + Prospecto (ambos) | 1481 |
-| **TOTAL con FT o Prospecto** | **2397** |
+| Solo Ficha Técnica | 296 |
+| Solo Prospecto | 625 |
+| FT + Prospecto (ambos) | 1489 |
+| **TOTAL con FT o Prospecto** | **2410** |
 
 Descarga del detalle completo: `ConkosafeIA_Regulatorio_ACUMULADO.xlsx`
 
@@ -32,6 +32,19 @@ Descarga del detalle completo: `ConkosafeIA_Regulatorio_ACUMULADO.xlsx`
 
 | Nº Registro | Medicamento | Laboratorio | Fecha | Tipo | Cambio | Enlaces |
 |---|---|---|---|---|---|---|
+| 90567 | PACLITAXEL ALBUMINA DR REDDYS 5 MG/ML POLVO PARA DISPERSION PARA PERFUSION EFG | Reddy Pharma Iberia S.A. | 26/09/2026 06:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/90567/P_90567.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/90567/P_90567.html) |
+| 1241846002 | PULVERIZADOR NASAL EURNEFFY 2 MG, SOLUCION EN ENVASE MONODOSIS | Alk-Abello A/S | 26/09/2026 06:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/1241846002/P_1241846002.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/1241846002/P_1241846002.html) |
+| 80845 | GEMCITABINA AUROVITAS SPAIN 2000 MG CONCENTRADO PARA SOLUCION PARA PERFUSION | Eugia Pharma (Malta) Limited | 26/09/2026 06:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/80845/P_80845.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/80845/P_80845.html) |
+| 80846 | GEMCITABINA AUROVITAS SPAIN 1000 MG CONCENTRADO PARA SOLUCION PARA PERFUSION | Eugia Pharma (Malta) Limited | 26/09/2026 06:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/80846/P_80846.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/80846/P_80846.html) |
+| 91614 | GYXINY 25 MICROGRAMOS COMPRIMIDOS | Afyx Therapeutics A/S | 26/09/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/91614/FT_91614.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/91614/FT_91614.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/91614/P_91614.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91614/P_91614.html) |
+| 91615 | EDOXABAN STADA 60 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Stada Arzneimittel Ag | 26/09/2026 06:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/91615/FT_91615.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/91615/FT_91615.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/91615/P_91615.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91615/P_91615.html) |
+| 91616 | EDOXABAN STADA 30 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Stada Arzneimittel Ag | 26/09/2026 06:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/91616/FT_91616.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/91616/FT_91616.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/91616/P_91616.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91616/P_91616.html) |
+| 91617 | EDOXABAN STADA 15 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Stada Arzneimittel Ag | 26/09/2026 06:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/91617/FT_91617.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/91617/FT_91617.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/91617/P_91617.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91617/P_91617.html) |
+| 91618 | DEXABIOX 1MG/G + 5MG/G POMADA OFTALMICA | Horus Pharma | 26/09/2026 06:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/91618/FT_91618.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/91618/FT_91618.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/91618/P_91618.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91618/P_91618.html) |
+| 91619 | CONCILIAX 1 MG/ML SOLUCION ORAL | Products And Technology S.L. | 26/09/2026 06:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/91619/FT_91619.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/91619/FT_91619.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/91619/P_91619.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91619/P_91619.html) |
+| 74727 | ACITRETINA IFC 10 mg CAPSULAS DURAS EFG | Industrial Farmaceutica Cantabria S.A. | 26/09/2026 06:55 | MODIFICADO | FT | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/74727/FT_74727.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/74727/FT_74727.html) |
+| 91620 | BLOVARAK 2,5 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Les Laboratoires Servier | 26/09/2026 06:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/91620/FT_91620.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/91620/FT_91620.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/91620/P_91620.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91620/P_91620.html) |
+| 91621 | BLOVARAK 5 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Les Laboratoires Servier | 26/09/2026 06:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/91621/FT_91621.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/91621/FT_91621.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/91621/P_91621.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91621/P_91621.html) |
 | 91614 | GYXINY 25 MICROGRAMOS COMPRIMIDOS | Afyx Therapeutics A/S | 25/09/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/91614/FT_91614.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/91614/FT_91614.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/91614/P_91614.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91614/P_91614.html) |
 | 91615 | EDOXABAN STADA 60 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Stada Arzneimittel Ag | 25/09/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/91615/FT_91615.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/91615/FT_91615.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/91615/P_91615.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91615/P_91615.html) |
 | 91616 | EDOXABAN STADA 30 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Stada Arzneimittel Ag | 25/09/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/91616/FT_91616.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/91616/FT_91616.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/91616/P_91616.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91616/P_91616.html) |
