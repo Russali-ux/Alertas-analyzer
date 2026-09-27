@@ -1,6 +1,6 @@
 # ConkoSafe IA — Cambios en Ficha Técnica y Prospecto (CIMA / AEMPS)
 
-**Generado:** 26/09/2026 17:29 UTC  
+**Generado:** 27/09/2026 18:01 UTC  
 **Periodo:** 23/06/2026 → 26/09/2026 (últimos 95 días)  
 **Fuente:** [CIMA — AEMPS (registroCambios)](https://cima.aemps.es/cima/rest/registroCambios)
 
