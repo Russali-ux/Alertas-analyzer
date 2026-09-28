@@ -1,5 +1,115 @@
 [
   {
+    "molecula": "Oxacillin",
+    "senal": "Drug reaction with eosinophilia and systemic symptoms (DRESS)",
+    "epitt_no": null,
+    "seccion": "actualizacion_producto",
+    "fecha_reunion": "31 August-3 September 2026",
+    "referencia": "EMA/PRAC/183502/2026",
+    "fecha_publicacion": "2026-09-28",
+    "url_pdf": "https://www.ema.europa.eu/en/documents/prac-recommendation/prac-recommendations-signals-adopted-31-august-3-september-2026-prac-meeting_en.pdf",
+    "dedupe_key": "8dfbd2c79c8231a6bb7420782ebdefd9"
+  },
+  {
+    "molecula": "Acitretin",
+    "senal": "Erectile dysfunction",
+    "epitt_no": "20310",
+    "seccion": "tabla",
+    "fecha_reunion": "31 August-3 September 2026",
+    "referencia": "EMA/PRAC/183502/2026",
+    "fecha_publicacion": "2026-09-28",
+    "url_pdf": "https://www.ema.europa.eu/en/documents/prac-recommendation/prac-recommendations-signals-adopted-31-august-3-september-2026-prac-meeting_en.pdf",
+    "dedupe_key": "8ad866b0bb899270613b8d392597b5ae"
+  },
+  {
+    "molecula": "Adalimumab; certolizumab pegol; etanercept; golimumab; infliximab",
+    "senal": "IgA nephropathy",
+    "epitt_no": "18649",
+    "seccion": "tabla",
+    "fecha_reunion": "31 August-3 September 2026",
+    "referencia": "EMA/PRAC/183502/2026",
+    "fecha_publicacion": "2026-09-28",
+    "url_pdf": "https://www.ema.europa.eu/en/documents/prac-recommendation/prac-recommendations-signals-adopted-31-august-3-september-2026-prac-meeting_en.pdf",
+    "dedupe_key": "f03479503e1097294e626d3ab6c93b4b"
+  },
+  {
+    "molecula": "Anakinra",
+    "senal": "Fulminant hepatitis",
+    "epitt_no": "20308",
+    "seccion": "tabla",
+    "fecha_reunion": "31 August-3 September 2026",
+    "referencia": "EMA/PRAC/183502/2026",
+    "fecha_publicacion": "2026-09-28",
+    "url_pdf": "https://www.ema.europa.eu/en/documents/prac-recommendation/prac-recommendations-signals-adopted-31-august-3-september-2026-prac-meeting_en.pdf",
+    "dedupe_key": "7c2b97cfce84016cfa6aaa57e7575238"
+  },
+  {
+    "molecula": "Deucravacitinib",
+    "senal": "Pemphigoid",
+    "epitt_no": "20304",
+    "seccion": "tabla",
+    "fecha_reunion": "31 August-3 September 2026",
+    "referencia": "EMA/PRAC/183502/2026",
+    "fecha_publicacion": "2026-09-28",
+    "url_pdf": "https://www.ema.europa.eu/en/documents/prac-recommendation/prac-recommendations-signals-adopted-31-august-3-september-2026-prac-meeting_en.pdf",
+    "dedupe_key": "a9492522d6375f4c63c2d34836a4b4c5"
+  },
+  {
+    "molecula": "Fentanyl (transdermal patches)",
+    "senal": "Accidental exposure",
+    "epitt_no": "17778",
+    "seccion": "tabla",
+    "fecha_reunion": "31 August-3 September 2026",
+    "referencia": "EMA/PRAC/183502/2026",
+    "fecha_publicacion": "2026-09-28",
+    "url_pdf": "https://www.ema.europa.eu/en/documents/prac-recommendation/prac-recommendations-signals-adopted-31-august-3-september-2026-prac-meeting_en.pdf",
+    "dedupe_key": "924df2b5fc25b291b1c6a2f19aef5c80"
+  },
+  {
+    "molecula": "Gefitinib",
+    "senal": "Pulmonary alveolar haemorrhage",
+    "epitt_no": "20307",
+    "seccion": "tabla",
+    "fecha_reunion": "31 August-3 September 2026",
+    "referencia": "EMA/PRAC/183502/2026",
+    "fecha_publicacion": "2026-09-28",
+    "url_pdf": "https://www.ema.europa.eu/en/documents/prac-recommendation/prac-recommendations-signals-adopted-31-august-3-september-2026-prac-meeting_en.pdf",
+    "dedupe_key": "87f6a84e457606ae99bcaea56094fff0"
+  },
+  {
+    "molecula": "Idarucizumab",
+    "senal": "Disseminated intravascular coagulation",
+    "epitt_no": "20297",
+    "seccion": "tabla",
+    "fecha_reunion": "31 August-3 September 2026",
+    "referencia": "EMA/PRAC/183502/2026",
+    "fecha_publicacion": "2026-09-28",
+    "url_pdf": "https://www.ema.europa.eu/en/documents/prac-recommendation/prac-recommendations-signals-adopted-31-august-3-september-2026-prac-meeting_en.pdf",
+    "dedupe_key": "c70c6415ff3b69de89a8d24452534cc3"
+  },
+  {
+    "molecula": "Lazertinib",
+    "senal": "Colitis",
+    "epitt_no": "20296",
+    "seccion": "tabla",
+    "fecha_reunion": "31 August-3 September 2026",
+    "referencia": "EMA/PRAC/183502/2026",
+    "fecha_publicacion": "2026-09-28",
+    "url_pdf": "https://www.ema.europa.eu/en/documents/prac-recommendation/prac-recommendations-signals-adopted-31-august-3-september-2026-prac-meeting_en.pdf",
+    "dedupe_key": "7e01897957412d5098266fb370e50122"
+  },
+  {
+    "molecula": "Progestogens4",
+    "senal": "Meningioma",
+    "epitt_no": "20300",
+    "seccion": "tabla",
+    "fecha_reunion": "31 August-3 September 2026",
+    "referencia": "EMA/PRAC/183502/2026",
+    "fecha_publicacion": "2026-09-28",
+    "url_pdf": "https://www.ema.europa.eu/en/documents/prac-recommendation/prac-recommendations-signals-adopted-31-august-3-september-2026-prac-meeting_en.pdf",
+    "dedupe_key": "981f14401fe465cc3de933c917b0ab16"
+  },
+  {
     "molecula": "Desogestrel; etonogestrel",
     "senal": "Meningioma",
     "epitt_no": null,
