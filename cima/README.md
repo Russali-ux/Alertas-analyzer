@@ -84,6 +84,49 @@ Las estructuras viven en `cima/plantillas.js`. Para agregar Colombia o México
 se completa su entrada en `PAISES` (`activo: true`) y su bloque en `PLANTILLAS`.
 La lógica está en `cima/generador.js`, y reutiliza el segmentador y la caché en Supabase.
 
+## Control de versiones y control de cambios
+
+Todo documento generado (FT, inserto o etiqueta) puede guardarse como **documento
+controlado** con **💾 Guardar versión**, junto a "Exportar Word".
+
+| Elemento | Formato | Lo asigna |
+|---|---|---|
+| Documento controlado | `CKS-FT-PE-00001` (`FT` / `IN` / `ET`, país, correlativo) | servidor |
+| Versión | `CKS-FT-PE-00001-V02` | servidor (correlativo, sin saltos ni duplicados) |
+| Control de cambio | `CC-2026-00002`: motivo, versión base y secciones +agregadas ~modificadas −eliminadas | servidor |
+| Fecha y hora | `now()` del servidor (se muestra en hora de Lima) | servidor |
+| Integridad | SHA-256 por sección, SHA-256 del contenido y cadena de hash con la versión anterior | servidor |
+
+**Flujo de actualización:** en **📚 Segmentados → 🕘 Historial → 🔄 Nueva versión**:
+1. Se elige la versión anterior (base).
+2. Se sube la nueva versión de referencia o se toma la vigente en CIMA.
+3. Se ejecuta la separación y cada sección queda marcada **MODIFICADA / NUEVA**, con "⇄ Ver cambios" palabra a palabra.
+4. Se edita lo necesario y se guarda la nueva versión, con motivo y confirmación obligatorios.
+
+Si se genera un producto que ya tiene documento controlado, el visor ofrece **🔗 Vincular como nueva versión** para no duplicarlo.
+
+**Historial:** muestra versiones, usuario, fecha y hora, control de cambio, motivo, secciones afectadas y hash, con
+**⇄ Comparar** entre cualquier par de versiones y **🛡 Verificar integridad**, que recalcula los hashes y la cadena.
+La columna *Versión controlada* y el buscador de "📚 Segmentados" responden cuántas versiones y cambios tiene cada documento.
+
+**Criterios de auditoría (ALCOA+ · 21 CFR Part 11 · EU GMP Anexo 11):**
+- Los registros son **inmutables**: triggers bloquean UPDATE, DELETE y TRUNCATE incluso para el rol `postgres`, y
+  los usuarios no tienen permisos de escritura directa. Solo se escribe por la función `guardar_version_documento`, que es atómica
+  y serializa versiones concurrentes.
+- Cada registro es **atribuible** (id, email y nombre del usuario al momento) y **contemporáneo** (hora del servidor).
+- El **motivo** es obligatorio (mínimo 10 caracteres) y se exige declarar que se revisó el contenido. Una versión sin cambios se rechaza.
+- Las copias **exportadas o impresas** llevan el código, la versión, la fecha y el hash, y el código también en el pie de cada página. Si no
+  están guardadas, salen como **"BORRADOR — COPIA NO CONTROLADA"**. Las exportaciones e impresiones de versiones controladas
+  quedan en la bitácora `documento_eventos`.
+- El documento segmentado que respalda una versión **no puede eliminarse** (FK `on delete restrict`).
+
+Esquema, funciones y políticas: `cima/sql/control_versiones.sql`.
+
+**Límites conocidos:**
+- No hay firma electrónica con re-autenticación. Part 11 la exige para *aprobaciones*, y hoy se registra quién guarda pero no hay flujo de revisión y aprobación.
+- Un superusuario de la base podría desactivar los triggers y recalcular toda la cadena. Para mitigarlo, conviene anclar periódicamente
+  el último `hash_cadena` fuera de la base, por ejemplo exportándolo al repositorio.
+
 ## Segmentación FT / Prospecto → campos de la Ficha Técnica
 
 Desde el visor, cada fila tiene botones **✂ FT** y **✂ Prosp** que separan el
