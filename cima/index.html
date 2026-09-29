@@ -6,6 +6,8 @@
 <title>ConkoSafe IA — CIMA · Ficha Técnica y Prospecto (AEMPS)</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.6/purify.min.js"></script>
+<script src="segmentador.js"></script>
 <style>
 :root{
   --bg:#ffffff; --surface:#f5f7fa; --border:#d0d7e3; --accent:#0077cc;
@@ -71,6 +73,43 @@ tbody tr:hover{background:#eef3f8}
 .err{background:#fdecec;border:1px solid #f5b5b5;color:#a11;padding:12px 14px;border-radius:10px;font-size:13px;margin-bottom:16px}
 footer{margin-top:30px;font-size:11px;color:var(--muted);font-family:var(--mono);border-top:1px solid var(--border);padding-top:14px}
 @media(max-width:720px){.stats{grid-template-columns:repeat(2,1fr)}}
+
+/* ── Segmentación FT / Prospecto ─────────────────────────────────────────── */
+.links button.seg{font-family:var(--mono);font-size:11px;padding:2px 7px;margin:1px 3px 1px 0;border-radius:6px;cursor:pointer;white-space:nowrap;background:#fff}
+.links button.seg.ft{border:1px dashed var(--ft);color:var(--ft)}
+.links button.seg.p{border:1px dashed var(--prosp);color:var(--prosp)}
+.links button.seg:hover{background:var(--surface)}
+.modal{position:fixed;inset:0;background:rgba(15,25,40,.55);display:flex;align-items:flex-start;justify-content:center;padding:28px 16px;z-index:50;overflow-y:auto}
+.modal[hidden]{display:none}
+.panel{background:#fff;border-radius:14px;width:100%;max-width:980px;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.panel-h{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:16px 20px;border-bottom:1px solid var(--border)}
+.panel-h h2{margin:0;font-size:16px}
+.panel-h .sub{font-size:11px;color:var(--muted);font-family:var(--mono);margin-top:4px;word-break:break-word}
+.panel-b{padding:14px 20px 20px}
+.x{background:none;border:none;font-size:22px;cursor:pointer;color:var(--muted);line-height:1}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px}
+.bar select{min-width:0}
+.estado{font-size:12px;font-family:var(--mono);padding:4px 10px;border-radius:20px;background:var(--surface);border:1px solid var(--border)}
+.estado.ok{background:#e6f4ea;border-color:#9ccfa8;color:#1e6b34}
+.estado.warn{background:#fff6e0;border-color:#f0cf7a;color:#7a5600}
+.avisos{font-size:12px;background:#fff9ec;border:1px solid #f3dca2;border-radius:8px;padding:8px 12px;margin-bottom:12px}
+.avisos li{margin:2px 0}
+.vacios{font-size:12px;color:var(--muted);margin-bottom:12px}
+.chip{display:inline-block;font-family:var(--mono);font-size:10px;padding:1px 7px;border-radius:10px;background:#fdecec;color:#a11;margin:1px 2px}
+details.campo{border:1px solid var(--border);border-radius:10px;margin-bottom:6px;overflow:hidden}
+details.campo summary{cursor:pointer;padding:9px 12px;display:flex;gap:10px;align-items:baseline;background:var(--surface);list-style:none}
+details.campo summary::-webkit-details-marker{display:none}
+details.campo summary .cod{font-family:var(--mono);font-weight:700;color:var(--header);min-width:34px}
+details.campo summary .tit{flex:1;font-weight:600;font-size:13px}
+details.campo summary .src{font-family:var(--mono);font-size:10px;color:var(--muted);white-space:nowrap}
+details.campo.vacio summary{background:#fff;color:var(--muted)}
+details.campo.extra summary .cod{color:var(--muted)}
+.contenido{padding:10px 14px;font-size:13px;max-height:420px;overflow:auto;border-top:1px solid var(--border)}
+.contenido table{min-width:0;font-size:12px;border-collapse:collapse}
+.contenido td,.contenido th{border:1px solid var(--border);padding:3px 6px;vertical-align:top}
+.contenido *{font-family:inherit !important;font-size:inherit !important;max-width:100%}
+.hist td{cursor:pointer}
+.cargando{padding:40px;text-align:center;color:var(--muted)}
 </style>
 </head>
 <body>
@@ -108,6 +147,9 @@ footer{margin-top:30px;font-size:11px;color:var(--muted);font-family:var(--mono)
     </div>
     <a class="btn" id="xlsxBtn" href="#" target="_blank" rel="noopener">⬇ Descargar Excel</a>
     <a class="btn ghost" id="mdBtn" href="#" target="_blank" rel="noopener">📄 Ver resumen (MD)</a>
+    <button class="btn" id="subirBtn" type="button" title="PDF, Word (.docx) o HTML de una FT o un Prospecto">⬆ Subir FT / Prospecto</button>
+    <button class="btn ghost" id="histBtn" type="button">📚 Segmentados</button>
+    <input type="file" id="subirInput" accept=".pdf,.docx,.html,.htm" hidden>
   </div>
 
   <div class="meta" id="meta">Cargando…</div>
@@ -141,7 +183,18 @@ footer{margin-top:30px;font-size:11px;color:var(--muted);font-family:var(--mono)
     Fuente: <a href="https://cima.aemps.es/cima/rest/registroCambios" target="_blank" rel="noopener">CIMA — AEMPS (registroCambios)</a>.
     Datos generados automáticamente por el workflow <code>cima_monitor.yml</code>.
     Nota: CIMA indica que el documento completo fue modificado, no la sección específica (4.1, 4.8, etc.).
+    ✂ FT / ✂ Prosp separan el documento en los campos de la Ficha Técnica (a … e.6) y lo guardan en Supabase.
   </footer>
+</div>
+
+<div class="modal" id="segModal" hidden>
+  <div class="panel" role="dialog" aria-modal="true" aria-labelledby="segTitulo">
+    <div class="panel-h">
+      <div><h2 id="segTitulo">Documento segmentado</h2><div class="sub" id="segSub"></div></div>
+      <button class="x" id="segCerrar" type="button" aria-label="Cerrar">×</button>
+    </div>
+    <div class="panel-b" id="segCuerpo"></div>
+  </div>
 </div>
 
 <script>
@@ -274,6 +327,9 @@ function render(){
       links.push(`<a class="pl" href="${r.p_html}" target="_blank" rel="noopener">Prosp · HTML</a>`);
     }
     const esc=t=>(t||'').replace(/</g,'&lt;');
+    const nregAttr = esc(r.nreg).replace(/"/g,'&quot;');
+    if(r.has_ft)    links.push(`<button type="button" class="seg ft" data-nreg="${nregAttr}" data-tipo="FT" title="Separar la Ficha Técnica en campos a … e.6">✂ FT</button>`);
+    if(r.has_prosp) links.push(`<button type="button" class="seg p"  data-nreg="${nregAttr}" data-tipo="P"  title="Separar el Prospecto en campos a … e.6">✂ Prosp</button>`);
     return `<tr class="${r.cat}">
       <td class="nreg">${esc(r.nreg)}</td>
       <td>${esc(r.nombre)}</td>
@@ -284,6 +340,276 @@ function render(){
       <td class="links">${links.join('')}</td>
     </tr>`;
   }).join('');
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// Segmentación FT / Prospecto → campos a … e.6 (cima/segmentador.js) + Supabase
+// ════════════════════════════════════════════════════════════════════════════
+const BUCKET = 'documentos-segmentados';
+const XLSX_SRC = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+const escH = t => String(t ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const nombreTipo = t => t === 'FT' ? 'Ficha Técnica' : 'Prospecto';
+const fmtFecha = iso => iso ? new Date(iso).toLocaleDateString('es-PE',{day:'2-digit',month:'2-digit',year:'numeric'}) : '—';
+
+// Estado del documento abierto en el panel.
+let seg = null;   // { res, archivo, docId, estado, tipoForzado }
+
+function abrirPanel(titulo, sub, cuerpoHTML){
+  $('segTitulo').textContent = titulo;
+  $('segSub').textContent = sub || '';
+  $('segCuerpo').innerHTML = cuerpoHTML;
+  $('segModal').hidden = false;
+}
+function cerrarPanel(){ $('segModal').hidden = true; seg = null; }
+$('segCerrar').onclick = cerrarPanel;
+$('segModal').addEventListener('click', e => { if(e.target === $('segModal')) cerrarPanel(); });
+document.addEventListener('keydown', e => { if(e.key === 'Escape' && !$('segModal').hidden) cerrarPanel(); });
+const cargando = msg => `<div class="cargando">⏳ ${escH(msg)}</div>`;
+
+// ── Supabase ────────────────────────────────────────────────────────────────
+function filaADoc(d, secciones){
+  return {
+    tipo: d.tipo_documento, origen: d.origen,
+    meta: { nregistro: d.nregistro, nombre: d.nombre_medicamento, laboratorio: d.laboratorio_titular,
+            url: d.url_origen, fecha_version: d.fecha_version_cima, archivo: d.archivo_nombre },
+    campos: secciones.sort((a,b)=>a.orden-b.orden).map(s => ({
+      codigo: s.campo, titulo: s.campo_titulo, secciones_origen: s.secciones_origen || '', texto: s.texto, html: s.html })),
+    campos_vacios: d.campos_vacios || [], avisos: d.avisos || [],
+    creado_en: d.creado_en,
+  };
+}
+
+async function cargarDeSupabase(filtro){
+  let q = sb.from('documentos_segmentados').select('*');
+  for (const [k,v] of Object.entries(filtro)) q = q.eq(k, v);
+  const { data: docs, error } = await q.order('creado_en',{ascending:false}).limit(1);
+  if (error) throw error;
+  if (!docs || !docs.length) return null;
+  const d = docs[0];
+  const { data: secs, error: e2 } = await sb.from('documento_secciones').select('*').eq('documento_id', d.id);
+  if (e2) throw e2;
+  return { id: d.id, res: filaADoc(d, secs || []) };
+}
+
+async function guardarEnSupabase(res, archivo){
+  const { data: { user } } = await sb.auth.getUser();
+  if (!user) throw new Error('Sesión expirada: vuelva a iniciar sesión.');
+  let path = null;
+  if (archivo){
+    path = `${user.id}/${Date.now()}_${archivo.name.replace(/[^\w.\-]+/g,'_')}`;
+    const mime = { pdf:'application/pdf', docx:'application/vnd.openxmlformats-officedocument.wordprocessingml.document', html:'text/html', htm:'text/html' }[archivo.name.split('.').pop().toLowerCase()];
+    const { error } = await sb.storage.from(BUCKET).upload(path, archivo, { contentType: mime, upsert: false });
+    if (error) throw new Error('No se pudo subir el archivo: ' + error.message);
+  }
+  const { data: doc, error } = await sb.from('documentos_segmentados').insert({
+    origen: res.origen, tipo_documento: res.tipo,
+    nregistro: res.meta.nregistro || null, nombre_medicamento: res.meta.nombre || null,
+    laboratorio_titular: res.meta.laboratorio || null, fecha_version_cima: res.meta.fecha_version || null,
+    url_origen: res.meta.url || null, archivo_nombre: archivo ? archivo.name : null, archivo_path: path,
+    campos_vacios: res.campos_vacios, avisos: res.avisos, creado_por: user.id,
+  }).select('id').single();
+  if (error){
+    // Otro usuario guardó la misma versión CIMA mientras tanto: se usa la suya.
+    if (error.code === '23505' && res.origen === 'cima') return null;
+    throw error;
+  }
+  const filas = res.campos.map((c,i) => ({ documento_id: doc.id, campo: c.codigo, campo_titulo: c.titulo, orden: i,
+    secciones_origen: c.secciones_origen || null, texto: c.texto, html: c.html || null }));
+  const { error: e2 } = await sb.from('documento_secciones').insert(filas);
+  if (e2){
+    await sb.from('documentos_segmentados').delete().eq('id', doc.id);   // no dejar cabeceras huérfanas
+    throw e2;
+  }
+  return doc.id;
+}
+
+// ── Flujo 1: botón ✂ en una fila (documento CIMA) ───────────────────────────
+async function segmentarFila(nreg, tipo){
+  const fila = current && current.registros.find(r => r.nreg === nreg);
+  const titulo = `${nombreTipo(tipo)} · ${fila ? fila.nombre : nreg}`;
+  abrirPanel(titulo, `Nº ${nreg}`, cargando('Consultando CIMA…'));
+  seg = { estado: 'cargando' };
+  try{
+    const meta = await Segmentador.metaCIMA(nreg);
+    const version = Segmentador.fechaVersion(meta, tipo);
+    if (version){
+      const previo = await cargarDeSupabase({ origen:'cima', tipo_documento: tipo, nregistro: nreg, fecha_version_cima: version });
+      if (previo){ seg = { res: previo.res, docId: previo.id, estado: 'previo' }; return mostrarResultado(); }
+    }
+    $('segCuerpo').innerHTML = cargando('Separando secciones…');
+    const res = await Segmentador.segmentarCIMA(nreg, tipo, meta);
+    seg = { res, estado: 'guardando' };
+    mostrarResultado();
+    try{
+      const id = await guardarEnSupabase(res);
+      if (id === null){
+        const previo = await cargarDeSupabase({ origen:'cima', tipo_documento: tipo, nregistro: nreg, fecha_version_cima: version });
+        seg = previo ? { res: previo.res, docId: previo.id, estado: 'previo' } : { res, estado: 'error', error: 'Conflicto al guardar' };
+      } else seg = { res, docId: id, estado: 'guardado' };
+    }catch(e){ seg = { res, estado: 'error', error: e.message }; }
+    mostrarResultado();
+  }catch(e){
+    if (e.codigo === 'SIN_SEGMENTAR'){
+      const pdf = e.url_pdf || (fila && (tipo === 'FT' ? fila.ft_pdf : fila.p_pdf));
+      $('segCuerpo').innerHTML = `<div class="err" style="display:block">CIMA no publica este documento dividido por secciones
+        (frecuente en importaciones paralelas).<br>Descargue el ${pdf ? `<a href="${escH(pdf)}" target="_blank" rel="noopener">PDF</a>` : 'PDF'}
+        y súbalo con <b>⬆ Subir FT / Prospecto</b>: se separará con las mismas reglas.</div>`;
+    } else {
+      $('segCuerpo').innerHTML = `<div class="err" style="display:block">No se pudo segmentar: ${escH(e.message)}</div>`;
+    }
+    seg = null;
+  }
+}
+
+$('tbody').addEventListener('click', e => {
+  const b = e.target.closest('button.seg');
+  if (b) segmentarFila(b.dataset.nreg, b.dataset.tipo);
+});
+
+// ── Flujo 2: documento subido ───────────────────────────────────────────────
+$('subirBtn').onclick = () => { $('subirInput').value = ''; $('subirInput').click(); };
+$('subirInput').onchange = () => { const f = $('subirInput').files[0]; if (f) procesarArchivo(f, 'auto'); };
+
+async function procesarArchivo(archivo, tipo){
+  abrirPanel(`Documento subido · ${archivo.name}`, `${(archivo.size/1024).toFixed(0)} KB`, cargando('Leyendo y separando secciones…'));
+  seg = { estado: 'cargando' };
+  try{
+    const res = await Segmentador.segmentarArchivo(archivo, tipo);
+    seg = { res, archivo, estado: 'sin_guardar', tipoForzado: tipo };
+    mostrarResultado();
+  }catch(e){
+    $('segCuerpo').innerHTML = `<div class="err" style="display:block">${escH(e.message)}</div>`;
+    seg = null;
+  }
+}
+
+async function guardarSubida(){
+  if (!seg || !seg.archivo) return;
+  seg.estado = 'guardando'; mostrarResultado();
+  try{ seg.docId = await guardarEnSupabase(seg.res, seg.archivo); seg.estado = 'guardado'; }
+  catch(e){ seg.estado = 'error'; seg.error = e.message; }
+  mostrarResultado();
+}
+
+// ── Historial ───────────────────────────────────────────────────────────────
+$('histBtn').onclick = async () => {
+  abrirPanel('Documentos segmentados', 'Últimos 100 guardados en Supabase', cargando('Cargando…'));
+  seg = null;
+  const { data, error } = await sb.from('documentos_segmentados')
+    .select('id, origen, tipo_documento, nregistro, nombre_medicamento, archivo_nombre, fecha_version_cima, creado_en')
+    .order('creado_en', { ascending: false }).limit(100);
+  if (error){ $('segCuerpo').innerHTML = `<div class="err" style="display:block">${escH(error.message)}</div>`; return; }
+  if (!data.length){ $('segCuerpo').innerHTML = '<div class="empty">Todavía no hay documentos segmentados.</div>'; return; }
+  $('segCuerpo').innerHTML = `<div class="table-scroll"><table class="hist" style="min-width:0"><thead><tr>
+      <th>Guardado</th><th>Tipo</th><th>Origen</th><th>Nº</th><th>Medicamento / archivo</th><th>Versión CIMA</th></tr></thead><tbody>
+    ${data.map(d => `<tr data-id="${escH(d.id)}"><td class="nreg">${fmtFecha(d.creado_en)}</td><td><span class="tag ${d.tipo_documento === 'FT' ? 'ft' : 'prosp'}">${d.tipo_documento}</span></td>
+      <td class="tipo">${d.origen === 'cima' ? 'CIMA' : 'Subido'}</td><td class="nreg">${escH(d.nregistro || '—')}</td>
+      <td>${escH(d.nombre_medicamento || d.archivo_nombre || '—')}</td><td class="nreg">${fmtFecha(d.fecha_version_cima)}</td></tr>`).join('')}
+    </tbody></table></div>`;
+  $('segCuerpo').querySelector('tbody').onclick = async e => {
+    const tr = e.target.closest('tr[data-id]'); if (!tr) return;
+    $('segCuerpo').innerHTML = cargando('Cargando…');
+    try{
+      const previo = await cargarDeSupabase({ id: tr.dataset.id });
+      seg = { res: previo.res, docId: previo.id, estado: 'previo' };
+      mostrarResultado();
+    }catch(err){ $('segCuerpo').innerHTML = `<div class="err" style="display:block">${escH(err.message)}</div>`; }
+  };
+};
+
+// ── Render del resultado ────────────────────────────────────────────────────
+function mostrarResultado(){
+  if (!seg || !seg.res) return;
+  const r = seg.res;
+  const titulo = `${nombreTipo(r.tipo)} · ${r.meta.nombre || r.meta.archivo || ''}`;
+  const sub = [r.meta.nregistro && `Nº ${r.meta.nregistro}`, r.meta.laboratorio,
+               r.origen === 'cima' ? `CIMA · versión ${fmtFecha(r.meta.fecha_version)}` : `Subido: ${r.meta.archivo || ''}`]
+              .filter(Boolean).join(' · ');
+  const estado = {
+    cargando:    ['', '⏳ Procesando…'],
+    guardando:   ['', '⏳ Guardando en Supabase…'],
+    guardado:    ['ok', '✓ Guardado en Supabase'],
+    previo:      ['ok', `✓ Guardado previamente${r.creado_en ? ' (' + fmtFecha(r.creado_en) + ')' : ''}`],
+    sin_guardar: ['warn', 'Sin guardar: revise y pulse Guardar'],
+    error:       ['warn', `⚠ No se guardó: ${seg.error || ''}`],
+  }[seg.estado] || ['', ''];
+
+  const porCodigo = Object.fromEntries(r.campos.map(c => [c.codigo, c]));
+  const filas = [];
+  for (const def of [...Segmentador.CAMPOS, ...Segmentador.CAMPOS_EXTRA]){
+    const c = porCodigo[def.codigo];
+    const extra = def.codigo.startsWith('x.');
+    if (!c){
+      if (extra || def.codigo.startsWith('g.')) continue;   // opcionales: no se listan si faltan
+      filas.push(`<details class="campo vacio"><summary><span class="cod">${def.codigo}</span><span class="tit">${escH(def.titulo)}</span>
+        <span class="src">no encontrado</span></summary></details>`);
+      continue;
+    }
+    filas.push(`<details class="campo${extra ? ' extra' : ''}" data-cod="${escH(c.codigo)}"><summary><span class="cod">${escH(c.codigo)}</span>
+      <span class="tit">${escH(c.titulo)}</span><span class="src">${escH(c.secciones_origen)} · ${c.texto.length.toLocaleString('es-PE')} car.</span></summary>
+      <div class="contenido"></div></details>`);
+  }
+
+  const acciones = [`<button class="btn" type="button" id="segXlsx">⬇ Excel</button>`];
+  if (seg.archivo && (seg.estado === 'sin_guardar' || seg.estado === 'error'))
+    acciones.push(`<button class="btn" type="button" id="segGuardar">💾 Guardar en Supabase</button>`);
+  if (seg.archivo && seg.estado === 'sin_guardar')
+    acciones.push(`<label class="tipo">Tratar como
+      <select id="segTipo"><option value="FT"${r.tipo === 'FT' ? ' selected' : ''}>Ficha Técnica</option>
+      <option value="P"${r.tipo === 'P' ? ' selected' : ''}>Prospecto</option></select></label>`);
+
+  abrirPanel(titulo, sub, `
+    <div class="bar">${acciones.join('')}<span class="estado ${estado[0]}">${escH(estado[1])}</span></div>
+    ${r.avisos && r.avisos.length ? `<ul class="avisos">${r.avisos.map(a => `<li>${escH(a)}</li>`).join('')}</ul>` : ''}
+    ${r.campos_vacios && r.campos_vacios.length ? `<div class="vacios">Campos sin contenido: ${r.campos_vacios.map(c => `<span class="chip">${escH(c)}</span>`).join('')}</div>` : ''}
+    ${filas.join('')}`);
+
+  // El HTML de cada campo (4.8 puede pasar de 200 KB) se inserta al abrirlo, ya sanitizado.
+  $('segCuerpo').querySelectorAll('details.campo[data-cod]').forEach(d => {
+    d.addEventListener('toggle', () => {
+      const box = d.querySelector('.contenido');
+      if (!d.open || box.dataset.ok) return;
+      const c = porCodigo[d.dataset.cod];
+      box.innerHTML = DOMPurify.sanitize(c.html || `<p>${escH(c.texto).replace(/\n/g,'<br>')}</p>`, { FORBID_ATTR: ['style'] });
+      box.dataset.ok = '1';
+    });
+  });
+  $('segXlsx').onclick = () => exportarExcel(r);
+  if ($('segGuardar')) $('segGuardar').onclick = guardarSubida;
+  if ($('segTipo')) $('segTipo').onchange = e => procesarArchivo(seg.archivo, e.target.value);
+}
+
+const cargarXLSX = () => window.XLSX ? Promise.resolve() : new Promise((ok, mal) => {
+  const s = document.createElement('script'); s.src = XLSX_SRC; s.onload = ok; s.onerror = () => mal(new Error('No se pudo cargar SheetJS'));
+  document.head.appendChild(s);
+});
+
+async function exportarExcel(r){
+  await cargarXLSX();
+  const LIM = 32000;   // Excel admite 32.767 caracteres por celda
+  const porCodigo = Object.fromEntries(r.campos.map(c => [c.codigo, c]));
+  const filas = [['Código', 'Campo', 'Sección de origen', 'Contenido']];
+  for (const def of [...Segmentador.CAMPOS, ...Segmentador.CAMPOS_EXTRA]){
+    const c = porCodigo[def.codigo];
+    if (!c && (def.codigo.startsWith('x.') || def.codigo.startsWith('g.'))) continue;
+    const t = c ? c.texto : '';
+    filas.push([def.codigo, def.titulo, c ? c.secciones_origen : '— no encontrado —',
+                t.length > LIM ? t.slice(0, LIM) + ' […texto truncado: ver documento original]' : t]);
+  }
+  const ws = XLSX.utils.aoa_to_sheet(filas);
+  ws['!cols'] = [{ wch: 10 }, { wch: 48 }, { wch: 16 }, { wch: 120 }];
+  const info = XLSX.utils.aoa_to_sheet([
+    ['Documento', nombreTipo(r.tipo)], ['Medicamento', r.meta.nombre || ''], ['Nº registro', r.meta.nregistro || ''],
+    ['Laboratorio', r.meta.laboratorio || ''], ['Origen', r.origen === 'cima' ? 'CIMA (AEMPS)' : `Subido: ${r.meta.archivo || ''}`],
+    ['Versión CIMA', fmtFecha(r.meta.fecha_version)], ['URL', r.meta.url || ''], ['Avisos', (r.avisos || []).join(' | ')],
+    ['Generado', new Date().toLocaleString('es-PE')],
+  ]);
+  info['!cols'] = [{ wch: 16 }, { wch: 100 }];
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Campos');
+  XLSX.utils.book_append_sheet(wb, info, 'Documento');
+  const base = (r.meta.nregistro || r.meta.nombre || 'documento').toString().replace(/[^\w\-]+/g, '_').slice(0, 60);
+  XLSX.writeFile(wb, `Segmentado_${r.tipo}_${base}_${new Date().toISOString().slice(0,10).replace(/-/g,'')}.xlsx`);
 }
 
 verificarAccesoYcargar();
