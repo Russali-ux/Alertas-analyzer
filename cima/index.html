@@ -316,9 +316,22 @@ table.ctimeline td{vertical-align:top}
   <div id="err" class="err" style="display:none"></div>
 
   <nav class="tabs" role="tablist">
-    <button type="button" class="tab" role="tab" data-tab="tabGenerador">✍ Generar documento</button>
     <button type="button" class="tab" role="tab" data-tab="tabMonitor">📋 Cambios CIMA (monitor)</button>
+    <button type="button" class="tab" role="tab" data-tab="tabGenerador">✍ Generar documento</button>
+    <button type="button" class="tab" role="tab" data-tab="tabSegmentados">📚 Segmentados</button>
   </nav>
+
+  <!-- ── Pestaña: documentos segmentados y versiones controladas ── -->
+  <section id="tabSegmentados" class="tabpane" hidden>
+    <div class="gcard">
+      <div class="gcard-h"><span class="gdot"></span>DOCUMENTOS SEGMENTADOS Y VERSIONES CONTROLADAS
+        <button type="button" class="glink" id="segRecargar" style="margin-left:auto">↻ Actualizar</button></div>
+      <div class="gcard-b">
+        <div class="gnote" id="segListaSub" style="margin:0 0 12px"></div>
+        <div id="segLista"></div>
+      </div>
+    </div>
+  </section>
 
   <!-- ── Pestaña: generador (FT / inserto / etiqueta), lógica en generador.js ── -->
   <section id="tabGenerador" class="tabpane" hidden>
@@ -704,17 +717,15 @@ $('tbody').addEventListener('click', e => {
   if (b) segmentarFila(b.dataset.nreg, b.dataset.tipo);
 });
 
-// ── Pestañas: Generar documento / Cambios CIMA ──────────────────────────────
+// ── Pestañas: 1 Cambios CIMA (monitor) · 2 Generar documento · 3 Segmentados ─
 function mostrarTab(id){
   document.querySelectorAll('.tabpane').forEach(p => { p.hidden = p.id !== id; });
   document.querySelectorAll('.tabs .tab').forEach(t => t.classList.toggle('sel', t.dataset.tab === id));
-  try{ localStorage.setItem('cima_tab', id); }catch(_){}
+  if (id === 'tabSegmentados') cargarSegmentados();   // siempre datos frescos (versiones nuevas, eliminados)
 }
 function initTabs(){
   document.querySelectorAll('.tabs .tab').forEach(t => t.onclick = () => mostrarTab(t.dataset.tab));
-  let inicial = 'tabGenerador';
-  try{ const g = localStorage.getItem('cima_tab'); if (g === 'tabMonitor' || g === 'tabGenerador') inicial = g; }catch(_){}
-  mostrarTab(inicial);
+  mostrarTab('tabMonitor');                            // el monitor es la primera pestaña
 }
 
 // ── Flujo 2: documento subido ───────────────────────────────────────────────
@@ -742,15 +753,19 @@ async function guardarSubida(){
   mostrarResultado();
 }
 
-// ── Historial ───────────────────────────────────────────────────────────────
-$('histBtn').onclick = async () => {
-  abrirPanel('Documentos segmentados', 'Últimos 100 guardados en Supabase', cargando('Cargando…'));
-  seg = null;
+// ── Pestaña Segmentados (antes ventana emergente del botón 📚) ──────────────
+$('histBtn').onclick = () => { mostrarTab('tabSegmentados'); window.scrollTo({ top: 0, behavior: 'smooth' }); };
+$('segRecargar').onclick = () => cargarSegmentados();
+
+async function cargarSegmentados(){
+  const lista = $('segLista'), sub = $('segListaSub');
+  const textoSub = n => `${n} documento(s) guardado(s) en Supabase (últimos 100) · clic en una fila o en "Abrir" para ver sus campos`;
+  lista.innerHTML = cargando('Cargando…'); sub.textContent = '';
   const { data, error } = await sb.from('documentos_segmentados')
     .select('id, origen, tipo_documento, nregistro, nombre_medicamento, archivo_nombre, archivo_path, fecha_version_cima, creado_en, creado_por')
     .order('creado_en', { ascending: false }).limit(100);
-  if (error){ $('segCuerpo').innerHTML = `<div class="err" style="display:block">${escH(error.message)}</div>`; return; }
-  if (!data.length){ $('segCuerpo').innerHTML = '<div class="empty">Todavía no hay documentos segmentados.</div>'; return; }
+  if (error){ lista.innerHTML = `<div class="err" style="display:block">${escH(error.message)}</div>`; return; }
+  if (!data.length){ lista.innerHTML = '<div class="empty">Todavía no hay documentos segmentados.</div>'; return; }
   const porId = Object.fromEntries(data.map(d => [d.id, d]));
   // Versiones controladas que usan cada documento segmentado como referencia.
   let versiones = {};
@@ -765,10 +780,10 @@ $('histBtn').onclick = async () => {
         <span class="cmono">${doc.total_versiones || 1} versión(es) · ${doc.total_cambios || 0} cambio(s)${doc.version_vigente === v.version ? ' · vigente' : ''}</span></div>`;
     }).join('');
   };
-  $('segSub').textContent = `${data.length} documento(s) guardado(s) en Supabase · clic en una fila o en "Abrir" para ver sus campos`;
+  sub.textContent = textoSub(data.length);
   // La columna Acciones queda fija a la derecha (sticky) y los nombres largos
   // se parten en líneas, así los botones no quedan fuera de la vista.
-  $('segCuerpo').innerHTML = `
+  lista.innerHTML = `
     <div class="bar"><input type="search" id="histBuscar" class="ginput" style="max-width:460px"
       placeholder="Buscar por medicamento, Nº de registro o código (CKS-…)">
       <span class="gnote" id="histCuenta"></span></div>
@@ -798,7 +813,7 @@ $('histBtn').onclick = async () => {
   $('histBuscar').oninput = () => {
     const q = $('histBuscar').value.trim().toLowerCase();
     let n = 0;
-    $('segCuerpo').querySelectorAll('tbody tr[data-buscar]').forEach(tr => {
+    lista.querySelectorAll('tbody tr[data-buscar]').forEach(tr => {
       const ok = !q || tr.dataset.buscar.includes(q); tr.hidden = !ok; if (ok) n++;
     });
     $('histCuenta').textContent = q ? `${n} coincidencia(s) en la tabla` : '';
@@ -819,7 +834,7 @@ $('histBtn').onclick = async () => {
     }, 400);
   };
 
-  $('segCuerpo').querySelector('tbody').onclick = async e => {
+  lista.querySelector('tbody').onclick = async e => {
     const tr = e.target.closest('tr[data-id]'); if (!tr) return;
     if (e.target.closest('.sin-permiso')) return;
     const hb = e.target.closest('button.hist-b');
@@ -831,23 +846,24 @@ $('histBtn').onclick = async () => {
       try{
         if (await eliminarDocumento(d.id, d.archivo_path, d.nombre_medicamento || d.archivo_nombre)){
           tr.remove();
-          const quedan = $('segCuerpo').querySelectorAll('tbody tr').length;
-          $('segSub').textContent = `${quedan} documento(s) guardado(s) en Supabase · clic en una fila o en "Abrir" para ver sus campos`;
-          if (!quedan) $('segCuerpo').innerHTML = '<div class="empty">Todavía no hay documentos segmentados.</div>';
+          const quedan = lista.querySelectorAll('tbody tr').length;
+          sub.textContent = textoSub(quedan);
+          if (!quedan) lista.innerHTML = '<div class="empty">Todavía no hay documentos segmentados.</div>';
           return;
         }
       }catch(err){ alert('No se pudo eliminar: ' + err.message); }
       del.disabled = false; del.textContent = '🗑 Eliminar';
       return;
     }
-    $('segCuerpo').innerHTML = cargando('Cargando…');
+    // Abrir: el documento se muestra en la ventana de detalle, sobre la pestaña.
+    abrirPanel('Documento segmentado', '', cargando('Cargando…'));
     try{
       const previo = await cargarDeSupabase({ id: tr.dataset.id });
       seg = { res: previo.res, docId: previo.id, estado: 'previo' };
       mostrarResultado();
     }catch(err){ $('segCuerpo').innerHTML = `<div class="err" style="display:block">${escH(err.message)}</div>`; }
   };
-};
+}
 
 // ── Render del resultado ────────────────────────────────────────────────────
 function mostrarResultado(){
