@@ -154,16 +154,30 @@
       <label class="clabel" for="ctlMotivo">Motivo del cambio <span class="req">*</span></label>
       <textarea id="ctlMotivo" class="ctextarea" rows="3" maxlength="1000"
         placeholder="${esNueva ? 'Ej.: Actualización de la sección c.4 según nueva ficha técnica de CIMA del 23/09/2026.' : 'Ej.: Emisión inicial de la ficha técnica para registro en DIGEMID.'}"></textarea>
+      <div class="ccontador" id="ctlContador">0 / 10 caracteres mínimos</div>
       <label class="ccheck"><input type="checkbox" id="ctlConfirmo"> Declaro que revisé el contenido y que este registro es exacto y completo.</label>
       <p class="gnote">Se registrarán automáticamente: su usuario, la fecha y hora del servidor, el hash SHA-256 del contenido y un código de control de cambio.
         <b>Las versiones guardadas no se pueden modificar ni eliminar</b>; cualquier corrección se hace con una nueva versión.</p>
       <div class="bar"><button type="button" class="btn" id="ctlGuardar" disabled>💾 Guardar versión</button>
+        <span class="cfalta" id="ctlFalta"></span>
         <span class="estado" id="ctlEstado"></span></div>`}`);
 
     if (sinCambios) return;
     const motivo = document.getElementById('ctlMotivo'), chk = document.getElementById('ctlConfirmo'), btn = document.getElementById('ctlGuardar');
-    const validar = () => { btn.disabled = !(motivo.value.trim().length >= 10 && chk.checked); };
+    const contador = document.getElementById('ctlContador'), falta = document.getElementById('ctlFalta');
+    // El motivo es un requisito de auditoría: se explica en pantalla qué falta en lugar de solo bloquear el botón.
+    const validar = () => {
+      const n = motivo.value.trim().length;
+      contador.textContent = n >= 10 ? `✓ ${n} caracteres` : `${n} / 10 caracteres mínimos`;
+      contador.classList.toggle('ok', n >= 10);
+      const faltan = [];
+      if (n < 10) faltan.push(`escriba un motivo descriptivo (faltan ${10 - n} caracteres)`);
+      if (!chk.checked) faltan.push('marque la declaración de revisión');
+      falta.textContent = faltan.length ? 'Para guardar: ' + faltan.join(' y ') + '.' : '';
+      btn.disabled = faltan.length > 0;
+    };
     motivo.oninput = validar; chk.onchange = validar;
+    validar();
     motivo.focus();
     btn.onclick = async () => {
       btn.disabled = true; document.getElementById('ctlEstado').textContent = '⏳ Guardando…';
