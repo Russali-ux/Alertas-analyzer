@@ -8,6 +8,8 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.6/purify.min.js"></script>
 <script src="segmentador.js"></script>
+<script src="plantillas.js"></script>
+<script src="generador.js"></script>
 <style>
 :root{
   --bg:#ffffff; --surface:#f5f7fa; --border:#d0d7e3; --accent:#0077cc;
@@ -123,6 +125,123 @@ table.hist{min-width:0}
 .hist .sin-permiso{color:var(--muted);cursor:help;padding:0 6px}
 .btn.danger{color:#b42318;border-color:#b42318}
 .cargando{padding:40px;text-align:center;color:var(--muted)}
+
+/* ── Pestañas ────────────────────────────────────────────────────────────── */
+.tabs{display:flex;gap:6px;border-bottom:2px solid var(--border);margin-bottom:18px;flex-wrap:wrap}
+.tabs .tab{font-family:var(--sora);font-size:14px;font-weight:600;padding:10px 16px;border:none;background:none;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px}
+.tabs .tab:hover{color:var(--header)}
+.tabs .tab.sel{color:var(--header);border-bottom-color:var(--accent)}
+.links button.seg.gen{border:1px solid var(--header);color:var(--header)}
+
+/* ── Generador (estilo Scribe) ───────────────────────────────────────────── */
+.gcard{background:#fff;border:1px solid var(--border);border-radius:16px;margin-bottom:20px;overflow:hidden}
+.gcard-h{background:var(--surface);padding:14px 22px;font-size:12px;font-weight:700;letter-spacing:.4px;color:var(--header);display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border)}
+.gdot{width:9px;height:9px;border-radius:50%;background:var(--accent);display:inline-block}
+.gcard-b{padding:20px 22px 24px}
+.ggrid{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.glabel{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--header);margin-bottom:10px}
+.gopt{display:flex;align-items:center;gap:12px;width:100%;text-align:left;font-family:var(--sora);font-size:14px;color:var(--ink);background:#f7f9fc;border:1px solid var(--border);border-radius:12px;padding:12px 16px;margin-bottom:10px;cursor:pointer}
+.gopt:hover:not(:disabled){border-color:var(--accent)}
+.gopt.sel{background:#e8f1fb;border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.gopt:disabled{cursor:not-allowed;opacity:.55}
+.gopt b{display:block;font-size:14px}
+.gopt small{display:block;font-size:12px;color:var(--muted)}
+.gcode{font-family:var(--mono);font-size:11px;color:var(--muted);min-width:22px}
+.gsoon{margin-left:auto;font-size:10px;font-family:var(--mono);padding:2px 8px;border-radius:10px;background:#eef1f5;color:var(--muted)}
+.gtipos{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.gtipo{font-family:var(--sora);font-size:14px;font-weight:700;padding:14px 8px;border-radius:12px;border:1px solid var(--border);background:#f7f9fc;color:var(--header);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px}
+.gtipo small{font-size:10px;font-weight:600;color:#b45309;text-transform:uppercase;letter-spacing:.4px}
+.gtipo.sel{background:var(--header);color:#fff;border-color:var(--header)}
+.gtipo.sel small{color:#fde68a}
+.gtipo:disabled{opacity:.5;cursor:not-allowed}
+.gmodo{display:flex;gap:8px;margin-bottom:10px}
+.gmodo button{flex:1;font-family:var(--sora);font-size:13px;font-weight:600;padding:9px;border-radius:10px;border:1px solid var(--border);background:#f7f9fc;color:var(--header);cursor:pointer}
+.gmodo button.sel{background:#e8f1fb;border-color:var(--accent);color:var(--accent)}
+.ginput{width:100%;min-width:0;font-size:14px;padding:11px 14px;border-radius:10px}
+.gresultados{margin-top:8px;max-height:360px;overflow-y:auto}
+.gres{display:block;width:100%;text-align:left;font-family:var(--sora);background:#fff;border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:6px;cursor:pointer;position:relative}
+.gres:hover{border-color:var(--accent)}
+.gres.sel{background:#e8f1fb;border-color:var(--accent)}
+.gres b{display:block;font-size:13px;padding-right:90px}
+.gres small{display:block;font-size:11px;color:var(--muted);font-family:var(--mono);margin-top:2px}
+.gdocs{position:absolute;right:10px;top:10px;display:flex;gap:4px}
+.gdocs i{font-style:normal;font-size:10px;font-family:var(--mono);padding:1px 6px;border-radius:8px;background:#eef1f5;color:var(--muted)}
+.gdocs i.ok{background:#D5E8D4;color:#0a5e42}
+.gdrop{display:flex;flex-direction:column;align-items:center;gap:4px;border:2px dashed var(--border);border-radius:12px;padding:26px 16px;cursor:pointer;text-align:center;color:var(--muted);font-size:13px}
+.gdrop b{color:var(--accent);font-size:14px}
+.gdrop:hover{border-color:var(--accent);background:#f7f9fc}
+.gresumen{border:1px solid var(--border);border-radius:14px;padding:16px 18px;margin-bottom:14px;background:#fbfcfe}
+.gres-nombre{font-weight:700;font-size:15px;margin-bottom:4px}
+.gres-det{color:var(--accent);font-size:13px;margin-bottom:4px}
+.gres-meta{font-size:12px;color:var(--muted);font-family:var(--mono)}
+.gres-vacio{font-size:13px;color:var(--muted)}
+.gchips{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.gchip{font-size:11px;padding:3px 10px;border-radius:12px;background:#eef1f5;color:var(--header);border:1px solid var(--border)}
+.gchip.warn{background:#fff6e0;border-color:#f0cf7a;color:#7a5600}
+.ggenerar{width:100%;font-family:var(--sora);font-size:15px;font-weight:700;letter-spacing:.3px;padding:15px;border:none;border-radius:12px;background:var(--header);color:#fff;cursor:pointer;box-shadow:0 6px 16px rgba(26,58,92,.25)}
+.ggenerar:hover:not(:disabled){filter:brightness(1.12)}
+.ggenerar:disabled{opacity:.45;cursor:not-allowed;box-shadow:none}
+.gnote{font-size:12px;color:var(--muted);margin-top:8px}
+.gnote .err,.gnote.err{color:#a11}
+/* Documento generado */
+.gdoc-h{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;background:#eef4fa;padding:18px 22px;border-bottom:1px solid var(--border)}
+.gdoc-norma{font-size:12px;font-weight:700;color:var(--accent)}
+.gdoc-titulo{font-size:19px;font-weight:700;margin:4px 0}
+.gdoc-sub{font-size:13px;color:var(--muted)}
+.gdoc-sub .pend{color:#b45309}
+.gdoc-fuente{font-size:11px;color:var(--muted);font-family:var(--mono);margin-top:4px}
+.gdoc-acc{display:flex;gap:8px;align-items:flex-start}
+.gbtn{font-family:var(--sora);font-size:13px;font-weight:700;padding:10px 16px;border-radius:10px;border:1px solid var(--border);background:#fff;color:var(--header);cursor:pointer;white-space:nowrap}
+.gbtn.prim{background:var(--header);color:#fff;border-color:var(--header)}
+.gbtn:disabled{opacity:.6;cursor:wait}
+.gaviso{margin:12px 22px 0;font-size:12px;padding:8px 12px;border-radius:8px;background:#fff6e0;border:1px solid #f0cf7a;color:#7a5600}
+.gaviso.info{background:#eaf2fd;border-color:#b6d2f5;color:#0a4d80}
+.gdoc-tools{padding:10px 22px;font-size:12px;color:var(--muted)}
+.glink{background:none;border:none;color:var(--accent);cursor:pointer;font-family:var(--sora);font-size:12px;padding:0}
+.gdoc-tools .gnote{display:inline;margin-left:10px}
+.ggrupo{padding:14px 22px 6px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--accent);border-top:1px solid var(--border);background:#fbfcfe}
+details.gsec{border-top:1px solid var(--border)}
+details.gsec summary{list-style:none;display:flex;align-items:center;gap:14px;padding:14px 22px;cursor:pointer}
+details.gsec summary::-webkit-details-marker{display:none}
+details.gsec summary:hover{background:#f7f9fc}
+.gnum{flex:0 0 auto;min-width:40px;height:40px;padding:0 6px;border-radius:20px;background:#eef1f5;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-weight:700;font-family:var(--mono);font-size:13px;color:var(--header)}
+.gtit{flex:1;font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.2px;color:var(--ink)}
+.gbadge{font-size:10px;font-weight:700;padding:3px 9px;border-radius:6px;letter-spacing:.3px}
+.gbadge.crit{background:#fdecec;border:1px solid #f3b5b5;color:#b42318}
+.gbadge.pend{background:#fff6e0;border:1px solid #f0cf7a;color:#7a5600}
+.gbadge.man{background:#eaf2fd;border:1px solid #b6d2f5;color:#0a4d80}
+.gorig{font-size:10px;font-family:var(--mono);color:var(--muted);white-space:nowrap}
+.gchev{color:var(--muted);transition:transform .15s}
+details.gsec[open] .gchev{transform:rotate(180deg)}
+.gsec-b{padding:0 22px 18px 76px}
+.gnota{font-size:12px;background:#f7f9fc;border-left:3px solid var(--accent);padding:6px 10px;margin-bottom:8px;color:var(--muted)}
+.gcont{font-size:13px;line-height:1.55;border:1px dashed transparent;border-radius:8px;padding:8px 10px;max-height:520px;overflow:auto;outline:none}
+.gcont:hover{border-color:var(--border)}
+.gcont:focus{border-color:var(--accent);background:#fcfdff}
+.gcont:empty::before{content:attr(data-ph);color:#b45309;font-style:italic}
+.gcont table{min-width:0;font-size:12px;border-collapse:collapse;margin:6px 0}
+.gcont td,.gcont th{border:1px solid var(--border);padding:3px 6px;vertical-align:top}
+@media(max-width:820px){
+  .ggrid{grid-template-columns:1fr}
+  .gtipos{grid-template-columns:1fr 1fr 1fr}
+  .gsec-b{padding-left:22px}
+  .gorig{display:none}
+}
+/* Impresión: solo el documento generado, con todas sus secciones */
+#genPrintRoot{display:none}
+@media print{
+  body.gen-imprimiendo > *:not(#genPrintRoot){display:none !important}
+  body.gen-imprimiendo #genPrintRoot{display:block;font-family:Arial,sans-serif;font-size:11pt;color:#000}
+  #genPrintRoot h1{font-size:18pt;margin:4pt 0}
+  #genPrintRoot h2.pgrupo{font-size:12pt;text-transform:uppercase;border-bottom:1px solid #999;margin-top:16pt}
+  #genPrintRoot h3{font-size:11.5pt;margin:12pt 0 4pt;page-break-after:avoid}
+  #genPrintRoot .pnorma,#genPrintRoot .psub{font-size:9pt;color:#444}
+  #genPrintRoot .paviso{font-size:9pt;font-style:italic;color:#7a5600}
+  #genPrintRoot .pcrit{font-size:8pt;color:#b42318;border:1px solid #b42318;padding:0 4px}
+  #genPrintRoot .pvacio{font-style:italic;color:#7a5600}
+  #genPrintRoot table{border-collapse:collapse;width:100%;min-width:0;font-size:9pt;page-break-inside:auto}
+  #genPrintRoot td,#genPrintRoot th{border:1px solid #999;padding:2pt 4pt;vertical-align:top}
+}
 </style>
 </head>
 <body>
@@ -140,6 +259,19 @@ table.hist{min-width:0}
 <div class="wrap">
   <div id="err" class="err" style="display:none"></div>
 
+  <nav class="tabs" role="tablist">
+    <button type="button" class="tab" role="tab" data-tab="tabGenerador">✍ Generar documento</button>
+    <button type="button" class="tab" role="tab" data-tab="tabMonitor">📋 Cambios CIMA (monitor)</button>
+  </nav>
+
+  <!-- ── Pestaña: generador (FT / inserto / etiqueta), lógica en generador.js ── -->
+  <section id="tabGenerador" class="tabpane" hidden>
+    <div class="gcard" id="genConfig"></div>
+    <div class="gcard gdoc" id="genDoc" hidden></div>
+  </section>
+
+  <!-- ── Pestaña: monitor de cambios CIMA (sin cambios) ── -->
+  <section id="tabMonitor" class="tabpane" hidden>
   <div class="controls">
     <div class="ctrl">
       <label>Fecha del reporte</label>
@@ -197,7 +329,9 @@ table.hist{min-width:0}
     Datos generados automáticamente por el workflow <code>cima_monitor.yml</code>.
     Nota: CIMA indica que el documento completo fue modificado, no la sección específica (4.1, 4.8, etc.).
     ✂ FT / ✂ Prosp separan el documento en los campos de la Ficha Técnica (a … e.6) y lo guardan en Supabase.
+    ✍ lleva el medicamento al generador de documentos.
   </footer>
+  </section>
 </div>
 
 <div class="modal" id="segModal" hidden>
@@ -243,7 +377,9 @@ async function verificarAccesoYcargar(){
     return;
   }
   yo = { id: session.user.id, admin: perfil.rol === 'admin' };
+  initTabs();
   init();
+  Generador.init();
 }
 
 const ACUMULADO_FILE = 'cima_acumulado.json';
@@ -344,6 +480,7 @@ function render(){
     const nregAttr = esc(r.nreg).replace(/"/g,'&quot;');
     if(r.has_ft)    links.push(`<button type="button" class="seg ft" data-nreg="${nregAttr}" data-tipo="FT" title="Separar la Ficha Técnica en campos a … e.6">✂ FT</button>`);
     if(r.has_prosp) links.push(`<button type="button" class="seg p"  data-nreg="${nregAttr}" data-tipo="P"  title="Separar el Prospecto en campos a … e.6">✂ Prosp</button>`);
+    links.push(`<button type="button" class="seg gen" data-nreg="${nregAttr}" title="Generar ficha técnica, inserto o etiqueta de este medicamento">✍ Generar</button>`);
     return `<tr class="${r.cat}">
       <td class="nreg">${esc(r.nreg)}</td>
       <td>${esc(r.nombre)}</td>
@@ -497,9 +634,28 @@ async function segmentarFila(nreg, tipo){
 }
 
 $('tbody').addEventListener('click', e => {
+  const g = e.target.closest('button.seg.gen');
+  if (g){
+    const fila = current && current.registros.find(r => r.nreg === g.dataset.nreg);
+    if (fila){ Generador.usarProducto(fila); mostrarTab('tabGenerador'); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+    return;
+  }
   const b = e.target.closest('button.seg');
   if (b) segmentarFila(b.dataset.nreg, b.dataset.tipo);
 });
+
+// ── Pestañas: Generar documento / Cambios CIMA ──────────────────────────────
+function mostrarTab(id){
+  document.querySelectorAll('.tabpane').forEach(p => { p.hidden = p.id !== id; });
+  document.querySelectorAll('.tabs .tab').forEach(t => t.classList.toggle('sel', t.dataset.tab === id));
+  try{ localStorage.setItem('cima_tab', id); }catch(_){}
+}
+function initTabs(){
+  document.querySelectorAll('.tabs .tab').forEach(t => t.onclick = () => mostrarTab(t.dataset.tab));
+  let inicial = 'tabGenerador';
+  try{ const g = localStorage.getItem('cima_tab'); if (g === 'tabMonitor' || g === 'tabGenerador') inicial = g; }catch(_){}
+  mostrarTab(inicial);
+}
 
 // ── Flujo 2: documento subido ───────────────────────────────────────────────
 $('subirBtn').onclick = () => { $('subirInput').value = ''; $('subirInput').click(); };

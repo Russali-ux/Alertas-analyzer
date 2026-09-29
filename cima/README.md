@@ -56,6 +56,34 @@ ventana de días).
 
 No requiere ningún secreto ni API key: la API de CIMA es pública.
 
+## Generar documento (pestaña ✍, estilo Scribe)
+
+El visor tiene dos pestañas: **✍ Generar documento** y **📋 Cambios CIMA (monitor)**,
+que se mantiene igual. El generador sigue cuatro pasos:
+
+1. **País**: Perú (DIGEMID). Colombia y México aparecen como *Próximamente*.
+2. **Idioma**: Español o Português. En portugués se traducen títulos y etiquetas;
+   el contenido queda en español porque CIMA solo publica en español.
+3. **Tipo**: Ficha técnica, Inserto o Etiqueta.
+4. **Producto**: búsqueda en el catálogo completo de CIMA (nombre, principio
+   activo o Nº de registro), documento subido (PDF / DOCX / HTML) o el botón
+   **✍ Generar** de una fila del monitor.
+
+**Generar** muestra las secciones numeradas y desplegables, con marcas
+*CRÍTICA*, *PENDIENTE* (sin contenido en el origen) y *COMPLETAR* (datos que no
+están en la FT, como el Nº de Registro Sanitario). Cada sección es **editable**
+antes de **Exportar Word** (.docx real, con tablas y superíndices) o **Imprimir**.
+
+| Documento | Estructura | Fuente preferida |
+|---|---|---|
+| Ficha técnica (PE) | "Contenido de la Ficha Técnica" (a … e.6, f, g.x) | FT, si no hay: prospecto |
+| Inserto (PE) | **Provisional**, basada en el DS 016-2011-SA, pendiente de validar | Prospecto, si no hay: FT |
+| Etiqueta (PE) | **Provisional**, basada en el DS 016-2011-SA, pendiente de validar | FT, si no hay: prospecto |
+
+Las estructuras viven en `cima/plantillas.js`. Para agregar Colombia o México
+se completa su entrada en `PAISES` (`activo: true`) y su bloque en `PLANTILLAS`.
+La lógica está en `cima/generador.js`, y reutiliza el segmentador y la caché en Supabase.
+
 ## Segmentación FT / Prospecto → campos de la Ficha Técnica
 
 Desde el visor, cada fila tiene botones **✂ FT** y **✂ Prosp** que separan el
