@@ -180,6 +180,17 @@ table.hist{min-width:0}
 .gchips{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
 .gchip{font-size:11px;padding:3px 10px;border-radius:12px;background:#eef1f5;color:var(--header);border:1px solid var(--border)}
 .gchip.warn{background:#fff6e0;border-color:#f0cf7a;color:#7a5600}
+.gchip.rs{background:#efe9fb;border-color:#cdbdf2;color:#5b3aa6;font-family:var(--mono)}
+/* Paso 5: registro sanitario */
+.grs-sel{display:flex;gap:10px;align-items:flex-start;justify-content:space-between;border:1px solid #cdbdf2;background:#f7f3fe;border-radius:12px;padding:10px 14px}
+.grs-sel b{font-family:var(--mono);color:#5b3aa6}
+.grs-sel small{display:block;font-size:12px;color:var(--muted)}
+.grs-card b{display:block;font-size:13px;padding-right:110px}
+.grs-card .rsn{font-family:var(--mono);font-size:11px;color:#5b3aa6;font-weight:700}
+.gvto{font-size:10px;font-family:var(--mono);padding:1px 7px;border-radius:8px;background:#eef1f5;color:var(--muted);white-space:nowrap}
+.gvto.venc{background:#fdecec;color:#b42318}.gvto.prox{background:#fff6e0;color:#7a5600}.gvto.ok{background:#e6f4ea;color:#1e6b34}
+.grs-doc{padding:8px 22px;font-size:12px;border-bottom:1px solid var(--border);background:#f7f3fe;color:#3e2a73;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.grs-doc b{font-family:var(--mono)}
 .ggenerar{width:100%;font-family:var(--sora);font-size:15px;font-weight:700;letter-spacing:.3px;padding:15px;border:none;border-radius:12px;background:var(--header);color:#fff;cursor:pointer;box-shadow:0 6px 16px rgba(26,58,92,.25)}
 .ggenerar:hover:not(:disabled){filter:brightness(1.12)}
 .ggenerar:disabled{opacity:.45;cursor:not-allowed;box-shadow:none}
@@ -445,12 +456,13 @@ async function verificarAccesoYcargar(){
   const { data: { session } } = await sb.auth.getSession();
   if (!session) { window.location.href = '../'; return; }
 
-  const { data: perfil } = await sb.from('perfiles').select('rol, acceso_cima').eq('id', session.user.id).single();
+  const { data: perfil } = await sb.from('perfiles').select('rol, acceso_cima, acceso_titulares').eq('id', session.user.id).single();
   if (!perfil || (perfil.rol !== 'admin' && !perfil.acceso_cima)) {
     showAccessBlocked();
     return;
   }
-  yo = { id: session.user.id, admin: perfil.rol === 'admin' };
+  // titulares: puede ver el portafolio de registros sanitarios (paso 5 del generador)
+  yo = { id: session.user.id, admin: perfil.rol === 'admin', titulares: perfil.rol === 'admin' || !!perfil.acceso_titulares };
   initTabs();
   init();
   Generador.init();
@@ -790,7 +802,7 @@ async function cargarSegmentados(){
   // se parten en líneas, así los botones no quedan fuera de la vista.
   lista.innerHTML = `
     <div class="bar"><input type="search" id="histBuscar" class="ginput" style="max-width:460px"
-      placeholder="Buscar por medicamento, Nº de registro o código (CKS-…)">
+      placeholder="Buscar por medicamento, Nº CIMA, código (CKS-…) o registro sanitario (EN-…)">
       <span class="gnote" id="histCuenta"></span></div>
     <div id="histControlados"></div>
     <div class="table-scroll"><table class="hist"><thead><tr>
@@ -828,12 +840,12 @@ async function cargarSegmentados(){
       if (q.length < 3){ caja.innerHTML = ''; return; }
       const limpio = q.replace(/[,()%*]/g, ' ').trim();
       const { data: docs } = await sb.from('v_documentos_controlados')
-        .select('id, codigo, producto, tipo_documento, pais, idioma, nregistro, codigo_version_vigente, total_versiones, total_cambios, ultima_fecha')
-        .or(`codigo.ilike.%${limpio}%,producto.ilike.%${limpio}%,nregistro.ilike.%${limpio}%`)
+        .select('id, codigo, producto, tipo_documento, pais, idioma, nregistro, codigo_version_vigente, total_versiones, total_cambios, ultima_fecha, rs_numero')
+        .or(`codigo.ilike.%${limpio}%,producto.ilike.%${limpio}%,nregistro.ilike.%${limpio}%,rs_numero.ilike.%${limpio}%,rs_producto.ilike.%${limpio}%`)
         .order('ultima_fecha', { ascending: false }).limit(20);
       caja.innerHTML = docs && docs.length ? `<div class="czona"><b>Documentos controlados (${docs.length})</b>
         ${docs.map(c => `<div class="cfam"><span><b>${escH(c.codigo)}</b> · ${escH(c.producto)} · ${escH(c.tipo_documento)} ${escH(c.pais)}/${escH(c.idioma.toUpperCase())}</span>
-          <span class="cmono">vigente ${escH(c.codigo_version_vigente)} · ${c.total_versiones} versión(es) · <b>${c.total_cambios} cambio(s)</b></span>
+          <span class="cmono">vigente ${escH(c.codigo_version_vigente)}${c.rs_numero ? ' · RS ' + escH(c.rs_numero) : ''} · ${c.total_versiones} versión(es) · <b>${c.total_cambios} cambio(s)</b></span>
           <button type="button" class="mini hist-b" data-doc="${escH(c.id)}">🕘 Historial</button></div>`).join('')}</div>` : '';
       caja.querySelectorAll('.hist-b').forEach(b => b.onclick = () => Control.abrirHistorial(b.dataset.doc));
     }, 400);

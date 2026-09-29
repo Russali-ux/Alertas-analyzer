@@ -20,11 +20,66 @@
     pais: 'PE', idioma: 'es', tipo: 'FT', modo: 'cima',
     producto: null,        // { origen:'cima', nregistro, nombre, lab, detalle, docs } | { origen:'subida', nombre, archivo, res, docId }
     resultados: [], buscando: false, busquedaId: 0,
+    registro: null,        // paso 5: { id, nro, producto, titular, vencimiento } del portafolio
+    rsSugerencia: '',      // término para sugerir registros sanitarios según el producto elegido
     doc: null,             // documento generado
   };
   const $g = id => document.getElementById(id);
   // escH es un const del script principal de index.html: se accede por nombre (no es propiedad de window).
   const esc = s => escH(s);
+  // Paso 5 solo para admin o usuarios con acceso a Titulares (yo es un let de index.html).
+  const puedeRS = () => typeof yo !== 'undefined' && !!yo && !!yo.titulares;
+
+  // ════════════════════════════════════════════════════════════════════════
+  // Paso 5: selector de registro sanitario (portafolio de medicamentos)
+  // ════════════════════════════════════════════════════════════════════════
+  function badgeVencimiento(fecha) {
+    if (!fecha) return '';
+    const f = new Date(fecha + 'T00:00:00'), hoy = new Date();
+    const dias = Math.floor((f - hoy) / 86400000);
+    const txt = f.toLocaleDateString('es-PE', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    if (dias < 0) return `<span class="gvto venc" title="Registro sanitario vencido">VENCIDO ${txt}</span>`;
+    if (dias <= 180) return `<span class="gvto prox" title="Vence en ${dias} días">vence ${txt}</span>`;
+    return `<span class="gvto ok">vence ${txt}</span>`;
+  }
+
+  // La ★ (titular principal) es solo visual en la búsqueda; el snapshot guardado no la lleva.
+  const rsDesdeFila = r => ({ id: r.id, nro: r.nro_registro_sanitario, producto: r.producto, titular: (r.titulares || '').replace(/ ★/g, ''),
+                              vencimiento: r.vencimiento, principio: r.principio_activo });
+
+  /** Monta buscador + resultados en `caja`. onSelect(registro) al elegir. */
+  function montarSelectorRS(caja, { valorInicial = '', onSelect }) {
+    caja.innerHTML = `
+      <input type="search" class="ginput grs-q" placeholder="Producto, principio activo o Nº de registro sanitario (mín. 2)" autocomplete="off">
+      <div class="gresultados grs-res"></div>`;
+    const inp = caja.querySelector('.grs-q'), res = caja.querySelector('.grs-res');
+    let t = null, n = 0, lista = [];
+    const buscarRS = async q => {
+      const id = ++n;
+      if (q.length < 2) { res.innerHTML = ''; return; }
+      res.innerHTML = '<div class="gnote">⏳ Buscando en el portafolio…</div>';
+      const { data, error } = await sb.rpc('buscar_registros_sanitarios', { p_q: q });
+      if (id !== n) return;
+      if (error) { res.innerHTML = `<div class="gnote err">${esc(error.message)}</div>`; return; }
+      lista = data || [];
+      res.innerHTML = lista.length ? lista.map((r, i) => `
+        <button type="button" class="gres grs-card" data-i="${i}">
+          <b>${esc(r.producto)}</b>
+          <small><span class="rsn">${esc(r.nro_registro_sanitario)}</span> · ${esc(r.principio_activo || '')}</small>
+          <small>${esc(r.titulares || '—')}${r.fabricante ? ' · Fab.: ' + esc(r.fabricante) : ''}</small>
+          <span class="gdocs">${badgeVencimiento(r.vencimiento)}</span>
+        </button>`).join('') : '<div class="gnote">Sin coincidencias en el portafolio.</div>';
+      res.querySelectorAll('.grs-card').forEach(b => b.onclick = () => onSelect(rsDesdeFila(lista[+b.dataset.i])));
+    };
+    inp.oninput = () => { clearTimeout(t); t = setTimeout(() => buscarRS(inp.value.trim()), 350); };
+    inp.onkeydown = e => { if (e.key === 'Enter') { clearTimeout(t); buscarRS(inp.value.trim()); } };
+    if (valorInicial) { inp.value = valorInicial; buscarRS(valorInicial); }
+  }
+
+  const htmlRSElegido = (r, conQuitar) => `
+    <div class="grs-sel"><div><b>${esc(r.nro)}</b> ${badgeVencimiento(r.vencimiento)}
+      <small>${esc(r.producto)}</small><small>${esc(r.titular || '—')}</small></div>
+      ${conQuitar ? '<button type="button" class="glink" id="genRsQuitar">Cambiar</button>' : ''}</div>`;
 
   // ════════════════════════════════════════════════════════════════════════
   // Configuración
@@ -82,6 +137,11 @@
               </label>
               <input type="file" id="genArchivo" accept=".pdf,.docx,.html,.htm" hidden>
               <div id="genSubidaEstado" class="gnote"></div>`}
+
+            ${puedeRS() ? `
+            <div class="glabel" style="margin-top:22px">5 · Registro sanitario (DIGEMID) <span class="gnote" style="text-transform:none;font-weight:400">— opcional</span></div>
+            ${st.registro ? htmlRSElegido(st.registro, true) : `<div id="genRsSelector"></div>
+              <p class="gnote">Asocia el documento a un producto del portafolio. Queda registrado en la versión controlada.</p>`}` : ''}
           </div>
           <div>
             <div class="gresumen">
@@ -97,6 +157,7 @@
                 <span class="gchip">${st.idioma === 'es' ? 'Español' : 'Português'}</span>
                 <span class="gchip">${esc(tipoDef.nombre.es)}</span>
                 ${plantilla && plantilla.borrador ? '<span class="gchip warn">Estructura provisional</span>' : ''}
+                ${st.registro ? `<span class="gchip rs">RS ${esc(st.registro.nro)}</span>` : ''}
               </div>
             </div>
             <button type="button" id="genGenerar" class="ggenerar" ${pr && plantilla ? '' : 'disabled'}>▶ ${esc(tipoDef.accion.es.toUpperCase())}</button>
@@ -126,6 +187,20 @@
     } else {
       $g('genArchivo').onchange = () => { const f = $g('genArchivo').files[0]; if (f) subir(f); };
     }
+
+    if (puedeRS()) {
+      if (st.registro) $g('genRsQuitar').onclick = () => { st.registro = null; renderConfig(); };
+      else montarSelectorRS($g('genRsSelector'), {
+        valorInicial: st.rsSugerencia,
+        onSelect: r => { st.registro = r; renderConfig(); },
+      });
+    }
+  }
+
+  /** Término para sugerir el registro sanitario: primer principio activo del producto de CIMA. */
+  function sugerirRS(m) {
+    const pa = (m.pactivos || '').split(/[,/]/)[0].trim();
+    st.rsSugerencia = pa || (m.nombre || '').split(/\s+/)[0] || '';
   }
 
   // ════════════════════════════════════════════════════════════════════════
@@ -186,6 +261,7 @@
         origen: 'cima', nregistro: String(m.nregistro), nombre: m.nombre, lab: m.labtitular,
         detalle: [m.pactivos || m.dosis, forma].filter(Boolean).join(' · '), docs: m.docs || [],
       };
+      if (!st.registro) sugerirRS(m);
       renderConfig();
     });
   }
@@ -315,7 +391,8 @@
       get fuente() { return this.fuenteFija || textoFuente(this, this.idioma); },
       // Control de versiones
       referenciaId: referenciaId || null,
-      control: null,      // versión guardada que se está viendo: { version_id, codigo_version, version, creado_en, … }
+      registro: st.registro ? { ...st.registro } : null,   // paso 5 (se guarda como snapshot en la versión)
+      control: null,     // versión guardada que se está viendo: { version_id, codigo_version, version, creado_en, … }
       familia: null,      // documento controlado al que pertenecerá la próxima versión
       base: null,         // versión contra la que se muestran diferencias (y base de la próxima versión)
       sucio: false,       // editado después de guardar/abrir
@@ -342,8 +419,15 @@
     const cv = await global.Control.cargarVersion(c.version_vigente_id);
     st.doc.familia = { documentoId: c.id, codigo: c.codigo, versionVigente: c.version_vigente };
     st.doc.base = global.Control.baseDesde(cv);
+    if (!st.doc.registro) st.doc.registro = registroDesdeVersion(cv.version);   // hereda el RS de la versión vigente
     renderDoc();
   }
+
+  /** Registro sanitario (snapshot) de una versión guardada. */
+  const registroDesdeVersion = v => v && v.medicamento_id
+    ? { id: v.medicamento_id, nro: v.rs_numero, producto: v.rs_producto, titular: v.rs_titular, vencimiento: v.rs_vencimiento }
+    : null;
+
   function textoFuente(d, L) {
     const doc = d.fuenteTipo === 'FT' ? 'Ficha técnica' : (L === 'pt' ? 'Bula (prospecto)' : 'Prospecto');
     return d.fuenteOrigen === 'cima'
@@ -389,6 +473,13 @@
         </div>
       </div>
       <div class="gtraz ${estadoTraza(d).clase}" id="genTraza">${estadoTraza(d).html}</div>
+      ${d.registro || puedeRS() ? `<div class="grs-doc">🏷 Registro sanitario:
+        ${d.registro ? `<b>${esc(d.registro.nro)}</b> · ${esc(d.registro.producto)} · ${esc(d.registro.titular || '—')} ${badgeVencimiento(d.registro.vencimiento)}`
+                     : '<span>sin asociar</span>'}
+        ${d.base && (d.base.medicamentoId || null) !== (d.registro ? d.registro.id : null)
+          ? `<span class="gbadge dif modificada">CAMBIO vs ${esc(d.base.codigoVersion)}</span>` : ''}
+        ${puedeRS() ? `<button type="button" class="glink" id="genRsCambiar">${d.registro ? 'Cambiar' : 'Asociar'}</button>` : ''}
+      </div>` : ''}
       ${!d.familia && d.coincidencias.length ? d.coincidencias.map(c => `
         <div class="gaviso">⚠ Este producto ya tiene el documento controlado <b>${esc(c.codigo)}</b>
           (vigente ${esc(c.codigo_version_vigente)}, ${c.total_cambios} cambio(s)). Si esto es una actualización, vincúlelo para registrar
@@ -456,6 +547,21 @@
     $g('genCol').onclick = () => box.querySelectorAll('details.gsec').forEach(x => { x.open = false; });
     $g('genWord').onclick = exportarWord;
     $g('genPrint').onclick = imprimir;
+    const brs = $g('genRsCambiar');
+    if (brs) brs.onclick = () => {
+      abrirPanel('Registro sanitario del documento', d.producto, `
+        ${d.registro ? `<p class="gnote">Actual: <b>${esc(d.registro.nro)}</b> · ${esc(d.registro.producto)}</p>` : ''}
+        <div id="rsPanelSel"></div>
+        ${d.registro ? '<div class="bar"><button type="button" class="btn ghost" id="rsQuitar">Quitar asociación</button></div>' : ''}
+        <p class="gnote">Cambiar el registro sanitario de un documento controlado genera una nueva versión con su control de cambio.</p>`);
+      const aplicar = r => {
+        d.registro = r;
+        if (d.control) d.sucio = true;
+        cerrarPanel(); renderDoc();
+      };
+      montarSelectorRS($g('rsPanelSel'), { valorInicial: d.registro ? '' : (st.rsSugerencia || ''), onSelect: aplicar });
+      const q = $g('rsQuitar'); if (q) q.onclick = () => aplicar(null);
+    };
     const bg = $g('genGuardar');
     bg.disabled = !!(d.control && !d.sucio);
     bg.title = bg.disabled ? 'Sin cambios desde la versión guardada' : '';
@@ -463,7 +569,10 @@
       d.control = r;
       d.familia = { documentoId: r.documento_id, codigo: r.codigo, versionVigente: r.version };
       // La versión recién guardada pasa a ser la base: los cambios siguientes se comparan contra ella.
+      if (r.medicamento_id) d.registro = { id: r.medicamento_id, nro: r.rs_numero, producto: r.rs_producto,
+                                           titular: r.rs_titular, vencimiento: r.rs_vencimiento };  // snapshot del servidor
       d.base = { versionId: r.version_id, version: r.version, codigoVersion: r.codigo_version,
+        medicamentoId: r.medicamento_id || null, rsNumero: r.rs_numero || null,
         secciones: Object.fromEntries(d.secciones.map(s => [s.clave, { clave: s.clave, titulo: s.def.titulo[d.idioma],
           texto: global.Control.htmlATexto(s.html), html: s.html }])) };
       d.sucio = false;
@@ -530,6 +639,7 @@
       <h1>${esc(d.producto)}</h1>
       <div class="psub">${esc(tipoDef.nombre[L])} · ${T.idioma} · ${esc(T.generado)}: ${d.generado.toLocaleDateString('es-PE')}</div>
       <div class="psub">${esc(T.fuente)}: ${esc(d.fuente)}</div>
+      ${d.registro ? `<div class="psub"><b>${esc(textoRS(d, L))}</b></div>` : ''}
       ${d.plantilla.borrador ? `<p class="paviso">${esc(T.borrador)}</p>` : ''}
       ${L === 'pt' ? `<p class="paviso">${esc(T.aviso_pt)}</p>` : ''}
       ${d.secciones.map(s => {
@@ -540,6 +650,15 @@
         return `${g}<h3>${esc(s.num)}. ${esc(s.def.titulo[L])}${s.def.critica ? ` <span class="pcrit">${T.critica}</span>` : ''}</h3>${cuerpo}`;
       }).join('')}
       <div class="${tz.controlado ? 'ptraz pie' : 'ptraz pie nocontrol'}">${esc(tz.linea)}${tz.hash ? ' · SHA-256 ' + esc(tz.hash) : ''}</div>`;
+  }
+
+  function textoRS(d, L) {
+    const r = d.registro;
+    const vto = r.vencimiento
+      ? new Date(r.vencimiento + 'T00:00:00').toLocaleDateString('es-PE', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '—';
+    return L === 'pt'
+      ? `Registro sanitário: ${r.nro} · ${r.producto} · Titular: ${r.titular || '—'} · Validade: ${vto}`
+      : `Registro sanitario: ${r.nro} · ${r.producto} · Titular: ${r.titular || '—'} · Vencimiento: ${vto}`;
   }
 
   /** Línea de trazabilidad que acompaña toda copia exportada o impresa. */
@@ -657,6 +776,7 @@
         new D.Paragraph({ heading: D.HeadingLevel.TITLE, children: [new D.TextRun({ text: d.producto, bold: true })] }),
         gris(`${tipoDef.nombre[L]} · ${T.idioma} · ${T.generado}: ${d.generado.toLocaleDateString('es-PE')}`),
         gris(`${T.fuente}: ${d.fuente}`),
+        ...(d.registro ? [new D.Paragraph({ children: [new D.TextRun({ text: textoRS(d, L), bold: true, size: 18, color: '5B3AA6' })] })] : []),
       ];
       if (d.plantilla.borrador) hijos.push(new D.Paragraph({ children: [new D.TextRun({ text: T.borrador, italics: true, color: 'B45309' })] }));
       if (L === 'pt') hijos.push(new D.Paragraph({ children: [new D.TextRun({ text: T.aviso_pt, italics: true, color: '1D4ED8' })] }));
@@ -716,6 +836,7 @@
   function usarProducto(fila) {
     st.modo = 'cima';
     st.producto = { origen: 'cima', nregistro: String(fila.nreg), nombre: fila.nombre, lab: fila.lab, detalle: '', docs: [] };
+    if (!st.registro) sugerirRS({ nombre: fila.nombre });
     renderConfig();
   }
 
@@ -754,6 +875,7 @@
       fuenteTipo: null, generado: new Date(v.creado_en),
       get fuente() { return this.fuenteFija; },
       referenciaId: v.referencia_segmentado_id,
+      registro: registroDesdeVersion(v),
       control: { documento_id: d.id, codigo: d.codigo, version_id: v.id, version: v.version, codigo_version: v.codigo_version,
                  creado_en: v.creado_en, creado_por_email: v.creado_por_email, hash_contenido: v.hash_contenido,
                  control_codigo: cv.control && cv.control.codigo },
@@ -781,6 +903,7 @@
     st.doc.producto = d.producto;                    // la identidad del documento no cambia
     st.doc.familia = { documentoId: d.id, codigo: d.codigo, versionVigente: d.version_vigente };
     st.doc.base = global.Control.baseDesde(cv);
+    st.doc.registro = registroDesdeVersion(cv.version);   // la actualización conserva el RS de la base
     global.cerrarPanel();
     mostrarDocumento();
   }
