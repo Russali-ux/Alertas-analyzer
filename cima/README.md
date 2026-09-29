@@ -122,6 +122,27 @@ La columna *Versión controlada* y el buscador de "📚 Segmentados" responden c
 
 Esquema, funciones y políticas: `cima/sql/control_versiones.sql`.
 
+### Paso 5 · Registro sanitario (DIGEMID)
+
+El generador permite asociar el documento a un producto del **portafolio de
+registros sanitarios** (`medicamentos` + titulares). El buscador filtra por
+producto, principio activo o Nº de RS, sugiere según el principio activo del
+producto de CIMA y marca los registros **VENCIDOS** o próximos a vencer.
+
+- **Acceso:** solo **admin o usuarios con acceso a Titulares**, la misma regla del portafolio.
+  Quien no tiene ese acceso no ve el paso 5 y no puede asociar ni cambiar el RS; el servidor lo
+  rechaza aunque se intente por la API. Sí puede editar el contenido de un documento que ya tiene RS, y la versión
+  nueva conserva el mismo RS.
+- **Trazabilidad:** la versión guarda el id del medicamento y un **snapshot** (Nº RS, producto,
+  titular(es), vencimiento) con su hash, encadenado en `hash_cadena`. Así el registro sigue siendo
+  fiel aunque el portafolio se recargue.
+- **Cambio de RS = cambio controlado:** genera una nueva versión aunque no cambie ninguna sección,
+  con el detalle *"Registro sanitario asociado: EN-… → EN-…"*.
+- El RS aparece en el documento, en el Word y la impresión, y en el historial. En la pestaña Segmentados se puede
+  buscar por Nº de RS.
+
+SQL: `cima/sql/registro_sanitario.sql` (compatible con las versiones guardadas antes: siguen verificando igual).
+
 **Límites conocidos:**
 - No hay firma electrónica con re-autenticación. Part 11 la exige para *aprobaciones*, y hoy se registra quién guarda pero no hay flujo de revisión y aprobación.
 - Un superusuario de la base podría desactivar los triggers y recalcular toda la cadena. Para mitigarlo, conviene anclar periódicamente

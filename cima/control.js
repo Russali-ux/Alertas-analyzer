@@ -74,6 +74,7 @@
       p_referencia_segmentado_id: doc.referenciaId || null,
       p_referencia_descripcion: doc.fuente,
       p_motivo: motivo, p_secciones: secciones,
+      p_medicamento_id: doc.registro ? doc.registro.id : null,
     });
     if (error) throw new Error(error.message);
     return data;
@@ -95,6 +96,7 @@
   function baseDesde(cv) {
     return {
       versionId: cv.version.id, version: cv.version.version, codigoVersion: cv.version.codigo_version,
+      medicamentoId: cv.version.medicamento_id || null, rsNumero: cv.version.rs_numero || null,
       secciones: Object.fromEntries(cv.secciones.map(s => [s.clave, { clave: s.clave, titulo: s.titulo, texto: s.texto, html: s.html }])),
     };
   }
@@ -130,7 +132,10 @@
     const cmp = doc.base ? compararConBase(doc.secciones, doc.base) : null;
     const vigente = doc.familia && doc.familia.versionVigente;
     const baseNoVigente = doc.base && vigente && doc.base.version !== vigente;
-    const sinCambios = cmp && cmp.total === 0;
+    // Cambiar el registro sanitario asociado también es un cambio controlado.
+    const rsCambio = !!doc.base && (doc.base.medicamentoId || null) !== (doc.registro ? doc.registro.id : null);
+    const sinCambios = cmp && cmp.total === 0 && !rsCambio;
+    const rsTexto = doc.registro ? `${doc.registro.nro} · ${doc.registro.producto}` : '— sin asociar';
 
     const lista = cmp ? [
       ...doc.secciones.filter(s => cmp.porClave[s.clave].tipo !== 'SIN_CAMBIOS')
@@ -145,11 +150,13 @@
         <div><label>Versión a crear</label><b>${esNueva ? 'V' + String((vigente || 0) + 1).padStart(2, '0') : 'V01'}</b><small>el servidor asigna el número definitivo</small></div>
         <div><label>Versión base</label><b>${doc.base ? esc(doc.base.codigoVersion) : '— (emisión inicial)'}</b></div>
         <div><label>Referencia</label><span>${esc(doc.fuente)}</span></div>
+        <div><label>Registro sanitario</label><b>${esc(rsTexto)}</b>${doc.registro && doc.registro.titular ? `<small>${esc(doc.registro.titular)}</small>` : ''}</div>
       </div>
       ${baseNoVigente ? `<div class="gaviso">⚠ La versión base (V${String(doc.base.version).padStart(2, '0')}) no es la vigente (V${String(vigente).padStart(2, '0')}). La nueva versión quedará registrada como derivada de la base elegida.</div>` : ''}
       ${cmp ? `<div class="cresumen"><b>Cambios respecto de ${esc(doc.base.codigoVersion)}:</b>
           ${cmp.agregadas} agregada(s) · ${cmp.modificadas} modificada(s) · ${cmp.eliminadas.length} eliminada(s)
-          ${lista ? `<ul>${lista}</ul>` : ''}</div>` : ''}
+          ${rsCambio ? ` · registro sanitario ${esc(doc.base.rsNumero || '—')} → ${esc(doc.registro ? doc.registro.nro : '—')}` : ''}
+          ${lista || rsCambio ? `<ul>${lista}${rsCambio ? `<li><span class="ctipo modificada">MODIFICADA</span> Registro sanitario asociado: ${esc(doc.base.rsNumero || '—')} → ${esc(doc.registro ? doc.registro.nro : '—')}</li>` : ''}</ul>` : ''}</div>` : ''}
       ${sinCambios ? `<div class="err" style="display:block">No hay cambios respecto de la versión base: no se puede crear una versión nueva.</div>` : `
       <label class="clabel" for="ctlMotivo">Motivo del cambio <span class="req">*</span></label>
       <textarea id="ctlMotivo" class="ctextarea" rows="3" maxlength="1000"
@@ -192,6 +199,7 @@
             <div><label>Fecha y hora (Lima)</label><b>${fechaHora(r.creado_en)}</b></div>
             <div><label>Control de cambio</label><b>${esc(r.control_codigo)}</b><small>${r.tipo_control === 'EMISION_INICIAL' ? 'Emisión inicial' : `+${r.agregadas} ~${r.modificadas} −${r.eliminadas}`}</small></div>
             <div><label>Usuario</label><span>${esc(r.creado_por_email || '')}</span></div>
+            <div><label>Registro sanitario</label><b>${esc(r.rs_numero || '— sin asociar')}</b>${r.rs_titular ? `<small>${esc(r.rs_titular)}</small>` : ''}</div>
             <div><label>SHA-256 contenido</label><code class="chash">${esc(r.hash_contenido)}</code></div>
           </div>`;
       } catch (e) {
@@ -209,7 +217,7 @@
     try {
       const [{ data: d, error: e1 }, { data: vs, error: e2 }, { data: ccs, error: e3 }] = await Promise.all([
         sb.from('v_documentos_controlados').select('*').eq('id', documentoId).single(),
-        sb.from('documento_versiones').select('id, version, codigo_version, version_base_id, referencia_descripcion, hash_contenido, hash_cadena, creado_por_email, creado_por_nombre, creado_en').eq('documento_id', documentoId).order('version', { ascending: false }),
+        sb.from('documento_versiones').select('id, version, codigo_version, version_base_id, referencia_descripcion, hash_contenido, hash_cadena, creado_por_email, creado_por_nombre, creado_en, rs_numero, rs_titular').eq('documento_id', documentoId).order('version', { ascending: false }),
         sb.from('control_cambios').select('*, control_cambios_detalle(clave, titulo, tipo_cambio)').eq('documento_id', documentoId),
       ]);
       if (e1 || e2 || e3) throw new Error((e1 || e2 || e3).message);
@@ -242,7 +250,7 @@
             <td class="nreg">${fechaHora(v.creado_en)}</td>
             <td>${esc(v.creado_por_nombre || '')}<div class="cmono">${esc(v.creado_por_email || '')}</div></td>
             <td><b>${esc(c.codigo || '—')}</b><div class="cmono">${c.tipo === 'EMISION_INICIAL' ? 'Emisión inicial' : `Base: ${esc(codPorId[c.version_base_id] || '—')}`}</div></td>
-            <td class="med">${esc(c.motivo || '')}${det ? `<details class="cdet"><summary>Ver secciones</summary><ul>${det}</ul></details>` : ''}<div class="cmono">Ref.: ${esc(v.referencia_descripcion || '—')}</div></td>
+            <td class="med">${esc(c.motivo || '')}${det ? `<details class="cdet"><summary>Ver secciones</summary><ul>${det}</ul></details>` : ''}<div class="cmono">Ref.: ${esc(v.referencia_descripcion || '—')}</div><div class="cmono">RS: ${esc(v.rs_numero || '—')}${v.rs_titular ? ' · ' + esc(v.rs_titular) : ''}</div></td>
             <td class="nreg">${c.tipo === 'ACTUALIZACION' ? `+${c.secciones_agregadas} ~${c.secciones_modificadas} −${c.secciones_eliminadas}` : '—'}</td>
             <td><code class="chash" title="Contenido: ${esc(v.hash_contenido)}&#10;Cadena: ${esc(v.hash_cadena)}">${corto(v.hash_contenido)}</code></td>
             <td class="acc"><button type="button" class="mini abrir" data-abrir="${esc(v.id)}">Abrir</button></td>
@@ -258,7 +266,7 @@
         est.textContent = '⏳ Recalculando hashes…'; est.className = 'estado';
         const { data, error } = await sb.rpc('verificar_integridad_documento', { p_documento_id: documentoId });
         if (error) { est.textContent = '⚠ ' + error.message; est.className = 'estado warn'; return; }
-        const malas = data.filter(r => !(r.secciones_ok && r.contenido_ok && r.cadena_ok));
+        const malas = data.filter(r => !(r.secciones_ok && r.contenido_ok && r.cadena_ok && r.asociacion_ok !== false));
         est.className = 'estado ' + (malas.length ? 'warn' : 'ok');
         est.textContent = malas.length
           ? `⚠ Integridad comprometida en: ${malas.map(r => r.codigo_version).join(', ')}`
