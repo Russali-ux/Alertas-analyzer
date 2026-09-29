@@ -10,6 +10,8 @@
 <script src="segmentador.js"></script>
 <script src="plantillas.js"></script>
 <script src="generador.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsdiff/5.1.0/diff.min.js"></script>
+<script src="control.js"></script>
 <style>
 :root{
   --bg:#ffffff; --surface:#f5f7fa; --border:#d0d7e3; --accent:#0077cc;
@@ -227,6 +229,57 @@ details.gsec[open] .gchev{transform:rotate(180deg)}
   .gsec-b{padding-left:22px}
   .gorig{display:none}
 }
+/* ── Control de versiones ────────────────────────────────────────────────── */
+.panel{max-width:1180px}
+.gbtn.guardar{background:#0f7b4f;color:#fff;border-color:#0f7b4f}
+.gbtn.guardar:disabled{background:#e9efe9;color:#7a8a7a;border-color:#cfd8cf;cursor:not-allowed}
+.gbtn.mini-b{font-size:12px;padding:5px 10px;margin-left:8px}
+.gtraz{margin:0;padding:9px 22px;font-size:12px;border-bottom:1px solid var(--border)}
+.gtraz.ok{background:#e6f4ea;color:#1e6b34}
+.gtraz.warn{background:#fff6e0;color:#7a5600}
+.gtraz code{font-family:var(--mono);font-size:11px}
+.gbadge.dif.modificada{background:#fff1d6;border:1px solid #f0b54a;color:#8a4d00}
+.gbadge.dif.agregada{background:#e6f4ea;border:1px solid #9ccfa8;color:#1e6b34}
+.gbadge.dif.eliminada{background:#fdecec;border:1px solid #f3b5b5;color:#b42318}
+details.gsec.concambio > summary{box-shadow:inset 4px 0 0 #f0b54a}
+.gelim{padding:10px 22px;border-top:1px solid var(--border);font-size:13px;color:var(--muted);text-decoration:line-through}
+.gelim .gbadge{text-decoration:none;margin-right:8px}
+.gverdif{margin-bottom:8px;display:inline-block}
+.cdiff-b{font-size:13px;line-height:1.6;border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:10px;background:#fcfcfd;max-height:420px;overflow:auto;white-space:normal}
+.cdiff-b ins,.cresumen ins,.gnote ins{background:#d9f7e3;color:#0a5e2a;text-decoration:none;border-radius:3px}
+.cdiff-b del,.cresumen del,.gnote del{background:#fde2e2;color:#a11;border-radius:3px}
+.cgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-bottom:14px}
+.cgrid > div{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 12px;font-size:13px;min-width:0}
+.cgrid label{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);font-family:var(--mono);margin-bottom:3px}
+.cgrid small{display:block;font-size:11px;color:var(--muted)}
+.chash{font-family:var(--mono);font-size:11px;word-break:break-all}
+.cresumen{font-size:13px;background:#f7f9fc;border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin-bottom:14px}
+.cresumen ul{margin:8px 0 0;padding-left:18px}
+.ctipo{display:inline-block;font-size:10px;font-weight:700;font-family:var(--mono);padding:1px 7px;border-radius:6px;margin-right:4px}
+.ctipo.modificada{background:#fff1d6;color:#8a4d00}.ctipo.agregada{background:#e6f4ea;color:#1e6b34}.ctipo.eliminada{background:#fdecec;color:#b42318}
+.clabel{display:block;font-weight:600;font-size:13px;margin:6px 0 4px}
+.clabel .req{color:#b42318}
+.ctextarea{width:100%;font-family:var(--sora);font-size:13px;padding:10px 12px;border:1px solid var(--border);border-radius:10px;resize:vertical}
+.ccheck{display:flex;gap:8px;align-items:flex-start;font-size:13px;margin:10px 0}
+.cstats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-bottom:14px}
+.cstats > div{border:1px solid var(--border);border-radius:10px;padding:10px 12px;min-width:0}
+.cstats b{display:block;font-size:17px;color:var(--header);word-break:break-word}
+.cstats span{font-size:11px;color:var(--muted)}
+.cmono{display:block;font-family:var(--mono);font-size:10.5px;color:var(--muted)}
+.czona{border:1px dashed var(--accent);border-radius:12px;padding:12px 14px;margin-bottom:14px;background:#fbfdff}
+.cpasos{margin:8px 0;padding-left:20px;font-size:13px}
+.cpasos li{margin-bottom:8px}
+.cpasos select,.czona select{min-width:0}
+.cdet summary{cursor:pointer;color:var(--accent);font-size:12px;margin-top:4px}
+.cdet ul{margin:4px 0;padding-left:16px;font-size:12px}
+details.cdiff{border:1px solid var(--border);border-radius:10px;margin-bottom:8px;padding:0 12px}
+details.cdiff summary{cursor:pointer;padding:9px 0;font-weight:600;font-size:13px}
+.cver b{font-family:var(--mono);font-size:11.5px;color:var(--header)}
+.cfam{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;justify-content:space-between;padding:7px 0;border-top:1px solid var(--border);font-size:13px}
+.hist button.hist-b{border:1px solid #0f7b4f;color:#0f7b4f}
+.hist button.hist-b:hover{background:#e6f4ea}
+table.ctimeline td{vertical-align:top}
+
 /* Impresión: solo el documento generado, con todas sus secciones */
 #genPrintRoot{display:none}
 @media print{
@@ -239,6 +292,9 @@ details.gsec[open] .gchev{transform:rotate(180deg)}
   #genPrintRoot .paviso{font-size:9pt;font-style:italic;color:#7a5600}
   #genPrintRoot .pcrit{font-size:8pt;color:#b42318;border:1px solid #b42318;padding:0 4px}
   #genPrintRoot .pvacio{font-style:italic;color:#7a5600}
+  #genPrintRoot .ptraz{font-size:8.5pt;font-weight:700;color:#1A3A5C;border:1px solid #1A3A5C;padding:3pt 6pt;margin-bottom:8pt}
+  #genPrintRoot .ptraz.nocontrol{color:#b42318;border-color:#b42318}
+  #genPrintRoot .ptraz.pie{margin-top:16pt;font-weight:400}
   #genPrintRoot table{border-collapse:collapse;width:100%;min-width:0;font-size:9pt;page-break-inside:auto}
   #genPrintRoot td,#genPrintRoot th{border:1px solid #999;padding:2pt 4pt;vertical-align:top}
 }
@@ -585,7 +641,11 @@ async function eliminarDocumento(id, archivoPath, nombre){
              + 'Se borran sus campos en Supabase' + (archivoPath ? ' y el archivo subido' : '')
              + '. Esta acción no se puede deshacer.')) return false;
   const { data, error } = await sb.from('documentos_segmentados').delete().eq('id', id).select('id');
-  if (error) throw error;
+  if (error){
+    if (error.code === '23503')   // FK desde documento_versiones: es la referencia de una versión controlada
+      throw new Error('Este documento es la referencia de una versión controlada y no puede eliminarse (integridad del registro).');
+    throw error;
+  }
   // Con RLS, un borrado no permitido no da error: simplemente no afecta filas.
   if (!data || !data.length) throw new Error('No tiene permiso para eliminar este documento (solo quien lo guardó o un administrador).');
   if (archivoPath){
@@ -692,21 +752,78 @@ $('histBtn').onclick = async () => {
   if (error){ $('segCuerpo').innerHTML = `<div class="err" style="display:block">${escH(error.message)}</div>`; return; }
   if (!data.length){ $('segCuerpo').innerHTML = '<div class="empty">Todavía no hay documentos segmentados.</div>'; return; }
   const porId = Object.fromEntries(data.map(d => [d.id, d]));
+  // Versiones controladas que usan cada documento segmentado como referencia.
+  let versiones = {};
+  try{ versiones = await Control.versionesPorReferencia(data.map(d => d.id)); }
+  catch(err){ console.warn('No se pudieron leer las versiones controladas:', err.message); }
+  const celdaVersion = d => {
+    const vs = versiones[d.id];
+    if (!vs || !vs.length) return '<span class="cmono">—</span>';
+    return vs.map(v => {
+      const doc = v.documento || {};
+      return `<div class="cver"><b>${escH(v.codigo_version)}</b>
+        <span class="cmono">${doc.total_versiones || 1} versión(es) · ${doc.total_cambios || 0} cambio(s)${doc.version_vigente === v.version ? ' · vigente' : ''}</span></div>`;
+    }).join('');
+  };
   $('segSub').textContent = `${data.length} documento(s) guardado(s) en Supabase · clic en una fila o en "Abrir" para ver sus campos`;
   // La columna Acciones queda fija a la derecha (sticky) y los nombres largos
   // se parten en líneas, así los botones no quedan fuera de la vista.
-  $('segCuerpo').innerHTML = `<div class="table-scroll"><table class="hist"><thead><tr>
-      <th>Guardado</th><th>Tipo</th><th>Origen</th><th>Nº</th><th>Medicamento / archivo</th><th>Versión CIMA</th><th class="acc">Acciones</th></tr></thead><tbody>
-    ${data.map(d => `<tr data-id="${escH(d.id)}"><td class="nreg">${fmtFecha(d.creado_en)}</td><td><span class="tag ${d.tipo_documento === 'FT' ? 'ft' : 'prosp'}">${d.tipo_documento}</span></td>
+  $('segCuerpo').innerHTML = `
+    <div class="bar"><input type="search" id="histBuscar" class="ginput" style="max-width:460px"
+      placeholder="Buscar por medicamento, Nº de registro o código (CKS-…)">
+      <span class="gnote" id="histCuenta"></span></div>
+    <div id="histControlados"></div>
+    <div class="table-scroll"><table class="hist"><thead><tr>
+      <th>Guardado</th><th>Tipo</th><th>Origen</th><th>Nº</th><th>Medicamento / archivo</th><th>Versión CIMA</th><th>Versión controlada</th><th class="acc">Acciones</th></tr></thead><tbody>
+    ${data.map(d => {
+      const vs = versiones[d.id] || [];
+      const docIds = [...new Set(vs.map(v => v.documento_id))];
+      const buscable = [d.nombre_medicamento, d.archivo_nombre, d.nregistro, ...vs.map(v => v.codigo_version)].join(' ').toLowerCase();
+      return `<tr data-id="${escH(d.id)}" data-buscar="${escH(buscable)}"><td class="nreg">${fmtFecha(d.creado_en)}</td><td><span class="tag ${d.tipo_documento === 'FT' ? 'ft' : 'prosp'}">${d.tipo_documento}</span></td>
       <td class="tipo">${d.origen === 'cima' ? 'CIMA' : 'Subido'}</td><td class="nreg">${escH(d.nregistro || '—')}</td>
       <td class="med">${escH(d.nombre_medicamento || d.archivo_nombre || '—')}</td><td class="nreg">${fmtFecha(d.fecha_version_cima)}</td>
-      <td class="acc"><button type="button" class="mini abrir">Abrir</button>${puedeEliminar(d.creado_por)
+      <td>${celdaVersion(d)}</td>
+      <td class="acc"><button type="button" class="mini abrir">Abrir</button>${docIds.map(id =>
+          `<button type="button" class="mini hist-b" data-doc="${escH(id)}" title="Versiones y controles de cambio">🕘 Historial</button>`).join('')}${
+        vs.length ? `<span class="sin-permiso" title="Es la referencia de una versión controlada: no se puede eliminar (integridad del registro)">🔒</span>`
+        : puedeEliminar(d.creado_por)
         ? `<button type="button" class="mini del" title="Eliminar este documento segmentado">🗑 Eliminar</button>`
-        : `<span class="sin-permiso" title="Solo quien lo guardó o un administrador puede eliminarlo">🔒</span>`}</td></tr>`).join('')}
+        : `<span class="sin-permiso" title="Solo quien lo guardó o un administrador puede eliminarlo">🔒</span>`}</td></tr>`;
+    }).join('')}
     </tbody></table></div>`;
+
+  // Búsqueda: filtra la tabla y, además, busca en TODOS los documentos controlados
+  // (también los que no están entre los últimos 100 segmentados).
+  let tBusca = null;
+  $('histBuscar').oninput = () => {
+    const q = $('histBuscar').value.trim().toLowerCase();
+    let n = 0;
+    $('segCuerpo').querySelectorAll('tbody tr[data-buscar]').forEach(tr => {
+      const ok = !q || tr.dataset.buscar.includes(q); tr.hidden = !ok; if (ok) n++;
+    });
+    $('histCuenta').textContent = q ? `${n} coincidencia(s) en la tabla` : '';
+    clearTimeout(tBusca);
+    tBusca = setTimeout(async () => {
+      const caja = $('histControlados'); if (!caja) return;
+      if (q.length < 3){ caja.innerHTML = ''; return; }
+      const limpio = q.replace(/[,()%*]/g, ' ').trim();
+      const { data: docs } = await sb.from('v_documentos_controlados')
+        .select('id, codigo, producto, tipo_documento, pais, idioma, nregistro, codigo_version_vigente, total_versiones, total_cambios, ultima_fecha')
+        .or(`codigo.ilike.%${limpio}%,producto.ilike.%${limpio}%,nregistro.ilike.%${limpio}%`)
+        .order('ultima_fecha', { ascending: false }).limit(20);
+      caja.innerHTML = docs && docs.length ? `<div class="czona"><b>Documentos controlados (${docs.length})</b>
+        ${docs.map(c => `<div class="cfam"><span><b>${escH(c.codigo)}</b> · ${escH(c.producto)} · ${escH(c.tipo_documento)} ${escH(c.pais)}/${escH(c.idioma.toUpperCase())}</span>
+          <span class="cmono">vigente ${escH(c.codigo_version_vigente)} · ${c.total_versiones} versión(es) · <b>${c.total_cambios} cambio(s)</b></span>
+          <button type="button" class="mini hist-b" data-doc="${escH(c.id)}">🕘 Historial</button></div>`).join('')}</div>` : '';
+      caja.querySelectorAll('.hist-b').forEach(b => b.onclick = () => Control.abrirHistorial(b.dataset.doc));
+    }, 400);
+  };
+
   $('segCuerpo').querySelector('tbody').onclick = async e => {
     const tr = e.target.closest('tr[data-id]'); if (!tr) return;
     if (e.target.closest('.sin-permiso')) return;
+    const hb = e.target.closest('button.hist-b');
+    if (hb){ Control.abrirHistorial(hb.dataset.doc); return; }
     const del = e.target.closest('button.del');
     if (del){
       const d = porId[tr.dataset.id];

@@ -89,7 +89,8 @@
               ${pr ? `
                 <div class="gres-nombre">${esc(pr.nombre)}</div>
                 ${pr.detalle ? `<div class="gres-det">${esc(pr.detalle)}</div>` : ''}
-                <div class="gres-meta">${pr.origen === 'cima' ? `CIMA · Nº ${esc(pr.nregistro)}${pr.lab ? ' · ' + esc(pr.lab) : ''}` : `Documento subido · ${esc(pr.archivo.name)}`}</div>`
+                <div class="gres-meta">${pr.origen === 'cima' ? `CIMA · Nº ${esc(pr.nregistro)}${pr.lab ? ' · ' + esc(pr.lab) : ''}`
+                  : pr.archivo ? `Documento subido · ${esc(pr.archivo.name)}` : pr.nregistro ? `Nº ${esc(pr.nregistro)}` : ''}</div>`
                 : `<div class="gres-vacio">Seleccione un producto de CIMA o suba una ficha técnica.</div>`}
               <div class="gchips">
                 <span class="gchip">${esc((P().PAISES.find(p => p.codigo === st.pais) || {}).nombre || st.pais)}</span>
@@ -108,7 +109,9 @@
     $g('genConfig').querySelectorAll('[data-pais]').forEach(b => b.onclick = () => { st.pais = b.dataset.pais; renderConfig(); });
     $g('genConfig').querySelectorAll('[data-idioma]').forEach(b => b.onclick = () => {
       st.idioma = b.dataset.idioma; renderConfig();
-      if (st.doc) { st.doc.idioma = st.idioma; renderDoc(); }      // solo cambian títulos: no hace falta regenerar
+      // Solo cambian títulos: no hace falta regenerar. Un documento controlado conserva el idioma
+      // con el que se registró (el idioma es parte de su identidad); para otro idioma se genera aparte.
+      if (st.doc && !st.doc.control && !st.doc.familia) { st.doc.idioma = st.idioma; renderDoc(); }
     });
     $g('genConfig').querySelectorAll('[data-tipo]').forEach(b => b.onclick = () => { st.tipo = b.dataset.tipo; renderConfig(); });
     $g('genConfig').querySelectorAll('[data-modo]').forEach(b => b.onclick = () => { st.modo = b.dataset.modo; renderConfig(); });
@@ -209,18 +212,50 @@
   // ════════════════════════════════════════════════════════════════════════
   const estado = (msg, err) => { const e = $g('genEstado'); if (e) e.innerHTML = err ? `<span class="err">${msg}</span>` : msg; };
 
-  /** Documento CIMA segmentado: usa el guardado en Supabase si ya existe esa versión; si no, segmenta y guarda. */
+  /** Documento CIMA segmentado: usa el guardado en Supabase si ya existe esa versión; si no, segmenta y guarda.
+   *  Devuelve { res, id } — id = documentos_segmentados.id (referencia de la versión controlada). */
   async function segmentadoCIMA(meta, tipoDoc) {
     const version = global.Segmentador.fechaVersion(meta, tipoDoc);
     if (version) {
       try {
         const previo = await global.cargarDeSupabase({ origen: 'cima', tipo_documento: tipoDoc, nregistro: meta.nregistro, fecha_version_cima: version });
-        if (previo) return previo.res;
+        if (previo) return { res: previo.res, id: previo.id };
       } catch (e) { console.warn('No se pudo leer Supabase:', e.message); }
     }
     const res = await global.Segmentador.segmentarCIMA(meta.nregistro, tipoDoc, meta);
-    try { await global.guardarEnSupabase(res); } catch (e) { console.warn('No se guardó en Supabase:', e.message); }
-    return res;
+    let id = null;
+    try {
+      id = await global.guardarEnSupabase(res);
+      if (id === null && version) {   // otro usuario la guardó en paralelo: se usa esa
+        const previo = await global.cargarDeSupabase({ origen: 'cima', tipo_documento: tipoDoc, nregistro: meta.nregistro, fecha_version_cima: version });
+        if (previo) id = previo.id;
+      }
+    } catch (e) { console.warn('No se guardó en Supabase:', e.message); }
+    return { res, id };
+  }
+
+  /** Referencia segmentada desde CIMA (según la fuente preferida de la plantilla) o desde un archivo. */
+  async function obtenerReferencia(plantilla, { nregistro, archivo, res: resPrevio, docId }) {
+    if (archivo) {
+      const res = resPrevio || await global.Segmentador.segmentarArchivo(archivo, 'auto');
+      let id = docId || null;
+      if (!id) {
+        estado('⏳ Guardando referencia en Supabase…');
+        try { id = await global.guardarEnSupabase(res, archivo); } catch (e) { console.warn('No se guardó en Supabase:', e.message); }
+      }
+      return { res, id };
+    }
+    estado('⏳ Consultando CIMA…');
+    const meta = await global.Segmentador.metaCIMA(nregistro);
+    for (const tipoDoc of plantilla.fuentePreferida) {
+      if (!(tipoDoc === 'FT' ? meta.docFT : meta.docP)) continue;
+      estado(`⏳ Separando ${tipoDoc === 'FT' ? 'la ficha técnica' : 'el prospecto'}…`);
+      try { return await segmentadoCIMA(meta, tipoDoc); }
+      catch (e) { if (e.codigo !== 'SIN_SEGMENTAR') throw e; }
+    }
+    const pdf = (meta.docFT || meta.docP || {}).url;
+    throw new Error('CIMA no publica este medicamento dividido por secciones. '
+      + (pdf ? `Descargue el <a href="${esc(pdf)}" target="_blank" rel="noopener">PDF</a> y súbalo como archivo.` : 'Súbalo como archivo.'));
   }
 
   async function generar() {
@@ -229,32 +264,14 @@
     const btn = $g('genGenerar');
     btn.disabled = true;
     try {
-      let res;
-      if (pr.origen === 'cima') {
-        estado('⏳ Consultando CIMA…');
-        const meta = await global.Segmentador.metaCIMA(pr.nregistro);
-        const errores = [];
-        for (const tipoDoc of plantilla.fuentePreferida) {
-          if (!(tipoDoc === 'FT' ? meta.docFT : meta.docP)) continue;
-          estado(`⏳ Separando ${tipoDoc === 'FT' ? 'la ficha técnica' : 'el prospecto'}…`);
-          try { res = await segmentadoCIMA(meta, tipoDoc); break; }
-          catch (e) { errores.push(e); if (e.codigo !== 'SIN_SEGMENTAR') throw e; }
-        }
-        if (!res) {
-          const pdf = (meta.docFT || meta.docP || {}).url;
-          throw new Error('CIMA no publica este medicamento dividido por secciones. '
-            + (pdf ? `Descargue el <a href="${esc(pdf)}" target="_blank" rel="noopener">PDF</a> y use "Subir ficha técnica".` : 'Suba el documento con "Subir ficha técnica".'));
-        }
-      } else {
-        res = pr.res;
-        if (!pr.docId) {
-          estado('⏳ Guardando en Supabase…');
-          try { pr.docId = await global.guardarEnSupabase(res, pr.archivo); }
-          catch (e) { console.warn('No se guardó en Supabase:', e.message); }
-        }
-      }
-      st.doc = construir(plantilla, res, pr);
+      if (!pr.archivo && !pr.nregistro) throw new Error('Seleccione un producto de CIMA o suba un documento.');
+      const ref = pr.archivo
+        ? await obtenerReferencia(plantilla, { archivo: pr.archivo, res: pr.res, docId: pr.docId })
+        : await obtenerReferencia(plantilla, { nregistro: pr.nregistro });
+      if (pr.origen === 'subida') pr.docId = ref.id;
+      st.doc = construir(plantilla, ref.res, pr, ref.id);
       estado('');
+      await buscarCoincidencias(st.doc, pr);
       renderDoc();
       $g('genDoc').scrollIntoView({ behavior: 'smooth', block: 'start' });
     } catch (e) {
@@ -264,11 +281,14 @@
     }
   }
 
+  /** Clave estable de una sección de plantilla: su código (FT) o su posición (inserto / etiqueta). */
+  const claveDe = (s, i) => s.codigo || String(i + 1);
+
   /** Arma las secciones de la plantilla con el contenido de los campos segmentados. */
-  function construir(plantilla, res, pr) {
+  function construir(plantilla, res, pr, referenciaId) {
     const porCodigo = Object.fromEntries(res.campos.map(c => [c.codigo, c]));
     const secciones = [];
-    plantilla.secciones.forEach(s => {
+    plantilla.secciones.forEach((s, idx) => {
       let html = '';
       const origen = [];
       for (const fu of s.fuentes || []) {
@@ -280,7 +300,7 @@
       }
       if (s.opcional && !html) return;
       secciones.push({
-        def: s, html: s.manual ? '' : html,
+        def: s, clave: claveDe(s, idx), html: s.manual ? '' : html,
         estado: s.manual ? 'manual' : (html ? 'ok' : 'vacio'),
         origen: origen.join(', '), editado: false,
       });
@@ -289,11 +309,40 @@
     return {
       pais: st.pais, idioma: st.idioma, tipo: st.tipo, plantilla, secciones,
       producto: pr.nombre, detalle: pr.detalle || '',
-      fuenteOrigen: res.origen, fuenteTipo: res.tipo, fuenteNreg: res.meta.nregistro,
+      fuenteOrigen: res.origen, fuenteTipo: res.tipo, fuenteNreg: res.meta.nregistro || pr.nregistro || null,
       fuenteVersion: res.meta.fecha_version, fuenteArchivo: res.meta.archivo || '',
       generado: new Date(),
-      get fuente() { return textoFuente(this, this.idioma); },
+      get fuente() { return this.fuenteFija || textoFuente(this, this.idioma); },
+      // Control de versiones
+      referenciaId: referenciaId || null,
+      control: null,      // versión guardada que se está viendo: { version_id, codigo_version, version, creado_en, … }
+      familia: null,      // documento controlado al que pertenecerá la próxima versión
+      base: null,         // versión contra la que se muestran diferencias (y base de la próxima versión)
+      sucio: false,       // editado después de guardar/abrir
+      coincidencias: [],  // documentos controlados existentes del mismo producto/tipo/país/idioma
     };
+  }
+
+  /** Documentos controlados que ya existen para este producto (evita duplicar familias sin querer). */
+  async function buscarCoincidencias(doc, pr) {
+    try {
+      let q = sb.from('v_documentos_controlados')
+        .select('id, codigo, version_vigente, version_vigente_id, codigo_version_vigente, total_cambios')
+        .eq('tipo_documento', doc.tipo).eq('pais', doc.pais).eq('idioma', doc.idioma);
+      q = pr.nregistro ? q.eq('nregistro', pr.nregistro) : q.eq('producto', doc.producto);
+      const { data } = await q;
+      doc.coincidencias = data || [];
+    } catch (e) { doc.coincidencias = []; }
+  }
+
+  /** Vincula el documento en pantalla a un documento controlado existente: su versión vigente pasa a ser la base. */
+  async function vincular(documentoId) {
+    const c = st.doc.coincidencias.find(x => x.id === documentoId);
+    if (!c) return;
+    const cv = await global.Control.cargarVersion(c.version_vigente_id);
+    st.doc.familia = { documentoId: c.id, codigo: c.codigo, versionVigente: c.version_vigente };
+    st.doc.base = global.Control.baseDesde(cv);
+    renderDoc();
   }
   function textoFuente(d, L) {
     const doc = d.fuenteTipo === 'FT' ? 'Ficha técnica' : (L === 'pt' ? 'Bula (prospecto)' : 'Prospecto');
@@ -318,6 +367,11 @@
     const avisoFuente = d.tipo === 'INSERTO' && d.fuenteTipo === 'FT'
       ? '<div class="gaviso">El inserto se armó desde la ficha técnica (no hay prospecto disponible): revise el lenguaje para el paciente.</div>' : '';
 
+    // Diferencias contra la versión base (si la hay). Informativas: el servidor recalcula al guardar.
+    const cmp = d.base ? global.Control.compararConBase(d.secciones, d.base) : null;
+    const hayDiff = cmp && cmp.total > 0;
+    const V = n => 'V' + String(n).padStart(2, '0');
+
     let grupoPrevio = null;
     box.hidden = false;
     box.innerHTML = `
@@ -325,21 +379,29 @@
         <div>
           <div class="gdoc-norma"><span class="gcode">${pais.codigo}</span> ${esc(pais.nombre)} — ${esc(d.plantilla.norma[L])}</div>
           <div class="gdoc-titulo">${esc(d.producto)}</div>
-          <div class="gdoc-sub">${esc(tipoDef.nombre[L])} · ${T.idioma} · ${d.secciones.length} ${T.secciones} · ${nCrit} ${T.criticas}${nPend ? ` · <b class="pend">${nPend} ${T.pendientes}</b>` : ''}</div>
+          <div class="gdoc-sub">${esc(tipoDef.nombre[L])} · ${T.idioma} · ${d.secciones.length} ${T.secciones} · ${nCrit} ${T.criticas}${nPend ? ` · <b class="pend">${nPend} ${T.pendientes}</b>` : ''}${hayDiff ? ` · <b class="pend">${cmp.total} cambio(s) vs ${esc(d.base.codigoVersion)}</b>` : ''}</div>
           <div class="gdoc-fuente">${esc(T.fuente)}: ${esc(d.fuente)}</div>
         </div>
         <div class="gdoc-acc">
+          <button type="button" class="gbtn guardar" id="genGuardar">💾 ${d.control || d.familia ? 'Guardar nueva versión' : 'Guardar versión'}</button>
           <button type="button" class="gbtn prim" id="genWord">⬇ ${T.exportar}</button>
           <button type="button" class="gbtn" id="genPrint">🖨 ${T.imprimir}</button>
         </div>
       </div>
+      <div class="gtraz ${estadoTraza(d).clase}" id="genTraza">${estadoTraza(d).html}</div>
+      ${!d.familia && d.coincidencias.length ? d.coincidencias.map(c => `
+        <div class="gaviso">⚠ Este producto ya tiene el documento controlado <b>${esc(c.codigo)}</b>
+          (vigente ${esc(c.codigo_version_vigente)}, ${c.total_cambios} cambio(s)). Si esto es una actualización, vincúlelo para registrar
+          el control de cambio en lugar de crear un documento nuevo.
+          <button type="button" class="gbtn mini-b" data-vincular="${esc(c.id)}">🔗 Vincular como nueva versión de ${esc(c.codigo)}</button></div>`).join('') : ''}
       ${d.plantilla.borrador ? `<div class="gaviso">⚠ ${esc(T.borrador)}</div>` : ''}
       ${L === 'pt' ? `<div class="gaviso info">${esc(T.aviso_pt)}</div>` : ''}
       ${avisoFuente}
       <div class="gdoc-tools">
         <button type="button" class="glink" id="genExp">${T.expandir}</button> ·
         <button type="button" class="glink" id="genCol">${T.contraer}</button>
-        <span class="gnote">Puede editar el texto de cada sección antes de exportar.</span>
+        ${hayDiff ? ` · <label class="glink"><input type="checkbox" id="genSoloCambios"> Solo secciones con cambios</label>` : ''}
+        <span class="gnote">Puede editar el texto de cada sección antes de guardar o exportar.</span>
       </div>
       <div class="gsecs">
         ${d.secciones.map((s, i) => {
@@ -348,26 +410,81 @@
           const badge = s.def.critica ? `<span class="gbadge crit">${T.critica}</span>` : '';
           const pend = s.editado ? '' : s.estado === 'manual' ? `<span class="gbadge man">${T.completar}</span>`
                      : s.estado === 'vacio' ? `<span class="gbadge pend">${T.pendiente}</span>` : '';
-          return `${g}<details class="gsec" data-i="${i}">
+          const c = hayDiff ? cmp.porClave[s.clave] : null;
+          const dif = c && c.tipo !== 'SIN_CAMBIOS' ? `<span class="gbadge dif ${c.tipo.toLowerCase()}">${c.tipo === 'AGREGADA' ? 'NUEVA' : 'MODIFICADA'}</span>` : '';
+          return `${g}<details class="gsec${c && c.tipo !== 'SIN_CAMBIOS' ? ' concambio' : ''}" data-i="${i}">
             <summary><span class="gnum">${esc(s.num)}</span><span class="gtit">${esc(s.def.titulo[L])}</span>
-              ${pend}${badge}${s.origen ? `<span class="gorig">${esc(s.origen)}</span>` : ''}<span class="gchev">▼</span></summary>
+              <span class="gdifslot">${dif}</span>${pend}${badge}${s.origen ? `<span class="gorig">${esc(s.origen)}</span>` : ''}<span class="gchev">▼</span></summary>
             <div class="gsec-b">
               ${s.def.nota ? `<div class="gnota">💡 ${esc(s.def.nota[L])}</div>` : ''}
+              ${d.base ? `<button type="button" class="glink gverdif">⇄ Ver cambios vs ${esc(d.base.codigoVersion)}</button><div class="cdiff-b gdifbox" hidden></div>` : ''}
               <div class="gcont" contenteditable="true" spellcheck="true"
                    data-ph="${esc(s.estado === 'manual' ? s.def.manual[L] : T.sinContenido)}"></div>
             </div>
           </details>`;
         }).join('')}
+        ${hayDiff && cmp.eliminadas.length ? `<div class="ggrupo">Secciones eliminadas respecto de ${esc(d.base.codigoVersion)}</div>
+          ${cmp.eliminadas.map(b => `<div class="gelim"><span class="gbadge dif eliminada">ELIMINADA</span> ${esc(b.titulo)}</div>`).join('')}` : ''}
       </div>`;
 
     // El HTML de cada sección (4.8 puede pasar de 200 KB) se inserta al abrirla.
     box.querySelectorAll('details.gsec').forEach(det => {
       det.addEventListener('toggle', () => { if (det.open) pintarSeccion(det); });
+      const bv = det.querySelector('.gverdif');
+      if (bv) bv.onclick = () => {
+        const s = d.secciones[+det.dataset.i], caja = det.querySelector('.gdifbox');
+        const b = d.base.secciones[s.clave];
+        caja.hidden = !caja.hidden;
+        if (!caja.hidden) {
+          const actual = global.Control.htmlATexto(s.html);
+          caja.innerHTML = !b ? '<p class="gnote">Sección nueva (no existía en la versión base).</p>'
+            : (b.texto || '').replace(/\s+/g, ' ').trim() === actual.replace(/\s+/g, ' ').trim()
+              ? '<p class="gnote">Sin cambios respecto de la versión base.</p>'
+              : global.Control.diffHTML(b.texto, actual);
+        }
+      };
+    });
+    box.querySelectorAll('[data-vincular]').forEach(b => b.onclick = async () => {
+      b.disabled = true; b.textContent = '⏳ Cargando versión vigente…';
+      try { await vincular(b.dataset.vincular); } catch (e) { alert(e.message); b.disabled = false; }
+    });
+    const solo = $g('genSoloCambios');
+    if (solo) solo.onchange = () => box.querySelectorAll('details.gsec').forEach(x => {
+      x.hidden = solo.checked && !x.classList.contains('concambio');
     });
     $g('genExp').onclick = () => box.querySelectorAll('details.gsec').forEach(x => { x.open = true; pintarSeccion(x); });
     $g('genCol').onclick = () => box.querySelectorAll('details.gsec').forEach(x => { x.open = false; });
     $g('genWord').onclick = exportarWord;
     $g('genPrint').onclick = imprimir;
+    const bg = $g('genGuardar');
+    bg.disabled = !!(d.control && !d.sucio);
+    bg.title = bg.disabled ? 'Sin cambios desde la versión guardada' : '';
+    bg.onclick = () => global.Control.abrirGuardar(d, r => {
+      d.control = r;
+      d.familia = { documentoId: r.documento_id, codigo: r.codigo, versionVigente: r.version };
+      // La versión recién guardada pasa a ser la base: los cambios siguientes se comparan contra ella.
+      d.base = { versionId: r.version_id, version: r.version, codigoVersion: r.codigo_version,
+        secciones: Object.fromEntries(d.secciones.map(s => [s.clave, { clave: s.clave, titulo: s.def.titulo[d.idioma],
+          texto: global.Control.htmlATexto(s.html), html: s.html }])) };
+      d.sucio = false;
+      d.secciones.forEach(s => { s.editado = false; });
+      d.coincidencias = [];
+      renderDoc();
+    });
+  }
+
+  /** Franja de trazabilidad: qué es legalmente lo que se ve en pantalla. */
+  function estadoTraza(d) {
+    const fh = global.Control.fechaHora;
+    if (d.control && !d.sucio) return { clase: 'ok', html:
+      `🔒 <b>Documento controlado</b> · Código <b>${esc(d.control.codigo_version)}</b> · Versión <b>V${String(d.control.version).padStart(2, '0')}</b>
+       · ${fh(d.control.creado_en)} (Lima)${d.control.creado_por_email ? ' · ' + esc(d.control.creado_por_email) : ''}
+       ${d.control.control_codigo ? ' · ' + esc(d.control.control_codigo) : ''} · SHA-256 <code title="${esc(d.control.hash_contenido)}">${esc((d.control.hash_contenido || '').slice(0, 12))}…</code>` };
+    if (d.control && d.sucio) return { clase: 'warn', html:
+      `✏ <b>Cambios sin guardar</b> sobre ${esc(d.control.codigo_version)}. Lo que ve no es una versión controlada hasta que guarde una nueva versión.` };
+    if (d.familia) return { clase: 'warn', html:
+      `🔄 <b>Actualización de ${esc(d.familia.codigo)}</b> · base ${esc(d.base ? d.base.codigoVersion : '—')} · nueva versión <b>sin guardar</b>.` };
+    return { clase: 'warn', html: `📝 <b>Borrador no controlado</b>: guarde la versión para asignarle código interno, fecha, versión y hash.` };
   }
 
   function pintarSeccion(det) {
@@ -379,6 +496,21 @@
     cont.addEventListener('input', () => {
       s.html = cont.innerHTML; s.editado = true;
       const b = det.querySelector('.gbadge.pend, .gbadge.man'); if (b) b.remove();
+      if (st.doc.control && !st.doc.sucio) {
+        st.doc.sucio = true;
+        const t = estadoTraza(st.doc), el = $g('genTraza');
+        el.className = 'gtraz ' + t.clase; el.innerHTML = t.html;
+        $g('genGuardar').disabled = false; $g('genGuardar').title = '';
+      }
+    });
+    // Al salir de la sección se recalcula su marca de diferencia contra la base.
+    cont.addEventListener('focusout', () => {
+      if (!st.doc.base) return;
+      const b = st.doc.base.secciones[s.clave], slot = det.querySelector('.gdifslot');
+      const actual = global.Control.htmlATexto(s.html).replace(/\s+/g, ' ').trim();
+      const cambio = !b ? 'NUEVA' : (b.texto || '').replace(/\s+/g, ' ').trim() !== actual ? 'MODIFICADA' : '';
+      slot.innerHTML = cambio ? `<span class="gbadge dif ${cambio === 'NUEVA' ? 'agregada' : 'modificada'}">${cambio}</span>` : '';
+      det.classList.toggle('concambio', !!cambio);
     });
   }
   const limpiar = html => global.DOMPurify.sanitize(html || '', { FORBID_ATTR: ['style', 'class'], FORBID_TAGS: ['img', 'style'] });
@@ -391,7 +523,9 @@
     const pais = P().PAISES.find(p => p.codigo === d.pais);
     const tipoDef = P().TIPOS.find(t => t.codigo === d.tipo);
     let grupoPrevio = null;
+    const tz = textoTrazabilidad(d);
     return `
+      <div class="${tz.controlado ? 'ptraz' : 'ptraz nocontrol'}">${esc(tz.linea)}</div>
       <div class="pnorma">${esc(pais.nombre)} — ${esc(d.plantilla.norma[L])}</div>
       <h1>${esc(d.producto)}</h1>
       <div class="psub">${esc(tipoDef.nombre[L])} · ${T.idioma} · ${esc(T.generado)}: ${d.generado.toLocaleDateString('es-PE')}</div>
@@ -404,13 +538,29 @@
         const cuerpo = s.html ? limpiar(s.html)
           : `<p class="pvacio">${esc(s.estado === 'manual' ? s.def.manual[L] : T.sinContenido)}</p>`;
         return `${g}<h3>${esc(s.num)}. ${esc(s.def.titulo[L])}${s.def.critica ? ` <span class="pcrit">${T.critica}</span>` : ''}</h3>${cuerpo}`;
-      }).join('')}`;
+      }).join('')}
+      <div class="${tz.controlado ? 'ptraz pie' : 'ptraz pie nocontrol'}">${esc(tz.linea)}${tz.hash ? ' · SHA-256 ' + esc(tz.hash) : ''}</div>`;
+  }
+
+  /** Línea de trazabilidad que acompaña toda copia exportada o impresa. */
+  function textoTrazabilidad(d) {
+    if (d.control && !d.sucio) {
+      const c = d.control;
+      return { controlado: true, codigo: c.codigo_version, hash: c.hash_contenido,
+        linea: `Documento controlado ${c.codigo_version} · Versión V${String(c.version).padStart(2, '0')} · `
+             + `Emitido ${global.Control.fechaHora(c.creado_en)} (Lima)${c.control_codigo ? ' · ' + c.control_codigo : ''}` };
+    }
+    return { controlado: false, codigo: null, hash: null,
+      linea: `BORRADOR — COPIA NO CONTROLADA · generada ${global.Control.fechaHora(new Date().toISOString())} (Lima)`
+           + (d.familia ? ` · pendiente de guardar como nueva versión de ${d.familia.codigo}` : '') };
   }
 
   function imprimir() {
     let root = $g('genPrintRoot');
     if (!root) { root = document.createElement('div'); root.id = 'genPrintRoot'; document.body.appendChild(root); }
     root.innerHTML = htmlDocumento();
+    const d = st.doc;
+    if (d.control && !d.sucio) global.Control.registrarEvento(d.control.version_id, 'IMPRIMIR');
     document.body.classList.add('gen-imprimiendo');
     const fin = () => { document.body.classList.remove('gen-imprimiendo'); global.removeEventListener('afterprint', fin); };
     global.addEventListener('afterprint', fin);
@@ -499,7 +649,10 @@
       const pais = P().PAISES.find(p => p.codigo === d.pais);
       const tipoDef = P().TIPOS.find(t => t.codigo === d.tipo);
       const gris = t => new D.Paragraph({ children: [new D.TextRun({ text: t, color: '666666', size: 18 })] });
+      const tz = textoTrazabilidad(d);
       const hijos = [
+        new D.Paragraph({ children: [new D.TextRun({ text: tz.linea, bold: true, size: 18, color: tz.controlado ? '1A3A5C' : 'B42318' })] }),
+        ...(tz.hash ? [gris(`SHA-256 del contenido: ${tz.hash}`)] : []),
         gris(`${pais.nombre} — ${d.plantilla.norma[L]}`),
         new D.Paragraph({ heading: D.HeadingLevel.TITLE, children: [new D.TextRun({ text: d.producto, bold: true })] }),
         gris(`${tipoDef.nombre[L]} · ${T.idioma} · ${T.generado}: ${d.generado.toLocaleDateString('es-PE')}`),
@@ -527,11 +680,20 @@
         creator: 'ConkoSafe IA',
         title: d.producto,
         styles: { default: { document: { run: { font: 'Arial', size: 20 } } } },
-        sections: [{ children: hijos }],
+        sections: [{
+          footers: { default: new D.Footer({ children: [new D.Paragraph({ alignment: D.AlignmentType.CENTER, children: [
+            new D.TextRun({ text: `${tz.controlado ? tz.codigo : 'COPIA NO CONTROLADA'} · Página `, size: 16, color: tz.controlado ? '666666' : 'B42318' }),
+            new D.TextRun({ children: [D.PageNumber.CURRENT], size: 16, color: '666666' }),
+            new D.TextRun({ text: ' de ', size: 16, color: '666666' }),
+            new D.TextRun({ children: [D.PageNumber.TOTAL_PAGES], size: 16, color: '666666' }),
+          ] })] }) },
+          children: hijos,
+        }],
       });
       const blob = await D.Packer.toBlob(documento);
-      const nombre = `${tipoDef.nombre[L]}_${pais.codigo}_${L.toUpperCase()}_${d.producto}`
-        .normalize('NFD').replace(/[̀-ͯ]/g, '')          // "técnica" → "tecnica"
+      if (tz.controlado) global.Control.registrarEvento(d.control.version_id, 'EXPORTAR_WORD');
+      const nombre = `${tz.controlado ? tz.codigo + '_' : 'BORRADOR_'}${tipoDef.nombre[L]}_${pais.codigo}_${L.toUpperCase()}_${d.producto}`
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')          // "técnica" → "tecnica"
         .replace(/[^\w\-]+/g, '_').replace(/_+/g, '_').slice(0, 90) + '.docx';
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob); a.download = nombre;
@@ -557,5 +719,71 @@
     renderConfig();
   }
 
-  global.Generador = { init, usarProducto, _estado: st };
+  /** Plantilla y definición de sección para una versión guardada (tolera plantillas que cambiaron después). */
+  function seccionesDesdeVersion(plantilla, filas, idioma) {
+    return filas.map((f, i) => {
+      const idx = plantilla ? plantilla.secciones.findIndex((s, k) => claveDe(s, k) === f.clave) : -1;
+      const def = idx >= 0 ? plantilla.secciones[idx]
+        : { titulo: { es: f.titulo, pt: f.titulo }, critica: f.critica };
+      return {
+        def, clave: f.clave, html: f.html, origen: '', editado: false,
+        estado: f.estado === 'editado' ? 'ok' : f.estado,
+        num: plantilla && plantilla.numerar === 'codigo' ? f.clave : String(i + 1),
+      };
+    });
+  }
+
+  function mostrarDocumento() {
+    global.mostrarTab('tabGenerador');
+    renderConfig();
+    renderDoc();
+    $g('genDoc').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  /** Abre una versión guardada (desde el historial). Se puede editar y guardar como nueva versión. */
+  function abrirVersion(cv) {
+    const d = cv.documento, v = cv.version;
+    const plantilla = (P().PLANTILLAS[d.pais] || {})[d.tipo_documento];
+    Object.assign(st, { pais: d.pais, idioma: d.idioma, tipo: d.tipo_documento });
+    st.producto = { origen: 'version', nombre: d.producto, nregistro: d.nregistro, detalle: `Versión controlada ${v.codigo_version}` };
+    st.doc = {
+      pais: d.pais, idioma: d.idioma, tipo: d.tipo_documento,
+      plantilla: plantilla || { norma: { es: v.norma || '', pt: v.norma || '' }, secciones: [] },
+      secciones: seccionesDesdeVersion(plantilla, cv.secciones, d.idioma),
+      producto: d.producto, detalle: '', fuenteFija: v.referencia_descripcion || '', fuenteNreg: d.nregistro,
+      fuenteTipo: null, generado: new Date(v.creado_en),
+      get fuente() { return this.fuenteFija; },
+      referenciaId: v.referencia_segmentado_id,
+      control: { documento_id: d.id, codigo: d.codigo, version_id: v.id, version: v.version, codigo_version: v.codigo_version,
+                 creado_en: v.creado_en, creado_por_email: v.creado_por_email, hash_contenido: v.hash_contenido,
+                 control_codigo: cv.control && cv.control.codigo },
+      familia: { documentoId: d.id, codigo: d.codigo, versionVigente: d.version_vigente },
+      base: global.Control.baseDesde(cv),
+      sucio: false, coincidencias: [],
+    };
+    mostrarDocumento();
+  }
+
+  /**
+   * Flujo de actualización: versión base elegida + nueva referencia (archivo o CIMA)
+   * → separación → documento con las diferencias marcadas, listo para revisar y guardar.
+   */
+  async function actualizarVersion({ documento: d, baseVersionId, archivo, nregistro }) {
+    const plantilla = (P().PLANTILLAS[d.pais] || {})[d.tipo_documento];
+    if (!plantilla) throw new Error(`No hay plantilla para ${d.tipo_documento} / ${d.pais}.`);
+    const cv = await global.Control.cargarVersion(baseVersionId);
+    Object.assign(st, { pais: d.pais, idioma: d.idioma, tipo: d.tipo_documento });
+    const pr = { origen: archivo ? 'subida' : 'cima', nombre: d.producto, nregistro: d.nregistro, archivo };
+    const ref = await obtenerReferencia(plantilla, archivo ? { archivo } : { nregistro });
+    estado('');
+    st.producto = { ...pr, detalle: `Actualización de ${d.codigo} (base ${cv.version.codigo_version})` };
+    st.doc = construir(plantilla, ref.res, pr, ref.id);
+    st.doc.producto = d.producto;                    // la identidad del documento no cambia
+    st.doc.familia = { documentoId: d.id, codigo: d.codigo, versionVigente: d.version_vigente };
+    st.doc.base = global.Control.baseDesde(cv);
+    global.cerrarPanel();
+    mostrarDocumento();
+  }
+
+  global.Generador = { init, usarProducto, abrirVersion, actualizarVersion, _estado: st };
 })(window);
