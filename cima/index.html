@@ -109,6 +109,9 @@ details.campo.extra summary .cod{color:var(--muted)}
 .contenido td,.contenido th{border:1px solid var(--border);padding:3px 6px;vertical-align:top}
 .contenido *{font-family:inherit !important;font-size:inherit !important;max-width:100%}
 .hist td{cursor:pointer}
+.hist button.del{background:none;border:1px solid transparent;border-radius:6px;cursor:pointer;font-size:15px;padding:2px 6px;line-height:1}
+.hist button.del:hover{border-color:#e39a9a;background:#fdecec}
+.btn.danger{color:#b42318;border-color:#b42318}
 .cargando{padding:40px;text-align:center;color:var(--muted)}
 </style>
 </head>
@@ -229,6 +232,7 @@ async function verificarAccesoYcargar(){
     showAccessBlocked();
     return;
   }
+  yo = { id: session.user.id, admin: perfil.rol === 'admin' };
   init();
 }
 
@@ -353,6 +357,9 @@ const fmtFecha = iso => iso ? new Date(iso).toLocaleDateString('es-PE',{day:'2-d
 
 // Estado del documento abierto en el panel.
 let seg = null;   // { res, archivo, docId, estado, tipoForzado }
+// Usuario actual (lo fija verificarAccesoYcargar). Eliminar: admin o quien lo guardó (misma regla que la RLS).
+let yo = null;
+const puedeEliminar = creadoPor => !!yo && (yo.admin || creadoPor === yo.id);
 
 function abrirPanel(titulo, sub, cuerpoHTML){
   $('segTitulo').textContent = titulo;
@@ -375,7 +382,7 @@ function filaADoc(d, secciones){
     campos: secciones.sort((a,b)=>a.orden-b.orden).map(s => ({
       codigo: s.campo, titulo: s.campo_titulo, secciones_origen: s.secciones_origen || '', texto: s.texto, html: s.html })),
     campos_vacios: d.campos_vacios || [], avisos: d.avisos || [],
-    creado_en: d.creado_en,
+    creado_en: d.creado_en, creado_por: d.creado_por, archivo_path: d.archivo_path,
   };
 }
 
@@ -420,7 +427,25 @@ async function guardarEnSupabase(res, archivo){
     await sb.from('documentos_segmentados').delete().eq('id', doc.id);   // no dejar cabeceras huérfanas
     throw e2;
   }
+  res.creado_por = user.id;
+  res.archivo_path = path;
   return doc.id;
+}
+
+/** Elimina un documento segmentado (sus campos caen por cascada) y, si fue subido, su archivo. */
+async function eliminarDocumento(id, archivoPath, nombre){
+  if (!confirm(`¿Eliminar "${nombre || 'este documento'}" de los documentos segmentados?\n\n`
+             + 'Se borran sus campos en Supabase' + (archivoPath ? ' y el archivo subido' : '')
+             + '. Esta acción no se puede deshacer.')) return false;
+  const { data, error } = await sb.from('documentos_segmentados').delete().eq('id', id).select('id');
+  if (error) throw error;
+  // Con RLS, un borrado no permitido no da error: simplemente no afecta filas.
+  if (!data || !data.length) throw new Error('No tiene permiso para eliminar este documento (solo quien lo guardó o un administrador).');
+  if (archivoPath){
+    const { error: e2 } = await sb.storage.from(BUCKET).remove([archivoPath]);
+    if (e2) console.warn('Documento eliminado, pero no el archivo en storage:', e2.message);
+  }
+  return true;
 }
 
 // ── Flujo 1: botón ✂ en una fila (documento CIMA) ───────────────────────────
@@ -496,18 +521,31 @@ $('histBtn').onclick = async () => {
   abrirPanel('Documentos segmentados', 'Últimos 100 guardados en Supabase', cargando('Cargando…'));
   seg = null;
   const { data, error } = await sb.from('documentos_segmentados')
-    .select('id, origen, tipo_documento, nregistro, nombre_medicamento, archivo_nombre, fecha_version_cima, creado_en')
+    .select('id, origen, tipo_documento, nregistro, nombre_medicamento, archivo_nombre, archivo_path, fecha_version_cima, creado_en, creado_por')
     .order('creado_en', { ascending: false }).limit(100);
   if (error){ $('segCuerpo').innerHTML = `<div class="err" style="display:block">${escH(error.message)}</div>`; return; }
   if (!data.length){ $('segCuerpo').innerHTML = '<div class="empty">Todavía no hay documentos segmentados.</div>'; return; }
+  const porId = Object.fromEntries(data.map(d => [d.id, d]));
   $('segCuerpo').innerHTML = `<div class="table-scroll"><table class="hist" style="min-width:0"><thead><tr>
-      <th>Guardado</th><th>Tipo</th><th>Origen</th><th>Nº</th><th>Medicamento / archivo</th><th>Versión CIMA</th></tr></thead><tbody>
+      <th>Guardado</th><th>Tipo</th><th>Origen</th><th>Nº</th><th>Medicamento / archivo</th><th>Versión CIMA</th><th></th></tr></thead><tbody>
     ${data.map(d => `<tr data-id="${escH(d.id)}"><td class="nreg">${fmtFecha(d.creado_en)}</td><td><span class="tag ${d.tipo_documento === 'FT' ? 'ft' : 'prosp'}">${d.tipo_documento}</span></td>
       <td class="tipo">${d.origen === 'cima' ? 'CIMA' : 'Subido'}</td><td class="nreg">${escH(d.nregistro || '—')}</td>
-      <td>${escH(d.nombre_medicamento || d.archivo_nombre || '—')}</td><td class="nreg">${fmtFecha(d.fecha_version_cima)}</td></tr>`).join('')}
+      <td>${escH(d.nombre_medicamento || d.archivo_nombre || '—')}</td><td class="nreg">${fmtFecha(d.fecha_version_cima)}</td>
+      <td>${puedeEliminar(d.creado_por) ? `<button type="button" class="del" title="Eliminar este documento segmentado" aria-label="Eliminar">🗑</button>` : ''}</td></tr>`).join('')}
     </tbody></table></div>`;
   $('segCuerpo').querySelector('tbody').onclick = async e => {
     const tr = e.target.closest('tr[data-id]'); if (!tr) return;
+    if (e.target.closest('button.del')){
+      const d = porId[tr.dataset.id];
+      try{
+        if (await eliminarDocumento(d.id, d.archivo_path, d.nombre_medicamento || d.archivo_nombre)){
+          tr.remove();
+          if (!$('segCuerpo').querySelector('tbody tr'))
+            $('segCuerpo').innerHTML = '<div class="empty">Todavía no hay documentos segmentados.</div>';
+        }
+      }catch(err){ alert('No se pudo eliminar: ' + err.message); }
+      return;
+    }
     $('segCuerpo').innerHTML = cargando('Cargando…');
     try{
       const previo = await cargarDeSupabase({ id: tr.dataset.id });
@@ -557,6 +595,8 @@ function mostrarResultado(){
     acciones.push(`<label class="tipo">Tratar como
       <select id="segTipo"><option value="FT"${r.tipo === 'FT' ? ' selected' : ''}>Ficha Técnica</option>
       <option value="P"${r.tipo === 'P' ? ' selected' : ''}>Prospecto</option></select></label>`);
+  if (seg.docId && (seg.estado === 'guardado' || seg.estado === 'previo') && puedeEliminar(r.creado_por))
+    acciones.push(`<button class="btn ghost danger" type="button" id="segEliminar" title="Eliminar de Supabase">🗑 Eliminar</button>`);
 
   abrirPanel(titulo, sub, `
     <div class="bar">${acciones.join('')}<span class="estado ${estado[0]}">${escH(estado[1])}</span></div>
@@ -576,6 +616,13 @@ function mostrarResultado(){
   });
   $('segXlsx').onclick = () => exportarExcel(r);
   if ($('segGuardar')) $('segGuardar').onclick = guardarSubida;
+  if ($('segEliminar')) $('segEliminar').onclick = async () => {
+    try{
+      if (await eliminarDocumento(seg.docId, r.archivo_path, r.meta.nombre || r.meta.archivo))
+        $('segCuerpo').innerHTML = `<div class="estado ok" style="display:inline-block">✓ Documento eliminado</div>
+          <p class="vacios">Puede volver a segmentarlo con ✂ FT / ✂ Prosp o subiéndolo de nuevo.</p>`;
+    }catch(err){ alert('No se pudo eliminar: ' + err.message); }
+  };
   if ($('segTipo')) $('segTipo').onchange = e => procesarArchivo(seg.archivo, e.target.value);
 }
 

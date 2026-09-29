@@ -112,3 +112,10 @@ drop policy if exists docseg_storage_insert on storage.objects;
 create policy docseg_storage_insert on storage.objects
   for insert to authenticated
   with check (bucket_id = 'documentos-segmentados' and (select public.tiene_acceso_cima()));
+
+-- Borrar el archivo original: quien lo subió o un administrador (igual que docseg_delete).
+drop policy if exists docseg_storage_delete on storage.objects;
+create policy docseg_storage_delete on storage.objects
+  for delete to authenticated
+  using (bucket_id = 'documentos-segmentados'
+         and ((select public.es_admin()) or owner_id = (select auth.uid())::text));
