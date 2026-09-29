@@ -108,9 +108,19 @@ details.campo.extra summary .cod{color:var(--muted)}
 .contenido table{min-width:0;font-size:12px;border-collapse:collapse}
 .contenido td,.contenido th{border:1px solid var(--border);padding:3px 6px;vertical-align:top}
 .contenido *{font-family:inherit !important;font-size:inherit !important;max-width:100%}
-.hist td{cursor:pointer}
-.hist button.del{background:none;border:1px solid transparent;border-radius:6px;cursor:pointer;font-size:15px;padding:2px 6px;line-height:1}
-.hist button.del:hover{border-color:#e39a9a;background:#fdecec}
+table.hist{min-width:0}
+.hist td{cursor:pointer;vertical-align:middle}
+.hist tbody tr:hover td{background:#eef3f8}
+.hist td.med{min-width:220px;white-space:normal}
+.hist th.acc,.hist td.acc{position:sticky;right:0;white-space:nowrap;box-shadow:-6px 0 8px -6px rgba(0,0,0,.18)}
+.hist td.acc{background:#fff}
+.hist button.mini{font-family:var(--sora);font-size:12px;font-weight:600;padding:5px 10px;border-radius:7px;cursor:pointer;margin-right:6px;background:#fff}
+.hist button.abrir{border:1px solid var(--accent);color:var(--accent)}
+.hist button.abrir:hover{background:#e8f2fb}
+.hist button.del{border:1px solid #d14343;color:#b42318}
+.hist button.del:hover{background:#fdecec}
+.hist button.del:disabled{opacity:.6;cursor:wait}
+.hist .sin-permiso{color:var(--muted);cursor:help;padding:0 6px}
 .btn.danger{color:#b42318;border-color:#b42318}
 .cargando{padding:40px;text-align:center;color:var(--muted)}
 </style>
@@ -526,24 +536,35 @@ $('histBtn').onclick = async () => {
   if (error){ $('segCuerpo').innerHTML = `<div class="err" style="display:block">${escH(error.message)}</div>`; return; }
   if (!data.length){ $('segCuerpo').innerHTML = '<div class="empty">Todavía no hay documentos segmentados.</div>'; return; }
   const porId = Object.fromEntries(data.map(d => [d.id, d]));
-  $('segCuerpo').innerHTML = `<div class="table-scroll"><table class="hist" style="min-width:0"><thead><tr>
-      <th>Guardado</th><th>Tipo</th><th>Origen</th><th>Nº</th><th>Medicamento / archivo</th><th>Versión CIMA</th><th></th></tr></thead><tbody>
+  $('segSub').textContent = `${data.length} documento(s) guardado(s) en Supabase · clic en una fila o en "Abrir" para ver sus campos`;
+  // La columna Acciones queda fija a la derecha (sticky) y los nombres largos
+  // se parten en líneas, así los botones no quedan fuera de la vista.
+  $('segCuerpo').innerHTML = `<div class="table-scroll"><table class="hist"><thead><tr>
+      <th>Guardado</th><th>Tipo</th><th>Origen</th><th>Nº</th><th>Medicamento / archivo</th><th>Versión CIMA</th><th class="acc">Acciones</th></tr></thead><tbody>
     ${data.map(d => `<tr data-id="${escH(d.id)}"><td class="nreg">${fmtFecha(d.creado_en)}</td><td><span class="tag ${d.tipo_documento === 'FT' ? 'ft' : 'prosp'}">${d.tipo_documento}</span></td>
       <td class="tipo">${d.origen === 'cima' ? 'CIMA' : 'Subido'}</td><td class="nreg">${escH(d.nregistro || '—')}</td>
-      <td>${escH(d.nombre_medicamento || d.archivo_nombre || '—')}</td><td class="nreg">${fmtFecha(d.fecha_version_cima)}</td>
-      <td>${puedeEliminar(d.creado_por) ? `<button type="button" class="del" title="Eliminar este documento segmentado" aria-label="Eliminar">🗑</button>` : ''}</td></tr>`).join('')}
+      <td class="med">${escH(d.nombre_medicamento || d.archivo_nombre || '—')}</td><td class="nreg">${fmtFecha(d.fecha_version_cima)}</td>
+      <td class="acc"><button type="button" class="mini abrir">Abrir</button>${puedeEliminar(d.creado_por)
+        ? `<button type="button" class="mini del" title="Eliminar este documento segmentado">🗑 Eliminar</button>`
+        : `<span class="sin-permiso" title="Solo quien lo guardó o un administrador puede eliminarlo">🔒</span>`}</td></tr>`).join('')}
     </tbody></table></div>`;
   $('segCuerpo').querySelector('tbody').onclick = async e => {
     const tr = e.target.closest('tr[data-id]'); if (!tr) return;
-    if (e.target.closest('button.del')){
+    if (e.target.closest('.sin-permiso')) return;
+    const del = e.target.closest('button.del');
+    if (del){
       const d = porId[tr.dataset.id];
+      del.disabled = true; del.textContent = 'Eliminando…';
       try{
         if (await eliminarDocumento(d.id, d.archivo_path, d.nombre_medicamento || d.archivo_nombre)){
           tr.remove();
-          if (!$('segCuerpo').querySelector('tbody tr'))
-            $('segCuerpo').innerHTML = '<div class="empty">Todavía no hay documentos segmentados.</div>';
+          const quedan = $('segCuerpo').querySelectorAll('tbody tr').length;
+          $('segSub').textContent = `${quedan} documento(s) guardado(s) en Supabase · clic en una fila o en "Abrir" para ver sus campos`;
+          if (!quedan) $('segCuerpo').innerHTML = '<div class="empty">Todavía no hay documentos segmentados.</div>';
+          return;
         }
       }catch(err){ alert('No se pudo eliminar: ' + err.message); }
+      del.disabled = false; del.textContent = '🗑 Eliminar';
       return;
     }
     $('segCuerpo').innerHTML = cargando('Cargando…');
