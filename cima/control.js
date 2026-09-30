@@ -105,7 +105,7 @@
   async function versionesPorReferencia(ids) {
     if (!ids.length) return {};
     const { data, error } = await sb.from('documento_versiones')
-      .select('id, version, codigo_version, referencia_segmentado_id, documento_id')
+      .select('id, version, codigo_version, referencia_segmentado_id, documento_id, medicamento_id, rs_numero, rs_producto, rs_principio_activo')
       .in('referencia_segmentado_id', ids);
     if (error) throw new Error(error.message);
     const docIds = [...new Set((data || []).map(v => v.documento_id))];

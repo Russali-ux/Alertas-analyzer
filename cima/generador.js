@@ -425,7 +425,8 @@
 
   /** Registro sanitario (snapshot) de una versión guardada. */
   const registroDesdeVersion = v => v && v.medicamento_id
-    ? { id: v.medicamento_id, nro: v.rs_numero, producto: v.rs_producto, titular: v.rs_titular, vencimiento: v.rs_vencimiento }
+    ? { id: v.medicamento_id, nro: v.rs_numero, producto: v.rs_producto, titular: v.rs_titular, vencimiento: v.rs_vencimiento,
+        principio: v.rs_principio_activo || null }
     : null;
 
   function textoFuente(d, L) {
@@ -570,7 +571,8 @@
       d.familia = { documentoId: r.documento_id, codigo: r.codigo, versionVigente: r.version };
       // La versión recién guardada pasa a ser la base: los cambios siguientes se comparan contra ella.
       if (r.medicamento_id) d.registro = { id: r.medicamento_id, nro: r.rs_numero, producto: r.rs_producto,
-                                           titular: r.rs_titular, vencimiento: r.rs_vencimiento };  // snapshot del servidor
+                                           titular: r.rs_titular, vencimiento: r.rs_vencimiento,
+                                           principio: r.rs_principio_activo || null };  // snapshot del servidor
       d.base = { versionId: r.version_id, version: r.version, codigoVersion: r.codigo_version,
         medicamentoId: r.medicamento_id || null, rsNumero: r.rs_numero || null,
         secciones: Object.fromEntries(d.secciones.map(s => [s.clave, { clave: s.clave, titulo: s.def.titulo[d.idioma],

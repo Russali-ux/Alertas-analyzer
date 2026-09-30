@@ -141,7 +141,9 @@ producto de CIMA y marca los registros **VENCIDOS** o próximos a vencer.
 - El RS aparece en el documento, en el Word y la impresión, y en el historial. En la pestaña Segmentados se puede
   buscar por Nº de RS.
 
-SQL: `cima/sql/registro_sanitario.sql` (compatible con las versiones guardadas antes: siguen verificando igual).
+SQL: `cima/sql/registro_sanitario.sql` y `cima/sql/registro_sanitario_principio_activo.sql`, que agrega el principio activo al snapshot. Ambos son compatibles con las versiones ya guardadas, que siguen verificando igual.
+
+En la pestaña **📚 Segmentados**, la columna *Medicamento referencia* es el documento de CIMA o subido. Las columnas **RS DIGEMID**, **Producto (RS)** y **Principio activo (RS)** muestran lo elegido en el paso 5 en la versión controlada más reciente de esa referencia. Las versiones guardadas antes de incluir el principio activo lo muestran desde el portafolio actual, marcado *(portafolio)*.
 
 **Límites conocidos:**
 - No hay firma electrónica con re-autenticación. Part 11 la exige para *aprobaciones*, y hoy se registra quién guarda pero no hay flujo de revisión y aprobación.
