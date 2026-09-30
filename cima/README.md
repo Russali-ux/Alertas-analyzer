@@ -143,6 +143,17 @@ producto de CIMA y marca los registros **VENCIDOS** o próximos a vencer.
 
 SQL: `cima/sql/registro_sanitario.sql` y `cima/sql/registro_sanitario_principio_activo.sql`, que agrega el principio activo al snapshot. Ambos son compatibles con las versiones ya guardadas, que siguen verificando igual.
 
+**El registro sanitario identifica al documento.** La identidad de un documento controlado se forma con el
+**RS + el tipo (FT / inserto / etiqueta) + el país + el idioma**:
+- Si se genera una ficha para un RS que ya tiene documento, el visor se vincula solo a ese documento y marca las
+  diferencias contra la versión vigente. Al guardar, la ficha queda como la **siguiente versión**, no como un documento
+  nuevo. El servidor aplica la misma regla, con un bloqueo por RS, aunque el cliente no se haya vinculado.
+- El RS de un documento ya asociado **no puede cambiarse ni quitarse** (🔒). Para otro RS se genera su propio
+  documento. Un documento sin RS puede asociarse a un RS que no tenga ya su documento.
+- Los documentos duplicados para un mismo RS creados antes de esta regla se conservan, porque son inmutables. Las nuevas
+  versiones van al **más antiguo** y los demás se marcan como *"duplicado anterior a la regla"*. SQL:
+  `cima/sql/registro_sanitario_identidad.sql`.
+
 En la pestaña **📚 Segmentados**, la columna *Medicamento referencia* es el documento de CIMA o subido. Las columnas **RS DIGEMID**, **Producto (RS)** y **Principio activo (RS)** muestran lo elegido en el paso 5 en la versión controlada más reciente de esa referencia. Las versiones guardadas antes de incluir el principio activo lo muestran desde el portafolio actual, marcado *(portafolio)*.
 
 **Límites conocidos:**

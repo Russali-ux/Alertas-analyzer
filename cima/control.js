@@ -146,7 +146,8 @@
     abrirPanel(esNueva ? 'Guardar nueva versión controlada' : 'Guardar versión controlada (emisión inicial)',
       `${doc.producto}`, `
       <div class="cgrid">
-        <div><label>Documento</label><b>${esNueva ? esc(doc.familia.codigo) : 'Se asignará al guardar (CKS-…)'}</b></div>
+        <div><label>Documento</label><b>${esNueva ? esc(doc.familia.codigo) : 'Se asignará al guardar (CKS-…)'}</b>
+          ${doc.registro ? `<small>identificado por el RS ${esc(doc.registro.nro)}</small>` : ''}</div>
         <div><label>Versión a crear</label><b>${esNueva ? 'V' + String((vigente || 0) + 1).padStart(2, '0') : 'V01'}</b><small>el servidor asigna el número definitivo</small></div>
         <div><label>Versión base</label><b>${doc.base ? esc(doc.base.codigoVersion) : '— (emisión inicial)'}</b></div>
         <div><label>Referencia</label><span>${esc(doc.fuente)}</span></div>
@@ -193,6 +194,8 @@
         alGuardar(r);
         document.getElementById('segCuerpo').innerHTML = `
           <div class="estado ok" style="display:inline-block">✓ Versión controlada guardada</div>
+          ${r.vinculado_por_rs ? `<p class="gnote">El registro sanitario ${esc(r.rs_numero || '')} ya tenía el documento ${esc(r.codigo)}:
+            se registró como su nueva versión (base ${esc(r.version_base_codigo || '')}).</p>` : ''}
           <div class="cgrid" style="margin-top:14px">
             <div><label>Código interno</label><b>${esc(r.codigo_version)}</b></div>
             <div><label>Versión</label><b>V${String(r.version).padStart(2, '0')}</b></div>
@@ -224,8 +227,16 @@
       const ccPorVersion = Object.fromEntries((ccs || []).map(c => [c.version_id, c]));
       const codPorId = Object.fromEntries(vs.map(v => [v.id, v.codigo_version]));
       const tipoNom = { FT: 'Ficha técnica', INSERTO: 'Inserto', ETIQUETA: 'Etiqueta' }[d.tipo_documento] || d.tipo_documento;
+      // Duplicado del mismo RS creado antes de la regla "el RS identifica al documento".
+      let avisoDup = '';
+      if (d.documento_principal_rs_id && d.documento_principal_rs_id !== d.id) {
+        const { data: pr } = await sb.from('v_documentos_controlados').select('codigo').eq('id', d.documento_principal_rs_id).maybeSingle();
+        avisoDup = `<div class="gaviso">⚠ <b>Duplicado anterior a la regla</b>: el registro sanitario ${esc(d.rs_numero || '')} ya tiene como documento
+          principal <b>${esc(pr ? pr.codigo : '—')}</b>. Las nuevas versiones de este RS se registran allí; este documento se conserva sin cambios.</div>`;
+      }
 
       abrirPanel(`Historial · ${d.codigo}`, `${d.producto} · ${tipoNom} · ${d.pais} · ${d.idioma.toUpperCase()}`, `
+        ${avisoDup}
         <div class="cstats">
           <div><b>${d.total_versiones}</b><span>versiones</span></div>
           <div><b>${d.total_cambios}</b><span>controles de cambio (actualizaciones)</span></div>

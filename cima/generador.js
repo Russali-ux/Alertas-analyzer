@@ -347,7 +347,9 @@
       if (pr.origen === 'subida') pr.docId = ref.id;
       st.doc = construir(plantilla, ref.res, pr, ref.id);
       estado('');
-      await buscarCoincidencias(st.doc, pr);
+      // Manda el registro sanitario: si el RS ya tiene documento, esta ficha es su nueva versión.
+      if (st.doc.registro) await vincularPorRS(st.doc);
+      else await buscarCoincidencias(st.doc, pr);
       renderDoc();
       $g('genDoc').scrollIntoView({ behavior: 'smooth', block: 'start' });
     } catch (e) {
@@ -413,6 +415,28 @@
   }
 
   /** Vincula el documento en pantalla a un documento controlado existente: su versión vigente pasa a ser la base. */
+  /**
+   * El registro sanitario identifica al documento (RS + tipo + país + idioma). Si ya existe
+   * su documento controlado, se vincula a él con la versión vigente como base: al guardar
+   * será la siguiente versión. (El servidor aplica la misma regla aunque no se vincule aquí.)
+   */
+  async function vincularPorRS(doc) {
+    if (doc.vinculoPor === 'rs') { doc.familia = null; doc.base = null; doc.vinculoPor = null; }
+    if (!doc.registro) return;
+    const { data, error } = await sb.from('v_documentos_controlados')
+      .select('id, codigo, version_vigente, version_vigente_id, codigo_version_vigente, total_versiones, total_cambios, documento_principal_rs_id')
+      .eq('medicamento_id', doc.registro.id).eq('tipo_documento', doc.tipo).eq('pais', doc.pais).eq('idioma', doc.idioma);
+    if (error) throw new Error(error.message);
+    const f = (data || []).find(x => x.documento_principal_rs_id === x.id) || (data || [])[0];
+    if (!f) return;
+    const cv = await global.Control.cargarVersion(f.version_vigente_id);
+    doc.familia = { documentoId: f.id, codigo: f.codigo, versionVigente: f.version_vigente,
+                    totalVersiones: f.total_versiones, totalCambios: f.total_cambios };
+    doc.base = global.Control.baseDesde(cv);
+    doc.vinculoPor = 'rs';
+    doc.coincidencias = [];
+  }
+
   async function vincular(documentoId) {
     const c = st.doc.coincidencias.find(x => x.id === documentoId);
     if (!c) return;
@@ -479,8 +503,12 @@
                      : '<span>sin asociar</span>'}
         ${d.base && (d.base.medicamentoId || null) !== (d.registro ? d.registro.id : null)
           ? `<span class="gbadge dif modificada">CAMBIO vs ${esc(d.base.codigoVersion)}</span>` : ''}
-        ${puedeRS() ? `<button type="button" class="glink" id="genRsCambiar">${d.registro ? 'Cambiar' : 'Asociar'}</button>` : ''}
+        ${rsBloqueado(d) ? `<span class="cmono" title="El registro sanitario identifica al documento ${esc(d.familia.codigo)}: no puede cambiarse. Para otro RS genere su propio documento.">🔒 identifica al documento</span>`
+          : puedeRS() ? `<button type="button" class="glink" id="genRsCambiar">${d.registro ? 'Cambiar' : 'Asociar'}</button>` : ''}
       </div>` : ''}
+      ${d.vinculoPor === 'rs' && !d.control ? `<div class="gaviso info">🔗 El registro sanitario <b>${esc(d.registro.nro)}</b> ya tiene el documento controlado
+        <b>${esc(d.familia.codigo)}</b> (vigente ${esc(d.base.codigoVersion)}${d.familia.totalCambios != null ? `, ${d.familia.totalCambios} cambio(s)` : ''}).
+        Esta ficha se guardará como su <b>versión V${String((d.familia.versionVigente || 0) + 1).padStart(2, '0')}</b>; las diferencias contra la vigente se marcan en cada sección.</div>` : ''}
       ${!d.familia && d.coincidencias.length ? d.coincidencias.map(c => `
         <div class="gaviso">⚠ Este producto ya tiene el documento controlado <b>${esc(c.codigo)}</b>
           (vigente ${esc(c.codigo_version_vigente)}, ${c.total_cambios} cambio(s)). Si esto es una actualización, vincúlelo para registrar
@@ -555,10 +583,15 @@
         <div id="rsPanelSel"></div>
         ${d.registro ? '<div class="bar"><button type="button" class="btn ghost" id="rsQuitar">Quitar asociación</button></div>' : ''}
         <p class="gnote">Cambiar el registro sanitario de un documento controlado genera una nueva versión con su control de cambio.</p>`);
-      const aplicar = r => {
+      const aplicar = async r => {
         d.registro = r;
         if (d.control) d.sucio = true;
-        cerrarPanel(); renderDoc();
+        cerrarPanel();
+        // Documento aún sin guardar: el nuevo RS puede tener ya su documento → se re-vincula.
+        if (!d.control && (!d.familia || d.vinculoPor === 'rs')) {
+          try { await vincularPorRS(d); } catch (e) { alert(e.message); }
+        }
+        renderDoc();
       };
       montarSelectorRS($g('rsPanelSel'), { valorInicial: d.registro ? '' : (st.rsSugerencia || ''), onSelect: aplicar });
       const q = $g('rsQuitar'); if (q) q.onclick = () => aplicar(null);
@@ -580,9 +613,13 @@
       d.sucio = false;
       d.secciones.forEach(s => { s.editado = false; });
       d.coincidencias = [];
+      d.vinculoPor = null;          // ya guardado: el RS pasa a identificar al documento (bloqueado)
       renderDoc();
     });
   }
+
+  /** El RS no se puede cambiar cuando ya identifica a un documento controlado (guardado o de base). */
+  const rsBloqueado = d => !!(d.registro && d.familia && d.base && d.base.medicamentoId && d.vinculoPor !== 'rs');
 
   /** Franja de trazabilidad: qué es legalmente lo que se ve en pantalla. */
   function estadoTraza(d) {
