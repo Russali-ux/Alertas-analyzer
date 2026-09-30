@@ -116,6 +116,7 @@ table.hist{min-width:0}
 .hist td{cursor:pointer;vertical-align:middle}
 .hist tbody tr:hover td{background:#eef3f8}
 .hist td.med{min-width:220px;white-space:normal}
+.hist .rsnum{font-family:var(--mono);font-size:12px;color:#5b3aa6}
 .hist th.acc,.hist td.acc{position:sticky;right:0;white-space:nowrap;box-shadow:-6px 0 8px -6px rgba(0,0,0,.18)}
 .hist td.acc{background:#fff}
 .hist button.mini{font-family:var(--sora);font-size:12px;font-weight:600;padding:5px 10px;border-radius:7px;cursor:pointer;margin-right:6px;background:#fff}
@@ -788,6 +789,28 @@ async function cargarSegmentados(){
   let versiones = {};
   try{ versiones = await Control.versionesPorReferencia(data.map(d => d.id)); }
   catch(err){ console.warn('No se pudieron leer las versiones controladas:', err.message); }
+  // Registro sanitario (paso 5): el de la versión más reciente que usa esta referencia.
+  const rsDe = d => {
+    const vs = (versiones[d.id] || []).filter(v => v.medicamento_id);
+    return vs.length ? vs.reduce((a, b) => (b.version > a.version ? b : a)) : null;
+  };
+  // Versiones guardadas antes de incluir el principio activo en el snapshot: se muestra el
+  // del portafolio actual, marcado (solo si el usuario puede leer el portafolio).
+  const paPortafolio = {};
+  const faltanPA = [...new Set(data.map(rsDe).filter(v => v && !v.rs_principio_activo).map(v => v.medicamento_id))];
+  if (faltanPA.length && yo && yo.titulares){
+    try{
+      const { data: meds } = await sb.from('medicamentos').select('id, principio_activo').in('id', faltanPA);
+      (meds || []).forEach(m => { paPortafolio[m.id] = m.principio_activo; });
+    }catch(_){}
+  }
+  const celdaPA = v => {
+    if (!v) return '<span class="cmono">—</span>';
+    if (v.rs_principio_activo) return escH(v.rs_principio_activo);
+    const pa = paPortafolio[v.medicamento_id];
+    return pa ? `<span title="No incluido en la versión controlada (guardada antes de este dato): se muestra el del portafolio actual">${escH(pa)} <span class="cmono">(portafolio)</span></span>`
+              : '<span class="cmono">—</span>';
+  };
   const celdaVersion = d => {
     const vs = versiones[d.id];
     if (!vs || !vs.length) return '<span class="cmono">—</span>';
@@ -806,14 +829,21 @@ async function cargarSegmentados(){
       <span class="gnote" id="histCuenta"></span></div>
     <div id="histControlados"></div>
     <div class="table-scroll"><table class="hist"><thead><tr>
-      <th>Guardado</th><th>Tipo</th><th>Origen</th><th>Nº</th><th>Medicamento / archivo</th><th>Versión CIMA</th><th>Versión controlada</th><th class="acc">Acciones</th></tr></thead><tbody>
+      <th>Guardado</th><th>Tipo</th><th>Origen</th><th>Nº</th><th>Medicamento referencia</th><th>Versión CIMA</th>
+      <th>RS DIGEMID</th><th>Producto (RS)</th><th>Principio activo (RS)</th>
+      <th>Versión controlada</th><th class="acc">Acciones</th></tr></thead><tbody>
     ${data.map(d => {
       const vs = versiones[d.id] || [];
+      const rs = rsDe(d);
       const docIds = [...new Set(vs.map(v => v.documento_id))];
-      const buscable = [d.nombre_medicamento, d.archivo_nombre, d.nregistro, ...vs.map(v => v.codigo_version)].join(' ').toLowerCase();
+      const buscable = [d.nombre_medicamento, d.archivo_nombre, d.nregistro, ...vs.map(v => v.codigo_version),
+                        rs && rs.rs_numero, rs && rs.rs_producto, rs && rs.rs_principio_activo].join(' ').toLowerCase();
       return `<tr data-id="${escH(d.id)}" data-buscar="${escH(buscable)}"><td class="nreg">${fmtFecha(d.creado_en)}</td><td><span class="tag ${d.tipo_documento === 'FT' ? 'ft' : 'prosp'}">${d.tipo_documento}</span></td>
       <td class="tipo">${d.origen === 'cima' ? 'CIMA' : 'Subido'}</td><td class="nreg">${escH(d.nregistro || '—')}</td>
       <td class="med">${escH(d.nombre_medicamento || d.archivo_nombre || '—')}</td><td class="nreg">${fmtFecha(d.fecha_version_cima)}</td>
+      <td class="nreg">${rs ? `<b class="rsnum">${escH(rs.rs_numero)}</b>` : '<span class="cmono">—</span>'}</td>
+      <td class="med">${rs ? escH(rs.rs_producto) : '<span class="cmono">—</span>'}</td>
+      <td>${celdaPA(rs)}</td>
       <td>${celdaVersion(d)}</td>
       <td class="acc"><button type="button" class="mini abrir">Abrir</button>${docIds.map(id =>
           `<button type="button" class="mini hist-b" data-doc="${escH(id)}" title="Versiones y controles de cambio">🕘 Historial</button>`).join('')}${
