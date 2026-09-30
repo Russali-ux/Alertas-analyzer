@@ -315,6 +315,52 @@ table.ctimeline td{vertical-align:top}
   #genPrintRoot table{border-collapse:collapse;width:100%;min-width:0;font-size:9pt;page-break-inside:auto}
   #genPrintRoot td,#genPrintRoot th{border:1px solid #999;padding:2pt 4pt;vertical-align:top}
 }
+
+/* ── Segmentados: tabla agrupada (estilo Titulares) + acordeón de versiones ── */
+table.sgm{min-width:980px;font-size:12.5px;background:#fff}
+table.sgm thead th{background:var(--surface);color:#5a6a82;font-family:var(--mono);font-size:9.5px;font-weight:700;
+  letter-spacing:1px;text-transform:uppercase;border-bottom:2px solid var(--border);white-space:nowrap}
+table.sgm > tbody > tr.grp > td{padding:12px;vertical-align:top;cursor:pointer}
+table.sgm > tbody > tr.grp:hover > td{background:rgba(0,119,204,.04)}
+table.sgm > tbody > tr.grp.open > td{background:#f3f8fd;border-bottom:none}
+table.sgm td.num{font-family:var(--mono);color:var(--muted);width:38px}
+table.sgm td.prod{min-width:230px;font-weight:600;color:var(--ink)}
+table.sgm td.prod .cmono{font-weight:400}
+.vchip{display:inline-block;background:rgba(111,66,193,.1);color:#5a2ea6;border:1px solid rgba(111,66,193,.28);
+  border-radius:6px;padding:2px 7px;font-size:10px;font-weight:700;font-family:var(--mono);margin:1px 3px 1px 0;white-space:nowrap}
+.vchip.elim{background:#fdecec;color:#a11;border-color:#f3b4b4}
+button.tgl{font-family:var(--sora);font-size:12px;font-weight:600;padding:5px 10px;border-radius:7px;cursor:pointer;
+  background:#fff;border:1px solid var(--border);color:#5a6a82;white-space:nowrap}
+button.tgl .car{display:inline-block;transition:transform .15s}
+tr.grp.open button.tgl{border-color:var(--accent);color:var(--accent)}
+tr.grp.open button.tgl .car{transform:rotate(90deg)}
+tr.det > td{padding:0 12px 14px 50px !important;background:#f3f8fd;border-top:none !important}
+table.ver{min-width:0;width:100%;font-size:12.5px;border:1px solid var(--border);border-radius:10px;overflow:hidden;background:#fff}
+table.ver thead th{background:#eaf1f8;color:#1A3A5C;font-family:var(--mono);font-size:9.5px;letter-spacing:.8px;
+  text-transform:uppercase;padding:7px 10px;position:static}
+table.ver tbody td{padding:8px 10px;vertical-align:middle;cursor:default}
+table.ver tbody tr:hover td{background:#fafcff}
+table.ver tr.elim td{background:#fff7f7;color:#8a6d6d}
+table.ver tr.elim td.med{text-decoration:line-through}
+table.ver .elim-info{display:block;font-family:var(--mono);font-size:10px;color:#a11;margin-top:3px;text-decoration:none}
+table.ver td.acc{white-space:nowrap;text-align:right}
+table.ver button.mini{font-family:var(--sora);font-size:12px;font-weight:600;padding:5px 10px;border-radius:7px;cursor:pointer;margin-left:6px;background:#fff}
+table.ver button.abrir{border:1px solid var(--accent);color:var(--accent)}
+table.ver button.abrir:hover{background:#e8f2fb}
+table.ver button.hist-b{border:1px solid #0f7b4f;color:#0f7b4f}
+table.ver button.hist-b:hover{background:#e6f4ea}
+table.ver button.del{border:1px solid #d14343;color:#b42318}
+table.ver button.del:hover{background:#fdecec}
+table.ver button.del:disabled{opacity:.6;cursor:wait}
+table.ver .sin-permiso{color:var(--muted);cursor:help;padding:0 6px}
+.btn.danger-fill{background:#d14343}
+.btn.danger-fill:disabled{opacity:.6;cursor:wait}
+table.aud{min-width:0;font-size:12px}
+table.aud td{vertical-align:top}
+.ev{display:inline-block;font-family:var(--mono);font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px}
+.ev.CREAR{background:#e6f4ea;color:#0f7b4f}
+.ev.ELIMINAR{background:#fdecec;color:#a11}
+.ev.DESCARTAR_INCOMPLETO{background:#fff3dc;color:#8a5a00}
 </style>
 </head>
 <body>
@@ -342,7 +388,11 @@ table.ctimeline td{vertical-align:top}
   <section id="tabSegmentados" class="tabpane" hidden>
     <div class="gcard">
       <div class="gcard-h"><span class="gdot"></span>DOCUMENTOS SEGMENTADOS Y VERSIONES CONTROLADAS
-        <button type="button" class="glink" id="segRecargar" style="margin-left:auto">↻ Actualizar</button></div>
+        <span style="margin-left:auto;display:flex;gap:14px;align-items:center">
+          <label class="gnote" style="margin:0;display:flex;gap:6px;align-items:center;cursor:pointer">
+            <input type="checkbox" id="segVerElim"> Mostrar eliminados</label>
+          <button type="button" class="glink" id="segBitacora">🧾 Bitácora</button>
+          <button type="button" class="glink" id="segRecargar">↻ Actualizar</button></span></div>
       <div class="gcard-b">
         <div class="gnote" id="segListaSub" style="margin:0 0 12px"></div>
         <div id="segLista"></div>
@@ -427,6 +477,26 @@ table.ctimeline td{vertical-align:top}
       <button class="x" id="segCerrar" type="button" aria-label="Cerrar">×</button>
     </div>
     <div class="panel-b" id="segCuerpo"></div>
+  </div>
+</div>
+
+<div class="modal" id="delModal" hidden>
+  <div class="panel" role="dialog" aria-modal="true" aria-labelledby="delTitulo" style="max-width:560px">
+    <div class="panel-h">
+      <div><h2 id="delTitulo">Eliminar versión</h2><div class="sub" id="delSub"></div></div>
+      <button class="x" id="delCerrar" type="button" aria-label="Cerrar">×</button>
+    </div>
+    <div class="panel-b">
+      <p class="gnote" style="margin:0 0 10px">La versión deja de mostrarse, pero <b>no se borra</b>: sus campos, el archivo y
+        el evento (usuario, fecha/hora del servidor y motivo) quedan en la bitácora de auditoría.</p>
+      <label class="gnote" for="delMotivo" style="display:block;margin:0 0 4px">Motivo de la eliminación (obligatorio, mín. 10 caracteres)</label>
+      <textarea id="delMotivo" rows="3" class="ginput" style="resize:vertical" placeholder="Ej.: versión duplicada, segmentada por error…"></textarea>
+      <div class="bar" style="margin-top:12px;justify-content:flex-end">
+        <span class="gnote err" id="delErr" style="margin:0 auto 0 0"></span>
+        <button class="btn ghost" type="button" id="delCancelar">Cancelar</button>
+        <button class="btn danger-fill" type="button" id="delOk">🗑 Eliminar</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -617,12 +687,15 @@ function filaADoc(d, secciones){
       codigo: s.campo, titulo: s.campo_titulo, secciones_origen: s.secciones_origen || '', texto: s.texto, html: s.html })),
     campos_vacios: d.campos_vacios || [], avisos: d.avisos || [],
     creado_en: d.creado_en, creado_por: d.creado_por, archivo_path: d.archivo_path,
+    eliminado: d.eliminado_en ? { en: d.eliminado_en, por: d.eliminado_por_nombre || d.eliminado_por_email || '',
+                                  motivo: d.motivo_eliminacion || '' } : null,
   };
 }
 
 async function cargarDeSupabase(filtro){
   let q = sb.from('documentos_segmentados').select('*');
   for (const [k,v] of Object.entries(filtro)) q = q.eq(k, v);
+  if (!filtro.id) q = q.is('eliminado_en', null);   // las versiones eliminadas solo se abren desde la lista
   const { data: docs, error } = await q.order('creado_en',{ascending:false}).limit(1);
   if (error) throw error;
   if (!docs || !docs.length) return null;
@@ -666,23 +739,32 @@ async function guardarEnSupabase(res, archivo){
   return doc.id;
 }
 
-/** Elimina un documento segmentado (sus campos caen por cascada) y, si fue subido, su archivo. */
-async function eliminarDocumento(id, archivoPath, nombre){
-  if (!confirm(`¿Eliminar "${nombre || 'este documento'}" de los documentos segmentados?\n\n`
-             + 'Se borran sus campos en Supabase' + (archivoPath ? ' y el archivo subido' : '')
-             + '. Esta acción no se puede deshacer.')) return false;
-  const { data, error } = await sb.from('documentos_segmentados').delete().eq('id', id).select('id');
-  if (error){
-    if (error.code === '23503')   // FK desde documento_versiones: es la referencia de una versión controlada
-      throw new Error('Este documento es la referencia de una versión controlada y no puede eliminarse (integridad del registro).');
-    throw error;
-  }
-  // Con RLS, un borrado no permitido no da error: simplemente no afecta filas.
-  if (!data || !data.length) throw new Error('No tiene permiso para eliminar este documento (solo quien lo guardó o un administrador).');
-  if (archivoPath){
-    const { error: e2 } = await sb.storage.from(BUCKET).remove([archivoPath]);
-    if (e2) console.warn('Documento eliminado, pero no el archivo en storage:', e2.message);
-  }
+/** Pide el motivo de la eliminación (modal). Resuelve con el texto o null si se cancela. */
+function pedirMotivo(nombre, detalle){
+  return new Promise(resolve => {
+    const m = $('delModal'), t = $('delMotivo'), err = $('delErr'), ok = $('delOk');
+    $('delSub').textContent = [nombre, detalle].filter(Boolean).join(' · ');
+    t.value = ''; err.textContent = ''; ok.disabled = false; m.hidden = false; setTimeout(() => t.focus(), 30);
+    const fin = v => { m.hidden = true; ok.onclick = $('delCancelar').onclick = $('delCerrar').onclick = null; resolve(v); };
+    $('delCancelar').onclick = $('delCerrar').onclick = () => fin(null);
+    ok.onclick = () => {
+      const v = t.value.trim();
+      if (v.length < 10){ err.textContent = 'Indique un motivo de al menos 10 caracteres.'; t.focus(); return; }
+      fin(v);
+    };
+  });
+}
+
+/**
+ * Elimina (lógicamente) una versión segmentada: NO se borra la fila ni sus campos ni el archivo.
+ * La RPC valida permisos (quien la guardó o admin), que no sea referencia de una versión
+ * controlada, y registra el evento en documentos_segmentados_auditoria con la hora del servidor.
+ */
+async function eliminarDocumento(id, nombre, detalle){
+  const motivo = await pedirMotivo(nombre || 'este documento', detalle);
+  if (!motivo) return false;
+  const { error } = await sb.rpc('eliminar_documento_segmentado', { p_id: id, p_motivo: motivo });
+  if (error) throw new Error(error.message);
   return true;
 }
 
@@ -771,99 +853,156 @@ async function guardarSubida(){
   mostrarResultado();
 }
 
-// ── Pestaña Segmentados (antes ventana emergente del botón 📚) ──────────────
+// ── Pestaña Segmentados: tabla agrupada por medicamento (estilo Titulares) ─
+// Cada fila = un medicamento (Nº CIMA + tipo FT/Prospecto). El acordeón muestra
+// sus versiones segmentadas con Nº, medicamento de referencia, versión CIMA,
+// versión controlada y acciones por versión. "Eliminar" es lógico y auditado.
+const fechaHoraPE = iso => iso ? new Date(iso).toLocaleString('es-PE',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '—';
+const segAbiertos = new Set();   // grupos desplegados (se conservan al recargar)
+
 $('histBtn').onclick = () => { mostrarTab('tabSegmentados'); window.scrollTo({ top: 0, behavior: 'smooth' }); };
 $('segRecargar').onclick = () => cargarSegmentados();
+$('segVerElim').onchange = () => cargarSegmentados();
+$('segBitacora').onclick = () => abrirBitacora();
 
 async function cargarSegmentados(){
   const lista = $('segLista'), sub = $('segListaSub');
-  const textoSub = n => `${n} documento(s) guardado(s) en Supabase (últimos 100) · clic en una fila o en "Abrir" para ver sus campos`;
+  const verElim = $('segVerElim').checked;
   lista.innerHTML = cargando('Cargando…'); sub.textContent = '';
-  const { data, error } = await sb.from('documentos_segmentados')
-    .select('id, origen, tipo_documento, nregistro, nombre_medicamento, archivo_nombre, archivo_path, fecha_version_cima, creado_en, creado_por')
-    .order('creado_en', { ascending: false }).limit(100);
+  let q = sb.from('documentos_segmentados')
+    .select('id, origen, tipo_documento, nregistro, nombre_medicamento, laboratorio_titular, archivo_nombre, archivo_path, fecha_version_cima, creado_en, creado_por, eliminado_en, eliminado_por_nombre, eliminado_por_email, motivo_eliminacion')
+    .order('creado_en', { ascending: false }).limit(500);
+  if (!verElim) q = q.is('eliminado_en', null);
+  const { data, error } = await q;
   if (error){ lista.innerHTML = `<div class="err" style="display:block">${escH(error.message)}</div>`; return; }
   if (!data.length){ lista.innerHTML = '<div class="empty">Todavía no hay documentos segmentados.</div>'; return; }
   const porId = Object.fromEntries(data.map(d => [d.id, d]));
+
   // Versiones controladas que usan cada documento segmentado como referencia.
   let versiones = {};
   try{ versiones = await Control.versionesPorReferencia(data.map(d => d.id)); }
   catch(err){ console.warn('No se pudieron leer las versiones controladas:', err.message); }
-  // Registro sanitario (paso 5): el de la versión más reciente que usa esta referencia.
-  const rsDe = d => {
+  const rsDeDoc = d => {
     const vs = (versiones[d.id] || []).filter(v => v.medicamento_id);
     return vs.length ? vs.reduce((a, b) => (b.version > a.version ? b : a)) : null;
   };
-  // Versiones guardadas antes de incluir el principio activo en el snapshot: se muestra el
-  // del portafolio actual, marcado (solo si el usuario puede leer el portafolio).
+
+  // ── Agrupar por medicamento + tipo de documento ──
+  const clave = d => d.origen === 'cima' && d.nregistro
+    ? `cima|${d.tipo_documento}|${d.nregistro}`
+    : `sub|${d.tipo_documento}|${(d.nombre_medicamento || d.archivo_nombre || d.id).trim().toLowerCase()}`;
+  const grupos = new Map();
+  for (const d of data){
+    const k = clave(d);
+    if (!grupos.has(k)) grupos.set(k, { k, docs: [] });
+    grupos.get(k).docs.push(d);
+  }
+  const lista_g = [...grupos.values()].map(g => {
+    // Versiones: la más reciente arriba (fecha de versión CIMA, o fecha de guardado para subidas).
+    g.docs.sort((a, b) => new Date(b.fecha_version_cima || b.creado_en) - new Date(a.fecha_version_cima || a.creado_en));
+    g.vigentes = g.docs.filter(d => !d.eliminado_en);
+    g.ref = g.vigentes[0] || g.docs[0];
+    g.rs = g.docs.map(rsDeDoc).filter(Boolean).sort((a, b) => b.version - a.version)[0] || null;
+    g.orden = Math.max(...g.docs.map(d => +new Date(d.creado_en)));
+    return g;
+  }).sort((a, b) => b.orden - a.orden);
+
+  // Principio activo: el del snapshot de la versión controlada; si no, el del portafolio (marcado).
   const paPortafolio = {};
-  const faltanPA = [...new Set(data.map(rsDe).filter(v => v && !v.rs_principio_activo).map(v => v.medicamento_id))];
+  const faltanPA = [...new Set(lista_g.map(g => g.rs).filter(v => v && !v.rs_principio_activo).map(v => v.medicamento_id))];
   if (faltanPA.length && yo && yo.titulares){
     try{
       const { data: meds } = await sb.from('medicamentos').select('id, principio_activo').in('id', faltanPA);
       (meds || []).forEach(m => { paPortafolio[m.id] = m.principio_activo; });
     }catch(_){}
   }
+  const guion = '<span style="color:var(--muted)">—</span>';
   const celdaPA = v => {
-    if (!v) return '<span class="cmono">—</span>';
+    if (!v) return guion;
     if (v.rs_principio_activo) return escH(v.rs_principio_activo);
     const pa = paPortafolio[v.medicamento_id];
-    return pa ? `<span title="No incluido en la versión controlada (guardada antes de este dato): se muestra el del portafolio actual">${escH(pa)} <span class="cmono">(portafolio)</span></span>`
-              : '<span class="cmono">—</span>';
+    return pa ? `<span title="No incluido en la versión controlada: se muestra el del portafolio actual">${escH(pa)} <span class="cmono">(portafolio)</span></span>` : guion;
   };
-  const celdaVersion = d => {
+  const celdaVersionCtrl = d => {
     const vs = versiones[d.id];
-    if (!vs || !vs.length) return '<span class="cmono">—</span>';
+    if (!vs || !vs.length) return guion;
     return vs.map(v => {
       const doc = v.documento || {};
       return `<div class="cver"><b>${escH(v.codigo_version)}</b>
         <span class="cmono">${doc.total_versiones || 1} versión(es) · ${doc.total_cambios || 0} cambio(s)${doc.version_vigente === v.version ? ' · vigente' : ''}</span></div>`;
     }).join('');
   };
-  sub.textContent = textoSub(data.length);
-  // La columna Acciones queda fija a la derecha (sticky) y los nombres largos
-  // se parten en líneas, así los botones no quedan fuera de la vista.
+  const accionesVersion = d => {
+    const vs = versiones[d.id] || [];
+    const docIds = [...new Set(vs.map(v => v.documento_id))];
+    let h = `<button type="button" class="mini abrir" data-id="${escH(d.id)}">Abrir</button>`;
+    h += docIds.map(id => `<button type="button" class="mini hist-b" data-doc="${escH(id)}" title="Versiones y controles de cambio">🕘 Historial</button>`).join('');
+    if (d.eliminado_en) return h;
+    if (vs.length) h += `<span class="sin-permiso" title="Es la referencia de una versión controlada: no se puede eliminar (integridad del registro)">🔒</span>`;
+    else if (puedeEliminar(d.creado_por)) h += `<button type="button" class="mini del" data-id="${escH(d.id)}" title="Eliminar esta versión (queda en la bitácora)">🗑 Eliminar</button>`;
+    else h += `<span class="sin-permiso" title="Solo quien lo guardó o un administrador puede eliminarlo">🔒</span>`;
+    return h;
+  };
+  const filaVersion = d => {
+    const elim = d.eliminado_en
+      ? `<span class="elim-info">🗑 Eliminado ${escH(fechaHoraPE(d.eliminado_en))}${d.eliminado_por_nombre || d.eliminado_por_email ? ' · ' + escH(d.eliminado_por_nombre || d.eliminado_por_email) : ''} · ${escH(d.motivo_eliminacion || '')}</span>` : '';
+    return `<tr class="${d.eliminado_en ? 'elim' : ''}">
+      <td class="nreg">${escH(d.nregistro || '—')}</td>
+      <td class="med">${escH(d.nombre_medicamento || d.archivo_nombre || '—')}
+        <span class="cmono">${d.origen === 'cima' ? 'CIMA' : 'Subido'} · guardado ${fmtFecha(d.creado_en)}</span>${elim}</td>
+      <td class="nreg">${d.fecha_version_cima ? fmtFecha(d.fecha_version_cima) : guion}</td>
+      <td>${celdaVersionCtrl(d)}</td>
+      <td class="acc">${accionesVersion(d)}</td></tr>`;
+  };
+  const tablaVersiones = g => `<table class="ver"><thead><tr>
+      <th>Nº</th><th>Medicamento de referencia</th><th>Versión CIMA</th><th>Versión controlada</th><th style="text-align:right">Acción</th>
+    </tr></thead><tbody>${g.docs.map(filaVersion).join('')}</tbody></table>`;
+
+  const totalV = data.filter(d => !d.eliminado_en).length, totalE = data.length - totalV;
+  sub.textContent = `${lista_g.length} medicamento(s) · ${totalV} versión(es) vigente(s)`
+    + (verElim ? ` · ${totalE} eliminada(s)` : '') + ' · clic en una fila para desplegar sus versiones';
+
   lista.innerHTML = `
     <div class="bar"><input type="search" id="histBuscar" class="ginput" style="max-width:460px"
       placeholder="Buscar por medicamento, Nº CIMA, código (CKS-…) o registro sanitario (EN-…)">
       <span class="gnote" id="histCuenta"></span></div>
     <div id="histControlados"></div>
-    <div class="table-scroll"><table class="hist"><thead><tr>
-      <th>Guardado</th><th>Tipo</th><th>Origen</th><th>Nº</th><th>Medicamento referencia</th><th>Versión CIMA</th>
-      <th>RS DIGEMID</th><th>Producto (RS)</th><th>Principio activo (RS)</th>
-      <th>Versión controlada</th><th class="acc">Acciones</th></tr></thead><tbody>
-    ${data.map(d => {
-      const vs = versiones[d.id] || [];
-      const rs = rsDe(d);
-      const docIds = [...new Set(vs.map(v => v.documento_id))];
-      const buscable = [d.nombre_medicamento, d.archivo_nombre, d.nregistro, ...vs.map(v => v.codigo_version),
-                        rs && rs.rs_numero, rs && rs.rs_producto, rs && rs.rs_principio_activo].join(' ').toLowerCase();
-      return `<tr data-id="${escH(d.id)}" data-buscar="${escH(buscable)}"><td class="nreg">${fmtFecha(d.creado_en)}</td><td><span class="tag ${d.tipo_documento === 'FT' ? 'ft' : 'prosp'}">${d.tipo_documento}</span></td>
-      <td class="tipo">${d.origen === 'cima' ? 'CIMA' : 'Subido'}</td><td class="nreg">${escH(d.nregistro || '—')}</td>
-      <td class="med">${escH(d.nombre_medicamento || d.archivo_nombre || '—')}</td><td class="nreg">${fmtFecha(d.fecha_version_cima)}</td>
-      <td class="nreg">${rs ? `<b class="rsnum">${escH(rs.rs_numero)}</b>` : '<span class="cmono">—</span>'}</td>
-      <td class="med">${rs ? escH(rs.rs_producto) : '<span class="cmono">—</span>'}</td>
-      <td>${celdaPA(rs)}</td>
-      <td>${celdaVersion(d)}</td>
-      <td class="acc"><button type="button" class="mini abrir">Abrir</button>${docIds.map(id =>
-          `<button type="button" class="mini hist-b" data-doc="${escH(id)}" title="Versiones y controles de cambio">🕘 Historial</button>`).join('')}${
-        vs.length ? `<span class="sin-permiso" title="Es la referencia de una versión controlada: no se puede eliminar (integridad del registro)">🔒</span>`
-        : puedeEliminar(d.creado_por)
-        ? `<button type="button" class="mini del" title="Eliminar este documento segmentado">🗑 Eliminar</button>`
-        : `<span class="sin-permiso" title="Solo quien lo guardó o un administrador puede eliminarlo">🔒</span>`}</td></tr>`;
+    <div class="table-scroll"><table class="sgm"><thead><tr>
+      <th>Nº</th><th>Producto</th><th>Principio activo</th><th>Nº Reg. Sanitario</th><th>Última versión CIMA</th>
+      <th>Laboratorio</th><th>Tipo</th><th>Versiones</th><th>Acción</th></tr></thead><tbody>
+    ${lista_g.map((g, i) => {
+      const r = g.ref, rs = g.rs, abierto = segAbiertos.has(g.k);
+      const buscable = [r.nombre_medicamento, r.archivo_nombre, r.nregistro, r.laboratorio_titular,
+        ...g.docs.flatMap(d => (versiones[d.id] || []).map(v => v.codigo_version)),
+        rs && rs.rs_numero, rs && rs.rs_producto, rs && rs.rs_principio_activo].join(' ').toLowerCase();
+      const nElim = g.docs.length - g.vigentes.length;
+      return `<tr class="grp${abierto ? ' open' : ''}" data-k="${escH(g.k)}" data-buscar="${escH(buscable)}">
+        <td class="num">${i + 1}</td>
+        <td class="prod">${escH(r.nombre_medicamento || r.archivo_nombre || '—')}
+          <span class="cmono">${r.origen === 'cima' ? 'CIMA Nº ' + escH(r.nregistro || '—') : 'Documento subido'}${rs && rs.rs_producto ? ' · ' + escH(rs.rs_producto) : ''}</span></td>
+        <td>${celdaPA(rs)}</td>
+        <td class="nreg">${rs ? `<b class="rsnum">${escH(rs.rs_numero)}</b>` : guion}</td>
+        <td class="nreg">${g.vigentes[0] && g.vigentes[0].fecha_version_cima ? fmtFecha(g.vigentes[0].fecha_version_cima) : guion}</td>
+        <td>${escH(r.laboratorio_titular || '—')}</td>
+        <td><span class="tag ${r.tipo_documento === 'FT' ? 'ft' : 'prosp'}">${r.tipo_documento === 'FT' ? 'FT' : 'PROSP'}</span></td>
+        <td><span class="vchip">${g.vigentes.length} vigente(s)</span>${nElim ? `<span class="vchip elim">${nElim} eliminada(s)</span>` : ''}</td>
+        <td><button type="button" class="tgl"><span class="car">▸</span> Versiones</button></td></tr>
+      <tr class="det" data-k="${escH(g.k)}"${abierto ? '' : ' hidden'}><td colspan="9">${tablaVersiones(g)}</td></tr>`;
     }).join('')}
     </tbody></table></div>`;
 
-  // Búsqueda: filtra la tabla y, además, busca en TODOS los documentos controlados
-  // (también los que no están entre los últimos 100 segmentados).
+  // ── Búsqueda: filtra medicamentos y busca en TODOS los documentos controlados ──
   let tBusca = null;
   $('histBuscar').oninput = () => {
     const q = $('histBuscar').value.trim().toLowerCase();
     let n = 0;
-    lista.querySelectorAll('tbody tr[data-buscar]').forEach(tr => {
-      const ok = !q || tr.dataset.buscar.includes(q); tr.hidden = !ok; if (ok) n++;
+    lista.querySelectorAll('tr.grp').forEach(tr => {
+      const ok = !q || tr.dataset.buscar.includes(q);
+      tr.hidden = !ok;
+      tr.nextElementSibling.hidden = !ok || !tr.classList.contains('open');
+      if (ok) n++;
     });
-    $('histCuenta').textContent = q ? `${n} coincidencia(s) en la tabla` : '';
+    $('histCuenta').textContent = q ? `${n} medicamento(s)` : '';
     clearTimeout(tBusca);
     tBusca = setTimeout(async () => {
       const caja = $('histControlados'); if (!caja) return;
@@ -882,34 +1021,82 @@ async function cargarSegmentados(){
     }, 400);
   };
 
-  lista.querySelector('tbody').onclick = async e => {
-    const tr = e.target.closest('tr[data-id]'); if (!tr) return;
+  // ── Clics: acordeón + acciones por versión ──
+  lista.querySelector('table.sgm > tbody').onclick = async e => {
     if (e.target.closest('.sin-permiso')) return;
     const hb = e.target.closest('button.hist-b');
     if (hb){ Control.abrirHistorial(hb.dataset.doc); return; }
+
     const del = e.target.closest('button.del');
     if (del){
-      const d = porId[tr.dataset.id];
+      const d = porId[del.dataset.id];
       del.disabled = true; del.textContent = 'Eliminando…';
       try{
-        if (await eliminarDocumento(d.id, d.archivo_path, d.nombre_medicamento || d.archivo_nombre)){
-          tr.remove();
-          const quedan = lista.querySelectorAll('tbody tr').length;
-          sub.textContent = textoSub(quedan);
-          if (!quedan) lista.innerHTML = '<div class="empty">Todavía no hay documentos segmentados.</div>';
+        if (await eliminarDocumento(d.id, d.nombre_medicamento || d.archivo_nombre,
+              `${nombreTipo(d.tipo_documento)} · versión ${d.fecha_version_cima ? fmtFecha(d.fecha_version_cima) : fmtFecha(d.creado_en)}`)){
+          await cargarSegmentados();   // refresca conteos, estado y (si procede) la fila tachada
           return;
         }
       }catch(err){ alert('No se pudo eliminar: ' + err.message); }
       del.disabled = false; del.textContent = '🗑 Eliminar';
       return;
     }
-    // Abrir: el documento se muestra en la ventana de detalle, sobre la pestaña.
-    abrirPanel('Documento segmentado', '', cargando('Cargando…'));
-    try{
-      const previo = await cargarDeSupabase({ id: tr.dataset.id });
-      seg = { res: previo.res, docId: previo.id, estado: 'previo' };
-      mostrarResultado();
-    }catch(err){ $('segCuerpo').innerHTML = `<div class="err" style="display:block">${escH(err.message)}</div>`; }
+
+    const ab = e.target.closest('button.abrir');
+    if (ab){
+      abrirPanel('Documento segmentado', '', cargando('Cargando…'));
+      try{
+        const previo = await cargarDeSupabase({ id: ab.dataset.id });
+        seg = { res: previo.res, docId: previo.id, estado: 'previo' };
+        mostrarResultado();
+      }catch(err){ $('segCuerpo').innerHTML = `<div class="err" style="display:block">${escH(err.message)}</div>`; }
+      return;
+    }
+
+    const grp = e.target.closest('tr.grp');
+    if (grp){
+      const abierto = grp.classList.toggle('open');
+      grp.nextElementSibling.hidden = !abierto;
+      abierto ? segAbiertos.add(grp.dataset.k) : segAbiertos.delete(grp.dataset.k);
+    }
+  };
+}
+
+// ── Bitácora de auditoría (altas y eliminaciones; solo lectura) ─────────────
+async function abrirBitacora(){
+  abrirPanel('🧾 Bitácora de documentos segmentados', 'Registro inmutable · hora del servidor', cargando('Cargando…'));
+  const { data, error } = await sb.from('documentos_segmentados_auditoria')
+    .select('id, documento_id, evento, motivo, snapshot, usuario_email, usuario_nombre, creado_en')
+    .order('creado_en', { ascending: false }).limit(300);
+  if (error){ $('segCuerpo').innerHTML = `<div class="err" style="display:block">${escH(error.message)}</div>`; return; }
+  if (!data.length){ $('segCuerpo').innerHTML = '<div class="empty">Sin eventos registrados.</div>'; return; }
+  const nombreEv = { CREAR: 'Alta', ELIMINAR: 'Eliminación', DESCARTAR_INCOMPLETO: 'Descarte (guardado incompleto)' };
+  const filas = data.map(a => {
+    const s = a.snapshot || {};
+    return `<tr><td class="nreg">${escH(fechaHoraPE(a.creado_en))}</td>
+      <td><span class="ev ${escH(a.evento)}">${escH(nombreEv[a.evento] || a.evento)}</span></td>
+      <td class="med">${escH(s.nombre_medicamento || s.archivo_nombre || '—')}
+        <span class="cmono">${escH(s.tipo_documento || '')} · Nº ${escH(s.nregistro || '—')} · versión ${s.fecha_version_cima ? fmtFecha(s.fecha_version_cima) : '—'}</span></td>
+      <td>${escH(a.usuario_nombre || a.usuario_email || '—')}</td>
+      <td>${escH(a.motivo || '')}</td></tr>`;
+  }).join('');
+  $('segCuerpo').innerHTML = `
+    <div class="bar"><button class="btn" type="button" id="audXlsx">⬇ Excel</button>
+      <span class="gnote" style="margin:0">${data.length} evento(s) (últimos 300)</span></div>
+    <div class="table-scroll"><table class="aud"><thead><tr>
+      <th>Fecha / hora</th><th>Evento</th><th>Documento</th><th>Usuario</th><th>Motivo</th></tr></thead>
+      <tbody>${filas}</tbody></table></div>`;
+  $('audXlsx').onclick = async () => {
+    await cargarXLSX();
+    const aoa = [['Fecha/hora', 'Evento', 'Documento ID', 'Tipo', 'Nº CIMA', 'Medicamento', 'Versión CIMA', 'Usuario', 'Email', 'Motivo']];
+    data.forEach(a => { const s = a.snapshot || {};
+      aoa.push([fechaHoraPE(a.creado_en), nombreEv[a.evento] || a.evento, a.documento_id, s.tipo_documento || '', s.nregistro || '',
+                s.nombre_medicamento || s.archivo_nombre || '', s.fecha_version_cima ? fmtFecha(s.fecha_version_cima) : '',
+                a.usuario_nombre || '', a.usuario_email || '', a.motivo || '']); });
+    const ws = XLSX.utils.aoa_to_sheet(aoa);
+    ws['!cols'] = [{wch:18},{wch:16},{wch:38},{wch:6},{wch:10},{wch:50},{wch:12},{wch:24},{wch:28},{wch:60}];
+    const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, 'Bitácora');
+    XLSX.writeFile(wb, `Bitacora_Segmentados_${new Date().toISOString().slice(0,10).replace(/-/g,'')}.xlsx`);
   };
 }
 
@@ -953,11 +1140,13 @@ function mostrarResultado(){
     acciones.push(`<label class="tipo">Tratar como
       <select id="segTipo"><option value="FT"${r.tipo === 'FT' ? ' selected' : ''}>Ficha Técnica</option>
       <option value="P"${r.tipo === 'P' ? ' selected' : ''}>Prospecto</option></select></label>`);
-  if (seg.docId && (seg.estado === 'guardado' || seg.estado === 'previo') && puedeEliminar(r.creado_por))
+  if (seg.docId && !r.eliminado && (seg.estado === 'guardado' || seg.estado === 'previo') && puedeEliminar(r.creado_por))
     acciones.push(`<button class="btn ghost danger" type="button" id="segEliminar" title="Eliminar de Supabase">🗑 Eliminar</button>`);
 
   abrirPanel(titulo, sub, `
     <div class="bar">${acciones.join('')}<span class="estado ${estado[0]}">${escH(estado[1])}</span></div>
+    ${r.eliminado ? `<div class="err" style="display:block;margin-bottom:10px">🗑 Versión eliminada el ${escH(fechaHoraPE(r.eliminado.en))}
+      ${r.eliminado.por ? 'por ' + escH(r.eliminado.por) : ''} · Motivo: ${escH(r.eliminado.motivo)}</div>` : ''}
     ${r.avisos && r.avisos.length ? `<ul class="avisos">${r.avisos.map(a => `<li>${escH(a)}</li>`).join('')}</ul>` : ''}
     ${r.campos_vacios && r.campos_vacios.length ? `<div class="vacios">Campos sin contenido: ${r.campos_vacios.map(c => `<span class="chip">${escH(c)}</span>`).join('')}</div>` : ''}
     ${filas.join('')}`);
@@ -976,9 +1165,9 @@ function mostrarResultado(){
   if ($('segGuardar')) $('segGuardar').onclick = guardarSubida;
   if ($('segEliminar')) $('segEliminar').onclick = async () => {
     try{
-      if (await eliminarDocumento(seg.docId, r.archivo_path, r.meta.nombre || r.meta.archivo))
-        $('segCuerpo').innerHTML = `<div class="estado ok" style="display:inline-block">✓ Documento eliminado</div>
-          <p class="vacios">Puede volver a segmentarlo con ✂ FT / ✂ Prosp o subiéndolo de nuevo.</p>`;
+      if (await eliminarDocumento(seg.docId, r.meta.nombre || r.meta.archivo, `versión ${fmtFecha(r.meta.fecha_version)}`))
+        $('segCuerpo').innerHTML = `<div class="estado ok" style="display:inline-block">✓ Versión eliminada y registrada en la bitácora</div>
+          <p class="vacios">Puede volver a segmentarla con ✂ FT / ✂ Prosp o subiéndola de nuevo.</p>`;
     }catch(err){ alert('No se pudo eliminar: ' + err.message); }
   };
   if ($('segTipo')) $('segTipo').onchange = e => procesarArchivo(seg.archivo, e.target.value);
