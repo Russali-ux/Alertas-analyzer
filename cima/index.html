@@ -362,6 +362,22 @@ table.aud td{vertical-align:top}
 .ev.CREAR{background:#e6f4ea;color:#0f7b4f}
 .ev.ELIMINAR{background:#fdecec;color:#a11}
 .ev.DESCARTAR_INCOMPLETO{background:#fff3dc;color:#8a5a00}
+
+/* ── Segmentados a ancho completo: todas las columnas visibles sin scroll ── */
+.wrap.ancho{max-width:none;padding-left:18px;padding-right:18px}
+table.sgm{min-width:0 !important;table-layout:auto}
+table.sgm thead th{padding:9px 8px;white-space:normal;line-height:1.3}
+table.sgm > tbody > tr.grp > td{padding:10px 8px}
+table.sgm td.num{width:28px}
+table.sgm td.prod{min-width:200px;width:22%}
+table.sgm td.prod .cmono{font-size:10px}
+table.sgm td[style*="min-width:140px"]{min-width:110px !important}
+table.sgm td[style*="min-width:150px"]{min-width:140px !important}
+table.sgm .vchip{white-space:nowrap}
+tr.det > td{padding:0 8px 12px 36px !important}
+table.ver{table-layout:auto}
+table.ver td.med{min-width:220px}
+@media (max-width:1100px){ table.sgm{min-width:1050px !important} }
 </style>
 </head>
 <body>
@@ -822,6 +838,8 @@ $('tbody').addEventListener('click', e => {
 function mostrarTab(id){
   document.querySelectorAll('.tabpane').forEach(p => { p.hidden = p.id !== id; });
   document.querySelectorAll('.tabs .tab').forEach(t => t.classList.toggle('sel', t.dataset.tab === id));
+  // Segmentados usa todo el ancho de la pantalla (tabla de 10 columnas).
+  document.querySelector('.wrap').classList.toggle('ancho', id === 'tabSegmentados');
   if (id === 'tabSegmentados') cargarSegmentados();   // siempre datos frescos (versiones nuevas, eliminados)
 }
 function initTabs(){
@@ -888,10 +906,21 @@ async function cargarSegmentados(){
     return vs.length ? vs.reduce((a, b) => (b.version > a.version ? b : a)) : null;
   };
 
-  // ── Agrupar por medicamento + tipo de documento ──
-  const clave = d => d.origen === 'cima' && d.nregistro
-    ? `cima|${d.tipo_documento}|${d.nregistro}`
-    : `sub|${d.tipo_documento}|${(d.nombre_medicamento || d.archivo_nombre || d.id).trim().toLowerCase()}`;
+  // ── Agrupar por PRODUCTO del portafolio (registro sanitario) ──
+  // Todas las referencias CIMA (FT y Prospecto, distintos Nº CIMA) vinculadas al mismo
+  // registro sanitario quedan en UNA sola fila; sus versiones van en el acordeón.
+  // Un documento sin versión controlada se une al producto si comparte Nº CIMA con otro
+  // que sí la tiene; si no, queda agrupado por su Nº CIMA.
+  const medDeDoc = d => { const v = rsDeDoc(d); return v && v.medicamento_id; };
+  const medPorCima = {};
+  for (const d of data){ const m = medDeDoc(d); if (m && d.nregistro) medPorCima[d.nregistro] ||= m; }
+  const clave = d => {
+    const m = medDeDoc(d) || (d.nregistro && medPorCima[d.nregistro]);
+    if (m) return `med|${m}`;
+    return d.origen === 'cima' && d.nregistro
+      ? `cima|${d.nregistro}`
+      : `sub|${(d.nombre_medicamento || d.archivo_nombre || d.id).trim().toLowerCase()}`;
+  };
   const grupos = new Map();
   for (const d of data){
     const k = clave(d);
@@ -900,7 +929,8 @@ async function cargarSegmentados(){
   }
   const lista_g = [...grupos.values()].map(g => {
     // Versiones: la más reciente arriba (fecha de versión CIMA, o fecha de guardado para subidas).
-    g.docs.sort((a, b) => new Date(b.fecha_version_cima || b.creado_en) - new Date(a.fecha_version_cima || a.creado_en));
+    g.docs.sort((a, b) => a.tipo_documento.localeCompare(b.tipo_documento)
+      || new Date(b.fecha_version_cima || b.creado_en) - new Date(a.fecha_version_cima || a.creado_en));
     g.vigentes = g.docs.filter(d => !d.eliminado_en);
     g.ref = g.vigentes[0] || g.docs[0];
     g.rs = g.docs.map(rsDeDoc).filter(Boolean).sort((a, b) => b.version - a.version)[0] || null;
@@ -972,6 +1002,7 @@ async function cargarSegmentados(){
       ? `<span class="elim-info">🗑 Eliminado ${escH(fechaHoraPE(d.eliminado_en))}${d.eliminado_por_nombre || d.eliminado_por_email ? ' · ' + escH(d.eliminado_por_nombre || d.eliminado_por_email) : ''} · ${escH(d.motivo_eliminacion || '')}</span>` : '';
     return `<tr class="${d.eliminado_en ? 'elim' : ''}">
       <td class="nreg">${escH(d.nregistro || '—')}</td>
+      <td><span class="tag ${d.tipo_documento === 'FT' ? 'ft' : 'prosp'}">${d.tipo_documento === 'FT' ? 'FT' : 'PROSP'}</span></td>
       <td class="med">${escH(d.nombre_medicamento || d.archivo_nombre || '—')}
         <span class="cmono">${d.origen === 'cima' ? 'CIMA' : 'Subido'} · guardado ${fmtFecha(d.creado_en)}</span>${elim}</td>
       <td class="nreg">${d.fecha_version_cima ? fmtFecha(d.fecha_version_cima) : guion}</td>
@@ -979,11 +1010,11 @@ async function cargarSegmentados(){
       <td class="acc">${accionesVersion(d)}</td></tr>`;
   };
   const tablaVersiones = g => `<table class="ver"><thead><tr>
-      <th>Nº</th><th>Medicamento de referencia</th><th>Versión CIMA</th><th>Versión controlada</th><th style="text-align:right">Acción</th>
+      <th>Nº</th><th>Tipo</th><th>Medicamento de referencia</th><th>Versión CIMA</th><th>Versión controlada</th><th style="text-align:right">Acción</th>
     </tr></thead><tbody>${g.docs.map(filaVersion).join('')}</tbody></table>`;
 
   const totalV = data.filter(d => !d.eliminado_en).length, totalE = data.length - totalV;
-  sub.textContent = `${lista_g.length} medicamento(s) · ${totalV} versión(es) vigente(s)`
+  sub.textContent = `${lista_g.length} producto(s) · ${totalV} versión(es) vigente(s)`
     + (verElim ? ` · ${totalE} eliminada(s)` : '') + ' · clic en una fila para desplegar sus versiones';
 
   lista.innerHTML = `
@@ -1002,8 +1033,13 @@ async function cargarSegmentados(){
         p && p.producto, p && p.pa, p && p.rs, p && p.fab, p && p.pais,
         ...(p && p.titulares ? p.titulares.map(t => t.nombre) : [])].join(' ').toLowerCase();
       const nElim = g.docs.length - g.vigentes.length;
-      const refCima = `<span class="tag ${r.tipo_documento === 'FT' ? 'ft' : 'prosp'}">${r.tipo_documento === 'FT' ? 'FT' : 'PROSP'}</span>
-        ${r.origen === 'cima' ? 'CIMA Nº ' + escH(r.nregistro || '—') : 'Subido'} · ${escH(r.nombre_medicamento || r.archivo_nombre || '—')}`;
+      // Referencias de origen del grupo: tipos presentes + Nº CIMA distintos.
+      const tipos = [...new Set(g.docs.map(d => d.tipo_documento))].sort();
+      const cimas = [...new Set(g.docs.filter(d => d.origen === 'cima' && d.nregistro).map(d => d.nregistro))];
+      const nSub = g.docs.filter(d => d.origen !== 'cima').length;
+      const refCima = tipos.map(t => `<span class="tag ${t === 'FT' ? 'ft' : 'prosp'}">${t === 'FT' ? 'FT' : 'PROSP'}</span>`).join(' ')
+        + ` ${cimas.length ? 'CIMA Nº ' + cimas.map(escH).join(', ') : ''}${nSub ? (cimas.length ? ' · ' : '') + nSub + ' subido(s)' : ''}`
+        + (p && p.producto ? '' : ` · ${escH(r.nombre_medicamento || r.archivo_nombre || '—')}`);
       return `<tr class="grp${abierto ? ' open' : ''}" data-k="${escH(g.k)}" data-buscar="${escH(buscable)}">
         <td class="num">${i + 1}</td>
         <td class="prod">${p && p.producto ? escH(p.producto) : '<span style="color:var(--muted);font-weight:400">Sin registro sanitario vinculado</span>'}
