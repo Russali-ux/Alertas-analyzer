@@ -7,6 +7,8 @@
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="ft69_export.js?v=1"></script>
 <style>
 :root{
   --bg:#ffffff; --surface:#f5f7fa; --border:#d0d7e3; --accent:#0077cc; --danger:#e00030;
@@ -181,6 +183,7 @@ th.sortable:hover{color:var(--accent)}
       <select class="inp" id="fTitulo" onchange="renderAlertas()"><option value="">Todos los títulos</option></select>
       <select class="inp" id="fTipo" onchange="renderAlertas()"><option value="">Todos los tipos</option></select>
       <button class="btn btn-ghost" onclick="cargarAlertas()">↻ Actualizar</button>
+      <button class="btn btn-primary" id="btnFT69" onclick="abrirExportFT69()" title="Exporta el formato FT-69 (Word) por titular, respetando los filtros actuales">📄 Exportar FT-69 (Word)</button>
     </div>
     <div id="alertasMsg"></div>
     <div class="tbl-wrap">
@@ -340,7 +343,7 @@ function nombreMed(id){ const m=MEDS.find(x=>x.id===id); return m?m.descripcion_
 /* ───────── Vista Alertas ───────── */
 async function cargarAlertas(){
   $('tbAlertas').innerHTML='<tr><td colspan="13" style="text-align:center;color:var(--muted);padding:24px">Cargando…</td></tr>';
-  const {data,error}=await sb.from('alertas_producto_titular').select('*, alerta:alertas_digemid(producto,titular_registro_sanitario), pavs:pavs_alertas(ifa,pais,agencia)').order('fecha_publicacion',{ascending:false,nullsFirst:false}).order('creado_en',{ascending:false});
+  const {data,error}=await sb.from('alertas_producto_titular').select('*, alerta:alertas_digemid(producto,titular_registro_sanitario,resumen_ia,url_pagina_digemid,url_pdf_digemid), pavs:pavs_alertas(ifa,pais,agencia,enlace)').order('fecha_publicacion',{ascending:false,nullsFirst:false}).order('creado_en',{ascending:false});
   if(error){ $('alertasMsg').innerHTML=`<div class="msg msg-err">No se pudo cargar: ${esc(error.message)}</div>`; $('tbAlertas').innerHTML=''; return; }
   $('alertasMsg').innerHTML=''; ALERTAS=data||[]; poblarFiltroProductos(); poblarFiltroTitulos(); poblarFiltroTipos(); renderAlertas();
 }
@@ -399,9 +402,10 @@ function _valAlerta(a,k){
 function _actualizarIndicadores(){
   document.querySelectorAll('.sort-ind').forEach(sp=>{ sp.textContent = sp.dataset.k===sortKey ? (sortDir==='asc'?'▲':'▼') : ''; });
 }
-function renderAlertas(){
-  const q=$('fAlertas').value.trim().toLowerCase(), tit=($('fTit')?.value)||'', prod=($('fProd')?.value)||'', tituloF=($('fTitulo')?.value)||'', tipoF=($('fTipo')?.value)||'';
-  const rows=ALERTAS.filter(a=>{
+/* Filtros de la vista (texto, titular, producto, título, tipo). ignorarTitular=true lo usa el export FT-69. */
+function alertasFiltradas(ignorarTitular){
+  const q=$('fAlertas').value.trim().toLowerCase(), tit=ignorarTitular?'':(($('fTit')?.value)||''), prod=($('fProd')?.value)||'', tituloF=($('fTitulo')?.value)||'', tipoF=($('fTipo')?.value)||'';
+  return ALERTAS.filter(a=>{
     if(tit && a.titular_1_id!==tit && a.titular_2_id!==tit) return false;
     if(prod && a.medicamento_id!==prod) return false;
     if(tituloF && a.titulo_alerta!==tituloF) return false;
@@ -410,6 +414,9 @@ function renderAlertas(){
     const hay=(nombreMed(a.medicamento_id)+' '+principioDe(a.medicamento_id)+' '+(a.titulo_alerta||'')+' '+((a.alerta&&a.alerta.producto)||'')+' '+(a.tipo_alerta||'')+' '+nombreTitular(a.titular_1_id)+' '+nombreTitular(a.titular_2_id)+' '+((a.alerta&&a.alerta.titular_registro_sanitario)||'')+' '+((a.pavs&&[a.pavs.ifa,a.pavs.pais,a.pavs.agencia].join(' '))||'')+' '+(a.origen==='pavs_vinculada'?'pavs':'')).toLowerCase();
     return hay.includes(q);
   });
+}
+function renderAlertas(){
+  const rows=alertasFiltradas(false);
   const _dir=sortDir==='asc'?1:-1;
   rows.sort((x,y)=>{ const A=_valAlerta(x,sortKey), B=_valAlerta(y,sortKey);
     if(typeof A==='number' && typeof B==='number') return (A-B)*_dir;
@@ -445,6 +452,97 @@ function renderAlertas(){
       ${acc}
     </tr>`;
   }).join('');
+}
+
+/* ───────── Exportar FT-69 (Word) por titular ───────── */
+const FT69_PLANTILLA='plantillas/FT-69_Registro_de_Monitoreo_Alertas_Nacionales.docx';
+const MESES_ES=['','Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Setiembre','Octubre','Noviembre','Diciembre'];
+const ymLabel=ym=>{ const [y,m]=ym.split('-').map(Number); return `${MESES_ES[m]} ${y}`; };
+
+/* Registro de alertas_producto_titular → fila del FT-69 */
+function normalizarFT69(a){
+  const esPavs=a.origen==='pavs_vinculada';
+  const autoridad=esPavs ? ['PAVS',[a.pavs&&a.pavs.agencia, a.pavs&&a.pavs.pais&&`(${a.pavs.pais})`].filter(Boolean).join(' ')].filter(Boolean).join(' · ') : 'DIGEMID';
+  return {
+    fecha:(a.fecha_publicacion||'').slice(0,10),
+    autoridad, codigo:a.titulo_alerta||'',
+    tipo:a.tipo_alerta||'', urgencia:a.urgencia||'', accion:a.accion_principal||'',
+    producto:nombreMed(a.medicamento_id)||(a.alerta&&a.alerta.producto)||(a.pavs&&a.pavs.ifa)||'',
+    principio:principioDe(a.medicamento_id)||(a.pavs&&a.pavs.ifa)||'',
+    titulares:[a.titular_1_id,a.titular_2_id].filter(Boolean).map(nombreTitular).filter(Boolean).join(', '),
+    resumen:a.resumen||(a.alerta&&a.alerta.resumen_ia)||'',
+    estado:(a.estado||'').replace('_',' '), expediente:a.expediente||'',
+    urlAlerta:(a.alerta&&a.alerta.url_pagina_digemid)||(esPavs&&a.pavs&&a.pavs.enlace)||'',
+    urlPdf:a.url_pdf||(a.alerta&&a.alerta.url_pdf_digemid)||''
+  };
+}
+
+function abrirExportFT69(){
+  const base=alertasFiltradas(true);   // respeta producto/título/tipo/texto; el titular se elige aquí
+  const conFecha=base.filter(a=>/^\d{4}-\d{2}/.test(a.fecha_publicacion||''));
+  const idsConAlerta=new Set(); let sinTitular=0;
+  base.forEach(a=>{ const t=[a.titular_1_id,a.titular_2_id].filter(Boolean); t.forEach(id=>idsConAlerta.add(id)); if(!t.length) sinTitular++; });
+  const titOpts=TITULARES.filter(t=>idsConAlerta.has(t.id));
+  const hoy=new Date(), ymHoy=`${hoy.getFullYear()}-${String(hoy.getMonth()+1).padStart(2,'0')}`;
+  const meses=[...new Set([ymHoy, ...conFecha.map(a=>a.fecha_publicacion.slice(0,7))])].sort().reverse();
+  const ymDef=conFecha.length ? conFecha.map(a=>a.fecha_publicacion.slice(0,7)).sort().pop() : ymHoy;
+  const titSel=$('fTit')?.value||'';
+
+  const box=document.createElement('div'); box.className='overlay';
+  box.innerHTML=`<div class="modal" style="max-width:560px">
+    <h2>📄 Exportar FT-69 · Registro de Monitoreo de Alertas Nacionales</h2>
+    <p class="sub">Se genera un Word por titular en el formato FT-69 (calendario del mes + tabla con fecha, producto impactado, principio activo, titulares, tipo de alerta, urgencia y resumen IA). Se respetan los filtros de producto, título, tipo y búsqueda aplicados en la tabla.</p>
+    <div id="ftMsg"></div>
+    <div class="field"><label>Titular</label>
+      <select class="inp" id="ftTit">
+        <option value="__all__">Todos los titulares con alertas (un Word por titular · ZIP)</option>
+        ${titOpts.map(t=>`<option value="${t.id}">${esc(t.razon_social)}</option>`).join('')}
+        ${sinTitular?'<option value="__none__">— Sin titular asignado —</option>':''}
+      </select></div>
+    <div class="field"><label>Periodo</label>
+      <select class="inp" id="ftMes">
+        ${meses.map(m=>`<option value="${m}">${ymLabel(m)}</option>`).join('')}
+        <option value="todos">Todos los meses con alertas (un FT-69 por mes)</option>
+      </select></div>
+    <label style="display:flex;gap:8px;align-items:flex-start;font-size:12px;color:var(--sub);margin-bottom:6px">
+      <input type="checkbox" id="ftVacios" style="margin-top:2px">
+      <span>Incluir titulares activos <b>sin alertas</b> en el periodo (FT-69 con calendario "No hay alerta" como evidencia del monitoreo). Solo aplica a "Todos los titulares" con un mes específico.</span>
+    </label>
+    <div class="modal-actions"><button class="btn btn-ghost" id="ftCancel">Cancelar</button><button class="btn btn-primary" id="ftGo">⬇ Generar Word</button></div>
+  </div>`;
+  document.body.appendChild(box);
+  const selT=box.querySelector('#ftTit'); if(titSel && titOpts.some(t=>t.id===titSel)) selT.value=titSel;
+  box.querySelector('#ftMes').value=ymDef;
+  const cerrar=()=>box.remove();
+  box.querySelector('#ftCancel').onclick=cerrar;
+  box.addEventListener('click',e=>{ if(e.target===box) cerrar(); });
+
+  box.querySelector('#ftGo').onclick=async()=>{
+    const tsel=selT.value, periodo=box.querySelector('#ftMes').value, vacios=box.querySelector('#ftVacios').checked;
+    const msg=box.querySelector('#ftMsg'), btn=box.querySelector('#ftGo');
+    const deTitular=id=>base.filter(a=>a.titular_1_id===id||a.titular_2_id===id).map(normalizarFT69);
+    let grupos=[];
+    if(tsel==='__none__') grupos=[{titular:'SIN TITULAR ASIGNADO', alertas:base.filter(a=>!a.titular_1_id&&!a.titular_2_id).map(normalizarFT69)}];
+    else if(tsel!=='__all__') grupos=[{titular:nombreTitular(tsel), alertas:deTitular(tsel)}];
+    else{
+      const lista=(vacios && periodo!=='todos') ? TITULARES : titOpts;
+      grupos=lista.map(t=>({titular:t.razon_social, alertas:deTitular(t.id)}));
+      if(sinTitular) grupos.push({titular:'SIN TITULAR ASIGNADO', alertas:base.filter(a=>!a.titular_1_id&&!a.titular_2_id).map(normalizarFT69)});
+      if(periodo!=='todos' && !vacios) grupos=grupos.filter(g=>g.alertas.some(a=>a.fecha.startsWith(periodo)));
+    }
+    if(!grupos.length){ msg.innerHTML='<div class="msg msg-warn">Ningún titular tiene alertas en el periodo seleccionado. Marca la opción de incluir titulares sin alertas o elige otro mes.</div>'; return; }
+    btn.disabled=true;
+    try{
+      const r=await FT69.exportarFT69PorTitular({
+        plantillaUrl:FT69_PLANTILLA, grupos, periodo,
+        generadoPor:(currentUser&&currentUser.email)||'',
+        onProgreso:(i,n,t)=>{ msg.innerHTML=`<div class="msg msg-info">Generando ${i} de ${n} · ${esc(t)}…</div>`; }
+      });
+      msg.innerHTML=`<div class="msg msg-info">✅ ${r.archivos} FT-69 generado(s) · ${r.alertas} alerta(s) incluida(s).</div>`;
+      setTimeout(cerrar,1400);
+    }catch(e){ msg.innerHTML=`<div class="msg msg-err">${esc(e.message)}</div>`; }
+    btn.disabled=false;
+  };
 }
 
 /* ───────── Vista Portafolio ───────── */
