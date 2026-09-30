@@ -870,12 +870,13 @@ async function cargarSegmentados(){
       if (q.length < 3){ caja.innerHTML = ''; return; }
       const limpio = q.replace(/[,()%*]/g, ' ').trim();
       const { data: docs } = await sb.from('v_documentos_controlados')
-        .select('id, codigo, producto, tipo_documento, pais, idioma, nregistro, codigo_version_vigente, total_versiones, total_cambios, ultima_fecha, rs_numero')
+        .select('id, codigo, producto, tipo_documento, pais, idioma, nregistro, codigo_version_vigente, total_versiones, total_cambios, ultima_fecha, rs_numero, documento_principal_rs_id')
         .or(`codigo.ilike.%${limpio}%,producto.ilike.%${limpio}%,nregistro.ilike.%${limpio}%,rs_numero.ilike.%${limpio}%,rs_producto.ilike.%${limpio}%`)
         .order('ultima_fecha', { ascending: false }).limit(20);
       caja.innerHTML = docs && docs.length ? `<div class="czona"><b>Documentos controlados (${docs.length})</b>
         ${docs.map(c => `<div class="cfam"><span><b>${escH(c.codigo)}</b> · ${escH(c.producto)} · ${escH(c.tipo_documento)} ${escH(c.pais)}/${escH(c.idioma.toUpperCase())}</span>
-          <span class="cmono">vigente ${escH(c.codigo_version_vigente)}${c.rs_numero ? ' · RS ' + escH(c.rs_numero) : ''} · ${c.total_versiones} versión(es) · <b>${c.total_cambios} cambio(s)</b></span>
+          <span class="cmono">vigente ${escH(c.codigo_version_vigente)}${c.rs_numero ? ' · RS ' + escH(c.rs_numero) : ''} · ${c.total_versiones} versión(es) · <b>${c.total_cambios} cambio(s)</b>${
+            c.documento_principal_rs_id && c.documento_principal_rs_id !== c.id ? ' · <span style="color:#b45309">duplicado anterior a la regla</span>' : ''}</span>
           <button type="button" class="mini hist-b" data-doc="${escH(c.id)}">🕘 Historial</button></div>`).join('')}</div>` : '';
       caja.querySelectorAll('.hist-b').forEach(b => b.onclick = () => Control.abrirHistorial(b.dataset.doc));
     }, 400);
