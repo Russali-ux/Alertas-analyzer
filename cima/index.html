@@ -317,7 +317,7 @@ table.ctimeline td{vertical-align:top}
 }
 
 /* ── Segmentados: tabla agrupada (estilo Titulares) + acordeón de versiones ── */
-table.sgm{min-width:980px;font-size:12.5px;background:#fff}
+table.sgm{min-width:1180px;font-size:12.5px;background:#fff}
 table.sgm thead th{background:var(--surface);color:#5a6a82;font-family:var(--mono);font-size:9.5px;font-weight:700;
   letter-spacing:1px;text-transform:uppercase;border-bottom:2px solid var(--border);white-space:nowrap}
 table.sgm > tbody > tr.grp > td{padding:12px;vertical-align:top;cursor:pointer}
@@ -328,6 +328,7 @@ table.sgm td.prod{min-width:230px;font-weight:600;color:var(--ink)}
 table.sgm td.prod .cmono{font-weight:400}
 .vchip{display:inline-block;background:rgba(111,66,193,.1);color:#5a2ea6;border:1px solid rgba(111,66,193,.28);
   border-radius:6px;padding:2px 7px;font-size:10px;font-weight:700;font-family:var(--mono);margin:1px 3px 1px 0;white-space:nowrap}
+.vchip.tit{font-family:var(--sora);font-weight:600;white-space:normal;line-height:1.35}
 .vchip.elim{background:#fdecec;color:#a11;border-color:#f3b4b4}
 button.tgl{font-family:var(--sora);font-size:12px;font-weight:600;padding:5px 10px;border-radius:7px;cursor:pointer;
   background:#fff;border:1px solid var(--border);color:#5a6a82;white-space:nowrap}
@@ -907,21 +908,44 @@ async function cargarSegmentados(){
     return g;
   }).sort((a, b) => b.orden - a.orden);
 
-  // Principio activo: el del snapshot de la versión controlada; si no, el del portafolio (marcado).
-  const paPortafolio = {};
-  const faltanPA = [...new Set(lista_g.map(g => g.rs).filter(v => v && !v.rs_principio_activo).map(v => v.medicamento_id))];
-  if (faltanPA.length && yo && yo.titulares){
+  // Datos del registro sanitario: los MISMOS de "Portafolio & titulares" (tabla medicamentos
+  // + medicamento_titulares). Si el usuario no tiene acceso al portafolio, se usa el snapshot
+  // guardado en la versión controlada.
+  const portafolio = {}, titularesPor = {};
+  const medIds = [...new Set(lista_g.map(g => g.rs && g.rs.medicamento_id).filter(Boolean))];
+  if (medIds.length && yo && yo.titulares){
     try{
-      const { data: meds } = await sb.from('medicamentos').select('id, principio_activo').in('id', faltanPA);
-      (meds || []).forEach(m => { paPortafolio[m.id] = m.principio_activo; });
-    }catch(_){}
+      const [m, mt] = await Promise.all([
+        sb.from('medicamentos').select('id, descripcion_producto, principio_activo, nro_registro_sanitario, vcto_registro_sanitario, fabricante, pais').in('id', medIds),
+        sb.from('medicamento_titulares').select('medicamento_id, titular_id, es_principal').in('medicamento_id', medIds),
+      ]);
+      (m.data || []).forEach(x => { portafolio[x.id] = x; });
+      const titIds = [...new Set((mt.data || []).map(x => x.titular_id))];
+      const { data: tits } = titIds.length
+        ? await sb.from('titulares_registro_sanitario').select('id, razon_social').in('id', titIds) : { data: [] };
+      const nomTit = Object.fromEntries((tits || []).map(t => [t.id, t.razon_social]));
+      (mt.data || []).forEach(x => (titularesPor[x.medicamento_id] ||= []).push({ nombre: nomTit[x.titular_id] || '—', principal: x.es_principal }));
+      Object.values(titularesPor).forEach(l => l.sort((a, b) => (b.principal - a.principal) || a.nombre.localeCompare(b.nombre)));
+    }catch(err){ console.warn('No se pudo leer el portafolio:', err.message); }
   }
   const guion = '<span style="color:var(--muted)">—</span>';
-  const celdaPA = v => {
-    if (!v) return guion;
-    if (v.rs_principio_activo) return escH(v.rs_principio_activo);
-    const pa = paPortafolio[v.medicamento_id];
-    return pa ? `<span title="No incluido en la versión controlada: se muestra el del portafolio actual">${escH(pa)} <span class="cmono">(portafolio)</span></span>` : guion;
+  // Fecha "AAAA-MM-DD" sin pasar por zona horaria (evita que 01/02 se vea como 31/01).
+  const fmtDia = v => { const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(v || ''); return m ? `${m[3]}/${m[2]}/${m[1]}` : (v ? fmtFecha(v) : '—'); };
+  const datosRS = g => {
+    const v = g.rs; if (!v) return null;
+    const m = portafolio[v.medicamento_id];
+    return m ? { producto: m.descripcion_producto, pa: m.principio_activo, rs: m.nro_registro_sanitario,
+                 vcto: m.vcto_registro_sanitario, fab: m.fabricante, pais: m.pais,
+                 titulares: titularesPor[m.id] || [], fuente: 'portafolio' }
+             : { producto: v.rs_producto, pa: v.rs_principio_activo, rs: v.rs_numero,
+                 vcto: null, fab: null, pais: null, titulares: null, fuente: 'snapshot' };
+  };
+  const celdaTitulares = d => {
+    if (!d) return guion;
+    if (d.titulares === null) return '<span class="cmono" title="Sin acceso al portafolio">—</span>';
+    return d.titulares.length
+      ? d.titulares.map(t => `<span class="vchip tit">${escH(t.nombre)}${t.principal ? ' ★' : ''}</span>`).join('')
+      : '<span style="color:var(--muted);font-size:12px">Sin titular asignado</span>';
   };
   const celdaVersionCtrl = d => {
     const vs = versiones[d.id];
@@ -968,26 +992,31 @@ async function cargarSegmentados(){
       <span class="gnote" id="histCuenta"></span></div>
     <div id="histControlados"></div>
     <div class="table-scroll"><table class="sgm"><thead><tr>
-      <th>Nº</th><th>Producto</th><th>Principio activo</th><th>Nº Reg. Sanitario</th><th>Última versión CIMA</th>
-      <th>Laboratorio</th><th>Tipo</th><th>Versiones</th><th>Acción</th></tr></thead><tbody>
+      <th>Nº</th><th>Producto</th><th>Principio activo</th><th>Nº Reg. Sanitario</th><th>Fecha vencimiento</th>
+      <th>Fabricante</th><th>País</th><th>Titulares asignados</th><th>Versiones</th><th>Acción</th></tr></thead><tbody>
     ${lista_g.map((g, i) => {
-      const r = g.ref, rs = g.rs, abierto = segAbiertos.has(g.k);
+      const r = g.ref, rs = g.rs, abierto = segAbiertos.has(g.k), p = datosRS(g);
       const buscable = [r.nombre_medicamento, r.archivo_nombre, r.nregistro, r.laboratorio_titular,
         ...g.docs.flatMap(d => (versiones[d.id] || []).map(v => v.codigo_version)),
-        rs && rs.rs_numero, rs && rs.rs_producto, rs && rs.rs_principio_activo].join(' ').toLowerCase();
+        rs && rs.rs_numero, rs && rs.rs_producto, rs && rs.rs_principio_activo,
+        p && p.producto, p && p.pa, p && p.rs, p && p.fab, p && p.pais,
+        ...(p && p.titulares ? p.titulares.map(t => t.nombre) : [])].join(' ').toLowerCase();
       const nElim = g.docs.length - g.vigentes.length;
+      const refCima = `<span class="tag ${r.tipo_documento === 'FT' ? 'ft' : 'prosp'}">${r.tipo_documento === 'FT' ? 'FT' : 'PROSP'}</span>
+        ${r.origen === 'cima' ? 'CIMA Nº ' + escH(r.nregistro || '—') : 'Subido'} · ${escH(r.nombre_medicamento || r.archivo_nombre || '—')}`;
       return `<tr class="grp${abierto ? ' open' : ''}" data-k="${escH(g.k)}" data-buscar="${escH(buscable)}">
         <td class="num">${i + 1}</td>
-        <td class="prod">${escH(r.nombre_medicamento || r.archivo_nombre || '—')}
-          <span class="cmono">${r.origen === 'cima' ? 'CIMA Nº ' + escH(r.nregistro || '—') : 'Documento subido'}${rs && rs.rs_producto ? ' · ' + escH(rs.rs_producto) : ''}</span></td>
-        <td>${celdaPA(rs)}</td>
-        <td class="nreg">${rs ? `<b class="rsnum">${escH(rs.rs_numero)}</b>` : guion}</td>
-        <td class="nreg">${g.vigentes[0] && g.vigentes[0].fecha_version_cima ? fmtFecha(g.vigentes[0].fecha_version_cima) : guion}</td>
-        <td>${escH(r.laboratorio_titular || '—')}</td>
-        <td><span class="tag ${r.tipo_documento === 'FT' ? 'ft' : 'prosp'}">${r.tipo_documento === 'FT' ? 'FT' : 'PROSP'}</span></td>
+        <td class="prod">${p && p.producto ? escH(p.producto) : '<span style="color:var(--muted);font-weight:400">Sin registro sanitario vinculado</span>'}
+          <span class="cmono">${refCima}${p && p.fuente === 'snapshot' ? ' · datos de la versión controlada' : ''}</span></td>
+        <td>${p && p.pa ? escH(p.pa) : guion}</td>
+        <td class="nreg">${p && p.rs ? `<b class="rsnum">${escH(p.rs)}</b>` : guion}</td>
+        <td class="nreg">${p && p.vcto ? fmtDia(p.vcto) : guion}</td>
+        <td style="min-width:140px">${p && p.fab ? escH(p.fab) : guion}</td>
+        <td style="white-space:nowrap">${p && p.pais ? escH(p.pais) : guion}</td>
+        <td style="min-width:150px">${celdaTitulares(p)}</td>
         <td><span class="vchip">${g.vigentes.length} vigente(s)</span>${nElim ? `<span class="vchip elim">${nElim} eliminada(s)</span>` : ''}</td>
         <td><button type="button" class="tgl"><span class="car">▸</span> Versiones</button></td></tr>
-      <tr class="det" data-k="${escH(g.k)}"${abierto ? '' : ' hidden'}><td colspan="9">${tablaVersiones(g)}</td></tr>`;
+      <tr class="det" data-k="${escH(g.k)}"${abierto ? '' : ' hidden'}><td colspan="10">${tablaVersiones(g)}</td></tr>`;
     }).join('')}
     </tbody></table></div>`;
 
