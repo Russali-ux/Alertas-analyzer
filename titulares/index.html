@@ -9,6 +9,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script src="ft69_export.js?v=2"></script>
+<script src="ft68_export.js?v=1"></script>
 <style>
 :root{
   --bg:#ffffff; --surface:#f5f7fa; --border:#d0d7e3; --accent:#0077cc; --danger:#e00030;
@@ -185,7 +186,8 @@ th.sortable:hover{color:var(--accent)}
       <select class="inp" id="fTitulo" onchange="renderAlertas()"><option value="">Todos los títulos</option></select>
       <select class="inp" id="fTipo" onchange="renderAlertas()"><option value="">Todos los tipos</option></select>
       <button class="btn btn-ghost" onclick="cargarAlertas()">↻ Actualizar</button>
-      <button class="btn btn-primary" id="btnFT69" onclick="abrirExportFT69()" title="Exporta el formato FT-69 (Word) por titular, respetando los filtros actuales">📄 Exportar FT-69 (Word)</button>
+      <button class="btn btn-primary" id="btnFT69" onclick="abrirExport('ft69')" title="FT-69 · Alertas nacionales (DIGEMID) por titular, respetando los filtros actuales">📄 Exportar FT-69 Nacional (Word)</button>
+      <button class="btn btn-primary" id="btnFT68" onclick="abrirExport('ft68')" style="background:#11703f" title="FT-68 · Alertas internacionales PAVS (excluye DIGEMID) por titular, respetando los filtros actuales">🌎 Exportar FT-68 Internacional (Word)</button>
     </div>
     <div id="alertasMsg"></div>
     <div class="tbl-wrap">
@@ -346,7 +348,7 @@ function nombreMed(id){ const m=MEDS.find(x=>x.id===id); return m?m.descripcion_
 /* ───────── Vista Alertas ───────── */
 async function cargarAlertas(){
   $('tbAlertas').innerHTML='<tr><td colspan="14" style="text-align:center;color:var(--muted);padding:24px">Cargando…</td></tr>';
-  const {data,error}=await sb.from('alertas_producto_titular').select('*, alerta:alertas_digemid(producto,titular_registro_sanitario,resumen_ia,url_pagina_digemid,url_pdf_digemid), pavs:pavs_alertas(ifa,pais,agencia,enlace)').order('fecha_publicacion',{ascending:false,nullsFirst:false}).order('creado_en',{ascending:false});
+  const {data,error}=await sb.from('alertas_producto_titular').select('*, alerta:alertas_digemid(producto,titular_registro_sanitario,resumen_ia,url_pagina_digemid,url_pdf_digemid), pavs:pavs_alertas(ifa,pais,agencia,enlace,fecha_emision,fecha_revision,tipo_alerta,titulo_alerta,reaccion_adversa)').order('fecha_publicacion',{ascending:false,nullsFirst:false}).order('creado_en',{ascending:false});
   if(error){ $('alertasMsg').innerHTML=`<div class="msg msg-err">No se pudo cargar: ${esc(error.message)}</div>`; $('tbAlertas').innerHTML=''; return; }
   $('alertasMsg').innerHTML=''; ALERTAS=data||[]; poblarFiltroProductos(); poblarFiltroTitulos(); poblarFiltroTipos(); renderAlertas();
 }
@@ -484,41 +486,75 @@ function normalizarFT69(a){
   };
 }
 
-function abrirExportFT69(){
-  const base=alertasFiltradas(true);   // respeta producto/título/tipo/texto; el titular se elige aquí
-  const conFecha=base.filter(a=>/^\d{4}-\d{2}/.test(a.fecha_publicacion||''));
+/* Clasificación por fuente:
+   · Nacional (FT-69): alertas DIGEMID vinculadas, PAVS emitidas por DIGEMID/Perú y registros manuales.
+   · Internacional (FT-68): alertas PAVS de agencias extranjeras (todo lo demás menos DIGEMID). */
+function esNacional(a){
+  if(a.origen!=='pavs_vinculada') return true;
+  return /digemid|per[uú]/i.test(`${(a.pavs&&a.pavs.agencia)||''} ${(a.pavs&&a.pavs.pais)||''}`);
+}
+/* Registro → fila del FT-68 (PAVS internacional) */
+function normalizarFT68(a){
+  const p=a.pavs||{};
+  return {
+    fechaEmision:(p.fecha_emision||a.fecha_publicacion||'').slice(0,10),
+    fechaRevision:(p.fecha_revision||'').slice(0,10),
+    pais:p.pais||'', agencia:p.agencia||'',
+    tipo:a.tipo_alerta||p.tipo_alerta||'',
+    titulo:p.titulo_alerta||a.titulo_alerta||'',
+    ifa:p.ifa||'', principio:principioDe(a.medicamento_id)||'',
+    producto:nombreMed(a.medicamento_id)||'', regSanitario:regSanitarioDe(a.medicamento_id)||'',
+    reaccion:p.reaccion_adversa||'', url:p.enlace||a.url_pdf||''
+  };
+}
+const FT68_PLANTILLA='plantillas/FT-68_Registro_de_Monitoreo_de_PAVS.docx';
+const EXPORT_CFG={
+  ft69:{ codigo:'FT-69', nombre:'Registro de Monitoreo de Alertas Nacionales', icono:'📄', filtro:esNacional,
+    normalizar:normalizarFT69, fechaDe:a=>a.fecha_publicacion||'',
+    desc:'Se genera un Word por titular en el formato FT-69 con las alertas <b>nacionales (DIGEMID)</b>: calendario del mes + tabla con fecha, Nº Reg. Sanitario, producto impactado, principio activo, titulares, tipo de alerta, urgencia y resumen IA.',
+    run:o=>FT69.exportarFT69PorTitular({...o, plantillaUrl:FT69_PLANTILLA}) },
+  ft68:{ codigo:'FT-68', nombre:'Registro de Monitoreo de PAVS', icono:'🌎', filtro:a=>!esNacional(a),
+    normalizar:normalizarFT68, fechaDe:a=>(a.pavs&&a.pavs.fecha_emision)||a.fecha_publicacion||'',
+    desc:'Se genera un Word por titular en el formato FT-68 con las alertas <b>internacionales PAVS</b> (excluye DIGEMID). La página 1 conserva la lista de agencias; desde la página 2 se completa el registro: fecha de emisión, fecha de revisión, país, agencia, tipo, título, IFA (con producto y Nº Reg. Sanitario) y reacción adversa.',
+    run:o=>FT68.exportarFT68PorTitular({...o, plantillaUrl:FT68_PLANTILLA}) }
+};
+
+function abrirExport(tipo){
+  const C=EXPORT_CFG[tipo];
+  const base=alertasFiltradas(true).filter(C.filtro);   // respeta producto/título/tipo/texto; el titular se elige aquí
+  const conFecha=base.filter(a=>/^\d{4}-\d{2}/.test(C.fechaDe(a)));
   const idsConAlerta=new Set(); let sinTitular=0;
   base.forEach(a=>{ const t=[a.titular_1_id,a.titular_2_id].filter(Boolean); t.forEach(id=>idsConAlerta.add(id)); if(!t.length) sinTitular++; });
   const titOpts=TITULARES.filter(t=>idsConAlerta.has(t.id));
   const hoy=new Date(), ymHoy=`${hoy.getFullYear()}-${String(hoy.getMonth()+1).padStart(2,'0')}`;
-  const meses=[...new Set([ymHoy, ...conFecha.map(a=>a.fecha_publicacion.slice(0,7))])].sort().reverse();
-  const ymDef=conFecha.length ? conFecha.map(a=>a.fecha_publicacion.slice(0,7)).sort().pop() : ymHoy;
+  const meses=[...new Set([ymHoy, ...conFecha.map(a=>C.fechaDe(a).slice(0,7))])].sort().reverse();
+  const ymDef=conFecha.length ? conFecha.map(a=>C.fechaDe(a).slice(0,7)).sort().pop() : ymHoy;
   const titSel=$('fTit')?.value||'';
 
   const box=document.createElement('div'); box.className='overlay';
   box.innerHTML=`<div class="modal" style="max-width:560px">
-    <h2>📄 Exportar FT-69 · Registro de Monitoreo de Alertas Nacionales</h2>
-    <p class="sub">Se genera un Word por titular en el formato FT-69 (calendario del mes + tabla con fecha, Nº Reg. Sanitario, producto impactado, principio activo, titulares, tipo de alerta, urgencia y resumen IA). Se respetan los filtros de producto, título, tipo y búsqueda aplicados en la tabla.</p>
-    <div id="ftMsg"></div>
+    <h2>${C.icono} Exportar ${C.codigo} · ${C.nombre}</h2>
+    <p class="sub">${C.desc} Se respetan los filtros de producto, título, tipo y búsqueda aplicados en la tabla.</p>
+    <div id="ftMsg">${base.length?'':`<div class="msg msg-warn">No hay alertas ${tipo==='ft68'?'internacionales (PAVS)':'nacionales (DIGEMID)'} con los filtros actuales. Puedes generar igualmente el ${C.codigo} vacío como evidencia del monitoreo.</div>`}</div>
     <div class="field"><label>Titular</label>
       <select class="inp" id="ftTit">
         <option value="__all__">Todos los titulares con alertas (un Word por titular · ZIP)</option>
-        ${titOpts.map(t=>`<option value="${t.id}">${esc(t.razon_social)}</option>`).join('')}
+        ${(titOpts.length?titOpts:TITULARES).map(t=>`<option value="${t.id}">${esc(t.razon_social)}</option>`).join('')}
         ${sinTitular?'<option value="__none__">— Sin titular asignado —</option>':''}
       </select></div>
     <div class="field"><label>Periodo</label>
       <select class="inp" id="ftMes">
         ${meses.map(m=>`<option value="${m}">${ymLabel(m)}</option>`).join('')}
-        <option value="todos">Todos los meses con alertas (un FT-69 por mes)</option>
+        <option value="todos">Todos los meses con alertas (un ${C.codigo} por mes)</option>
       </select></div>
     <label style="display:flex;gap:8px;align-items:flex-start;font-size:12px;color:var(--sub);margin-bottom:6px">
       <input type="checkbox" id="ftVacios" style="margin-top:2px">
-      <span>Incluir titulares activos <b>sin alertas</b> en el periodo (FT-69 con calendario "No hay alerta" como evidencia del monitoreo). Solo aplica a "Todos los titulares" con un mes específico.</span>
+      <span>Incluir titulares activos <b>sin alertas</b> en el periodo (${C.codigo} con registro "sin alertas" como evidencia del monitoreo). Solo aplica a "Todos los titulares" con un mes específico.</span>
     </label>
     <div class="modal-actions"><button class="btn btn-ghost" id="ftCancel">Cancelar</button><button class="btn btn-primary" id="ftGo">⬇ Generar Word</button></div>
   </div>`;
   document.body.appendChild(box);
-  const selT=box.querySelector('#ftTit'); if(titSel && titOpts.some(t=>t.id===titSel)) selT.value=titSel;
+  const selT=box.querySelector('#ftTit'); if(titSel && [...selT.options].some(o=>o.value===titSel)) selT.value=titSel;
   box.querySelector('#ftMes').value=ymDef;
   const cerrar=()=>box.remove();
   box.querySelector('#ftCancel').onclick=cerrar;
@@ -527,30 +563,30 @@ function abrirExportFT69(){
   box.querySelector('#ftGo').onclick=async()=>{
     const tsel=selT.value, periodo=box.querySelector('#ftMes').value, vacios=box.querySelector('#ftVacios').checked;
     const msg=box.querySelector('#ftMsg'), btn=box.querySelector('#ftGo');
-    const deTitular=id=>base.filter(a=>a.titular_1_id===id||a.titular_2_id===id).map(normalizarFT69);
+    const deTitular=id=>base.filter(a=>a.titular_1_id===id||a.titular_2_id===id).map(C.normalizar);
+    const sinTit=()=>base.filter(a=>!a.titular_1_id&&!a.titular_2_id).map(C.normalizar);
+    const fechaN=x=>tipo==='ft68'?x.fechaEmision:x.fecha;
     let grupos=[];
-    if(tsel==='__none__') grupos=[{titular:'SIN TITULAR ASIGNADO', alertas:base.filter(a=>!a.titular_1_id&&!a.titular_2_id).map(normalizarFT69)}];
+    if(tsel==='__none__') grupos=[{titular:'SIN TITULAR ASIGNADO', alertas:sinTit()}];
     else if(tsel!=='__all__') grupos=[{titular:nombreTitular(tsel), alertas:deTitular(tsel)}];
     else{
       const lista=(vacios && periodo!=='todos') ? TITULARES : titOpts;
       grupos=lista.map(t=>({titular:t.razon_social, alertas:deTitular(t.id)}));
-      if(sinTitular) grupos.push({titular:'SIN TITULAR ASIGNADO', alertas:base.filter(a=>!a.titular_1_id&&!a.titular_2_id).map(normalizarFT69)});
-      if(periodo!=='todos' && !vacios) grupos=grupos.filter(g=>g.alertas.some(a=>a.fecha.startsWith(periodo)));
+      if(sinTitular) grupos.push({titular:'SIN TITULAR ASIGNADO', alertas:sinTit()});
+      if(periodo!=='todos' && !vacios) grupos=grupos.filter(g=>g.alertas.some(a=>String(fechaN(a)).startsWith(periodo)));
     }
     if(!grupos.length){ msg.innerHTML='<div class="msg msg-warn">Ningún titular tiene alertas en el periodo seleccionado. Marca la opción de incluir titulares sin alertas o elige otro mes.</div>'; return; }
     btn.disabled=true;
     try{
-      const r=await FT69.exportarFT69PorTitular({
-        plantillaUrl:FT69_PLANTILLA, grupos, periodo,
-        generadoPor:(currentUser&&currentUser.email)||'',
-        onProgreso:(i,n,t)=>{ msg.innerHTML=`<div class="msg msg-info">Generando ${i} de ${n} · ${esc(t)}…</div>`; }
-      });
-      msg.innerHTML=`<div class="msg msg-info">✅ ${r.archivos} FT-69 generado(s) · ${r.alertas} alerta(s) incluida(s).</div>`;
+      const r=await C.run({ grupos, periodo, generadoPor:(currentUser&&currentUser.email)||'',
+        onProgreso:(i,n,t)=>{ msg.innerHTML=`<div class="msg msg-info">Generando ${i} de ${n} · ${esc(t)}…</div>`; } });
+      msg.innerHTML=`<div class="msg msg-info">✅ ${r.archivos} ${C.codigo} generado(s) · ${r.alertas} alerta(s) incluida(s).</div>`;
       setTimeout(cerrar,1400);
     }catch(e){ msg.innerHTML=`<div class="msg msg-err">${esc(e.message)}</div>`; }
     btn.disabled=false;
   };
 }
+function abrirExportFT69(){ abrirExport('ft69'); }
 
 /* ───────── Vista Portafolio ───────── */
 function renderMeds(){
