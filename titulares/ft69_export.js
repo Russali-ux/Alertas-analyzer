@@ -9,7 +9,7 @@
    - Calendario del mes: "Si hay alerta" en días con alertas que impactan al
      titular; "No hay alerta" en el resto de días ya transcurridos.
    - Tabla inferior: una fila por alerta (Autoridad y código · Tipo · IFA ·
-     Comentarios con producto impactado, titulares, urgencia, resumen IA…).
+     Comentarios con Nº Reg. Sanitario, producto impactado, titulares, urgencia, resumen IA…).
 
    Requiere JSZip (cdnjs) en el navegador. Sin dependencias de Supabase:
    index.html le entrega las alertas ya normalizadas.
@@ -282,10 +282,13 @@
       const hit = TIPO_IDX.find(([k]) => tipo.includes(k));
       if (hit && cbs[hit[1]]) marcar(cbs[hit[1]], true);
 
-      llenarCeldaTexto(doc, tc[2], [txt(a.principio) || txt(a.producto) || '—'], { size: SZ });
+      const ifa = [txt(a.principio) || txt(a.producto) || '—'];
+      if (txt(a.regSanitario)) ifa.push('Nº Reg. Sanitario: ' + txt(a.regSanitario));
+      llenarCeldaTexto(doc, tc[2], ifa, { size: SZ });
 
       const pares = [
         ['Fecha', fmtDMY(a.fecha)],
+        ['Nº Reg. Sanitario', txt(a.regSanitario) || 'No registrado en el portafolio'],
         ['Producto impactado', txt(a.producto)],
         ['Principio activo', txt(a.principio)],
         ['Titular(es)', txt(a.titulares) || 'No asignado en el portafolio'],

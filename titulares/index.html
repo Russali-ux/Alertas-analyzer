@@ -8,7 +8,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-<script src="ft69_export.js?v=1"></script>
+<script src="ft69_export.js?v=2"></script>
 <style>
 :root{
   --bg:#ffffff; --surface:#f5f7fa; --border:#d0d7e3; --accent:#0077cc; --danger:#e00030;
@@ -119,6 +119,7 @@ th.sortable:hover{color:var(--accent)}
 .src-badge.dig{background:#e8f2fb;color:#0a5a9c}
 .src-badge.pavs{background:#e9f7ef;color:#11703f}
 .chk-row:last-child{border-bottom:none}
+.rs-tag{display:inline-block;font-family:var(--mono);font-size:10px;font-weight:700;background:#eef4fb;color:#0a5a9c;border:1px solid #c9dcf0;border-radius:5px;padding:0 6px;margin-left:4px;white-space:nowrap}
 .chk-row:hover{background:rgba(0,119,204,.05)}
 .chk-row input{margin-top:2px;flex-shrink:0}
 /* footer de conteos de filtros */
@@ -176,7 +177,7 @@ th.sortable:hover{color:var(--accent)}
   <div id="vistaAlertas">
     <div class="toolbar">
       <span class="count" id="cntAlertas">— alertas</span>
-      <input class="inp" id="fAlertas" placeholder="🔍 Filtrar por producto, principio activo, tipo, título o titular…" style="flex:1;min-width:220px" oninput="renderAlertas()">
+      <input class="inp" id="fAlertas" placeholder="🔍 Filtrar por producto, Nº Reg. Sanitario, principio activo, tipo, título o titular…" style="flex:1;min-width:220px" oninput="renderAlertas()">
       <button class="btn btn-primary gate-hidden" id="btnNueva" onclick="abrirModal()">＋ Nueva alerta</button>
       <select class="inp" id="fTit" onchange="onTitularChange()"><option value="">Todos los titulares</option></select>
       <select class="inp" id="fProd" onchange="onProductoChange()"><option value="">Todos los productos</option></select>
@@ -190,6 +191,7 @@ th.sortable:hover{color:var(--accent)}
       <table>
         <thead><tr>
           <th class="sortable" onclick="sortAlertas('fecha')">Fecha <span class="sort-ind" data-k="fecha"></span></th>
+          <th class="sortable" onclick="sortAlertas('reg_sanitario')">Nº Reg. Sanitario <span class="sort-ind" data-k="reg_sanitario"></span></th>
           <th class="sortable" onclick="sortAlertas('producto')">Producto impactado <span class="sort-ind" data-k="producto"></span></th>
           <th class="sortable" onclick="sortAlertas('principio')">Principio activo <span class="sort-ind" data-k="principio"></span></th>
           <th class="sortable" onclick="sortAlertas('titular')">Titular(es) <span class="sort-ind" data-k="titular"></span></th>
@@ -203,7 +205,7 @@ th.sortable:hover{color:var(--accent)}
           <th class="sortable" onclick="sortAlertas('expediente')">Expediente <span class="sort-ind" data-k="expediente"></span></th>
           <th class="gate-hidden colAdmin">Acción</th>
         </tr></thead>
-        <tbody id="tbAlertas"><tr><td colspan="13" style="text-align:center;color:var(--muted);padding:24px">Cargando…</td></tr></tbody>
+        <tbody id="tbAlertas"><tr><td colspan="14" style="text-align:center;color:var(--muted);padding:24px">Cargando…</td></tr></tbody>
       </table>
     </div>
     <div id="alertasFooter" class="tbl-footer"></div>
@@ -253,7 +255,7 @@ th.sortable:hover{color:var(--accent)}
 
     <div class="field">
       <label><span class="step-tag">Paso 2</span> Producto(s) por principio activo — selecciona uno o varios</label>
-      <input class="inp" id="mBuscarProd" placeholder="🔍 Buscar por principio activo o producto…" style="width:100%;margin-bottom:6px" oninput="renderProdChecks()">
+      <input class="inp" id="mBuscarProd" placeholder="🔍 Buscar por principio activo, producto o Nº Reg. Sanitario…" style="width:100%;margin-bottom:6px" oninput="renderProdChecks()">
       <div class="check-list" id="mProdList"></div>
       <div class="hint" id="mProdHint">El titular se autoactiva desde el portafolio.</div>
     </div>
@@ -342,12 +344,13 @@ function nombreMed(id){ const m=MEDS.find(x=>x.id===id); return m?m.descripcion_
 
 /* ───────── Vista Alertas ───────── */
 async function cargarAlertas(){
-  $('tbAlertas').innerHTML='<tr><td colspan="13" style="text-align:center;color:var(--muted);padding:24px">Cargando…</td></tr>';
+  $('tbAlertas').innerHTML='<tr><td colspan="14" style="text-align:center;color:var(--muted);padding:24px">Cargando…</td></tr>';
   const {data,error}=await sb.from('alertas_producto_titular').select('*, alerta:alertas_digemid(producto,titular_registro_sanitario,resumen_ia,url_pagina_digemid,url_pdf_digemid), pavs:pavs_alertas(ifa,pais,agencia,enlace)').order('fecha_publicacion',{ascending:false,nullsFirst:false}).order('creado_en',{ascending:false});
   if(error){ $('alertasMsg').innerHTML=`<div class="msg msg-err">No se pudo cargar: ${esc(error.message)}</div>`; $('tbAlertas').innerHTML=''; return; }
   $('alertasMsg').innerHTML=''; ALERTAS=data||[]; poblarFiltroProductos(); poblarFiltroTitulos(); poblarFiltroTipos(); renderAlertas();
 }
 function principioDe(medId){ const m=MEDS.find(x=>x.id===medId); return m?(m.principio_activo||''):''; }
+function regSanitarioDe(medId){ const m=MEDS.find(x=>x.id===medId); return m?(m.nro_registro_sanitario||''):''; }
 function tipoClaseP(t){ const x=(t||'').toLowerCase();
   if(x.includes('falsific')) return 'tp-falsi';
   if(x.includes('calidad')) return 'tp-cal';
@@ -385,6 +388,7 @@ function sortAlertas(k){ if(sortKey===k){ sortDir=sortDir==='asc'?'desc':'asc'; 
 function _valAlerta(a,k){
   switch(k){
     case 'fecha': return a.fecha_publicacion||'';
+    case 'reg_sanitario': return regSanitarioDe(a.medicamento_id)||'';
     case 'producto': return nombreMed(a.medicamento_id)||'';
     case 'principio': return principioDe(a.medicamento_id)||'';
     case 'titulo': return a.titulo_alerta||'';
@@ -411,7 +415,7 @@ function alertasFiltradas(ignorarTitular){
     if(tituloF && a.titulo_alerta!==tituloF) return false;
     if(tipoF && a.tipo_alerta!==tipoF) return false;
     if(!q) return true;
-    const hay=(nombreMed(a.medicamento_id)+' '+principioDe(a.medicamento_id)+' '+(a.titulo_alerta||'')+' '+((a.alerta&&a.alerta.producto)||'')+' '+(a.tipo_alerta||'')+' '+nombreTitular(a.titular_1_id)+' '+nombreTitular(a.titular_2_id)+' '+((a.alerta&&a.alerta.titular_registro_sanitario)||'')+' '+((a.pavs&&[a.pavs.ifa,a.pavs.pais,a.pavs.agencia].join(' '))||'')+' '+(a.origen==='pavs_vinculada'?'pavs':'')).toLowerCase();
+    const hay=(nombreMed(a.medicamento_id)+' '+regSanitarioDe(a.medicamento_id)+' '+principioDe(a.medicamento_id)+' '+(a.titulo_alerta||'')+' '+((a.alerta&&a.alerta.producto)||'')+' '+(a.tipo_alerta||'')+' '+nombreTitular(a.titular_1_id)+' '+nombreTitular(a.titular_2_id)+' '+((a.alerta&&a.alerta.titular_registro_sanitario)||'')+' '+((a.pavs&&[a.pavs.ifa,a.pavs.pais,a.pavs.agencia].join(' '))||'')+' '+(a.origen==='pavs_vinculada'?'pavs':'')).toLowerCase();
     return hay.includes(q);
   });
 }
@@ -425,7 +429,7 @@ function renderAlertas(){
   _actualizarIndicadores();
   $('cntAlertas').textContent=`${rows.length} alerta(s)`;
   { const footer=$('alertasFooter'); if(footer) footer.innerHTML=`Mostrando <b>${rows.length}</b>`; }
-  if(!rows.length){ $('tbAlertas').innerHTML='<tr><td colspan="13" style="text-align:center;color:var(--muted);padding:24px">Sin alertas registradas todavía.</td></tr>'; return; }
+  if(!rows.length){ $('tbAlertas').innerHTML='<tr><td colspan="14" style="text-align:center;color:var(--muted);padding:24px">Sin alertas registradas todavía.</td></tr>'; return; }
   $('tbAlertas').innerHTML=rows.map(a=>{
     const tits=[a.titular_1_id,a.titular_2_id].filter(Boolean).map(id=>`<span class="tit-chip">${esc(nombreTitular(id))}</span>`).join('')||'<span style="color:var(--muted)">—</span>';
     const titImp=(a.alerta&&a.alerta.titular_registro_sanitario)?`<span class="tit-chip">${esc(a.alerta.titular_registro_sanitario)}</span>`:'<span style="color:var(--muted)">—</span>';
@@ -434,10 +438,11 @@ function renderAlertas(){
       : a.origen==='pavs_vinculada'?`🌎 PAVS${a.pavs&&(a.pavs.agencia||a.pavs.pais)?`<br><span style="color:var(--muted)">${esc([a.pavs.agencia,a.pavs.pais].filter(Boolean).join(' · '))}</span>`:''}`
       : '✍️ Manual';
     const tipoB=a.tipo_alerta?`<span class="tipo-badge ${tipoClaseP(a.tipo_alerta)}">${esc(a.tipo_alerta)}</span>`:'<span style="color:var(--muted)">—</span>';
-    const pa=principioDe(a.medicamento_id);
+    const pa=principioDe(a.medicamento_id), rs=regSanitarioDe(a.medicamento_id);
     const acc=esAdmin?`<td class="colAdmin"><button class="btn btn-ghost" style="padding:4px 9px" onclick="editar('${a.id}')">Editar</button> <button class="btn btn-danger" style="padding:4px 9px" onclick="eliminar('${a.id}')">✕</button></td>`:'';
     return `<tr>
       <td style="font-family:var(--mono);white-space:nowrap">${esc(a.fecha_publicacion||'—')}</td>
+      <td style="font-family:var(--mono);white-space:nowrap">${rs?esc(rs):'<span style=\'color:var(--muted)\'>—</span>'}</td>
       <td style="min-width:200px">${esc(nombreMed(a.medicamento_id))}</td>
       <td style="min-width:140px">${pa?esc(pa):'<span style=\'color:var(--muted)\'>—</span>'}</td>
       <td style="min-width:150px">${tits}</td>
@@ -468,6 +473,7 @@ function normalizarFT69(a){
     autoridad, codigo:a.titulo_alerta||'',
     tipo:a.tipo_alerta||'', urgencia:a.urgencia||'', accion:a.accion_principal||'',
     producto:nombreMed(a.medicamento_id)||(a.alerta&&a.alerta.producto)||(a.pavs&&a.pavs.ifa)||'',
+    regSanitario:regSanitarioDe(a.medicamento_id)||'',
     principio:principioDe(a.medicamento_id)||(a.pavs&&a.pavs.ifa)||'',
     titulares:[a.titular_1_id,a.titular_2_id].filter(Boolean).map(nombreTitular).filter(Boolean).join(', '),
     resumen:a.resumen||(a.alerta&&a.alerta.resumen_ia)||'',
@@ -491,7 +497,7 @@ function abrirExportFT69(){
   const box=document.createElement('div'); box.className='overlay';
   box.innerHTML=`<div class="modal" style="max-width:560px">
     <h2>📄 Exportar FT-69 · Registro de Monitoreo de Alertas Nacionales</h2>
-    <p class="sub">Se genera un Word por titular en el formato FT-69 (calendario del mes + tabla con fecha, producto impactado, principio activo, titulares, tipo de alerta, urgencia y resumen IA). Se respetan los filtros de producto, título, tipo y búsqueda aplicados en la tabla.</p>
+    <p class="sub">Se genera un Word por titular en el formato FT-69 (calendario del mes + tabla con fecha, Nº Reg. Sanitario, producto impactado, principio activo, titulares, tipo de alerta, urgencia y resumen IA). Se respetan los filtros de producto, título, tipo y búsqueda aplicados en la tabla.</p>
     <div id="ftMsg"></div>
     <div class="field"><label>Titular</label>
       <select class="inp" id="ftTit">
@@ -710,13 +716,13 @@ const claveRegistro=a=> a.alerta_pavs_id ? 'pavs:'+a.alerta_pavs_id : (a.alerta_
 /* Paso 2 · Productos por principio activo (selección múltiple) */
 function renderProdChecks(){
   const q=($('mBuscarProd').value||'').trim().toLowerCase();
-  const lista=MEDS.filter(m=> !q || (m.descripcion_producto+' '+(m.principio_activo||'')).toLowerCase().includes(q));
+  const lista=MEDS.filter(m=> !q || (m.descripcion_producto+' '+(m.principio_activo||'')+' '+(m.nro_registro_sanitario||'')).toLowerCase().includes(q));
   const cont=$('mProdList');
   if(!lista.length){ cont.innerHTML='<div class="hint" style="padding:8px">Sin productos.</div>'; actualizarHintProd(); return; }
   cont.innerHTML=lista.map(m=>{
     const auto=titularesAuto(m.id).filter(Boolean).map(id=>esc(nombreTitular(id))).join(', ')||'sin titular en portafolio';
     return `<label class="chk-row"><input type="checkbox" value="${m.id}" ${selProductos.has(m.id)?'checked':''} onchange="toggleProd('${m.id}',this.checked)">
-      <span>${esc(m.descripcion_producto)} <span class="hint">· ${esc(m.principio_activo||'—')} · 🏷️ ${auto}</span></span></label>`;
+      <span>${esc(m.descripcion_producto)} <span class="rs-tag" title="Nº Reg. Sanitario">RS ${esc(m.nro_registro_sanitario||'—')}</span> <span class="hint">· ${esc(m.principio_activo||'—')} · 🏷️ ${auto}</span></span></label>`;
   }).join('');
   actualizarHintProd();
 }
