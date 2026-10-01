@@ -119,6 +119,7 @@ th.sortable:hover{color:var(--accent)}
 .src-badge.dig{background:#e8f2fb;color:#0a5a9c}
 .src-badge.pavs{background:#e9f7ef;color:#11703f}
 .chk-row:last-child{border-bottom:none}
+.al-tit{display:inline-block;font-family:var(--mono);font-size:11px;font-weight:700;color:#1A3A5C;background:#eef2f8;border:1px solid var(--border);border-radius:5px;padding:0 6px;margin-right:4px;white-space:nowrap}
 .rs-tag{display:inline-block;font-family:var(--mono);font-size:10px;font-weight:700;background:#eef4fb;color:#0a5a9c;border:1px solid #c9dcf0;border-radius:5px;padding:0 6px;margin-left:4px;white-space:nowrap}
 .chk-row:hover{background:rgba(0,119,204,.05)}
 .chk-row input{margin-top:2px;flex-shrink:0}
@@ -695,7 +696,7 @@ function renderAlertaChecks(lista){
       const et=x.tipo?`<span class="tipo-badge ${tipoClaseP(x.tipo)}">${esc(x.tipo)}</span>`:'';
       const src=`<span class="src-badge ${x.fuente}">${x.fuente==='pavs'?'PAVS':'DIGEMID'}</span>`;
       return `<label class="chk-row"><input type="checkbox" value="${x.key}" ${selAlertas.has(x.key)?'checked':''} onchange="toggleAlerta('${x.key}',this.checked)">
-        <span>${src}<b>${esc(x.fecha||'')}</b> · ${esc((x.etiqueta||'').slice(0,110))} ${et}${x.sub?`<br><span class="hint">${esc(x.sub.slice(0,140))}</span>`:''}</span></label>`;
+        <span>${src}<b>${esc(x.fecha||'')}</b> · ${x.fuente==='dig'&&x.titulo?`<span class="al-tit">${esc(x.titulo)}</span>`:''}${esc((x.etiqueta||'').slice(0,110))} ${et}${x.sub?`<br><span class="hint">${esc(x.sub.slice(0,140))}</span>`:''}</span></label>`;
     }).join('');
   }
   actualizarHintAlertas();
