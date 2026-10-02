@@ -119,6 +119,10 @@ th.sortable:hover{color:var(--accent)}
 .src-badge{display:inline-block;font-family:var(--mono);font-size:8px;font-weight:700;padding:1px 5px;border-radius:4px;margin-right:4px;vertical-align:1px}
 .src-badge.dig{background:#e8f2fb;color:#0a5a9c}
 .src-badge.pavs{background:#e9f7ef;color:#11703f}
+.src-badge.fda{background:#eef2ff;color:#3730a3}
+.src-badge.ema{background:#fff7e6;color:#9a5b00}
+.si-no{display:inline-block;font-size:10px;font-weight:700;padding:1px 6px;border-radius:8px;margin-left:4px}
+.si-no.si{background:#fee2e2;color:#991b1b}.si-no.no{background:#eef0f3;color:#475467}
 .chk-row:last-child{border-bottom:none}
 .al-tit{display:inline-block;font-family:var(--mono);font-size:11px;font-weight:700;color:#1A3A5C;background:#eef2f8;border:1px solid var(--border);border-radius:5px;padding:0 6px;margin-right:4px;white-space:nowrap}
 .rs-tag{display:inline-block;font-family:var(--mono);font-size:10px;font-weight:700;background:#eef4fb;color:#0a5a9c;border:1px solid #c9dcf0;border-radius:5px;padding:0 6px;margin-left:4px;white-space:nowrap}
@@ -246,10 +250,12 @@ th.sortable:hover{color:var(--accent)}
     <div id="modalMsg"></div>
 
     <div class="field">
-      <label><span class="step-tag">Paso 1</span> Alerta(s) — selecciona una o varias (DIGEMID y/o PAVS)</label>
+      <label><span class="step-tag">Paso 1</span> Alerta(s) — selecciona una o varias (DIGEMID, PAVS, FDA AEMS y/o EMA PRAC)</label>
       <div class="src-tog" id="mFuente">
         <button type="button" class="on" data-f="dig" onclick="cambiarFuente('dig')">📋 DIGEMID</button>
         <button type="button" data-f="pavs" onclick="cambiarFuente('pavs')">🌎 PAVS · Alta vigilancia</button>
+        <button type="button" data-f="fda" onclick="cambiarFuente('fda')">🇺🇸 FDA AEMS · Señales</button>
+        <button type="button" data-f="ema" onclick="cambiarFuente('ema')">🇪🇺 EMA PRAC · Señales</button>
       </div>
       <input class="inp" id="mBuscarDig" placeholder="🔍 Buscar alerta por título, producto o tipo…" style="width:100%;margin-bottom:6px" oninput="buscarDigemid()">
       <div class="check-list" id="mAlertasList"></div>
@@ -348,7 +354,7 @@ function nombreMed(id){ const m=MEDS.find(x=>x.id===id); return m?m.descripcion_
 /* ───────── Vista Alertas ───────── */
 async function cargarAlertas(){
   $('tbAlertas').innerHTML='<tr><td colspan="14" style="text-align:center;color:var(--muted);padding:24px">Cargando…</td></tr>';
-  const {data,error}=await sb.from('alertas_producto_titular').select('*, alerta:alertas_digemid(producto,titular_registro_sanitario,resumen_ia,url_pagina_digemid,url_pdf_digemid), pavs:pavs_alertas(ifa,pais,agencia,enlace,fecha_emision,fecha_revision,tipo_alerta,titulo_alerta,reaccion_adversa)').order('fecha_publicacion',{ascending:false,nullsFirst:false}).order('creado_en',{ascending:false});
+  const {data,error}=await sb.from('alertas_producto_titular').select('*, alerta:alertas_digemid(producto,titular_registro_sanitario,resumen_ia,url_pagina_digemid,url_pdf_digemid), pavs:pavs_alertas(ifa,pais,agencia,enlace,fecha_emision,fecha_revision,tipo_alerta,titulo_alerta,reaccion_adversa), fda:fda_aems_senales(producto,principio,senal,periodo,url), ema:ema_prac_halmed_senales(inn,senal,reunion,accion_titular,fuente_url)').order('fecha_publicacion',{ascending:false,nullsFirst:false}).order('creado_en',{ascending:false});
   if(error){ $('alertasMsg').innerHTML=`<div class="msg msg-err">No se pudo cargar: ${esc(error.message)}</div>`; $('tbAlertas').innerHTML=''; return; }
   $('alertasMsg').innerHTML=''; ALERTAS=data||[]; poblarFiltroProductos(); poblarFiltroTitulos(); poblarFiltroTipos(); renderAlertas();
 }
@@ -395,7 +401,7 @@ function _valAlerta(a,k){
     case 'producto': return nombreMed(a.medicamento_id)||'';
     case 'principio': return principioDe(a.medicamento_id)||'';
     case 'titulo': return a.titulo_alerta||'';
-    case 'producto_alerta': return (a.alerta&&a.alerta.producto)||(a.pavs&&a.pavs.ifa)||'';
+    case 'producto_alerta': return (a.alerta&&a.alerta.producto)||(a.pavs&&a.pavs.ifa)||(a.fda&&a.fda.producto)||(a.ema&&a.ema.inn)||'';
     case 'tipo': return a.tipo_alerta||'';
     case 'titular': return nombreTitular(a.titular_1_id)||'';
     case 'titular_impactado': return (a.alerta&&a.alerta.titular_registro_sanitario)||'';
@@ -418,7 +424,7 @@ function alertasFiltradas(ignorarTitular){
     if(tituloF && a.titulo_alerta!==tituloF) return false;
     if(tipoF && a.tipo_alerta!==tipoF) return false;
     if(!q) return true;
-    const hay=(nombreMed(a.medicamento_id)+' '+regSanitarioDe(a.medicamento_id)+' '+principioDe(a.medicamento_id)+' '+(a.titulo_alerta||'')+' '+((a.alerta&&a.alerta.producto)||'')+' '+(a.tipo_alerta||'')+' '+nombreTitular(a.titular_1_id)+' '+nombreTitular(a.titular_2_id)+' '+((a.alerta&&a.alerta.titular_registro_sanitario)||'')+' '+((a.pavs&&[a.pavs.ifa,a.pavs.pais,a.pavs.agencia].join(' '))||'')+' '+(a.origen==='pavs_vinculada'?'pavs':'')).toLowerCase();
+    const hay=(nombreMed(a.medicamento_id)+' '+regSanitarioDe(a.medicamento_id)+' '+principioDe(a.medicamento_id)+' '+(a.titulo_alerta||'')+' '+((a.alerta&&a.alerta.producto)||'')+' '+(a.tipo_alerta||'')+' '+nombreTitular(a.titular_1_id)+' '+nombreTitular(a.titular_2_id)+' '+((a.alerta&&a.alerta.titular_registro_sanitario)||'')+' '+((a.pavs&&[a.pavs.ifa,a.pavs.pais,a.pavs.agencia].join(' '))||'')+' '+(a.origen==='pavs_vinculada'?'pavs':'')+' '+((a.fda&&['fda',a.fda.producto,a.fda.principio,a.fda.senal].join(' '))||'')+' '+((a.ema&&['ema prac',a.ema.inn,a.ema.senal].join(' '))||'')).toLowerCase();
     return hay.includes(q);
   });
 }
@@ -439,6 +445,8 @@ function renderAlertas(){
     const urgP=a.urgencia?`<span class="pill u-${a.urgencia}">${a.urgencia}</span>`:'—';
     const orig=a.origen==='digemid_vinculada'?'🔗 DIGEMID'
       : a.origen==='pavs_vinculada'?`🌎 PAVS${a.pavs&&(a.pavs.agencia||a.pavs.pais)?`<br><span style="color:var(--muted)">${esc([a.pavs.agencia,a.pavs.pais].filter(Boolean).join(' · '))}</span>`:''}`
+      : a.origen==='fda_vinculada'?`🇺🇸 FDA AEMS${a.fda&&a.fda.periodo?`<br><span style="color:var(--muted)">${esc(a.fda.periodo)}</span>`:''}`
+      : a.origen==='ema_vinculada'?`🇪🇺 EMA PRAC${a.ema&&a.ema.reunion?`<br><span style="color:var(--muted)">${esc(a.ema.reunion)}</span>`:''}`
       : '✍️ Manual';
     const tipoB=a.tipo_alerta?`<span class="tipo-badge ${tipoClaseP(a.tipo_alerta)}">${esc(a.tipo_alerta)}</span>`:'<span style="color:var(--muted)">—</span>';
     const pa=principioDe(a.medicamento_id), rs=regSanitarioDe(a.medicamento_id);
@@ -451,7 +459,10 @@ function renderAlertas(){
       <td style="min-width:150px">${tits}</td>
       <td style="min-width:170px">${esc(a.titulo_alerta||'—')}</td>
       <td style="min-width:150px">${titImp}</td>
-      <td style="min-width:160px">${a.alerta&&a.alerta.producto?esc(a.alerta.producto):(a.pavs&&a.pavs.ifa?esc(a.pavs.ifa):'<span style=\'color:var(--muted)\'>—</span>')}</td>
+      <td style="min-width:160px">${a.alerta&&a.alerta.producto?esc(a.alerta.producto):(a.pavs&&a.pavs.ifa?esc(a.pavs.ifa)
+        :a.fda?esc([a.fda.producto,a.fda.principio].filter(Boolean).join(' · '))+`<br><span style="color:var(--muted)">Señal: ${esc(a.fda.senal||'—')}</span>`
+        :a.ema?esc(a.ema.inn||'')+`<br><span style="color:var(--muted)">Señal: ${esc(a.ema.senal||'—')}</span><span class="si-no ${a.ema.accion_titular==='Sí'?'si':'no'}">Acción titular: ${esc(a.ema.accion_titular||'—')}</span>`
+        :'<span style=\'color:var(--muted)\'>—</span>')}</td>
       <td>${tipoB}</td>
       <td>${urgP}</td>
       <td style="font-family:var(--mono);font-size:10px;white-space:nowrap">${orig}</td>
@@ -490,11 +501,23 @@ function normalizarFT69(a){
    · Nacional (FT-69): alertas DIGEMID vinculadas, PAVS emitidas por DIGEMID/Perú y registros manuales.
    · Internacional (FT-68): alertas PAVS de agencias extranjeras (todo lo demás menos DIGEMID). */
 function esNacional(a){
+  if(a.origen==='fda_vinculada' || a.origen==='ema_vinculada') return false;  // señales internacionales → FT-68
   if(a.origen!=='pavs_vinculada') return true;
   return /digemid|per[uú]/i.test(`${(a.pavs&&a.pavs.agencia)||''} ${(a.pavs&&a.pavs.pais)||''}`);
 }
 /* Registro → fila del FT-68 (PAVS internacional) */
 function normalizarFT68(a){
+  if(a.origen==='fda_vinculada' || a.origen==='ema_vinculada'){
+    const esFda=a.origen==='fda_vinculada', f=a.fda||{}, e=a.ema||{};
+    return {
+      fechaEmision:(a.fecha_publicacion||'').slice(0,10), fechaRevision:'',
+      pais:esFda?'Estados Unidos':'Unión Europea', agencia:esFda?'FDA (AEMS)':'EMA (PRAC)',
+      tipo:a.tipo_alerta||'Seguridad', titulo:a.titulo_alerta||'',
+      ifa:esFda?(f.principio||''):(e.inn||''), principio:principioDe(a.medicamento_id)||'',
+      producto:nombreMed(a.medicamento_id)||'', regSanitario:regSanitarioDe(a.medicamento_id)||'',
+      reaccion:(esFda?f.senal:e.senal)||'', url:(esFda?f.url:e.fuente_url)||a.url_pdf||''
+    };
+  }
   const p=a.pavs||{};
   return {
     fechaEmision:(p.fecha_emision||a.fecha_publicacion||'').slice(0,10),
@@ -698,8 +721,40 @@ function normPavs(d){
     titulo:d.titulo_alerta, tipo, urgencia:null, accion:null, resumen:resumen||null, url:d.enlace||null,
     sub:[d.ifa, origen].filter(Boolean).join(' · ') };
 }
+/* FDA AEMS (fda_aems_senales): producto · principio activo · señal de riesgo.
+   La fecha se toma del final del trimestre ("January - March 2026" → 2026-03-31). */
+const MESES_EN=['january','february','march','april','may','june','july','august','september','october','november','december'];
+const MESES_ES_MIN=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+const numMes=t=>{ t=(t||'').toLowerCase().replace('setiembre','septiembre'); const i=MESES_EN.indexOf(t); return i>=0?i+1:MESES_ES_MIN.indexOf(t)+1; };
+function fechaPeriodo(periodo, anio){
+  const m=(periodo||'').toLowerCase().match(/([a-záéíóú]+)\s*[-–]\s*([a-záéíóú]+)\s+(\d{4})/);
+  const mes=m?numMes(m[2]):0, y=m?+m[3]:(+anio||0);
+  if(!y) return null;
+  if(!mes) return `${y}-12-31`;
+  return new Date(Date.UTC(y, mes, 0)).toISOString().slice(0,10);
+}
+function normFda(d){
+  const resumen=[d.producto&&`Producto: ${d.producto}`, d.principio&&`Principio activo: ${d.principio}`, d.senal&&`Señal de riesgo: ${d.senal}`].filter(Boolean).join(' · ');
+  return { key:'fda:'+d.id, fuente:'fda', id:d.id, fecha:fechaPeriodo(d.periodo,d.anio), etiqueta:d.producto||d.principio||'',
+    titulo:`FDA AEMS ${d.periodo||d.anio||''} — ${d.producto||d.principio||''}`.trim(), tipo:'Seguridad', urgencia:null,
+    accion:'Evaluar señal de riesgo (FDA AEMS)', resumen:resumen||null, url:d.url||null,
+    producto:d.producto, principio:d.principio, senal:d.senal, periodo:d.periodo };
+}
+/* EMA PRAC (ema_prac_halmed_senales): INN · señal · acción para el titular. */
+function normEma(d){
+  const accion=d.accion_titular==='Sí' ? 'Actualizar la información del producto (recomendación PRAC)' : (d.accion_raw || 'Sin acción para el titular');
+  const resumen=[d.inn&&`INN: ${d.inn}`, d.senal&&`Señal: ${d.senal}`, d.accion_titular&&`Acción para titular: ${d.accion_titular}`, d.reunion&&`Reunión PRAC: ${d.reunion}`].filter(Boolean).join(' · ');
+  return { key:'ema:'+d.id, fuente:'ema', id:d.id, fecha:d.reunion_inicio||null, etiqueta:d.inn||'',
+    titulo:`EMA PRAC ${d.reunion||''} — ${d.inn||''}: ${d.senal||''}`.trim(), tipo:'Seguridad', urgencia:null,
+    accion, resumen:resumen||null, url:d.fuente_url||null,
+    inn:d.inn, senal:d.senal, accionTitular:d.accion_titular, reunion:d.reunion, pdf:(d.fuente_archivo||'').startsWith('EMA PDF') };
+}
+const FUENTES={ dig:{nombre:'DIGEMID', ph:'🔍 Buscar alerta por título, producto o tipo…'},
+  pavs:{nombre:'PAVS', ph:'🔍 Buscar alerta PAVS por título, IFA, país, agencia o tipo…'},
+  fda:{nombre:'FDA', ph:'🔍 Buscar señal FDA por producto, principio activo, señal o periodo…'},
+  ema:{nombre:'EMA PRAC', ph:'🔍 Buscar señal EMA PRAC por INN, señal o reunión…'} };
 function marcarFuente(f){ fuenteAl=f; document.querySelectorAll('#mFuente button').forEach(b=>b.classList.toggle('on',b.dataset.f===f));
-  $('mBuscarDig').placeholder = f==='pavs' ? '🔍 Buscar alerta PAVS por título, IFA, país, agencia o tipo…' : '🔍 Buscar alerta por título, producto o tipo…'; }
+  $('mBuscarDig').placeholder = (FUENTES[f]||FUENTES.dig).ph; }
 function cambiarFuente(f){ marcarFuente(f); buscarDigemid(true); }
 let digTimer=null;
 async function buscarDigemid(inmediato){
@@ -707,7 +762,21 @@ async function buscarDigemid(inmediato){
   digTimer=setTimeout(async()=>{
     const q=$('mBuscarDig').value.trim().replace(/[,()%*]/g,' ').trim();
     let lista=[];
-    if(fuenteAl==='pavs'){
+    if(fuenteAl==='fda'){
+      let query=sb.from('fda_aems_senales').select('id,periodo,anio,producto,principio,senal,url')
+        .order('anio',{ascending:false,nullsFirst:false}).order('creado_en',{ascending:false}).limit(60);
+      if(q) query=query.or(`producto.ilike.%${q}%,principio.ilike.%${q}%,senal.ilike.%${q}%,periodo.ilike.%${q}%`);
+      const {data,error}=await query;
+      if(error){ $('mAlertasList').innerHTML=`<div class="hint" style="padding:8px;color:var(--danger,#b42318)">${esc(error.message)}</div>`; return; }
+      lista=(data||[]).map(normFda);
+    }else if(fuenteAl==='ema'){
+      let query=sb.from('ema_prac_halmed_senales').select('id,inn,senal,reunion,reunion_inicio,accion_titular,accion_raw,fuente_url,fuente_archivo')
+        .order('reunion_inicio',{ascending:false,nullsFirst:false}).order('accion_titular',{ascending:false}).limit(60);
+      if(q) query=query.or(`inn.ilike.%${q}%,senal.ilike.%${q}%,reunion.ilike.%${q}%`);
+      const {data,error}=await query;
+      if(error){ $('mAlertasList').innerHTML=`<div class="hint" style="padding:8px;color:var(--danger,#b42318)">${esc(error.message)}</div>`; return; }
+      lista=(data||[]).map(normEma);
+    }else if(fuenteAl==='pavs'){
       let query=sb.from('pavs_alertas').select('id,fecha_emision,pais,agencia,tipo_alerta,titulo_alerta,tipo_producto,ifa,reaccion_adversa,enlace')
         .order('fecha_emision',{ascending:false,nullsFirst:false}).limit(40);
       if(q) query=query.or(`titulo_alerta.ilike.%${q}%,ifa.ilike.%${q}%,pais.ilike.%${q}%,agencia.ilike.%${q}%,tipo_alerta.ilike.%${q}%`);
@@ -730,7 +799,13 @@ function renderAlertaChecks(lista){
   else{
     cont.innerHTML=lista.map(x=>{
       const et=x.tipo?`<span class="tipo-badge ${tipoClaseP(x.tipo)}">${esc(x.tipo)}</span>`:'';
-      const src=`<span class="src-badge ${x.fuente}">${x.fuente==='pavs'?'PAVS':'DIGEMID'}</span>`;
+      const src=`<span class="src-badge ${x.fuente}">${(FUENTES[x.fuente]||FUENTES.dig).nombre}</span>`;
+      if(x.fuente==='fda') return `<label class="chk-row"><input type="checkbox" value="${x.key}" ${selAlertas.has(x.key)?'checked':''} onchange="toggleAlerta('${x.key}',this.checked)">
+        <span>${src}<b>${esc(x.periodo||x.fecha||'')}</b> · <b>Producto:</b> ${esc(x.producto||'—')}
+        <br><span class="hint"><b>Principio activo:</b> ${esc(x.principio||'—')} · <b>Señal de riesgo:</b> ${esc(x.senal||'—')}</span></span></label>`;
+      if(x.fuente==='ema') return `<label class="chk-row"><input type="checkbox" value="${x.key}" ${selAlertas.has(x.key)?'checked':''} onchange="toggleAlerta('${x.key}',this.checked)">
+        <span>${src}<b>${esc(x.reunion||x.fecha||'')}</b> · <b>INN:</b> ${esc((x.inn||'—').slice(0,120))}
+        <br><span class="hint"><b>Señal:</b> ${esc(x.senal||'—')} · <b>Acción para titular:</b></span><span class="si-no ${x.accionTitular==='Sí'?'si':'no'}">${esc(x.accionTitular||'—')}</span>${x.pdf?' <span class="hint">(PDF EMA)</span>':''}</span></label>`;
       return `<label class="chk-row"><input type="checkbox" value="${x.key}" ${selAlertas.has(x.key)?'checked':''} onchange="toggleAlerta('${x.key}',this.checked)">
         <span>${src}<b>${esc(x.fecha||'')}</b> · ${x.fuente==='dig'&&x.titulo?`<span class="al-tit">${esc(x.titulo)}</span>`:''}${esc((x.etiqueta||'').slice(0,110))} ${et}${x.sub?`<br><span class="hint">${esc(x.sub.slice(0,140))}</span>`:''}</span></label>`;
     }).join('');
@@ -739,16 +814,19 @@ function renderAlertaChecks(lista){
 }
 function toggleAlerta(key,on){ if(on)selAlertas.add(key); else selAlertas.delete(key); actualizarHintAlertas(); }
 function actualizarHintAlertas(){
-  const n=[...selAlertas], d=n.filter(k=>k.startsWith('dig:')).length, p=n.length-d;
-  $('mAlertasHint').textContent=`${n.length} alerta(s) seleccionada(s)`+(n.length?` · ${d} DIGEMID · ${p} PAVS`:''); }
+  const n=[...selAlertas], c=f=>n.filter(k=>k.startsWith(f+':')).length;
+  const det=Object.keys(FUENTES).map(f=>c(f)?`${c(f)} ${FUENTES[f].nombre}`:'').filter(Boolean).join(' · ');
+  $('mAlertasHint').textContent=`${n.length} alerta(s) seleccionada(s)`+(det?` · ${det}`:''); }
 /* Campos de alertas_producto_titular a partir de una alerta normalizada. */
 function camposAlerta(x){
   return { alerta_digemid_id: x.fuente==='dig'?x.id:null, alerta_pavs_id: x.fuente==='pavs'?x.id:null,
-    origen: x.fuente==='pavs'?'pavs_vinculada':'digemid_vinculada',
+    alerta_fda_id: x.fuente==='fda'?x.id:null, alerta_ema_id: x.fuente==='ema'?x.id:null,
+    origen: {pavs:'pavs_vinculada', fda:'fda_vinculada', ema:'ema_vinculada'}[x.fuente]||'digemid_vinculada',
     titulo_alerta:x.titulo, tipo_alerta:x.tipo, fecha_publicacion:x.fecha, urgencia:x.urgencia,
     accion_principal:x.accion, resumen:x.resumen, url_pdf:x.url };
 }
-const claveRegistro=a=> a.alerta_pavs_id ? 'pavs:'+a.alerta_pavs_id : (a.alerta_digemid_id ? 'dig:'+a.alerta_digemid_id : null);
+const claveRegistro=a=> a.alerta_pavs_id ? 'pavs:'+a.alerta_pavs_id : a.alerta_fda_id ? 'fda:'+a.alerta_fda_id
+  : a.alerta_ema_id ? 'ema:'+a.alerta_ema_id : (a.alerta_digemid_id ? 'dig:'+a.alerta_digemid_id : null);
 
 /* Paso 2 · Productos por principio activo (selección múltiple) */
 function renderProdChecks(){
@@ -813,11 +891,11 @@ async function editar(id){
   $('mEstado').value=a.estado||'registrada';
   $('mExpediente').value=a.expediente||''; onEstadoChange();
   if(kEd && !ALCACHE[kEd]){
-    const pv=kEd.startsWith('pavs:');
-    ALCACHE[kEd]={ key:kEd, fuente:pv?'pavs':'dig', id:pv?a.alerta_pavs_id:a.alerta_digemid_id, fecha:a.fecha_publicacion, etiqueta:a.titulo_alerta,
+    const f=kEd.split(':')[0];
+    ALCACHE[kEd]={ key:kEd, fuente:f, id:{pavs:a.alerta_pavs_id, fda:a.alerta_fda_id, ema:a.alerta_ema_id}[f]||a.alerta_digemid_id, fecha:a.fecha_publicacion, etiqueta:a.titulo_alerta,
       titulo:a.titulo_alerta, tipo:a.tipo_alerta, urgencia:a.urgencia, accion:a.accion_principal, resumen:a.resumen, url:a.url_pdf };
   }
-  marcarFuente(kEd && kEd.startsWith('pavs:') ? 'pavs' : 'dig');
+  marcarFuente(kEd ? kEd.split(':')[0] : 'dig');
   $('mBuscarProd').value=''; renderProdChecks();
   $('mBuscarDig').value=a.titulo_alerta||''; buscarDigemid(true);
 }

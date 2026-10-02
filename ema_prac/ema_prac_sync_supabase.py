@@ -98,9 +98,13 @@ def upsert(tabla: str, filas: list[dict], lote: int = LOTE) -> int:
 
 
 def borrar(tabla: str, filtro: str) -> None:
+    """DELETE con filtros PostgREST "campo=op.valor&campo2=op.valor2"."""
     from urllib.parse import quote
-    campo, valor = filtro.split("=", 1)
-    r = requests.delete(f"{SUPABASE_URL}/rest/v1/{tabla}?{campo}={quote(valor, safe='.')}",
+    partes = []
+    for f in filtro.split("&"):
+        campo, valor = f.split("=", 1)
+        partes.append(f"{campo}={quote(valor, safe='.,()')}")
+    r = requests.delete(f"{SUPABASE_URL}/rest/v1/{tabla}?{'&'.join(partes)}",
                         headers={"apikey": SERVICE_KEY, "Authorization": f"Bearer {SERVICE_KEY}"}, timeout=60)
     if r.status_code >= 300:
         print(f"  ⚠️  no se pudo limpiar {tabla} ({r.status_code}): {r.text[:200]}")
@@ -185,10 +189,15 @@ def main() -> None:
         n1 = upsert("ema_prac_minutas", minutas)
         n2 = upsert("ema_prac_recomendaciones", recomendaciones)
         halmed = preparar_halmed(cargar("ema_prac_halmed_senales.json"))
-        if halmed:
-            # señales provisionales extraídas del PDF de EMA: se reemplazan en cada corrida
-            # (desaparecen cuando HALMED ya publicó esa reunión)
-            borrar("ema_prac_halmed_senales", "fuente_archivo=eq.EMA PDF (texto extraído)")
+        # Señales provisionales extraídas del PDF de EMA: se borran SOLO las de reuniones que HALMED ya
+        # publicó (sus filas oficiales las reemplazan). Las demás se actualizan por dedupe_key sin cambiar
+        # de id, así no se pierde el vínculo en Producto y Titular (alertas_producto_titular.alerta_ema_id).
+        cubiertas = sorted({r["reunion_inicio"] for r in halmed
+                            if r.get("reunion_inicio") and r.get("fuente_archivo") != "EMA PDF (texto extraído)"})
+        for i in range(0, len(cubiertas), 50):
+            lista = ",".join(cubiertas[i:i + 50])
+            borrar("ema_prac_halmed_senales",
+                   f"fuente_archivo=eq.EMA PDF (texto extraído)&reunion_inicio=in.({lista})")
         n3 = upsert("ema_prac_halmed_senales", halmed)
         resumen.append(f"Minutas/Agendas: {n1} · Recomendaciones: {n2} · Señales HALMED: {n3}")
 
