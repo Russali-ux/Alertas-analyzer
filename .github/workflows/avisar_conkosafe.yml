@@ -1,0 +1,22 @@
+name: Avisar a ConkoSafe IA (módulo actualizado)
+# Cuando cambia el código de un módulo, ConkoSafe IA lo sincroniza al instante (sin esperar el ciclo diario).
+# Requiere el secreto CONKOSAFE_DISPATCH_TOKEN (token con permiso sobre Russali-ux/conkosafe-ia).
+on:
+  push:
+    branches: [main]
+    paths: ['index.html', '*/index.html', '*/*.js', 'titulares/plantillas/**', 'logo.png']
+  workflow_dispatch:
+
+jobs:
+  avisar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Disparar la sincronización en conkosafe-ia
+        env:
+          TOKEN: ${{ secrets.CONKOSAFE_DISPATCH_TOKEN }}
+        run: |
+          if [ -z "$TOKEN" ]; then echo "Sin CONKOSAFE_DISPATCH_TOKEN: ConkoSafe sincronizará en su ciclo diario."; exit 0; fi
+          curl -sf -X POST https://api.github.com/repos/Russali-ux/conkosafe-ia/dispatches \
+            -H "Authorization: Bearer $TOKEN" -H "Accept: application/vnd.github+json" \
+            -d '{"event_type":"alertas-actualizado","client_payload":{"commit":"${{ github.sha }}"}}'
+          echo "✔ ConkoSafe IA notificado (commit ${{ github.sha }})"

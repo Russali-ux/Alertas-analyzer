@@ -1,0 +1,31 @@
+name: Publicar datos y PDF en Supabase Storage
+# Datos (CIMA) y PDF (DIGEMID, EMA PRAC) que muestran los módulos -> bucket público "alertas-analyzer".
+# Así ConkoSafe IA no depende de GitHub Pages ni de raw.githubusercontent (el repo puede ser privado).
+on:
+  schedule:
+    - cron: '15 14 * * *'   # 09:15 Lima, después de DIGEMID (13:00 UTC) y CIMA (13:30 UTC)
+    - cron: '15 10 * * *'   # 05:15 Lima, después de EMA PRAC
+  push:
+    branches: [main]
+    paths: ['pdfs/**', 'ema_prac/pdfs/**', 'ema_prac/md/**', 'cima/data/**', 'publicar_storage.py']
+  workflow_dispatch:
+
+concurrency:
+  group: publicar-storage
+  cancel-in-progress: false
+
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -q requests
+      - name: Publicar
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: python publicar_storage.py
