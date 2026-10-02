@@ -57,7 +57,7 @@ jobs:
       - name: Instalar dependencias
         run: |
           python -m pip install --upgrade pip
-          pip install requests beautifulsoup4 pymupdf openpyxl
+          pip install requests beautifulsoup4 pymupdf openpyxl pdfplumber
 
       - name: Raspar EMA PRAC (agendas, minutas, recomendaciones)
         if: steps.f.outputs.fuente != 'noticias'

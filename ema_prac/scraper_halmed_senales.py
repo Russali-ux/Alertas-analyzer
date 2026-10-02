@@ -46,6 +46,7 @@ warnings.filterwarnings("ignore", category=UserWarning, module="openpyxl")
 
 ROOT = Path(__file__).resolve().parent
 SALIDA = ROOT / "data" / "ema_prac_halmed_senales.json"
+sys.path.insert(0, str(ROOT))  # para importar senales_pdf.py
 
 PAGINA = (
     "https://halmed.hr/en/Lijekovi/Arbitrazni-postupci-PSUSA-postupci-i-PRAC-signali-"
@@ -149,6 +150,54 @@ def parsear_excel(contenido: bytes) -> tuple[list[dict], str | None]:
     return registros, actualizado
 
 
+FUENTE_PDF = "EMA PDF (texto extraído)"
+
+
+def senales_desde_pdf(registros_halmed: list[dict]) -> list[dict]:
+    """
+    Respaldo: HALMED publica la lista con retraso, así que para cada reunión con "PRAC recommendations
+    on signals" que HALMED todavía NO incluye, se extraen las señales directamente del PDF de EMA
+    (sección 1 = actualización de la información del producto -> "Sí"; secciones 2 y 3 -> "No").
+    Cuando HALMED publique la reunión, sus filas reemplazan a estas (ema_prac_sync_supabase.py borra
+    las de FUENTE_PDF antes de subir). Validado contra HALMED en 10 reuniones: 66/66 señales y 66/66 acciones.
+    """
+    from senales_pdf import extraer_senales
+    ruta = ROOT / "data" / "ema_prac_recomendaciones.json"
+    if not ruta.exists():
+        return []
+    cubiertas = {r["reunion_inicio"] for r in registros_halmed if r.get("reunion_inicio")}
+    salida = []
+    for rec in json.loads(ruta.read_text(encoding="utf-8")):
+        reunion, inicio = parsear_reunion(rec.get("fecha_reunion") or "")
+        url = rec.get("url_pdf")
+        if not inicio or inicio in cubiertas or not url:
+            continue
+        try:
+            r = requests.get(url, headers=HEADERS, timeout=120)
+            r.raise_for_status()
+            senales = extraer_senales(r.content)
+        except Exception as e:
+            print(f"  ⚠️  no se pudo leer el PDF de {rec.get('fecha_reunion')}: {e}")
+            continue
+        for s in senales:
+            clave = f"{s['inn'].lower()}|{s['senal'].lower()}|{inicio}"
+            salida.append({
+                "inn": s["inn"], "senal": s["senal"],
+                "reunion_texto": rec.get("fecha_reunion"), "reunion": reunion, "reunion_inicio": inicio,
+                "accion_titular": s["accion_titular"],
+                "accion_raw": s.get("accion_raw"),
+                "nota_texto": (f"Extraído del PDF de EMA (sección {s['seccion']}"
+                               + (f", EPITT {s['epitt']}" if s.get("epitt") else "")
+                               + (f": {s['accion_raw']}" if s.get("accion_raw") else "")
+                               + "). Pendiente de la lista HALMED."),
+                "dedupe_key": hashlib.md5(clave.encode("utf-8")).hexdigest(),
+                "fuente_archivo": FUENTE_PDF, "fuente_url": url,
+                "fuente_actualizado": rec.get("fecha_publicacion"),
+            })
+        print(f"  + {len(senales)} señales desde el PDF de EMA para {rec.get('fecha_reunion')} (aún no está en HALMED)")
+    return salida
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--xlsx", help="Ruta a un Excel local (omite la descarga)")
@@ -180,6 +229,8 @@ def main() -> None:
     if len(registros) < 500:  # la lista histórica tiene >1.600 filas; menos indica un cambio de formato
         print("✗ Muy pocas filas: posible cambio de formato del Excel, no se sobreescribe el JSON.", file=sys.stderr)
         sys.exit(1)
+
+    registros += senales_desde_pdf(registros)
 
     SALIDA.parent.mkdir(parents=True, exist_ok=True)
     SALIDA.write_text(json.dumps(registros, ensure_ascii=False, indent=1), encoding="utf-8")

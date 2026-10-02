@@ -78,6 +78,7 @@
   #tablaRecom td.inn .clamp { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
   #tablaRecom td.senal { max-width: 260px; }
   .badge.si { background: #FEE2E2; color: #991B1B; }
+  .badge.pdf { background: #E0F2FE; color: #075985; font-size: 10px; margin-left: 6px; vertical-align: middle; }
   .badge.no { background: #E5E7EB; color: #374151; }
   .nota { cursor: help; color: var(--muted); font-size: 11px; margin-left: 3px; }
   .sin-senales { color: var(--muted); font-style: italic; }
@@ -712,9 +713,9 @@ function renderTablaRecom() {
   const contador = document.getElementById('contadorRecom');
   let sortCol = 'fecha_publicacion', sortDir = -1;
 
-  const actualizado = HALMED.map(s => s.fuente_actualizado).filter(Boolean).sort().pop();
+  const actualizado = HALMED.filter(s => !(s.fuente_archivo || '').startsWith('EMA PDF')).map(s => s.fuente_actualizado).filter(Boolean).sort().pop();
   document.getElementById('fuenteHalmed').innerHTML = HALMED.length
-    ? `Columnas INN, Señal y Acción para Titular: lista acumulada de señales PRAC publicada por <a class="src" href="https://halmed.hr/en/Lijekovi/Arbitrazni-postupci-PSUSA-postupci-i-PRAC-signali-upute-za-prijavu-izmjena-/Upute-za-prijavu-izmjena-na-temelju-preporuka-PRAC-a-nakon-ocjene-sigurnosnih-signala/" target="_blank" rel="noopener">HALMED ↗</a>${actualizado ? ` (actualizada el ${fmtFecha(actualizado)})` : ''}. Incluye todas las señales discutidas en la reunión, no solo las que generaron recomendación.`
+    ? `Columnas INN, Señal y Acción para Titular: lista acumulada de señales PRAC publicada por <a class="src" href="https://halmed.hr/en/Lijekovi/Arbitrazni-postupci-PSUSA-postupci-i-PRAC-signali-upute-za-prijavu-izmjena-/Upute-za-prijavu-izmjena-na-temelju-preporuka-PRAC-a-nakon-ocjene-sigurnosnih-signala/" target="_blank" rel="noopener">HALMED ↗</a>${actualizado ? ` (actualizada el ${fmtFecha(actualizado)})` : ''}. Incluye todas las señales discutidas en la reunión, no solo las que generaron recomendación. Las reuniones que HALMED aún no publica muestran las señales extraídas directamente del PDF de EMA (etiqueta <span class="badge pdf">PDF EMA</span>), que se reemplazan cuando HALMED las incluye.`
     : 'Aún no hay datos de señales HALMED en Supabase (ejecuta el workflow EMA PRAC).';
 
   function render() {
@@ -737,11 +738,12 @@ function renderTablaRecom() {
       nSenales += senales.length;
       const cls = `grupo-inicio ${gi % 2 ? 'grupo-par' : ''}`;
       const celdasSenal = s => s ? `
-          <td class="inn"><div class="clamp" title="${esc(s.inn)}">${esc(s.inn)}</div></td>
+          <td class="inn"><div class="clamp" title="${esc(s.inn)}">${esc(s.inn)}</div>${
+            (s.fuente_archivo || '').startsWith('EMA PDF') ? '<span class="badge pdf" title="Extraída del PDF de EMA: HALMED aún no publica esta reunión">PDF EMA</span>' : ''}</td>
           <td class="senal">${esc(s.senal)}</td>
           <td><span class="badge ${s.accion_titular === 'Sí' ? 'si' : 'no'}">${esc(s.accion_titular || '—')}</span>${
             s.nota_texto ? `<span class="nota" title="${esc(s.nota_texto)}">ⓘ</span>` : ''}</td>`
-        : `<td colspan="3" class="sin-senales">${HALMED.length ? 'Sin señales asociadas en la lista HALMED' : '—'}</td>`;
+        : `<td colspan="3" class="sin-senales">${HALMED.length ? 'Sin señales asociadas (ni en la lista HALMED ni en el PDF de EMA)' : '—'}</td>`;
       const primera = `
         <tr class="${cls}">
           <td rowspan="${n}"><span class="badge recom">${esc(d.fecha_reunion || '—')}</span></td>
@@ -996,7 +998,7 @@ window.addEventListener('hashchange', () => cambiarFuente(location.hash.slice(1)
     RECOM = await fetchAll('ema_prac_recomendaciones', columnas);
     try {
       HALMED = await fetchAll('ema_prac_halmed_senales',
-        'inn,senal,reunion,reunion_inicio,accion_titular,nota_texto,fuente_actualizado', 'reunion_inicio.desc,inn.asc');
+        'inn,senal,reunion,reunion_inicio,accion_titular,nota_texto,fuente_archivo,fuente_actualizado', 'reunion_inicio.desc,inn.asc');
     } catch (e) {
       console.warn('No se pudieron cargar las señales HALMED:', e);
     }

@@ -97,6 +97,15 @@ def upsert(tabla: str, filas: list[dict], lote: int = LOTE) -> int:
     return total
 
 
+def borrar(tabla: str, filtro: str) -> None:
+    from urllib.parse import quote
+    campo, valor = filtro.split("=", 1)
+    r = requests.delete(f"{SUPABASE_URL}/rest/v1/{tabla}?{campo}={quote(valor, safe='.')}",
+                        headers={"apikey": SERVICE_KEY, "Authorization": f"Bearer {SERVICE_KEY}"}, timeout=60)
+    if r.status_code >= 300:
+        print(f"  ⚠️  no se pudo limpiar {tabla} ({r.status_code}): {r.text[:200]}")
+
+
 def preparar_minutas(regs: list[dict]) -> list[dict]:
     out = []
     for r in regs:
@@ -175,7 +184,12 @@ def main() -> None:
         recomendaciones = preparar_recomendaciones(cargar("ema_prac_recomendaciones.json"))
         n1 = upsert("ema_prac_minutas", minutas)
         n2 = upsert("ema_prac_recomendaciones", recomendaciones)
-        n3 = upsert("ema_prac_halmed_senales", preparar_halmed(cargar("ema_prac_halmed_senales.json")))
+        halmed = preparar_halmed(cargar("ema_prac_halmed_senales.json"))
+        if halmed:
+            # señales provisionales extraídas del PDF de EMA: se reemplazan en cada corrida
+            # (desaparecen cuando HALMED ya publicó esa reunión)
+            borrar("ema_prac_halmed_senales", "fuente_archivo=eq.EMA PDF (texto extraído)")
+        n3 = upsert("ema_prac_halmed_senales", halmed)
         resumen.append(f"Minutas/Agendas: {n1} · Recomendaciones: {n2} · Señales HALMED: {n3}")
 
     if fuente in ("todo", "noticias"):
