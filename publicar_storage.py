@@ -22,6 +22,7 @@ import mimetypes
 import os
 import re
 import sys
+import unicodedata
 from datetime import date, timedelta
 from pathlib import Path
 from urllib.parse import quote
@@ -37,6 +38,14 @@ TIPOS = {".pdf": "application/pdf", ".json": "application/json", ".md": "text/ma
 URL = os.environ.get("SUPABASE_URL", "").rstrip("/")
 KEY = os.environ.get("SUPABASE_SERVICE_ROLE_KEY", "")
 H = {"apikey": KEY, "Authorization": f"Bearer {KEY}"}
+
+
+def clave(ruta: str) -> str:
+    """Nombre válido en Supabase Storage: sin tildes ni símbolos ("Nº" -> "No"; otros -> "_").
+    El puente de ConkoSafe (scripts/sync_alertas.py) aplica EXACTAMENTE la misma regla."""
+    t = unicodedata.normalize("NFKD", ruta)
+    t = "".join(c for c in t if not unicodedata.combining(c))
+    return re.sub(r"[^A-Za-z0-9/._-]", "_", t)
 
 
 def remotos(prefijo: str) -> dict[str, int]:
@@ -89,7 +98,7 @@ def archivos_cima() -> dict[str, bytes]:
     salida = {"cima/data/index.json": json.dumps(indice, ensure_ascii=False, indent=2).encode("utf-8")}
     for nombre in {f["archivo"] for f in fechas} | {"cima_latest.json", "cima_acumulado.json", indice.get("latest") or ""}:
         if nombre and (carpeta / nombre).exists():
-            salida[f"cima/data/{nombre}"] = (carpeta / nombre).read_bytes()
+            salida[clave(f"cima/data/{nombre}")] = (carpeta / nombre).read_bytes()
     return salida
 
 
@@ -103,7 +112,7 @@ def main() -> None:
             continue
         ya = remotos(carpeta)
         for f in sorted(p for p in base.rglob("*") if p.is_file()):
-            ruta = f.relative_to(ROOT).as_posix()
+            ruta = clave(f.relative_to(ROOT).as_posix())
             if ya.get(ruta) == f.stat().st_size:
                 iguales += 1
                 continue
