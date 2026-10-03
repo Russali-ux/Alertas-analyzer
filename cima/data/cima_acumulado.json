@@ -1,17 +1,17 @@
 {
-  "generado": "2026-10-02T18:47:35Z",
-  "generado_str": "02/10/2026 18:47 UTC",
+  "generado": "2026-10-03T17:42:04Z",
+  "generado_str": "03/10/2026 17:42 UTC",
   "fecha_codigo": "ACUMULADO",
   "periodo": {
     "desde": "23/06/2026",
-    "hasta": "02/10/2026",
-    "dias": 101
+    "hasta": "03/10/2026",
+    "dias": 102
   },
   "excel": "ConkosafeIA_Regulatorio_ACUMULADO.xlsx",
   "markdown": "../summaries/cima_ACUMULADO.md",
   "stats": {
-    "total": 12584,
-    "solo_ft": 1856,
+    "total": 12585,
+    "solo_ft": 1857,
     "solo_prosp": 2411,
     "ambos": 8317,
     "top_labs": [
@@ -29,7 +29,7 @@
       },
       {
         "lab": "Teva Pharma S.L.U.",
-        "n": 457
+        "n": 458
       },
       {
         "lab": "Sandoz Farmaceutica S.A.",
@@ -58,6 +58,21 @@
     ]
   },
   "registros": [
+    {
+      "nreg": "81380",
+      "nombre": "SILDENAFILO TEVAGEN 20 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG",
+      "lab": "Teva Pharma S.L.U.",
+      "fecha": "03/10/2026 06:56",
+      "tipo": "MODIFICADO",
+      "otros": "",
+      "cat": "ft",
+      "has_ft": true,
+      "has_prosp": false,
+      "ft_pdf": "https://cima.aemps.es/cima/pdfs/ft/81380/FT_81380.pdf",
+      "ft_html": "https://cima.aemps.es/cima/dochtml/ft/81380/FT_81380.html",
+      "p_pdf": null,
+      "p_html": null
+    },
     {
       "nreg": "1241857001",
       "nombre": "VEVIZYE 1 MG/ML COLIRIO EN SOLUCION",
