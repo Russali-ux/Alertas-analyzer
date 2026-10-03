@@ -222,6 +222,44 @@ def subir_pdf_a_github(pdf_bytes: bytes, alerta: dict) -> str | None:
         return None
 
 
+STORAGE_BUCKET = "alertas-analyzer"
+
+
+def clave_storage(ruta: str) -> str:
+    """Nombre válido en Supabase Storage (igual que publicar_storage.py y el puente de ConkoSafe)."""
+    import unicodedata
+    t = unicodedata.normalize("NFKD", ruta)
+    t = "".join(c for c in t if not unicodedata.combining(c))
+    return re.sub(r"[^A-Za-z0-9/._-]", "_", t)
+
+
+def subir_pdf_a_storage(pdf_bytes: bytes, alerta: dict) -> str | None:
+    """
+    Sube el PDF a Supabase Storage (bucket público de solo lectura "alertas-analyzer", carpeta pdfs/)
+    y devuelve su URL pública. Es el enlace definitivo: no depende de GitHub (el repo puede ser privado)
+    y Claude puede leerlo para extraer las acciones.
+    """
+    url_sb = os.environ.get("SUPABASE_URL", "").rstrip("/")
+    clave = os.environ.get("SUPABASE_SERVICE_ROLE_KEY", "")
+    if not url_sb or not clave:
+        return None
+    fecha = str(alerta.get("fecha_publicacion", "sin-fecha"))
+    titulo = alerta.get("titulo", "alerta")[:60]
+    ruta = clave_storage(f"pdfs/{_sanitizar_nombre(f'{fecha}_{titulo}.pdf')}")
+    try:
+        r = requests.post(f"{url_sb}/storage/v1/object/{STORAGE_BUCKET}/{ruta}", data=pdf_bytes, timeout=60,
+                          headers={"apikey": clave, "Authorization": f"Bearer {clave}",
+                                   "Content-Type": "application/pdf", "x-upsert": "true"})
+    except requests.RequestException as e:
+        print(f"    [Storage ERROR] {e}")
+        return None
+    if r.status_code >= 300:
+        print(f"    [Storage ERROR {r.status_code}] {r.text[:200]}")
+        return None
+    print(f"    [Storage] PDF publicado → {ruta}")
+    return f"{url_sb}/storage/v1/object/public/{STORAGE_BUCKET}/{ruta}"
+
+
 def subir_json_a_github(data: list, nombre_archivo: str) -> bool:
     """Sube/actualiza un archivo JSON en data/ del repo."""
     if not GITHUB_TOKEN or not GITHUB_REPO:
@@ -588,9 +626,11 @@ def enriquecer_alerta(alerta: dict) -> dict:
         })
         return alerta
 
-    # ── SUBIR A GITHUB ──────────────────────────────────────────
+    # ── PUBLICAR EL PDF ─────────────────────────────────────────
+    # Enlace definitivo en Supabase Storage; el repo conserva una copia como archivo histórico.
+    storage_url = subir_pdf_a_storage(pdf_bytes, alerta)
     github_url = subir_pdf_a_github(pdf_bytes, alerta)
-    alerta["github_pdf_url"] = github_url
+    alerta["github_pdf_url"] = storage_url or github_url
 
     # ── EXTRAER TEXTO LOCAL (para fallback) ─────────────────────
     texto = ""

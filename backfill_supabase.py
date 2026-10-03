@@ -88,6 +88,18 @@ def _descargar_pdf_por_path(path_repo: str) -> bytes | None:
     return r.content
 
 
+def _descargar_pdf(url_pdf: str) -> bytes | None:
+    """PDF desde Supabase Storage (enlace público) o, si es un enlace antiguo de GitHub, desde el repo."""
+    if url_pdf and "/storage/v1/object/public/" in url_pdf:
+        r = requests.get(url_pdf, timeout=60)
+        if r.status_code != 200:
+            print(f"    [WARN] No se pudo descargar {url_pdf} (HTTP {r.status_code})")
+            return None
+        return r.content
+    path_repo = _path_desde_raw_url(url_pdf)
+    return _descargar_pdf_por_path(path_repo) if path_repo else None
+
+
 def _path_desde_raw_url(github_pdf_url: str) -> str | None:
     """Convierte una URL raw.githubusercontent.com/.../pdfs/x.pdf al path
     relativo 'pdfs/x.pdf' dentro del repo."""
@@ -143,14 +155,14 @@ def main(dry_run: bool = False):
     completadas = 0
     for i, fila in enumerate(faltantes, 1):
         titulo = fila.get("titulo", "?")
-        path_repo = _path_desde_raw_url(fila.get("github_pdf_url"))
+        url_pdf = fila.get("github_pdf_url")
         print(f"  [{i}/{len(faltantes)}] {titulo[:55]}...", end=" ", flush=True)
 
-        if not path_repo:
-            print("sin PDF en GitHub, se omite.")
+        if not url_pdf:
+            print("sin PDF guardado, se omite.")
             continue
 
-        pdf_bytes = _descargar_pdf_por_path(path_repo)
+        pdf_bytes = _descargar_pdf(url_pdf)
         if not pdf_bytes:
             continue
 

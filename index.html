@@ -1123,7 +1123,7 @@ function renderTable() {
       : `<span class="accion-badge accion-pendiente">— Sin analizar</span>`;
     const pdfHref = a.url_pdf_github || a.url_pdf_digemid;
     const pdfCell = pdfHref
-      ? `<a class="pdf-gh-link" href="${pdfHref}" target="_blank" onclick="event.stopPropagation()">${a.url_pdf_github ? '⬡ GitHub' : '📄 PDF'}</a>`
+      ? `<a class="pdf-gh-link" href="${pdfHref}" target="_blank" onclick="event.stopPropagation()">📄 PDF</a>`
       : `<span class="cell-empty">Sin PDF</span>`;
     const digemidCell = a.url_pagina_digemid
       ? `<a class="digemid-link" href="${a.url_pagina_digemid}" target="_blank" onclick="event.stopPropagation()">🔗 Ver en DIGEMID</a>`
