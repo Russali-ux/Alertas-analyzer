@@ -166,8 +166,8 @@ footer{margin-top:30px;font-size:11px;color:var(--muted);font-family:var(--mono)
     </div>
     <button class="btn ghost" id="clearBtn" title="Quitar todos los filtros">✕ Limpiar filtros</button>
     <button class="btn ghost" id="refreshBtn">↻ Actualizar</button>
-    <button class="btn" id="csvBtn" title="Exporta solo las alertas que cumplen los filtros actuales">⬇ Exportar CSV <span class="cnt" id="csvCnt">0</span></button>
-    <button class="btn ft95" id="ft95Btn" title="FT-95 · Monitoreo de Alertas de PAVS (Excel, formato DS043) con las alertas filtradas">📊 Exportar FT-95 (Excel) <span class="cnt" id="ft95Cnt">0</span></button>
+    <button class="btn" id="csvBtn" style="display:none" title="Exporta solo las alertas que cumplen los filtros actuales">⬇ Exportar CSV <span class="cnt" id="csvCnt">0</span></button>
+    <button class="btn ft95" id="ft95Btn" title="FT-95 · Monitoreo de Alertas de PAVS (Excel, formato DS043) por mes y año">📊 Exportar FT-95 (Excel)</button>
   </div>
 
   <div class="stats">
@@ -495,9 +495,9 @@ const FILTER_IDS = ['search','anioFilter','paisFilter','agenciaFilter','tipoFilt
 
 /* Devuelve SIEMPRE las filas que cumplen los filtros visibles en pantalla
    (se recalcula en el momento: lo usan la tabla, el CSV y el FT-95). */
-function filtrarFilas(){
+function filtrarFilas(ignorarAnio){
   const q = $('search').value.trim().toLowerCase();
-  const anio = $('anioFilter').value;
+  const anio = ignorarAnio ? '' : $('anioFilter').value;
   const pais = $('paisFilter').value;
   const agencia = $('agenciaFilter').value;
   const tipo = $('tipoFilter').value;
@@ -556,7 +556,6 @@ function sortRows(){
 function renderTable(){
   $('meta').textContent = `${filtered.length} alerta(s) encontrada(s) de ${ALL.length} totales.`;
   $('csvCnt').textContent = filtered.length;
-  $('ft95Cnt').textContent = filtered.length;
   $('csvBtn').disabled = $('ft95Btn').disabled = !ALL.length;
 
   const start = page * PAGE_SIZE;
@@ -631,12 +630,23 @@ function exportCSV(){
 /* ───────── Exportar FT-95 (Excel) ───────── */
 const FT95_PLANTILLA = 'plantillas/FT-95_Monitoreo_de_Alertas_de_PAVS.xlsx';
 
+const MESES_ES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Setiembre','Octubre','Noviembre','Diciembre'];
+
+/* Periodo (año, mes) de una alerta: por fecha de emisión; si no hay, usa anio/mes */
+function periodoDe(r){
+  const m = /^(\d{4})-(\d{2})/.exec(r.fecha_emision || '');
+  if (m) return { anio: +m[1], mes: +m[2] };
+  return { anio: Number(r.anio) || null, mes: Number(r.mes) || null };
+}
+
 function abrirExportFT95(){
-  const filas = filtrarFilas();
-  const filtros = filtrosActivos();
-  const fechas = filas.map(r=>r.fecha_emision).filter(Boolean).sort();
-  const rango = fechas.length ? `${fechas[0]} → ${fechas[fechas.length-1]}` : '—';
+  // Respeta búsqueda, país, agencia, tipo y producto; el año/mes se elige aquí (obligatorio)
+  const base = filtrarFilas(true);
+  const filtros = filtrosActivos().filter(([k]) => k !== 'Año');
   const esc = t => (t==null?'':String(t)).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+
+  const anios = [...new Set(ALL.map(r => periodoDe(r).anio).filter(Boolean))].sort((a,b)=>b-a);
+  const anioFiltro = $('anioFilter').value;
 
   const box = document.createElement('div');
   box.className = 'modal-overlay';
@@ -644,34 +654,85 @@ function abrirExportFT95(){
     <button class="modal-close" id="ftX">✕</button>
     <h3>📊 Exportar FT-95 · Monitoreo de Alertas de PAVS</h3>
     <div class="sub">Formato DS043 (Excel). Se conserva la hoja DS043 con la lista de agencias y se completa la hoja PAVS_BD
-      con las alertas que cumplen los filtros actuales.</div>
-    <div style="font-size:13px"><b>${filas.length}</b> alerta(s) de ${ALL.length} · emisión ${esc(rango)}</div>
+      con las alertas del periodo seleccionado (por fecha de emisión).</div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap">
+      <div class="ctrl"><label>Año *</label>
+        <select id="ftAnio" required>
+          <option value="">— Selecciona —</option>
+          ${anios.map(a=>`<option value="${a}">${a}</option>`).join('')}
+        </select></div>
+      <div class="ctrl"><label>Mes *</label>
+        <select id="ftMes" required disabled>
+          <option value="">— Selecciona —</option>
+          ${MESES_ES.map((m,i)=>`<option value="${i+1}">${m}</option>`).join('')}
+        </select></div>
+    </div>
     <div class="filtros-activos">${filtros.length
       ? filtros.map(([k,v])=>`<span class="chip">${esc(k)}: ${esc(v)}</span>`).join('')
-      : '<span class="chip">Sin filtros · se exporta todo el histórico</span>'}</div>
+      : '<span class="chip">Sin filtros adicionales · todas las agencias</span>'}</div>
+    <div id="ftResumen" style="font-size:13px;color:var(--muted)">Selecciona el año y el mes del reporte.</div>
     <label class="opt"><input type="checkbox" id="ftAsc" checked>
       <span>Orden cronológico ascendente por fecha de emisión (como el registro original). Si lo desmarcas, se respeta el orden de la tabla.</span></label>
-    <div id="ftMsg">${filas.length ? '' : '<div class="msg msg-warn">No hay alertas con los filtros actuales. Puedes generar el FT-95 vacío como evidencia del monitoreo.</div>'}</div>
+    <div id="ftMsg"></div>
     <div class="modal-actions">
       <button class="btn ghost" id="ftCancel">Cancelar</button>
-      <button class="btn ft95" id="ftGo">⬇ Generar Excel</button>
+      <button class="btn ft95" id="ftGo" disabled>⬇ Generar Excel</button>
     </div>
   </div>`;
   document.body.appendChild(box);
+
+  const selA = box.querySelector('#ftAnio'), selM = box.querySelector('#ftMes');
+  const btn = box.querySelector('#ftGo'), msg = box.querySelector('#ftMsg'), res = box.querySelector('#ftResumen');
+  const delPeriodo = () => base.filter(r => { const p = periodoDe(r); return p.anio === +selA.value && p.mes === +selM.value; });
+
+  function actualizarMeses(){
+    // Muestra cuántas alertas hay en cada mes del año elegido
+    const conteo = {};
+    base.forEach(r => { const p = periodoDe(r); if (p.anio === +selA.value && p.mes) conteo[p.mes] = (conteo[p.mes]||0) + 1; });
+    [...selM.options].forEach(o => {
+      if (!o.value) return;
+      const n = conteo[o.value] || 0;
+      o.textContent = `${MESES_ES[o.value-1]} (${n})`;
+    });
+  }
+  function validar(){
+    selM.disabled = !selA.value;
+    if (selA.value) actualizarMeses();
+    msg.innerHTML = '';
+    if (!selA.value || !selM.value){
+      btn.disabled = true;
+      res.textContent = 'Selecciona el año y el mes del reporte (obligatorio).';
+      return;
+    }
+    const n = delPeriodo().length;
+    btn.disabled = false;
+    res.innerHTML = `<b style="color:var(--ink)">${n}</b> alerta(s) en ${MESES_ES[selM.value-1]} ${selA.value}.`;
+    if (!n) msg.innerHTML = '<div class="msg msg-warn">No hay alertas en ese periodo con los filtros actuales. Puedes generar el FT-95 vacío como evidencia del monitoreo.</div>';
+  }
+  selA.addEventListener('change', validar);
+  selM.addEventListener('change', validar);
+  if (anioFiltro && anios.includes(+anioFiltro)) selA.value = anioFiltro;   // sugiere el año filtrado; el mes siempre se elige
+  validar();
+
   const cerrar = () => box.remove();
   box.querySelector('#ftX').onclick = cerrar;
   box.querySelector('#ftCancel').onclick = cerrar;
   box.addEventListener('click', e => { if (e.target === box) cerrar(); });
 
-  box.querySelector('#ftGo').onclick = async () => {
-    const btn = box.querySelector('#ftGo'), msg = box.querySelector('#ftMsg');
-    let datos = filas.slice();
+  btn.onclick = async () => {
+    if (!selA.value || !selM.value){ validar(); return; }
+    let datos = delPeriodo();
     if (box.querySelector('#ftAsc').checked){
       datos.sort((a,b)=> (a.fecha_emision||'').localeCompare(b.fecha_emision||'') || (a.agencia||'').localeCompare(b.agencia||''));
     } else {
       const k = sortKey, asc = sortAsc;
       datos.sort((a,b)=>{ const va=a[k]??'', vb=b[k]??''; return va<vb ? (asc?-1:1) : va>vb ? (asc?1:-1) : 0; });
     }
+    const periodo = `${selA.value}-${String(selM.value).padStart(2,'0')}`;
+    // sufijo de filtros sin el año (el periodo ya va en el nombre)
+    const anioPrev = $('anioFilter').value; $('anioFilter').value = '';
+    const suf = sufijoArchivo(); $('anioFilter').value = anioPrev;
+
     btn.disabled = true;
     msg.innerHTML = '<div class="msg msg-info">Generando FT-95…</div>';
     try{
@@ -679,9 +740,9 @@ function abrirExportFT95(){
         alertas: datos,
         plantillaUrl: FT95_PLANTILLA,
         generadoPor: CURRENT_EMAIL,
-        nombreArchivo: `FT-95_Monitoreo_de_Alertas_de_PAVS_${new Date().toISOString().slice(0,10)}${sufijoArchivo()}.xlsx`
+        nombreArchivo: `FT-95_Monitoreo_de_Alertas_de_PAVS_${periodo}${suf}.xlsx`
       });
-      msg.innerHTML = `<div class="msg msg-info">✅ FT-95 generado · ${r.alertas} alerta(s) en la hoja PAVS_BD.</div>`;
+      msg.innerHTML = `<div class="msg msg-info">✅ FT-95 ${MESES_ES[selM.value-1]} ${selA.value} generado · ${r.alertas} alerta(s) en la hoja PAVS_BD.</div>`;
       setTimeout(cerrar, 1400);
     }catch(e){
       msg.innerHTML = `<div class="msg msg-err">${esc(e.message)}</div>`;
