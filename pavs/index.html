@@ -6,6 +6,8 @@
 <title>ConkoSafe IA — Monitor PAVS</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="ft95_export.js?v=1"></script>
 <style>
 :root{
   --bg:#ffffff; --surface:#f5f7fa; --border:#d0d7e3; --accent:#0077cc;
@@ -32,6 +34,17 @@ select,input[type=search]{font-family:var(--sora);font-size:13px;padding:8px 10p
 .btn{font-family:var(--sora);font-size:13px;font-weight:600;padding:9px 16px;border:none;border-radius:8px;background:var(--accent);color:#fff;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
 .btn:hover{filter:brightness(1.08)}
 .btn.ghost{background:#fff;color:var(--accent);border:1px solid var(--accent)}
+.btn.ft95{background:#11703f}
+.btn:disabled{opacity:.5;cursor:not-allowed;filter:none}
+.btn .cnt{font-family:var(--mono);font-size:11px;background:rgba(255,255,255,.22);border-radius:10px;padding:1px 7px}
+.filtros-activos{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 12px}
+.chip{font-family:var(--mono);font-size:11px;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:3px 9px}
+.msg{padding:10px 12px;border-radius:8px;font-size:12.5px;margin-top:10px}
+.msg-info{background:#e8f3fc;color:#0a4d80;border:1px solid #b9d9f2}
+.msg-warn{background:#fff6e0;color:#8a5a00;border:1px solid #f0d58f}
+.msg-err{background:#fdecec;color:#a11;border:1px solid #f5b5b5}
+.modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:18px;border-top:1px solid var(--border);padding-top:14px}
+.opt{display:flex;gap:8px;align-items:flex-start;font-size:12.5px;color:var(--ink);margin-top:10px}
 
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
 .stat{background:#fff;border:1px solid var(--border);border-radius:12px;padding:14px 16px;position:relative;overflow:hidden}
@@ -151,8 +164,10 @@ footer{margin-top:30px;font-size:11px;color:var(--muted);font-family:var(--mono)
       <label>Producto</label>
       <select id="productoFilter"><option value="">Todos</option></select>
     </div>
+    <button class="btn ghost" id="clearBtn" title="Quitar todos los filtros">✕ Limpiar filtros</button>
     <button class="btn ghost" id="refreshBtn">↻ Actualizar</button>
-    <button class="btn" id="csvBtn">⬇ Exportar CSV</button>
+    <button class="btn" id="csvBtn" title="Exporta solo las alertas que cumplen los filtros actuales">⬇ Exportar CSV <span class="cnt" id="csvCnt">0</span></button>
+    <button class="btn ft95" id="ft95Btn" title="FT-95 · Monitoreo de Alertas de PAVS (Excel, formato DS043) con las alertas filtradas">📊 Exportar FT-95 (Excel) <span class="cnt" id="ft95Cnt">0</span></button>
   </div>
 
   <div class="stats">
@@ -229,6 +244,7 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
 
 const $ = id => document.getElementById(id);
 let ALL = [];
+let CURRENT_EMAIL = '';
 let filtered = [];
 let sortKey = 'fecha_emision', sortAsc = false;
 let page = 0;
@@ -247,6 +263,7 @@ function showAccessBlocked(){
 async function verificarAccesoYcargar(){
   const { data: { session } } = await sb.auth.getSession();
   if (!session) { window.location.href = '../'; return; }
+  CURRENT_EMAIL = session.user.email || '';
 
   const { data: perfil } = await sb.from('perfiles').select('rol, acceso_pavs').eq('id', session.user.id).single();
   if (!perfil || (perfil.rol !== 'admin' && !perfil.acceso_pavs)) {
@@ -474,7 +491,11 @@ function renderCharts(rows){
   }).join('');
 }
 
-function applyFilters(){
+const FILTER_IDS = ['search','anioFilter','paisFilter','agenciaFilter','tipoFilter','productoFilter'];
+
+/* Devuelve SIEMPRE las filas que cumplen los filtros visibles en pantalla
+   (se recalcula en el momento: lo usan la tabla, el CSV y el FT-95). */
+function filtrarFilas(){
   const q = $('search').value.trim().toLowerCase();
   const anio = $('anioFilter').value;
   const pais = $('paisFilter').value;
@@ -482,19 +503,39 @@ function applyFilters(){
   const tipo = $('tipoFilter').value;
   const producto = $('productoFilter').value;
 
-  filtered = ALL.filter(r=>{
+  return ALL.filter(r=>{
     if (anio && String(r.anio) !== anio) return false;
     if (pais && r.pais !== pais) return false;
     if (agencia && r.agencia !== agencia) return false;
     if (tipo && r.tipo_alerta !== tipo) return false;
     if (producto && r.tipo_producto !== producto) return false;
     if (q){
-      const hay = (r.titulo_alerta+' '+(r.tipo_producto||'')+' '+(r.ifa||'')).toLowerCase();
+      const hay = ((r.titulo_alerta||'')+' '+(r.tipo_producto||'')+' '+(r.ifa||'')).toLowerCase();
       if (!hay.includes(q)) return false;
     }
     return true;
   });
+}
 
+/* Filtros activos como etiquetas legibles (para el modal y el nombre del archivo) */
+function filtrosActivos(){
+  const out = [];
+  const q = $('search').value.trim();
+  if (q) out.push(['Búsqueda', q]);
+  [['anioFilter','Año'],['paisFilter','País'],['agenciaFilter','Agencia'],['tipoFilter','Tipo'],['productoFilter','Producto']]
+    .forEach(([id,lab])=>{ const v=$(id).value; if (v) out.push([lab, v]); });
+  return out;
+}
+function sufijoArchivo(){
+  const f = filtrosActivos();
+  if (!f.length) return '';
+  const slug = f.map(([,v])=>v).join('_').normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .replace(/[^A-Za-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,60);
+  return '_filtrado' + (slug ? '_' + slug : '');
+}
+
+function applyFilters(){
+  filtered = filtrarFilas();
   sortRows();
   page = 0;
   renderTable();
@@ -514,6 +555,9 @@ function sortRows(){
 
 function renderTable(){
   $('meta').textContent = `${filtered.length} alerta(s) encontrada(s) de ${ALL.length} totales.`;
+  $('csvCnt').textContent = filtered.length;
+  $('ft95Cnt').textContent = filtered.length;
+  $('csvBtn').disabled = $('ft95Btn').disabled = !ALL.length;
 
   const start = page * PAGE_SIZE;
   const rows = filtered.slice(start, start + PAGE_SIZE);
@@ -563,6 +607,9 @@ function renderTable(){
 }
 
 function exportCSV(){
+  // Recalcula con los filtros visibles en el momento del clic (nunca toda la data)
+  filtered = filtrarFilas(); sortRows();
+  if (!filtered.length){ alert('No hay alertas que cumplan los filtros actuales.'); return; }
   const cols = ['anio','mes','fecha_emision','fecha_revision','pais','agencia','tipo_alerta','titulo_alerta','tipo_producto','ifa','reaccion_adversa','atc_code','enlace'];
   const esc = v => `"${(v==null?'':String(v)).replace(/"/g,'""')}"`;
   const rowVal = (r,c) => {
@@ -576,37 +623,105 @@ function exportCSV(){
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `pavs_alertas_${new Date().toISOString().slice(0,10)}.csv`;
+  a.download = `pavs_alertas_${new Date().toISOString().slice(0,10)}${sufijoArchivo()}.csv`;
   a.click();
   URL.revokeObjectURL(url);
 }
 
-async function init(){
+/* ───────── Exportar FT-95 (Excel) ───────── */
+const FT95_PLANTILLA = 'plantillas/FT-95_Monitoreo_de_Alertas_de_PAVS.xlsx';
+
+function abrirExportFT95(){
+  const filas = filtrarFilas();
+  const filtros = filtrosActivos();
+  const fechas = filas.map(r=>r.fecha_emision).filter(Boolean).sort();
+  const rango = fechas.length ? `${fechas[0]} → ${fechas[fechas.length-1]}` : '—';
+  const esc = t => (t==null?'':String(t)).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+
+  const box = document.createElement('div');
+  box.className = 'modal-overlay';
+  box.innerHTML = `<div class="modal-box">
+    <button class="modal-close" id="ftX">✕</button>
+    <h3>📊 Exportar FT-95 · Monitoreo de Alertas de PAVS</h3>
+    <div class="sub">Formato DS043 (Excel). Se conserva la hoja DS043 con la lista de agencias y se completa la hoja PAVS_BD
+      con las alertas que cumplen los filtros actuales.</div>
+    <div style="font-size:13px"><b>${filas.length}</b> alerta(s) de ${ALL.length} · emisión ${esc(rango)}</div>
+    <div class="filtros-activos">${filtros.length
+      ? filtros.map(([k,v])=>`<span class="chip">${esc(k)}: ${esc(v)}</span>`).join('')
+      : '<span class="chip">Sin filtros · se exporta todo el histórico</span>'}</div>
+    <label class="opt"><input type="checkbox" id="ftAsc" checked>
+      <span>Orden cronológico ascendente por fecha de emisión (como el registro original). Si lo desmarcas, se respeta el orden de la tabla.</span></label>
+    <div id="ftMsg">${filas.length ? '' : '<div class="msg msg-warn">No hay alertas con los filtros actuales. Puedes generar el FT-95 vacío como evidencia del monitoreo.</div>'}</div>
+    <div class="modal-actions">
+      <button class="btn ghost" id="ftCancel">Cancelar</button>
+      <button class="btn ft95" id="ftGo">⬇ Generar Excel</button>
+    </div>
+  </div>`;
+  document.body.appendChild(box);
+  const cerrar = () => box.remove();
+  box.querySelector('#ftX').onclick = cerrar;
+  box.querySelector('#ftCancel').onclick = cerrar;
+  box.addEventListener('click', e => { if (e.target === box) cerrar(); });
+
+  box.querySelector('#ftGo').onclick = async () => {
+    const btn = box.querySelector('#ftGo'), msg = box.querySelector('#ftMsg');
+    let datos = filas.slice();
+    if (box.querySelector('#ftAsc').checked){
+      datos.sort((a,b)=> (a.fecha_emision||'').localeCompare(b.fecha_emision||'') || (a.agencia||'').localeCompare(b.agencia||''));
+    } else {
+      const k = sortKey, asc = sortAsc;
+      datos.sort((a,b)=>{ const va=a[k]??'', vb=b[k]??''; return va<vb ? (asc?-1:1) : va>vb ? (asc?1:-1) : 0; });
+    }
+    btn.disabled = true;
+    msg.innerHTML = '<div class="msg msg-info">Generando FT-95…</div>';
+    try{
+      const r = await FT95.exportarFT95({
+        alertas: datos,
+        plantillaUrl: FT95_PLANTILLA,
+        generadoPor: CURRENT_EMAIL,
+        nombreArchivo: `FT-95_Monitoreo_de_Alertas_de_PAVS_${new Date().toISOString().slice(0,10)}${sufijoArchivo()}.xlsx`
+      });
+      msg.innerHTML = `<div class="msg msg-info">✅ FT-95 generado · ${r.alertas} alerta(s) en la hoja PAVS_BD.</div>`;
+      setTimeout(cerrar, 1400);
+    }catch(e){
+      msg.innerHTML = `<div class="msg msg-err">${esc(e.message)}</div>`;
+    }
+    btn.disabled = false;
+  };
+}
+
+/* Rellena un <select> conservando la opción elegida (si sigue existiendo) */
+function resetSelect(id, values){
+  const sel = $(id);
+  const prev = sel.value;
+  while (sel.options.length > 1) sel.remove(1);
+  fillSelect(id, values);
+  if (prev && values.includes(prev)) sel.value = prev;
+}
+
+async function cargarDatos(){
+  $('meta').textContent = 'Cargando…';
   try{
-    [ALL] = await Promise.all([ fetchAll(), fetchAtcCatalog() ]);
+    [ALL] = await Promise.all([ fetchAll(), ATC_MAP.size ? Promise.resolve() : fetchAtcCatalog() ]);
   }catch(e){
     showErr('No se pudo cargar la tabla pavs_alertas (o el catálogo ATC) desde Supabase: ' + e.message);
     $('meta').textContent = 'Sin datos disponibles.';
     return;
   }
 
-  const agenciasSet = new Set(ALL.map(r=>r.agencia).filter(Boolean));
-  const paisesSet = new Set(ALL.map(r=>r.pais).filter(Boolean));
-
   const ultimaFecha = ALL.reduce((max,r)=> r.fecha_emision && r.fecha_emision > max ? r.fecha_emision : max, '');
   $('lastSync').textContent = ultimaFecha ? `Última alerta: ${ultimaFecha}` : 'Sin datos';
 
-  fillSelect('anioFilter', [...new Set(ALL.map(r=>r.anio).filter(Boolean))].sort((a,b)=>b-a).map(String));
-  fillSelect('paisFilter', [...paisesSet].sort());
-  fillSelect('agenciaFilter', [...agenciasSet].sort());
-  fillSelect('tipoFilter', [...new Set(ALL.map(r=>r.tipo_alerta).filter(Boolean))].sort());
-  fillSelect('productoFilter', [...new Set(ALL.map(r=>r.tipo_producto).filter(Boolean))].sort());
+  resetSelect('anioFilter', [...new Set(ALL.map(r=>r.anio).filter(Boolean))].sort((a,b)=>b-a).map(String));
+  resetSelect('paisFilter', [...new Set(ALL.map(r=>r.pais).filter(Boolean))].sort());
+  resetSelect('agenciaFilter', [...new Set(ALL.map(r=>r.agencia).filter(Boolean))].sort());
+  resetSelect('tipoFilter', [...new Set(ALL.map(r=>r.tipo_alerta).filter(Boolean))].sort());
+  resetSelect('productoFilter', [...new Set(ALL.map(r=>r.tipo_producto).filter(Boolean))].sort());
 
-  filtered = ALL.slice();
-  sortRows();
-  renderTable();
-  updateDashboard(filtered);
+  applyFilters();   // respeta los filtros que ya estaban seleccionados
+}
 
+function wireUI(){
   document.querySelectorAll('thead th[data-key]').forEach(th=>{
     th.addEventListener('click', ()=>{
       const key = th.dataset.key;
@@ -616,11 +731,17 @@ async function init(){
     });
   });
 
-  ['search','anioFilter','paisFilter','agenciaFilter','tipoFilter','productoFilter'].forEach(id=>{
+  FILTER_IDS.forEach(id=>{
     $(id).addEventListener('input', applyFilters);
+    $(id).addEventListener('change', applyFilters);
   });
-  $('refreshBtn').addEventListener('click', init);
+  $('clearBtn').addEventListener('click', ()=>{
+    FILTER_IDS.forEach(id=>{ $(id).value = ''; });
+    applyFilters();
+  });
+  $('refreshBtn').addEventListener('click', cargarDatos);
   $('csvBtn').addEventListener('click', exportCSV);
+  $('ft95Btn').addEventListener('click', abrirExportFT95);
   $('histClose').addEventListener('click', ()=>{ $('histModal').style.display='none'; });
   $('histModal').addEventListener('click', (e)=>{ if(e.target.id==='histModal') $('histModal').style.display='none'; });
   $('prevBtn').addEventListener('click', ()=>{ if(page>0){ page--; renderTable(); } });
@@ -628,6 +749,11 @@ async function init(){
     const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
     if(page < totalPages-1){ page++; renderTable(); }
   });
+}
+
+async function init(){
+  wireUI();
+  await cargarDatos();
 }
 
 verificarAccesoYcargar();
