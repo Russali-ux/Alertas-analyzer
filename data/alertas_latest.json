@@ -1,11 +1,29 @@
 [
   {
+    "titulo": "ALERTA DIGEMID Nº 124-2026",
+    "producto": "RIESGOS ASOCIADOS AL USO DE LA SONDA DE ASPIRACIÓN DE CIRCUITO CERRADO",
+    "tipo_alerta": "Seguridad",
+    "fecha_publicacion": "2026-10-07",
+    "url": "https://www.digemid.minsa.gob.pe/webDigemid/alertas-modificaciones/2026/alerta-digemid-no-124-2026/",
+    "fecha_captura": "2026-10-07 19:15:27",
+    "pdf_url": "https://www.digemid.minsa.gob.pe/Archivos/Alertas/2026/ALERTA_124-26.pdf",
+    "github_pdf_url": "https://ggbnfdaxtsngsjssrwrl.supabase.co/storage/v1/object/public/alertas-analyzer/pdfs/2026-10-07_ALERTA_DIGEMID_No_124-2026.pdf",
+    "accion_principal": "NOTIFICAR / MEDIDAS PREVENTIVAS",
+    "urgencia": "PREVENTIVA",
+    "resumen_accion": "",
+    "acciones_detalladas": "",
+    "dirigido_a": "profesionales \nde la salud, instituciones, establecimientos farmacéuticos, establecimientos de salud, responsables \ndel suministro de dispositivos médicos en el sector público y privado, la siguiente información \nrespecto a los riesgos asociados al uso de la sonda de aspiración de circuito cerrado | profesionales de la salud | titulares de registro sanitario y titulares del certificado de registro sanitario",
+    "motor_analisis": "Heurístico",
+    "titular_registro_sanitario": NaN,
+    "numero_lote": null
+  },
+  {
     "titulo": "ALERTA DIGEMID Nº 123-2026",
     "producto": "productos cosméticos marca Braham como mascarilla aclarante, crema hidratante aclarante, exfoliante corporal, limpiador facial, serum bótox procolágeno, serum anti imperfecciones",
     "tipo_alerta": "Productos Falsificados",
     "fecha_publicacion": "2026-10-01",
     "url": "https://www.digemid.minsa.gob.pe/webDigemid/alertas-modificaciones/2026/alerta-digemid-no-123-2026/",
-    "fecha_captura": "2026-10-06 18:50:12",
+    "fecha_captura": "2026-10-07 19:15:27",
     "pdf_url": "https://www.digemid.minsa.gob.pe/Archivos/Alertas/2026/ALERTA_123-26.pdf",
     "github_pdf_url": "https://ggbnfdaxtsngsjssrwrl.supabase.co/storage/v1/object/public/alertas-analyzer/pdfs/2026-10-01_ALERTA_DIGEMID_No_123-2026.pdf",
     "accion_principal": "NO ADQUIRIR / NO COMERCIALIZAR",
@@ -15,7 +33,7 @@
     "dirigido_a": "profesionales de la salud, instituciones, establecimientos farmacéuticos, \nresponsables del suministro de medicamentos en el sector público y privado, y al público en \ngeneral lo siguiente | profesionales de la salud, pacientes y población en general",
     "motor_analisis": "Heurístico",
     "titular_registro_sanitario": NaN,
-    "numero_lote": NaN
+    "numero_lote": null
   },
   {
     "titulo": "ALERTA DIGEMID Nº 122-2026",
@@ -23,7 +41,7 @@
     "tipo_alerta": "Productos Falsificados",
     "fecha_publicacion": "2026-10-01",
     "url": "https://www.digemid.minsa.gob.pe/webDigemid/alertas-modificaciones/2026/alerta-digemid-no-122-2026/",
-    "fecha_captura": "2026-10-06 18:50:12",
+    "fecha_captura": "2026-10-07 19:15:27",
     "pdf_url": "https://www.digemid.minsa.gob.pe/Archivos/Alertas/2026/ALERTA_122-26.pdf",
     "github_pdf_url": "https://ggbnfdaxtsngsjssrwrl.supabase.co/storage/v1/object/public/alertas-analyzer/pdfs/2026-10-01_ALERTA_DIGEMID_No_122-2026.pdf",
     "accion_principal": "NO ADQUIRIR / NO COMERCIALIZAR",
@@ -33,7 +51,7 @@
     "dirigido_a": "profesionales de la salud, instituciones, establecimientos farmacéuticos, responsables del \nsuministro de medicamentos en el sector público y privado, y al público en general lo siguiente | profesionales de la salud, pacientes y población en general",
     "motor_analisis": "Heurístico",
     "titular_registro_sanitario": NaN,
-    "numero_lote": NaN
+    "numero_lote": null
   },
   {
     "titulo": "ALERTA DIGEMID Nº 121-2026",
@@ -41,7 +59,7 @@
     "tipo_alerta": "Productos Falsificados",
     "fecha_publicacion": "2026-10-01",
     "url": "https://www.digemid.minsa.gob.pe/webDigemid/alertas-modificaciones/2026/alerta-digemid-no-121-2026/",
-    "fecha_captura": "2026-10-06 18:50:12",
+    "fecha_captura": "2026-10-07 19:15:27",
     "pdf_url": "https://www.digemid.minsa.gob.pe/Archivos/Alertas/2026/ALERTA_121-26.pdf",
     "github_pdf_url": "https://ggbnfdaxtsngsjssrwrl.supabase.co/storage/v1/object/public/alertas-analyzer/pdfs/2026-10-01_ALERTA_DIGEMID_No_121-2026.pdf",
     "accion_principal": "NO ADQUIRIR / NO COMERCIALIZAR",
@@ -51,7 +69,7 @@
     "dirigido_a": "profesionales de la salud, instituciones, establecimientos farmacéuticos, responsables del \nsuministro de medicamentos en el sector público y privado, y al público en general lo siguiente | profesionales de la salud, pacientes y población en general",
     "motor_analisis": "Heurístico",
     "titular_registro_sanitario": NaN,
-    "numero_lote": NaN
+    "numero_lote": null
   },
   {
     "titulo": "ALERTA DIGEMID Nº 120-2026",
@@ -59,7 +77,7 @@
     "tipo_alerta": "Productos Falsificados",
     "fecha_publicacion": "2026-10-01",
     "url": "https://www.digemid.minsa.gob.pe/webDigemid/alertas-modificaciones/2026/alerta-digemid-no-120-2026/",
-    "fecha_captura": "2026-10-06 18:50:12",
+    "fecha_captura": "2026-10-07 19:15:27",
     "pdf_url": "https://www.digemid.minsa.gob.pe/Archivos/Alertas/2026/ALERTA_120-26.pdf",
     "github_pdf_url": "https://ggbnfdaxtsngsjssrwrl.supabase.co/storage/v1/object/public/alertas-analyzer/pdfs/2026-10-01_ALERTA_DIGEMID_No_120-2026.pdf",
     "accion_principal": "NO ADQUIRIR / NO COMERCIALIZAR",
@@ -69,7 +87,7 @@
     "dirigido_a": "profesionales de la salud, instituciones, establecimientos farmacéuticos, responsables del \nsuministro de medicamentos en el sector público y privado, y al público en general lo siguiente | profesionales de la salud, pacientes y población en general",
     "motor_analisis": "Heurístico",
     "titular_registro_sanitario": NaN,
-    "numero_lote": NaN
+    "numero_lote": null
   },
   {
     "titulo": "ALERTA DIGEMID Nº 119-2026",
@@ -77,7 +95,7 @@
     "tipo_alerta": "Productos Falsificados",
     "fecha_publicacion": "2026-10-01",
     "url": "https://www.digemid.minsa.gob.pe/webDigemid/alertas-modificaciones/2026/alerta-digemid-no-119-2026/",
-    "fecha_captura": "2026-10-06 18:50:12",
+    "fecha_captura": "2026-10-07 19:15:27",
     "pdf_url": "https://www.digemid.minsa.gob.pe/Archivos/Alertas/2026/ALERTA_119-26.pdf",
     "github_pdf_url": "https://ggbnfdaxtsngsjssrwrl.supabase.co/storage/v1/object/public/alertas-analyzer/pdfs/2026-10-01_ALERTA_DIGEMID_No_119-2026.pdf",
     "accion_principal": "NO ADQUIRIR / NO COMERCIALIZAR",
@@ -87,7 +105,7 @@
     "dirigido_a": "profesionales de la salud, instituciones, establecimientos \nfarmacéuticos y no farmacéuticos del sector público y privado, y al público en general lo siguiente",
     "motor_analisis": "Heurístico",
     "titular_registro_sanitario": "Bagó del Perú S.A | S.A. Incautados en acciones de control y vigilancia de la DIRESA | Incautado por la DIRESA | S.A. Incautados por la DIRESA | Los números de lote no corresponden a lo importado ni comercializado por Bagó del Perú S.A | S.A., titular del registro sa | El número de lote corresponde a lo comercializado por el titular del registro sa",
-    "numero_lote": NaN
+    "numero_lote": null
   },
   {
     "titulo": "ALERTA DIGEMID Nº 118-2026",
@@ -95,7 +113,7 @@
     "tipo_alerta": "Productos Falsificados",
     "fecha_publicacion": "2026-09-29",
     "url": "https://www.digemid.minsa.gob.pe/webDigemid/alertas-modificaciones/2026/alerta-digemid-no-118-2026/",
-    "fecha_captura": "2026-10-06 18:50:12",
+    "fecha_captura": "2026-10-07 19:15:27",
     "pdf_url": "https://www.digemid.minsa.gob.pe/Archivos/Alertas/2026/ALERTA_118-26.pdf",
     "github_pdf_url": "https://ggbnfdaxtsngsjssrwrl.supabase.co/storage/v1/object/public/alertas-analyzer/pdfs/2026-09-29_ALERTA_DIGEMID_No_118-2026.pdf",
     "accion_principal": "NO ADQUIRIR / NO COMERCIALIZAR",
@@ -105,7 +123,7 @@
     "dirigido_a": "profesionales de la salud, instituciones, establecimientos \nfarmacéuticos y no farmacéuticos del sector público y privado, y al público en general lo siguiente",
     "motor_analisis": "Heurístico",
     "titular_registro_sanitario": "Incautado en acciones de control y vigilancia de la DIRESA | Perú Incautados en acciones de control y vigilancia de la DIRESA | Incautados en acciones de control y vigilancia de la DIRESA | a El lote no corresponde al importado por el titular del registro sa",
-    "numero_lote": NaN
+    "numero_lote": null
   },
   {
     "titulo": "ALERTA DIGEMID Nº 117-2026",
@@ -113,7 +131,7 @@
     "tipo_alerta": "Productos Falsificados",
     "fecha_publicacion": "2026-09-29",
     "url": "https://www.digemid.minsa.gob.pe/webDigemid/alertas-modificaciones/2026/alerta-digemid-no-117-2026/",
-    "fecha_captura": "2026-10-06 18:50:12",
+    "fecha_captura": "2026-10-07 19:15:27",
     "pdf_url": "https://www.digemid.minsa.gob.pe/Archivos/Alertas/2026/ALERTA_117-26.pdf",
     "github_pdf_url": "https://ggbnfdaxtsngsjssrwrl.supabase.co/storage/v1/object/public/alertas-analyzer/pdfs/2026-09-29_ALERTA_DIGEMID_No_117-2026.pdf",
     "accion_principal": "NO ADQUIRIR / NO COMERCIALIZAR",
@@ -123,7 +141,7 @@
     "dirigido_a": "profesionales de la salud, instituciones, establecimientos \nfarmacéuticos y no farmacéuticos del sector público y privado, y al público en general lo siguiente | siguientes productos farmacéuticos falsificados",
     "motor_analisis": "Heurístico",
     "titular_registro_sanitario": "Incautados en acciones de control y vigilancia de la DIRESA | Pharmatique S.A | Cifarma S.A.C | Tecnandina S.A | Indeurec S.A | a El lote corresponde al fabricado por Teva Perú S.A | S.A., el titular del registro sa",
-    "numero_lote": NaN
+    "numero_lote": null
   },
   {
     "titulo": "ALERTA DIGEMID Nº 116-2026",
@@ -131,7 +149,7 @@
     "tipo_alerta": "Productos Falsificados",
     "fecha_publicacion": "2026-09-29",
     "url": "https://www.digemid.minsa.gob.pe/webDigemid/alertas-modificaciones/2026/alerta-digemid-no-116-2026/",
-    "fecha_captura": "2026-10-06 18:50:12",
+    "fecha_captura": "2026-10-07 19:15:27",
     "pdf_url": "https://www.digemid.minsa.gob.pe/Archivos/Alertas/2026/ALERTA_116-26.pdf",
     "github_pdf_url": "https://ggbnfdaxtsngsjssrwrl.supabase.co/storage/v1/object/public/alertas-analyzer/pdfs/2026-09-29_ALERTA_DIGEMID_No_116-2026.pdf",
     "accion_principal": "NO ADQUIRIR / NO COMERCIALIZAR",
@@ -141,7 +159,7 @@
     "dirigido_a": "profesionales de la salud, instituciones, establecimientos farmacéuticos, \nresponsables del suministro de medicamentos en el sector público y privado, y al público en \ngeneral lo siguiente | profesionales de la salud, pacientes y población en general",
     "motor_analisis": "Heurístico",
     "titular_registro_sanitario": NaN,
-    "numero_lote": NaN
+    "numero_lote": null
   },
   {
     "titulo": "ALERTA DIGEMID Nº 115-2026",
@@ -149,7 +167,7 @@
     "tipo_alerta": "Productos Falsificados",
     "fecha_publicacion": "2026-09-29",
     "url": "https://www.digemid.minsa.gob.pe/webDigemid/alertas-modificaciones/2026/alerta-digemid-no-115-2026/",
-    "fecha_captura": "2026-10-06 18:50:12",
+    "fecha_captura": "2026-10-07 19:15:27",
     "pdf_url": "https://www.digemid.minsa.gob.pe/Archivos/Alertas/2026/ALERTA_115-26.pdf",
     "github_pdf_url": "https://ggbnfdaxtsngsjssrwrl.supabase.co/storage/v1/object/public/alertas-analyzer/pdfs/2026-09-29_ALERTA_DIGEMID_No_115-2026.pdf",
     "accion_principal": "NO ADQUIRIR / NO COMERCIALIZAR",
@@ -159,24 +177,6 @@
     "dirigido_a": "profesionales de la salud, instituciones, establecimientos farmacéuticos, \nresponsables del suministro de medicamentos en el sector público y privado, y al público en \ngeneral lo siguiente | profesionales de la salud, pacientes y población en general",
     "motor_analisis": "Heurístico",
     "titular_registro_sanitario": NaN,
-    "numero_lote": NaN
-  },
-  {
-    "titulo": "ALERTA DIGEMID Nº 114-2026",
-    "producto": "Vecunar (bromuro de vecuronio)",
-    "tipo_alerta": "Productos Falsificados",
-    "fecha_publicacion": "2026-09-29",
-    "url": "https://www.digemid.minsa.gob.pe/webDigemid/alertas-modificaciones/2026/alerta-digemid-no-114-2026/",
-    "fecha_captura": "2026-10-06 18:50:12",
-    "pdf_url": "https://www.digemid.minsa.gob.pe/Archivos/Alertas/2026/ALERTA_114-26.pdf",
-    "github_pdf_url": "https://ggbnfdaxtsngsjssrwrl.supabase.co/storage/v1/object/public/alertas-analyzer/pdfs/2026-09-29_ALERTA_DIGEMID_No_114-2026.pdf",
-    "accion_principal": "NO ADQUIRIR / NO COMERCIALIZAR",
-    "urgencia": "INMEDIATA",
-    "resumen_accion": "se recomienda abstenerse de utilizarlos.",
-    "acciones_detalladas": "",
-    "dirigido_a": "profesionales de la salud, a los establecimientos farmacéuticos, al público en general \ny a las instituciones responsables del suministro de productos farmacéuticos en los sectores público \ny privado lo siguiente | profesionales de la salud, pacientes y población en general",
-    "motor_analisis": "Heurístico",
-    "titular_registro_sanitario": NaN,
-    "numero_lote": "CN110E"
+    "numero_lote": null
   }
 ]
