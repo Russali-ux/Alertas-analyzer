@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Monitor EMA — PRAC y Noticias · ConkoSafe IA</title>
+<title>Monitor EMA — PRAC, Arbitrajes y Noticias · ConkoSafe IA</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 <style>
   :root {
@@ -147,14 +147,43 @@
   .nt-nueva { display: inline-block; font-size: 10px; font-weight: bold; background: var(--eu-gold); color: #3b2f00; border-radius: 4px; padding: 0 5px; margin-left: 6px; vertical-align: middle; }
   mark { background: #FFF1B8; color: inherit; padding: 0 1px; border-radius: 2px; }
 
+  /* ── Vista Arbitrajes EMA ── */
+  .ar-curso { display: grid; gap: 10px; }
+  .ar-proc { border: 1px solid var(--border); border-left: 4px solid var(--eu-gold); border-radius: 8px; padding: 12px 14px; background: #fff; }
+  .ar-proc h3 { margin: 0 0 2px; font-size: 14px; }
+  .ar-proc h3 a { color: var(--navy); text-decoration: none; }
+  .ar-proc h3 a:hover { color: var(--teal); text-decoration: underline; }
+  .ar-proc .inn { font-size: 12px; color: var(--muted); }
+  .ar-hitos { display: flex; flex-wrap: wrap; align-items: flex-start; margin-top: 10px; }
+  .ar-hito { position: relative; flex: 1 1 110px; min-width: 110px; text-align: center; font-size: 11px; color: var(--muted); padding-top: 18px; }
+  .ar-hito::before { content: ""; position: absolute; top: 6px; left: 0; right: 0; height: 2px; background: var(--border); }
+  .ar-hito:first-child::before { left: 50%; } .ar-hito:last-child::before { right: 50%; }
+  .ar-hito .pt { position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 14px; height: 14px; border-radius: 50%; background: #fff; border: 2px solid var(--border); z-index: 1; }
+  .ar-hito.ok { color: var(--text); } .ar-hito.ok .pt { background: var(--teal); border-color: var(--teal); }
+  .ar-hito.ok::before { background: var(--teal); }
+  .ar-hito.actual .pt { background: var(--eu-gold); border-color: var(--eu-gold); box-shadow: 0 0 0 4px rgba(255,204,0,.25); }
+  .ar-hito b { display: block; font-size: 11.5px; color: inherit; }
+  .ar-est { display: inline-block; font-size: 11px; font-weight: bold; border-radius: 10px; padding: 1px 8px; white-space: nowrap; }
+  .ar-est.curso { background: #FEF3C7; color: #92400E; }
+  .ar-est.fin { background: #E2E8F0; color: #334155; }
+  .ar-cambio { display: block; font-size: 11px; color: var(--muted); margin-top: 3px; }
+  #tablaArbitrajes { min-width: 1000px; }
+  #tablaArbitrajes thead th .arr { opacity: .6; margin-left: 4px; font-size: 10px; }
+  #tablaArbitrajes td.fecha { white-space: nowrap; color: var(--muted); font-variant-numeric: tabular-nums; }
+  #tablaArbitrajes td.tit a { color: var(--navy); font-weight: bold; text-decoration: none; }
+  #tablaArbitrajes td.tit a:hover { color: var(--teal); text-decoration: underline; }
+  #tablaArbitrajes td.tit .sum { color: var(--muted); font-size: 12px; margin-top: 3px; }
+  #tablaArbitrajes td.hitos { font-size: 11.5px; white-space: nowrap; line-height: 1.55; }
+  #tablaArbitrajes td.hitos span { color: var(--muted); }
+
   .modal-body pre { white-space: pre-wrap; word-break: break-word; font-family: 'Segoe UI', Arial, sans-serif; font-size: 12.5px; line-height: 1.5; margin: 0; }
 </style>
 </head>
 <body>
 <header>
   <div>
-    <h1>Monitor EMA — PRAC y Noticias</h1>
-    <p>ConkoSafe IA · Agendas, minutas y recomendaciones del PRAC + noticias de la EMA · Datos en vivo desde Supabase</p>
+    <h1>Monitor EMA — PRAC, Arbitrajes y Noticias</h1>
+    <p>ConkoSafe IA · Agendas, minutas y recomendaciones del PRAC + arbitrajes (referrals) + noticias de la EMA · Datos en vivo desde Supabase</p>
   </div>
   <a class="back" href="../">← Volver al panel principal</a>
 </header>
@@ -166,6 +195,9 @@
     </button>
     <button id="btnRecom" onclick="cambiarFuente('recom')">
       ⚠️ Recomendaciones sobre señales <span class="sub">PRAC recommendations on safety signals</span>
+    </button>
+    <button id="btnArbitrajes" onclick="cambiarFuente('arbitrajes')">
+      ⚖️ Arbitrajes <span class="sub">Referrals JSON data file · diario</span>
     </button>
     <button id="btnNoticias" onclick="cambiarFuente('noticias')">
       📰 Noticias EMA <span class="sub">News JSON data file · cada 5 días</span>
@@ -283,6 +315,76 @@
     </div>
   </div>
 
+  <!-- ── Bloque Arbitrajes EMA ── -->
+  <div id="blockArbitrajes" style="display:none">
+    <div class="kpis">
+      <div class="kpi"><div class="label">Arbitrajes</div><div class="value" id="arKpiTotal">—</div></div>
+      <div class="kpi"><div class="label">En curso</div><div class="value" id="arKpiCurso">—</div></div>
+      <div class="kpi"><div class="label">Iniciados últimos 12 meses</div><div class="value" id="arKpi12">—</div></div>
+      <div class="kpi"><div class="label">Novedades en la última corrida</div><div class="value" id="arKpiNuevos">—</div></div>
+      <div class="kpi"><div class="label">Último inicio</div><div class="value" id="arKpiUltimo" style="font-size:16px">—</div></div>
+    </div>
+    <div class="card">
+      <h2>Procedimientos en curso</h2>
+      <div class="ar-curso" id="arCurso"><p class="state-note">Abre esta pestaña para cargar los arbitrajes desde Supabase…</p></div>
+    </div>
+    <div class="charts">
+      <div class="card">
+        <h2>Arbitrajes por año de inicio (según filtros)</h2>
+        <div class="chart-box"><canvas id="chartArbAnio"></canvas></div>
+      </div>
+      <div class="card">
+        <h2>Tipos de procedimiento (según filtros)</h2>
+        <div class="chart-box"><canvas id="chartArbTipo"></canvas></div>
+        <p class="chart-hint">Clic en una barra para filtrar por ese tipo.</p>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Detalle de arbitrajes de la EMA</h2>
+      <section class="nt-filtros" aria-label="Filtros de arbitrajes">
+        <label class="wide">Buscar (nombre, principio activo, producto, clase, referencia)
+          <input id="arQ" type="search" placeholder="Ej.: iron, valproate, Art. 31…"></label>
+        <label>Estado
+          <select id="arEstado"><option value="">Todos</option><option value="curso">En curso</option><option value="fin">Finalizados</option></select></label>
+        <label>Tipo de procedimiento
+          <select id="arTipo"><option value="">Todos los tipos</option></select></label>
+        <label>Categoría
+          <select id="arCat"><option value="">Humano y veterinario</option><option value="Human">Humano</option><option value="Veterinary">Veterinario</option></select></label>
+        <label>Resultado
+          <select id="arRes"><option value="">Todos</option></select></label>
+        <label>Año de inicio
+          <select id="arAnio"><option value="">Todos los años</option></select></label>
+        <label>Evaluado por el PRAC
+          <select id="arPrac"><option value="">Todos</option><option value="1">Sí</option><option value="0">No</option></select></label>
+      </section>
+      <div class="nt-bar">
+        <span class="count" id="arCount"></span>
+        <button class="nt-btn" id="arReset" type="button">Limpiar filtros</button>
+        <span class="spacer"></span>
+        <label>Filas por página
+          <select id="arPs"><option>25</option><option selected>50</option><option>100</option><option>250</option></select></label>
+        <button class="nt-btn" id="arPrev" type="button" aria-label="Página anterior">‹</button>
+        <span id="arPg"></span>
+        <button class="nt-btn" id="arNext" type="button" aria-label="Página siguiente">›</button>
+      </div>
+      <div class="table-wrap" id="arWrap">
+        <table id="tablaArbitrajes">
+          <thead><tr>
+            <th data-k="fecha_inicio">Inicio<span class="arr"></span></th>
+            <th data-k="nombre">Arbitraje y principios activos<span class="arr"></span></th>
+            <th data-k="tipo">Tipo<span class="arr"></span></th>
+            <th data-k="estado">Estado<span class="arr"></span></th>
+            <th data-k="resultado_prac">Resultado<span class="arr"></span></th>
+            <th>Hitos</th>
+            <th data-k="fecha_actualizacion">Actualizado<span class="arr"></span></th>
+          </tr></thead>
+          <tbody id="arBody"><tr><td colspan="7" class="state-note">Abre esta pestaña para cargar los arbitrajes desde Supabase…</td></tr></tbody>
+        </table>
+      </div>
+      <p class="count-note" id="arFuente"></p>
+    </div>
+  </div>
+
   <!-- ── Bloque Noticias EMA ── -->
   <div id="blockNoticias" style="display:none">
     <div class="kpis">
@@ -349,7 +451,7 @@
   </div>
 
 </div>
-<footer>Generado automáticamente por el scraper semanal EMA PRAC (GitHub Actions) · Noticias EMA cada 5 días desde el News JSON data file · Fuentes: ema.europa.eu y halmed.hr (lista de señales PRAC) · El texto extraído es una conversión automática del PDF original, que prevalece en caso de discrepancia.</footer>
+<footer>Generado automáticamente por el scraper semanal EMA PRAC (GitHub Actions) · Arbitrajes a diario desde el Referrals JSON data file · Noticias EMA cada 5 días desde el News JSON data file · Fuentes: ema.europa.eu y halmed.hr (lista de señales PRAC) · El texto extraído es una conversión automática del PDF original, que prevalece en caso de discrepancia.</footer>
 
 <!-- Modal de texto extraído -->
 <div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this) cerrarModal()">
@@ -969,7 +1071,222 @@ const Noticias = (() => {
   return { cargar };
 })();
 
-const FUENTES = { minutas: ['btnMinutas', 'blockMinutas'], recom: ['btnRecom', 'blockRecom'], noticias: ['btnNoticias', 'blockNoticias'] };
+// ── Vista Arbitrajes EMA (tabla public.ema_arbitrajes, Referrals JSON data file) ──
+const Arbitrajes = (() => {
+  const $ = id => document.getElementById(id);
+  const esc = t => String(t ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const split = t => t ? t.split(';').map(x => x.trim()).filter(Boolean) : [];
+  const ESTADO_ES = {
+    'Procedure started': 'Procedimiento iniciado', 'Under evaluation': 'En evaluación',
+    'PRAC recommendation': 'Recomendación del PRAC', 'CHMP opinion': 'Opinión del CHMP', 'CVMP opinion': 'Opinión del CVMP',
+    'CMDh position': 'Posición del CMDh', 'CMDh final position': 'Posición final del CMDh',
+    'European Commission final decision': 'Decisión final de la Comisión Europea',
+  };
+  const RES_ES = { 'Risk minimisation measures': 'Medidas de minimización de riesgos', 'Variation': 'Modificación',
+    'Suspension': 'Suspensión', 'Revocation': 'Revocación', 'No further action': 'Sin acciones adicionales',
+    'Maintenance': 'Mantenimiento', 'Refusal': 'Denegación' };
+  const tipoCorto = t => (t || '').replace(/ referrals?/i, '').replace(/ procedures?/i, '').replace(/^Article/, 'Art.');
+  const estadoEs = e => ESTADO_ES[e] || e || '—';
+
+  let D = [], FIL = [], cargado = false, cargando = null;
+  let sortK = 'fecha_inicio', sortDir = -1, page = 0, ultimaCorrida = null;
+  const charts = {};
+
+  async function cargar() {
+    if (cargado) return;
+    if (cargando) return cargando;
+    $('arBody').innerHTML = '<tr><td colspan="7" class="state-note">Cargando arbitrajes desde Supabase…</td></tr>';
+    cargando = (async () => {
+      try {
+        D = await fetchAll('ema_arbitrajes',
+          'nombre,principios_activos,categoria,tipo,estado,en_curso,arbitraje_seguridad,nombres_centralizados,nombres_nacionales,clase,referencia,modelo_decision,evaluado_por_prac,modelo_autorizacion,resultado_prac,fecha_inicio,fecha_recomendacion_prac,fecha_posicion_cmdh,fecha_opinion_comite,fecha_decision_ce,fecha_publicacion,fecha_actualizacion,url,primera_deteccion,estado_anterior,fecha_cambio_estado,fuente_timestamp',
+          'fecha_inicio.desc.nullslast');
+        preparar();
+        cargado = true;
+        run();
+      } catch (e) {
+        const msg = `Error cargando arbitrajes de Supabase: ${esc(e.message)}`;
+        $('arBody').innerHTML = `<tr><td colspan="7" class="state-note">${msg}</td></tr>`;
+        $('arCurso').innerHTML = `<p class="state-note">${msg}</p>`;
+      } finally {
+        cargando = null;
+      }
+    })();
+    return cargando;
+  }
+
+  // Hitos que aplican según el modelo de decisión (PRAC-CMDh, PRAC-CHMP-EC, CHMP-EC, CVMP-EC...)
+  function hitos(r) {
+    const m = (r.modelo_decision || '').toUpperCase();
+    const comite = (m.includes('CVMP') || r.categoria === 'Veterinary') ? 'Opinión CVMP' : 'Opinión CHMP';
+    const lista = [['Inicio', r.fecha_inicio]];
+    if (r.evaluado_por_prac || m.includes('PRAC')) lista.push(['Recomendación PRAC', r.fecha_recomendacion_prac]);
+    if (m.includes('CHMP') || m.includes('CVMP') || !m) lista.push([comite, r.fecha_opinion_comite]);
+    if (m.includes('CMDH')) lista.push(['Posición CMDh', r.fecha_posicion_cmdh]);
+    if (m.includes('EC') || !m) lista.push(['Decisión CE', r.fecha_decision_ce]);
+    return lista;
+  }
+
+  function preparar() {
+    D.forEach(r => {
+      ['nombre', 'principios_activos', 'clase', 'referencia', 'nombres_centralizados', 'nombres_nacionales',
+       'tipo', 'estado', 'resultado_prac', 'fecha_inicio', 'fecha_actualizacion', 'fecha_publicacion'].forEach(k => r[k] ||= '');
+      r._hay = [r.nombre, r.principios_activos, r.clase, r.referencia, r.nombres_centralizados, r.nombres_nacionales, r.tipo]
+        .join(' ').toLowerCase();
+    });
+    const corridas = [...new Set(D.flatMap(r => [r.primera_deteccion, r.fecha_cambio_estado]).filter(Boolean))].sort();
+    ultimaCorrida = corridas.length > 1 ? corridas[corridas.length - 1] : null;
+
+    [...new Set(D.map(r => r.tipo).filter(Boolean))].sort().forEach(t => $('arTipo').add(new Option(tipoCorto(t), t)));
+    [...new Set(D.map(r => r.resultado_prac).filter(Boolean))].sort().forEach(t => $('arRes').add(new Option(RES_ES[t] || t, t)));
+    [...new Set(D.map(r => r.fecha_inicio.slice(0, 4)).filter(Boolean))].sort().reverse().forEach(y => $('arAnio').add(new Option(y, y)));
+
+    const hace12 = new Date(Date.now() - 365 * 864e5).toISOString().slice(0, 10);
+    const ultimo = D.map(r => r.fecha_inicio).filter(Boolean).sort().pop();
+    const novedades = ultimaCorrida ? D.filter(r => r.primera_deteccion === ultimaCorrida || r.fecha_cambio_estado === ultimaCorrida).length : null;
+    $('arKpiTotal').textContent = D.length.toLocaleString('es-PE');
+    $('arKpiCurso').textContent = D.filter(r => r.en_curso).length;
+    $('arKpi12').textContent = D.filter(r => r.fecha_inicio >= hace12).length;
+    $('arKpiNuevos').textContent = novedades ?? '—';
+    $('arKpiUltimo').textContent = fmtFecha(ultimo);
+
+    const ts = D.map(r => r.fuente_timestamp).filter(Boolean).sort().pop();
+    $('arFuente').innerHTML = `Fuente: <a class="src" href="https://www.ema.europa.eu/en/about-us/about-website/download-website-data-json-data-format" target="_blank" rel="noopener">EMA — Referrals JSON data file ↗</a>`
+      + (ts ? ` · exportación de EMA del ${fmtFecha(ts.slice(0, 10))}` : '')
+      + (ultimaCorrida ? ` · última corrida con novedades: ${fmtFecha(ultimaCorrida)}` : '');
+
+    renderCurso();
+
+    let tm;
+    $('arQ').addEventListener('input', () => { clearTimeout(tm); tm = setTimeout(() => { page = 0; run(); }, 150); });
+    ['arEstado', 'arTipo', 'arCat', 'arRes', 'arAnio', 'arPrac'].forEach(id => $(id).addEventListener('change', () => { page = 0; run(); }));
+    $('arPs').onchange = () => { page = 0; render(); };
+    $('arPrev').onclick = () => { page--; render(); $('arWrap').scrollTop = 0; };
+    $('arNext').onclick = () => { page++; render(); $('arWrap').scrollTop = 0; };
+    document.querySelectorAll('#tablaArbitrajes thead th[data-k]').forEach(th => th.onclick = () => {
+      const k = th.dataset.k;
+      if (k === sortK) sortDir *= -1;
+      else { sortK = k; sortDir = k.startsWith('fecha') ? -1 : 1; }
+      run();
+    });
+    $('arReset').onclick = () => {
+      ['arQ', 'arEstado', 'arTipo', 'arCat', 'arRes', 'arAnio', 'arPrac'].forEach(i => $(i).value = '');
+      page = 0; run();
+    };
+  }
+
+  // Tarjetas de los procedimientos en curso, con la línea de hitos
+  function renderCurso() {
+    const enCurso = D.filter(r => r.en_curso).sort((a, b) => (b.fecha_inicio || '').localeCompare(a.fecha_inicio || ''));
+    if (!enCurso.length) { $('arCurso').innerHTML = '<p class="state-note">No hay arbitrajes en curso.</p>'; return; }
+    $('arCurso').innerHTML = enCurso.map(r => {
+      const hs = hitos(r);
+      const sig = hs.findIndex(h => !h[1]);   // primer hito pendiente = etapa actual
+      const linea = hs.map(([n, f], i) => `<div class="ar-hito ${f ? 'ok' : ''} ${i === sig ? 'actual' : ''}"><span class="pt"></span><b>${esc(n)}</b>${f ? fmtFecha(f) : (i === sig ? 'en curso' : 'pendiente')}</div>`).join('');
+      const nuevo = ultimaCorrida && (r.primera_deteccion === ultimaCorrida || r.fecha_cambio_estado === ultimaCorrida) ? '<span class="nt-nueva">NOVEDAD</span>' : '';
+      return `<div class="ar-proc">
+        <h3><a href="${esc(r.url)}" target="_blank" rel="noopener">${esc(r.nombre)}</a>${nuevo}</h3>
+        <div class="inn">${esc(split(r.principios_activos).join(', ') || r.clase || '')}</div>
+        <div class="inn">${[tipoCorto(r.tipo), r.categoria === 'Veterinary' ? 'Veterinario' : 'Humano', r.modelo_decision].filter(Boolean).map(esc).join(' · ')} · <span class="ar-est curso">${esc(estadoEs(r.estado))}</span></div>
+        <div class="ar-hitos">${linea}</div></div>`;
+    }).join('');
+  }
+
+  function run() {
+    const words = $('arQ').value.trim().toLowerCase().split(/\s+/).filter(Boolean);
+    const est = $('arEstado').value, tipo = $('arTipo').value, cat = $('arCat').value,
+      res = $('arRes').value, y = $('arAnio').value, prac = $('arPrac').value;
+    FIL = D.filter(r => (!words.length || words.every(w => r._hay.includes(w)))
+      && (!est || (est === 'curso') === !!r.en_curso)
+      && (!tipo || r.tipo === tipo) && (!cat || r.categoria === cat)
+      && (!res || r.resultado_prac === res) && (!y || r.fecha_inicio.startsWith(y))
+      && (prac === '' || !!r.evaluado_por_prac === (prac === '1')));
+    FIL.sort((a, b) => {
+      let x = a[sortK] || '', z = b[sortK] || '';
+      if (typeof x === 'string') { x = x.toLowerCase(); z = String(z).toLowerCase(); }
+      return (x < z ? -1 : x > z ? 1 : 0) * sortDir;
+    });
+    render();
+    graficos();
+  }
+
+  function render() {
+    const ps = +$('arPs').value, pages = Math.max(1, Math.ceil(FIL.length / ps));
+    if (page >= pages) page = pages - 1;
+    if (page < 0) page = 0;
+    $('arCount').textContent = `${FIL.length.toLocaleString('es-PE')} de ${D.length.toLocaleString('es-PE')} arbitrajes`;
+    $('arPg').textContent = `Pág. ${page + 1} de ${pages}`;
+    $('arPrev').disabled = page === 0; $('arNext').disabled = page >= pages - 1;
+    document.querySelectorAll('#tablaArbitrajes thead th[data-k]').forEach(th => {
+      const on = th.dataset.k === sortK;
+      th.querySelector('.arr').textContent = on ? (sortDir > 0 ? '▲' : '▼') : '↕';
+      th.setAttribute('aria-sort', on ? (sortDir > 0 ? 'ascending' : 'descending') : 'none');
+    });
+    const rows = FIL.slice(page * ps, page * ps + ps).map(r => {
+      const inn = split(r.principios_activos), prods = [...split(r.nombres_centralizados), ...split(r.nombres_nacionales)];
+      const det = [inn.length ? inn.join(', ') : r.clase, prods.length ? 'Productos: ' + prods.slice(0, 6).join(', ') + (prods.length > 6 ? '…' : '') : '']
+        .filter(Boolean).map(esc).join('<br>');
+      const nuevo = ultimaCorrida && r.primera_deteccion === ultimaCorrida ? '<span class="nt-nueva">NUEVO</span>' : '';
+      const cambio = r.fecha_cambio_estado ? `<span class="ar-cambio">antes: ${esc(estadoEs(r.estado_anterior))} (${fmtFecha(r.fecha_cambio_estado)})</span>` : '';
+      const hs = hitos(r).filter(h => h[1]).map(([n, f]) => `<span>${esc(n)}:</span> ${fmtFecha(f)}`).join('<br>');
+      return `<tr>
+        <td class="fecha">${fmtFecha(r.fecha_inicio)}</td>
+        <td class="tit"><a href="${esc(r.url)}" target="_blank" rel="noopener">${esc(r.nombre)}</a>${nuevo}<div class="sum">${det}</div></td>
+        <td>${esc(tipoCorto(r.tipo) || '—')}<div class="sum" style="color:var(--muted);font-size:11px">${esc(r.categoria === 'Veterinary' ? 'Veterinario' : 'Humano')}${r.evaluado_por_prac ? ' · PRAC' : ''}</div></td>
+        <td><span class="ar-est ${r.en_curso ? 'curso' : 'fin'}">${esc(estadoEs(r.estado))}</span>${cambio}</td>
+        <td>${esc(RES_ES[r.resultado_prac] || r.resultado_prac || '—')}</td>
+        <td class="hitos">${hs || '—'}</td>
+        <td class="fecha">${fmtFecha(r.fecha_actualizacion)}</td></tr>`;
+    }).join('');
+    $('arBody').innerHTML = rows || '<tr><td colspan="7" class="state-note">Ningún arbitraje coincide con los filtros.</td></tr>';
+  }
+
+  function dibujar(id, config) {
+    if (charts[id]) charts[id].destroy();
+    charts[id] = new Chart($(id), config);
+  }
+
+  function graficos() {
+    try {
+      const porAnio = {};
+      FIL.forEach(r => {
+        const a = r.fecha_inicio.slice(0, 4); if (!a) return;
+        porAnio[a] ||= { h: 0, v: 0 };
+        porAnio[a][r.categoria === 'Veterinary' ? 'v' : 'h']++;
+      });
+      const anios = Object.keys(porAnio).sort();
+      dibujar('chartArbAnio', {
+        type: 'bar',
+        data: { labels: anios, datasets: [
+          { label: 'Humano', data: anios.map(a => porAnio[a].h), backgroundColor: '#003399' },
+          { label: 'Veterinario', data: anios.map(a => porAnio[a].v), backgroundColor: '#1A8C93' },
+        ] },
+        options: { maintainAspectRatio: false,
+          plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } } },
+          scales: { x: { stacked: true }, y: { stacked: true, beginAtZero: true, ticks: { precision: 0 } } } },
+      });
+      const porTipo = {};
+      FIL.forEach(r => { if (r.tipo) porTipo[r.tipo] = (porTipo[r.tipo] || 0) + 1; });
+      const top = Object.entries(porTipo).sort((a, b) => b[1] - a[1]).slice(0, 12);
+      const tipos = top.map(t => t[0]);
+      dibujar('chartArbTipo', {
+        type: 'bar',
+        data: { labels: tipos.map(tipoCorto), datasets: [{ label: 'Arbitrajes', data: top.map(t => t[1]), backgroundColor: '#1E3A78' }] },
+        options: { indexAxis: 'y', maintainAspectRatio: false,
+          plugins: { legend: { display: false }, tooltip: { callbacks: { title: it => tipos[it[0].dataIndex] } } },
+          scales: { x: { beginAtZero: true, ticks: { precision: 0 } }, y: { ticks: { autoSkip: false, font: { size: 11 } } } },
+          onClick: (evt, els) => { if (els.length) { $('arTipo').value = tipos[els[0].index]; page = 0; run(); } },
+          onHover: (evt, els) => { evt.native.target.style.cursor = els.length ? 'pointer' : 'default'; } },
+      });
+    } catch (e) {
+      console.warn('No se pudieron dibujar los gráficos de arbitrajes:', e);
+    }
+  }
+
+  return { cargar };
+})();
+
+const FUENTES = { minutas: ['btnMinutas', 'blockMinutas'], recom: ['btnRecom', 'blockRecom'], arbitrajes: ['btnArbitrajes', 'blockArbitrajes'], noticias: ['btnNoticias', 'blockNoticias'] };
 function cambiarFuente(fuente) {
   if (!FUENTES[fuente]) fuente = 'minutas';
   Object.entries(FUENTES).forEach(([k, [btn, blk]]) => {
@@ -978,6 +1295,7 @@ function cambiarFuente(fuente) {
   });
   if (location.hash.slice(1) !== fuente) history.replaceState(null, '', '#' + fuente);
   if (fuente === 'noticias') Noticias.cargar();  // carga diferida (~3900 filas) solo al abrir la pestaña
+  if (fuente === 'arbitrajes') Arbitrajes.cargar();  // carga diferida (~600 filas)
 }
 window.addEventListener('hashchange', () => cambiarFuente(location.hash.slice(1)));
 
@@ -1012,7 +1330,7 @@ window.addEventListener('hashchange', () => cambiarFuente(location.hash.slice(1)
   }
 
 })();
-// Pestaña inicial según el hash (#minutas, #recom, #noticias); se abre de
+// Pestaña inicial según el hash (#minutas, #recom, #arbitrajes, #noticias); se abre de
 // inmediato para que Noticias no espere la carga de las otras vistas.
 cambiarFuente(location.hash.slice(1) || 'minutas');
 </script>

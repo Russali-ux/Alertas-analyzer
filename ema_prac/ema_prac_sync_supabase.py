@@ -11,6 +11,8 @@ Sube (upsert) los JSON generados por scraper_ema_prac.py a Supabase.
   (INN / Señal / Acción para el titular, desde la lista acumulada de HALMED)
 - Lee ema_prac/data/ema_noticias.json              -> tabla public.ema_noticias
   (News JSON data file de EMA, refrescado cada 5 días)
+- Lee ema_prac/data/ema_arbitrajes.json            -> tabla public.ema_arbitrajes
+  (Referrals JSON data file de EMA, refrescado a diario)
 
 Usa la SERVICE_ROLE key (bypassa RLS) y hace upsert idempotente con
 on_conflict=dedupe_key + Prefer: resolution=merge-duplicates (mismo patrón
@@ -25,6 +27,7 @@ Uso local:
   python3 ema_prac/ema_prac_sync_supabase.py                    # todo
   python3 ema_prac/ema_prac_sync_supabase.py --fuente prac      # minutas/recom/HALMED
   python3 ema_prac/ema_prac_sync_supabase.py --fuente noticias  # solo ema_noticias
+  python3 ema_prac/ema_prac_sync_supabase.py --fuente arbitrajes  # solo ema_arbitrajes
 """
 
 from __future__ import annotations
@@ -176,9 +179,27 @@ def preparar_noticias(regs: list[dict]) -> list[dict]:
     ]
 
 
+CAMPOS_ARBITRAJES = (
+    "nombre", "principios_activos", "categoria", "tipo", "estado", "en_curso", "arbitraje_seguridad",
+    "nombres_centralizados", "nombres_nacionales", "clase", "referencia", "modelo_decision",
+    "evaluado_por_prac", "modelo_autorizacion", "resultado_prac", "fecha_inicio",
+    "fecha_recomendacion_prac", "fecha_posicion_cmdh", "fecha_opinion_comite", "fecha_decision_ce",
+    "fecha_publicacion", "fecha_actualizacion", "url", "primera_deteccion", "estado_anterior",
+    "fecha_cambio_estado", "fuente_timestamp", "dedupe_key",
+)
+
+
+def preparar_arbitrajes(regs: list[dict]) -> list[dict]:
+    return [
+        {k: r.get(k) for k in CAMPOS_ARBITRAJES}
+        for r in regs
+        if r.get("dedupe_key") and (r.get("nombre") or "").strip()
+    ]
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description="Sync EMA PRAC + Noticias a Supabase")
-    ap.add_argument("--fuente", choices=("todo", "prac", "noticias"), default="todo")
+    ap.add_argument("--fuente", choices=("todo", "prac", "noticias", "arbitrajes"), default="todo")
     fuente = ap.parse_args().fuente
     print(f"→ Sincronizando módulo EMA a Supabase (fuente: {fuente})")
     resumen = []
@@ -205,6 +226,10 @@ def main() -> None:
         # Filas livianas (sin contenido_md): lotes de 500 bastan y aceleran ~3900 filas
         n4 = upsert("ema_noticias", preparar_noticias(cargar("ema_noticias.json")), lote=500)
         resumen.append(f"Noticias EMA: {n4}")
+
+    if fuente in ("todo", "arbitrajes"):
+        n5 = upsert("ema_arbitrajes", preparar_arbitrajes(cargar("ema_arbitrajes.json")), lote=500)
+        resumen.append(f"Arbitrajes EMA: {n5}")
 
     print("\n✓ Listo — " + " · ".join(resumen))
 

@@ -26,10 +26,18 @@ Tercera fuente (independiente de los PDF):
      cada noticia a partir del JSON previo commiteado, para saber cuáles son
      nuevas en cada corrida.
 
+Cuarta fuente (independiente de los PDF):
+  4. Arbitrajes EMA (referrals) — "Referrals JSON data file" de la misma página.
+     ~600 procedimientos (Art. 31, 20, 107i, 29(4)...) con estado, principios
+     activos y fechas de cada hito (inicio, recomendación PRAC, posición CMDh,
+     opinión CHMP/CVMP, decisión de la Comisión). dedupe_key = md5(referral_url).
+     Conserva "primera_deteccion" y registra el último cambio de estado.
+
 Salidas (consumidas luego por ema_prac_sync_supabase.py):
   ema_prac/data/ema_prac_minutas.json          (agendas + minutas)
   ema_prac/data/ema_prac_recomendaciones.json  (PRAC recommendations on signals)
   ema_prac/data/ema_noticias.json              (News JSON data file de EMA)
+  ema_prac/data/ema_arbitrajes.json            (Referrals JSON data file de EMA)
 
 NOTA sobre el HTML de EMA: las clases CSS "reference-number", "first-published"
 y "last-updated" vienen concatenadas sin espacio con "fw-normal" (bug de su
@@ -42,6 +50,7 @@ Uso local:
   python3 ema_prac/scraper_ema_prac.py                     # todo (PRAC + noticias)
   python3 ema_prac/scraper_ema_prac.py --fuente prac       # solo agendas/minutas/recomendaciones
   python3 ema_prac/scraper_ema_prac.py --fuente noticias   # solo News JSON (workflow cada 5 días)
+  python3 ema_prac/scraper_ema_prac.py --fuente arbitrajes # solo Referrals JSON (workflow diario)
 """
 
 from __future__ import annotations
@@ -71,6 +80,7 @@ SIGNALS_PAGE = (
 # conocida del archivo (fallback si cambia el maquetado de la página).
 JSON_DATA_PAGE = f"{BASE_URL}/en/about-us/about-website/download-website-data-json-data-format"
 NEWS_JSON_FALLBACK = f"{BASE_URL}/en/documents/report/news-json-report_en.json"
+REFERRALS_JSON_FALLBACK = f"{BASE_URL}/en/documents/report/referrals-output-json-report_en.json"
 
 ROOT = Path(__file__).resolve().parent
 PDF_DIR = ROOT / "pdfs"
@@ -507,6 +517,124 @@ def raspar_noticias() -> list[dict]:
 
 
 # ─────────────────────────────────────────────────────────────────
+# Arbitrajes EMA (Referrals JSON data file)
+# ─────────────────────────────────────────────────────────────────
+# Estados en los que el procedimiento ya terminó (el resto se considera "en curso")
+ESTADOS_FINALES = {"european commission final decision", "cmdh final position"}
+
+
+def _en_curso(estado: str | None, a: dict) -> bool:
+    """Sin estado final y con actividad en los últimos 3 años (el JSON trae algunos registros
+    antiguos que quedaron en un estado intermedio, p. ej. una opinión CHMP de 2010)."""
+    if (estado or "").lower() in ESTADOS_FINALES:
+        return False
+    fechas = [_fecha_iso(a.get(k)) for k in ("procedure_start_date", "prac_recommendation_date",
+              "cmdh_position_date", "chmp_cvmp_opinion_date", "first_published_date", "last_updated_date")]
+    ultima = max((f for f in fechas if f), default=None)
+    limite = (datetime.now(timezone.utc).date().replace(day=1).isoformat())
+    limite = f"{int(limite[:4]) - 3}{limite[4:]}"
+    return bool(ultima and ultima >= limite)
+
+
+def localizar_referrals_json() -> str:
+    """Enlace del 'Referrals JSON data file' en la página de descargas JSON (fallback: URL conocida)."""
+    try:
+        soup = get_soup(JSON_DATA_PAGE)
+        for a in soup.find_all("a", href=True):
+            href = a["href"]
+            if "referrals" in href.lower() and href.lower().endswith(".json"):
+                return urljoin(BASE_URL, href)
+        print("  ⚠️  No se encontró el enlace 'Referrals JSON' en la página; uso la URL conocida")
+    except requests.RequestException as exc:
+        print(f"  ⚠️  No se pudo leer {JSON_DATA_PAGE} ({exc}); uso la URL conocida")
+    return REFERRALS_JSON_FALLBACK
+
+
+def raspar_arbitrajes() -> list[dict]:
+    url = localizar_referrals_json()
+    print(f"  Descargando {url}")
+    r = session.get(url, timeout=120, headers={"Accept": "application/json"})
+    r.raise_for_status()
+    payload = r.json()
+    datos = payload.get("data", payload) if isinstance(payload, dict) else payload
+    meta = payload.get("meta", {}) if isinstance(payload, dict) else {}
+    if not isinstance(datos, list) or not datos:
+        raise ValueError("El Referrals JSON de EMA no trae una lista de arbitrajes en 'data'")
+    print(f"  {len(datos)} arbitrajes en el archivo (meta: {meta})")
+
+    # Estado previo (JSON commiteado): primera detección y seguimiento de cambios de estado
+    ruta = DATA_DIR / "ema_arbitrajes.json"
+    previos: dict[str, dict] = {}
+    if ruta.exists():
+        try:
+            previos = {a["dedupe_key"]: a for a in json.loads(ruta.read_text(encoding="utf-8"))}
+        except (ValueError, KeyError):
+            previos = {}
+    hoy = datetime.now(timezone.utc).date().isoformat()
+    txt = lambda v: (v or "").strip() or None
+
+    registros: list[dict] = []
+    vistos: set[str] = set()
+    for a in datos:
+        url_ref = (a.get("referral_url") or "").strip()
+        nombre = (a.get("referral_name") or "").strip()
+        if not url_ref or not nombre:
+            continue
+        key = md5(url_ref)
+        if key in vistos:
+            continue
+        vistos.add(key)
+        estado = txt(a.get("current_status"))
+        prev = previos.get(key, {})
+        estado_prev = prev.get("estado")
+        cambio = bool(prev) and estado_prev != estado
+        registros.append({
+            "nombre": nombre,
+            "principios_activos": _lista(a.get("international_non_proprietary_name_inn_common_name")) or None,
+            "categoria": txt(a.get("category")),
+            "tipo": txt(a.get("referral_type")),
+            "estado": estado,
+            "en_curso": _en_curso(estado, a),
+            "arbitraje_seguridad": (a.get("safety_referral") or "").strip().lower() == "yes",
+            "nombres_centralizados": _lista(a.get("associated_names_centrally_authorised_medicines")) or None,
+            "nombres_nacionales": _lista(a.get("associated_names_non_centrally_authorised_medicines")) or None,
+            "clase": txt(a.get("class")),
+            "referencia": txt(a.get("reference_number")),
+            "modelo_decision": txt(a.get("prac_decision_making_model")) or txt(a.get("non_prac_decision_making_model")),
+            "evaluado_por_prac": bool(txt(a.get("prac_decision_making_model"))),
+            "modelo_autorizacion": txt(a.get("authorisation_model")),
+            "resultado_prac": txt(a.get("prac_recommendation")),
+            "fecha_inicio": _fecha_iso(a.get("procedure_start_date")),
+            "fecha_recomendacion_prac": _fecha_iso(a.get("prac_recommendation_date")),
+            "fecha_posicion_cmdh": _fecha_iso(a.get("cmdh_position_date")),
+            "fecha_opinion_comite": _fecha_iso(a.get("chmp_cvmp_opinion_date")),
+            "fecha_decision_ce": _fecha_iso(a.get("european_commission_decision_date")),
+            "fecha_publicacion": _fecha_iso(a.get("first_published_date")),
+            "fecha_actualizacion": _fecha_iso(a.get("last_updated_date")),
+            "url": url_ref,
+            "primera_deteccion": prev.get("primera_deteccion") or hoy,
+            "estado_anterior": estado_prev if cambio else prev.get("estado_anterior"),
+            "fecha_cambio_estado": hoy if cambio else prev.get("fecha_cambio_estado"),
+            "fuente_timestamp": meta.get("timestamp"),
+            "dedupe_key": key,
+        })
+
+    registros.sort(key=lambda x: (x["fecha_inicio"] or x["fecha_publicacion"] or ""), reverse=True)
+    if previos:
+        nuevos = [x for x in registros if x["dedupe_key"] not in previos]
+        cambios = [x for x in registros if x["fecha_cambio_estado"] == hoy and x["dedupe_key"] in previos]
+        print(f"  {len(nuevos)} arbitraje(s) nuevo(s) y {len(cambios)} cambio(s) de estado")
+        for x in nuevos[:20]:
+            print(f"    + {x['fecha_inicio']}  {x['nombre'][:100]}  [{x['estado']}]")
+        for x in cambios[:20]:
+            print(f"    ~ {x['nombre'][:80]}: {x['estado_anterior']} → {x['estado']}")
+    else:
+        print("  Primera carga: todos los arbitrajes se marcan con la fecha de hoy")
+    print(f"  En curso: {sum(1 for x in registros if x['en_curso'])}")
+    return registros
+
+
+# ─────────────────────────────────────────────────────────────────
 def ejecutar_prac() -> None:
     print("→ Raspando agendas y minutas del PRAC ...")
     agendas, minutas = raspar_agendas_y_minutas()
@@ -541,15 +669,26 @@ def ejecutar_noticias() -> None:
     print(f"✓ Noticias EMA — {len(registros)} registros guardados en data/ema_noticias.json")
 
 
+def ejecutar_arbitrajes() -> None:
+    print("→ Descargando Arbitrajes EMA (Referrals JSON data file) ...")
+    registros = raspar_arbitrajes()
+    (DATA_DIR / "ema_arbitrajes.json").write_text(
+        json.dumps(registros, ensure_ascii=False, indent=1), encoding="utf-8"
+    )
+    print(f"✓ Arbitrajes EMA — {len(registros)} registros guardados en data/ema_arbitrajes.json")
+
+
 def main() -> None:
-    ap = argparse.ArgumentParser(description="Scraper EMA: PRAC + Noticias")
-    ap.add_argument("--fuente", choices=("todo", "prac", "noticias"), default="todo",
+    ap = argparse.ArgumentParser(description="Scraper EMA: PRAC + Noticias + Arbitrajes")
+    ap.add_argument("--fuente", choices=("todo", "prac", "noticias", "arbitrajes"), default="todo",
                     help="qué fuente raspar (por defecto: todo)")
     fuente = ap.parse_args().fuente
     if fuente in ("todo", "prac"):
         ejecutar_prac()
     if fuente in ("todo", "noticias"):
         ejecutar_noticias()
+    if fuente in ("todo", "arbitrajes"):
+        ejecutar_arbitrajes()
 
 
 if __name__ == "__main__":

@@ -1,0 +1,57 @@
+name: EMA Arbitrajes (Referrals JSON · diario) → Supabase
+
+# Descarga el "Referrals JSON data file" de la EMA (todos los arbitrajes: Art. 31, 20, 107i,
+# 29(4)...), detecta arbitrajes nuevos y cambios de estado, y los sube a public.ema_arbitrajes.
+on:
+  schedule:
+    # 11:30 UTC = 06:30 Lima, todos los días. La EMA regenera el archivo a diario.
+    - cron: '30 11 * * *'
+  workflow_dispatch:
+
+# Mismo grupo que el workflow de EMA PRAC: nunca corren a la vez (ambos hacen commit en ema_prac/data)
+concurrency:
+  group: ema-prac
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  arbitrajes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests beautifulsoup4 pymupdf
+
+      - name: Descargar Arbitrajes EMA (Referrals JSON)
+        run: python ema_prac/scraper_ema_prac.py --fuente arbitrajes
+
+      - name: Sync a Supabase
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: python ema_prac/ema_prac_sync_supabase.py --fuente arbitrajes
+
+      - name: Commit del JSON actualizado
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add ema_prac/data/ema_arbitrajes.json
+          if ! git diff --cached --quiet; then
+            git commit -m "chore(ema): arbitrajes $(date -u +%F)"
+            git pull --rebase origin "${GITHUB_REF_NAME}"
+            git push
+          else
+            echo "Sin cambios en los arbitrajes."
+          fi
