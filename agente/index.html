@@ -140,7 +140,7 @@ h2{margin:0;font-size:12px;font-family:var(--mono);text-transform:uppercase;lett
 </header>
 
 <main class="wrap">
-  <div class="banner" id="demoBanner" hidden><b>Demostración con datos de ejemplo.</b> Las cifras salen de una búsqueda real de «metformina», pero la corrida es simulada. Inicia sesión en Alertas-analyzer para enviar tareas a tu agente.</div>
+  <div class="banner" id="demoBanner" hidden><b>Demostración con datos de ejemplo.</b> Las cifras salen de una búsqueda real de «metformina», pero la corrida es simulada. Para que el agente procese <b>tus</b> instrucciones, <a href="../index.html">inicia sesión en Alertas-analyzer</a> y vuelve a esta página.</div>
 
   <section class="panel composer" aria-labelledby="hComp">
     <h2 id="hComp">Nueva tarea para el agente</h2>
@@ -477,7 +477,10 @@ async function enviar() {
   const instruccion = $('instr').value.trim();
   if (instruccion.length < 3) { $('estadoEnvio').textContent = 'Escribe qué quieres que haga el agente.'; return; }
   $('enviar').disabled = true;
-  if (demo) { $('instr').value = ''; correrDemo(instruccion); $('enviar').disabled = false; return; }
+  if (demo) {
+    $('estadoEnvio').innerHTML = 'Estás en modo demostración: tu instrucción no se envió. <a href="../index.html">Inicia sesión en Alertas-analyzer</a> y vuelve aquí para que el agente la procese.';
+    $('enviar').disabled = false; return;
+  }
   $('estadoEnvio').textContent = 'Enviando…';
   const { data, error } = await sb.from('agente_tareas').insert({ instruccion }).select().single();
   if (error) { $('estadoEnvio').textContent = 'No se pudo enviar: ' + error.message; $('enviar').disabled = false; return; }
@@ -564,7 +567,6 @@ function correrDemo(instruccion) {
     if (i === GUION.length) {
       Object.assign(t, {estado:'completada', terminado_en:new Date().toISOString(), informe_md:INFORME_DEMO, tokens_in:18400, tokens_out:1900});
       renderTareas(); render();
-      demoTimer = setTimeout(() => correrDemo(t.instruccion), 9000);
       return;
     }
     render();
@@ -584,7 +586,7 @@ async function iniciar() {
 
   let session = null;
   try {
-    sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {auth:{persistSession:true, autoRefreshToken:true}});
+    sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {auth:{persistSession:true, autoRefreshToken:true, storageKey:'sb-alertas-digemid-auth'}});
     session = (await sb.auth.getSession()).data.session;
   } catch (e) { /* sin red o sin almacenamiento: modo demostración */ }
   demo = !session || location.hash === '#demo';
