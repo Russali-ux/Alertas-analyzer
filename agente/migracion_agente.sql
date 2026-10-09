@@ -47,6 +47,7 @@ comment on table public.agente_eventos is
 
 create index if not exists agente_eventos_tarea_ts on public.agente_eventos (tarea_id, ts);
 create index if not exists agente_tareas_estado on public.agente_tareas (estado, creado_en);
+create index if not exists agente_tareas_creado_por on public.agente_tareas (creado_por);
 
 -- ---------- RLS ----------
 alter table public.agente_tareas  enable row level security;
@@ -56,31 +57,33 @@ create or replace function public.agente_es_admin()
 returns boolean language sql stable security definer set search_path = public as $$
   select exists (select 1 from public.perfiles p where p.id = auth.uid() and p.rol = 'admin');
 $$;
+revoke all on function public.agente_es_admin() from public, anon;
+grant execute on function public.agente_es_admin() to authenticated;
 
 drop policy if exists agente_tareas_select on public.agente_tareas;
 create policy agente_tareas_select on public.agente_tareas
   for select to authenticated
-  using (creado_por = auth.uid() or public.agente_es_admin());
+  using (creado_por = (select auth.uid()) or (select public.agente_es_admin()));
 
 drop policy if exists agente_tareas_insert on public.agente_tareas;
 create policy agente_tareas_insert on public.agente_tareas
   for insert to authenticated
-  with check (creado_por = auth.uid() and estado = 'pendiente'
+  with check (creado_por = (select auth.uid()) and estado = 'pendiente'
               and informe_md is null and iniciado_en is null);
 
 -- El usuario solo puede CANCELAR su propia tarea pendiente/en curso.
 drop policy if exists agente_tareas_cancelar on public.agente_tareas;
 create policy agente_tareas_cancelar on public.agente_tareas
   for update to authenticated
-  using (creado_por = auth.uid() and estado in ('pendiente','en_curso'))
-  with check (creado_por = auth.uid() and estado = 'cancelada');
+  using (creado_por = (select auth.uid()) and estado in ('pendiente','en_curso'))
+  with check (creado_por = (select auth.uid()) and estado = 'cancelada');
 
 drop policy if exists agente_eventos_select on public.agente_eventos;
 create policy agente_eventos_select on public.agente_eventos
   for select to authenticated
   using (exists (select 1 from public.agente_tareas t
                  where t.id = tarea_id
-                   and (t.creado_por = auth.uid() or public.agente_es_admin())));
+                   and (t.creado_por = (select auth.uid()) or (select public.agente_es_admin()))));
 
 -- (sin políticas de insert/update para eventos: solo service_role escribe)
 
