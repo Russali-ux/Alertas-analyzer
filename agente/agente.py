@@ -483,7 +483,15 @@ def procesar(tarea_id: str, simular: bool = False) -> None:
         if simular or not os.environ.get("ANTHROPIC_API_KEY"):
             res = motor_heuristico(tarea, log)
         else:
-            res = motor_claude(tarea, log)
+            try:
+                res = motor_claude(tarea, log)
+            except Exception as e:  # noqa: BLE001 — clave inválida, sin saldo, modelo inexistente…
+                if type(e).__module__.split(".")[0] != "anthropic":
+                    raise
+                log("agente", "aviso", f"Claude no respondió ({type(e).__name__}: {str(e)[:160]}). "
+                                       "Continúo con el motor heurístico.")
+                sb_patch("agente_tareas", f"id=eq.{tarea_id}", {"modelo": f"heuristico (fallo {MODELO})"})
+                res = motor_heuristico(tarea, log)
     except Exception as e:  # noqa: BLE001 — cualquier fallo debe quedar en la bitácora
         log("agente", "error", f"Fallo inesperado: {type(e).__name__}: {e}")
         res = {"estado": "error", "resumen": f"{type(e).__name__}: {e}"}
