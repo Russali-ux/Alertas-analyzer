@@ -502,7 +502,7 @@ async function cancelar() {
 // ===================== Demostración =====================
 // Cifras tomadas de una búsqueda real de «metformina»/«metformin» en Supabase (oct 2026).
 const GUION = [
-  ['agente','inicio','Leyendo la instrucción con claude-sonnet-5-5',{}],
+  ['agente','inicio','Leyendo la instrucción con claude-haiku-5-5',{}],
   ['agente','pensamiento','Busco metformina en las fuentes peruanas y «metformin» en las internacionales; al final cruzo con el portafolio.',{}],
   ['digemid','inicio','Buscando «metformina» en Alertas DIGEMID',{}],
   ['digemid','ok','4 registro(s) en Alertas DIGEMID',{encontrados:4, ultima:'2026-01-26'}],
@@ -555,7 +555,7 @@ function correrDemo(instruccion) {
   clearTimeout(demoTimer);
   const ahora = Date.now();
   const t = {id:'demo-' + ahora, instruccion: instruccion || 'Revisa todas las fuentes por «metformina» y cruza con el portafolio',
-             estado:'en_curso', creado_en:new Date(ahora).toISOString(), iniciado_en:new Date(ahora).toISOString(), modelo:'claude-sonnet-5-5 (demo)'};
+             estado:'en_curso', creado_en:new Date(ahora).toISOString(), iniciado_en:new Date(ahora).toISOString(), modelo:'claude-haiku-5-5 (demo)'};
   tareas = [t, ...tareas.filter(x => !String(x.id).startsWith('demo-'))].slice(0, 5);
   actual = t; eventos = []; filtroEst = null; renderTareas(); render();
   let i = 0;

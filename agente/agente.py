@@ -22,7 +22,7 @@ Variables de entorno
   SUPABASE_URL                 https://ggbnfdaxtsngsjssrwrl.supabase.co
   SUPABASE_SERVICE_ROLE_KEY    service_role (solo en GitHub Secrets)
   ANTHROPIC_API_KEY            si falta, se usa el motor heurístico
-  AGENTE_MODELO                opcional, por defecto claude-sonnet-5-5
+  AGENTE_MODELO                opcional, por defecto claude-haiku-5-5
   GITHUB_TOKEN, GITHUB_REPOSITORY   para disparar scrapers (los pone Actions)
   GITHUB_RUN_URL               opcional, enlace a la corrida actual
 """
@@ -45,7 +45,7 @@ import requests
 # ---------------------------------------------------------------------------
 SUPABASE_URL = (os.environ.get("SUPABASE_URL") or "https://ggbnfdaxtsngsjssrwrl.supabase.co").rstrip("/")
 SERVICE_KEY = os.environ.get("SUPABASE_SERVICE_ROLE_KEY", "")
-MODELO = os.environ.get("AGENTE_MODELO") or "claude-sonnet-5-5"
+MODELO = os.environ.get("AGENTE_MODELO") or "claude-haiku-5-5"
 MAX_PASOS = int(os.environ.get("AGENTE_MAX_PASOS") or "14")
 HOY = dt.date.today()
 
