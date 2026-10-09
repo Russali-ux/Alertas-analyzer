@@ -43,8 +43,8 @@ Deno.serve(async (req) => {
   if (!tarea) return json({ error: "Tarea no encontrada" }, 404);
   if (tarea.estado !== "pendiente") return json({ ok: true, aviso: `La tarea ya está ${tarea.estado}` });
 
-  const token = Deno.env.get("GH_DISPATCH_TOKEN");
-  const repo = Deno.env.get("GH_REPO") ?? "Russali-ux/Alertas-analyzer";
+  const token = Deno.env.get("GH_DISPATCH_TOKEN")?.trim();
+  const repo = (Deno.env.get("GH_REPO") ?? "Russali-ux/Alertas-analyzer").trim();
   if (!token) return json({ ok: false, aviso: "Sin GH_DISPATCH_TOKEN; la tomará el ciclo de 15 min" });
 
   const r = await fetch(`https://api.github.com/repos/${repo}/dispatches`, {
@@ -56,6 +56,11 @@ Deno.serve(async (req) => {
     },
     body: JSON.stringify({ event_type: "agente_tarea", client_payload: { tarea_id: tareaId } }),
   });
-  if (r.status !== 204) return json({ ok: false, aviso: `GitHub respondió ${r.status}` }, 502);
+  if (r.status !== 204) {
+    // El cuerpo de error de GitHub no incluye el token; sirve para diagnosticar permisos o repo.
+    const detalle = (await r.text()).slice(0, 300);
+    console.error(`dispatch a ${repo} falló: ${r.status} ${detalle}`);
+    return json({ ok: false, aviso: `GitHub respondió ${r.status}`, repo, detalle }, 502);
+  }
   return json({ ok: true });
 });
