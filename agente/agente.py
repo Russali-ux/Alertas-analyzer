@@ -417,7 +417,9 @@ su sus todas todo todos un una ultimos últimos y ultimo último dias días sema
 monitor monitorea dame informe reporte actualiza actualizar actualizado actualizada actualizacion
 puedes puede podrias indicarme indicame dime decirme saber quiero necesito favor ficha fichas tecnica
 tecnicas prospecto prospectos sido esta estan ese esa este comprimido comprimidos tabletas capsulas
-solucion inyectable jarabe suspension crema mg mcg ml cima digemid pavs agencia producto productos""".split())
+solucion inyectable jarabe suspension crema mg mcg ml cima digemid pavs agencia producto productos
+portafolio afecten afecta afectan fda ema prac aems india cdsco pvpi modificatorias fuente cambio
+recientes reciente nuevas nuevos estado desactualizadas""".split())
 
 
 def _sin_tildes(s: str) -> str:
