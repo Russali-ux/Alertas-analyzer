@@ -414,7 +414,10 @@ def motor_claude(tarea: dict, log: Bitacora) -> dict:
 _VACIAS = set("""a al alerta alertas analiza busca buscar cambios de del desde dime el en entre esta este
 fuentes hay la las lo los me mes meses mi mis o para por que qué revisa revisar señal señales sobre
 su sus todas todo todos un una ultimos últimos y ultimo último dias días semana semanas año hoy
-monitor monitorea dame informe reporte actualiza actualizar""".split())
+monitor monitorea dame informe reporte actualiza actualizar actualizado actualizada actualizacion
+puedes puede podrias indicarme indicame dime decirme saber quiero necesito favor ficha fichas tecnica
+tecnicas prospecto prospectos sido esta estan ese esa este comprimido comprimidos tabletas capsulas
+solucion inyectable jarabe suspension crema mg mcg ml cima digemid pavs agencia producto productos""".split())
 
 
 def _sin_tildes(s: str) -> str:
@@ -429,11 +432,15 @@ def motor_heuristico(tarea: dict, log: Bitacora) -> dict:
     if citado:
         termino = citado[0].strip()
     else:
-        palabras = [w for w in re.findall(r"[\wáéíóúñÁÉÍÓÚÑ\-]{4,}", texto)
-                    if _sin_tildes(w.lower()) not in {_sin_tildes(v) for v in _VACIAS} and not w.isdigit()]
-        termino = max(palabras, key=len) if palabras else None
+        limpio = re.sub(r"https?://\S+", " ", texto)  # las URL no son términos de búsqueda
+        vacias = {_sin_tildes(v) for v in _VACIAS}
+        palabras = [w for w in re.findall(r"[\wáéíóúñÁÉÍÓÚÑ\-]{4,}", limpio)
+                    if _sin_tildes(w.lower()) not in vacias and not any(c.isdigit() for c in w)]
+        # Un nombre en MAYÚSCULAS (p. ej. NORMOSTOP) suele ser el producto: tiene prioridad
+        mayus = [w for w in palabras if w.isupper()]
+        termino = mayus[0] if mayus else (max(palabras, key=len) if palabras else None)
     # «metformina» → «metformin» encuentra también el nombre en inglés (ilike por subcadena)
-    if termino and len(termino) > 6 and termino[-1].lower() in "aoe":
+    if termino and not termino.isupper() and len(termino) > 6 and termino[-1].lower() in "aoe":
         termino = termino[:-1]
     m = re.search(r"(\d+)\s*(d[ií]as|semanas?|mes(?:es)?|años?)", texto, re.I)
     desde = None
