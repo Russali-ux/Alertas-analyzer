@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Agente ConkoSafe IA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.6/purify.min.js"></script>
+<style>
+/* Layout: cabecera ConkoSafe → compositor → [tareas | tablero isométrico] → [bitácora | informe].
+   Paleta y tipografía heredadas de los módulos de Alertas-analyzer (Sora + Space Mono, azul ConkoSafe). */
+:root{
+  --bg:#f4f6f8; --surface:#ffffff; --ink:#1a2433; --muted:#617286; --line:#d3dbe5;
+  --header:#1A3A5C; --accent:#0077cc;
+  --ground:#e4e8e6; --grid:#d3d9d6; --tile:#f2f4f3; --slab:#c4cbc8; --road:#cdd3d1; --roadline:#f7f9f8;
+  --idle:#b9c1c6; --card:#ffffff; --cardshadow:rgba(26,36,51,.10);
+  --ok:#11845b; --warn:#b97800; --err:#c62839; --run:#c98a00;
+  --sora:'Sora',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --mono:'Space Mono',ui-monospace,'SFMono-Regular',Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f1620; --surface:#16202c; --ink:#e3e9f0; --muted:#93a3b5; --line:#2a3747;
+  --header:#132a43; --accent:#4aa8f0;
+  --ground:#18222d; --grid:#223040; --tile:#1e2a37; --slab:#0c131b; --road:#263443; --roadline:#3a4a5c;
+  --idle:#4a5866; --card:#1b2733; --cardshadow:rgba(0,0,0,.35);
+  --ok:#3fc48f; --warn:#e6a92e; --err:#f06272; --run:#e6a92e; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1620; --surface:#16202c; --ink:#e3e9f0; --muted:#93a3b5; --line:#2a3747;
+  --header:#132a43; --accent:#4aa8f0;
+  --ground:#18222d; --grid:#223040; --tile:#1e2a37; --slab:#0c131b; --road:#263443; --roadline:#3a4a5c;
+  --idle:#4a5866; --card:#1b2733; --cardshadow:rgba(0,0,0,.35);
+  --ok:#3fc48f; --warn:#e6a92e; --err:#f06272; --run:#e6a92e; color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--sora);font-size:14px;line-height:1.5}
+a{color:var(--accent)}
+header{background:linear-gradient(120deg,#1A3A5C,#0077cc);color:#fff;padding:18px max(16px,3vw);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+header h1{margin:0;font-size:19px;font-weight:700;letter-spacing:.2px}
+header p{margin:3px 0 0;font:12px var(--mono);opacity:.85}
+.pills{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.pill{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;padding:5px 12px;border-radius:20px;font:11px var(--mono);text-decoration:none}
+a.pill:hover{background:rgba(255,255,255,.26)}
+.wrap{max-width:1360px;margin:0 auto;padding-block:20px 56px;padding-inline:max(16px,3vw);display:grid;gap:18px}
+.banner{border:1px solid var(--line);border-left:4px solid var(--warn);background:var(--surface);border-radius:10px;padding:10px 14px;font-size:13px;color:var(--muted)}
+.banner b{color:var(--ink)}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:12px}
+h2{margin:0;font-size:12px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700}
+
+/* Compositor */
+.composer{padding:16px;display:grid;gap:10px}
+.composer textarea{width:100%;min-height:74px;resize:vertical;border:1px solid var(--line);border-radius:10px;padding:11px 12px;font:14px var(--sora);color:var(--ink);background:var(--bg)}
+.composer textarea:focus-visible,button:focus-visible,.task:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.sug{font:12px var(--sora);border:1px dashed var(--line);background:transparent;color:var(--muted);border-radius:16px;padding:4px 10px;cursor:pointer;text-align:left}
+.sug:hover{color:var(--ink);border-color:var(--accent)}
+.btn{font:600 13px var(--sora);border:none;border-radius:8px;background:var(--accent);color:#fff;padding:9px 18px;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent);padding:6px 12px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.estado-envio{font-size:12.5px;color:var(--muted);flex:1;min-width:0}
+
+/* Tareas + tablero */
+.main{display:grid;grid-template-columns:270px minmax(0,1fr);gap:18px}
+.tasks{padding:14px;display:flex;flex-direction:column;gap:10px;min-width:0;max-height:820px}
+.tasklist{display:flex;flex-direction:column;gap:6px;overflow:auto}
+.task{all:unset;cursor:pointer;display:grid;gap:3px;padding:9px 10px;border-radius:8px;border:1px solid transparent}
+.task:hover{background:var(--bg)}
+.task[aria-current="true"]{border-color:var(--accent);background:var(--bg)}
+.task .t{font-size:13px;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.task .m{font:11px var(--mono);color:var(--muted);display:flex;gap:8px;align-items:center}
+.badge{font:700 10px var(--mono);text-transform:uppercase;letter-spacing:.05em;padding:1px 7px;border-radius:10px;border:1px solid currentColor}
+.b-pendiente{color:var(--muted)} .b-en_curso{color:var(--run)} .b-completada{color:var(--ok)} .b-error{color:var(--err)} .b-cancelada{color:var(--muted)}
+.vacio{color:var(--muted);font-size:13px;padding:6px 2px}
+
+.boardwrap{padding:12px;min-width:0}
+.boardhead{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding:2px 4px 8px}
+.boardhead .q{font-size:13.5px;color:var(--ink);min-width:0;flex:1}
+.board{position:relative;width:100%;aspect-ratio:1004/786;max-width:100%;container-type:inline-size;background:var(--ground);border-radius:10px;overflow:hidden}
+.board > svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.cards{position:absolute;inset:0;pointer-events:none}
+.card{position:absolute;width:19.2%;transform:translateY(-100%);background:var(--card);border-radius:.55cqw;box-shadow:0 .25cqw 1cqw var(--cardshadow);padding:.85cqw 1.1cqw .85cqw 1.5cqw;font-size:1.22cqw;line-height:1.45;pointer-events:auto;cursor:pointer;transition:box-shadow .2s, opacity .3s}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:.42cqw;background:var(--c);border-radius:.55cqw 0 0 .55cqw}
+.card .h{display:flex;justify-content:space-between;align-items:center;gap:.5cqw;font-weight:700;font-size:1.36cqw;margin-bottom:.25cqw}
+.card .l{color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card .l b{color:var(--ink);font-family:var(--mono);font-weight:700}
+.card.idle{opacity:.62}
+.card.sel{box-shadow:0 0 0 .2cqw var(--c),0 .25cqw 1cqw var(--cardshadow)}
+.card.activo{box-shadow:0 0 0 .18cqw var(--run),0 .25cqw 1cqw var(--cardshadow)}
+.ic{width:1.6cqw;height:1.6cqw;flex:none}
+.spin{animation:spin 1.1s linear infinite;transform-origin:50% 50%}
+@keyframes spin{to{transform:rotate(360deg)}}
+.tile-hit{cursor:pointer}
+.pulse{animation:pulse 1.6s ease-out infinite;transform-box:fill-box;transform-origin:center}
+@keyframes pulse{0%{opacity:.55;transform:scale(.6)}100%{opacity:0;transform:scale(1.5)}}
+
+/* Lista de estaciones para pantallas estrechas */
+.stationlist{display:none;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-top:10px}
+.stationlist .card{position:relative;width:auto;transform:none;font-size:12px;border-radius:8px;padding:8px 10px 8px 13px}
+.stationlist .card .h{font-size:13px}
+.stationlist .card::before{width:4px;border-radius:8px 0 0 8px}
+.stationlist .ic{width:15px;height:15px}
+
+/* Bitácora + informe */
+.bottom{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:18px}
+.log,.report{padding:14px 16px;min-width:0}
+.loglist{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-direction:column;gap:2px;max-height:430px;overflow:auto;font-size:13px}
+.loglist li{display:grid;grid-template-columns:62px 12px minmax(0,1fr);gap:8px;align-items:start;padding:5px 2px;border-bottom:1px solid var(--line)}
+.loglist time{font:11px var(--mono);color:var(--muted);padding-top:2px;font-variant-numeric:tabular-nums}
+.loglist .dot{width:10px;height:10px;border-radius:50%;margin-top:5px;background:var(--c)}
+.loglist .who{font:700 10.5px var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.loglist .msg{overflow-wrap:anywhere}
+.loglist li.pensamiento .msg{color:var(--muted);font-style:italic}
+.loglist li.error .msg{color:var(--err)} .loglist li.aviso .msg{color:var(--warn)}
+.filtro{font:11px var(--mono);color:var(--muted)}
+.report .meta{font:11.5px var(--mono);color:var(--muted);display:flex;gap:14px;flex-wrap:wrap;margin:8px 0 4px}
+.md{font-size:14px;max-width:72ch;overflow-wrap:anywhere}
+.md h1,.md h2,.md h3{font-family:var(--sora);text-transform:none;letter-spacing:0;color:var(--ink);font-size:16px;margin:16px 0 6px;text-wrap:balance}
+.md table{border-collapse:collapse;font-size:13px;display:block;overflow-x:auto;max-width:100%}
+.md th,.md td{border:1px solid var(--line);padding:5px 9px;text-align:left}
+.md th{background:var(--bg)}
+.md code{font-family:var(--mono);font-size:12.5px}
+
+@media (max-width:1100px){.main{grid-template-columns:1fr}.tasks{max-height:none}.tasklist{flex-direction:row;overflow-x:auto}.task{min-width:220px}}
+@media (max-width:760px){.cards{display:none}.stationlist{display:grid}.bottom{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){.spin,.pulse{animation:none}}
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>Agente ConkoSafe IA</h1>
+    <p>Vigilancia multifuente · DIGEMID · CIMA · PAVS · FDA · EMA · India</p>
+  </div>
+  <div class="pills">
+    <span class="pill" id="who">Sin sesión</span>
+    <a class="pill" href="../index.html">← Alertas-analyzer</a>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="banner" id="demoBanner" hidden><b>Demostración con datos de ejemplo.</b> Las cifras salen de una búsqueda real de «metformina», pero la corrida es simulada. Inicia sesión en Alertas-analyzer para enviar tareas a tu agente.</div>
+
+  <section class="panel composer" aria-labelledby="hComp">
+    <h2 id="hComp">Nueva tarea para el agente</h2>
+    <textarea id="instr" placeholder="Ej.: Revisa todas las fuentes por «valproato» en los últimos 12 meses y cruza con el portafolio"></textarea>
+    <div class="row" id="sugs"></div>
+    <div class="row">
+      <button class="btn" id="enviar" type="button">Enviar al agente</button>
+      <span class="estado-envio" id="estadoEnvio" role="status"></span>
+    </div>
+  </section>
+
+  <div class="main">
+    <aside class="panel tasks" aria-labelledby="hTasks">
+      <h2 id="hTasks">Tus tareas</h2>
+      <div class="tasklist" id="tasklist"><div class="vacio">Todavía no has enviado tareas.</div></div>
+    </aside>
+
+    <section class="panel boardwrap" aria-labelledby="hBoard">
+      <div class="boardhead">
+        <h2 id="hBoard">Estado del agente</h2>
+        <div class="q" id="tareaActual"></div>
+        <button class="btn ghost" id="cancelar" type="button" hidden>Cancelar tarea</button>
+      </div>
+      <div class="board" id="board">
+        <svg id="svg" viewBox="-502 -150 1004 786" role="img" aria-label="Tablero isométrico de actividad del agente"></svg>
+        <div class="cards" id="cards"></div>
+      </div>
+      <div class="stationlist" id="stationlist"></div>
+    </section>
+  </div>
+
+  <div class="bottom">
+    <section class="panel log" aria-labelledby="hLog">
+      <div class="row" style="justify-content:space-between">
+        <h2 id="hLog">Bitácora</h2>
+        <span class="filtro" id="filtro"></span>
+      </div>
+      <ol class="loglist" id="loglist"></ol>
+    </section>
+    <section class="panel report" aria-labelledby="hRep">
+      <h2 id="hRep">Informe</h2>
+      <div class="meta" id="repmeta"></div>
+      <div class="md" id="informe"><p class="vacio">El informe aparece aquí cuando el agente termina.</p></div>
+    </section>
+  </div>
+</main>
+
+<script>
+// ===================== Configuración =====================
+const SUPABASE_URL = 'https://ggbnfdaxtsngsjssrwrl.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdnYm5mZGF4dHNuZ3Nqc3Nyd3JsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ4ODAzODIsImV4cCI6MjEwMDQ1NjM4Mn0.126hhMpakcOlzp5KyyWdMU56UjwLwn5Xn4Nc13OIjgU';
+
+// Baldosas del tablero: g = posición en la cuadrícula isométrica (i, j)
+const EST = [
+  {k:'digemid',        n:'Alertas DIGEMID',   c:'#d9435a', g:[0,0]},
+  {k:'modificatorias', n:'Modificatorias RS', c:'#e2662f', g:[1,0]},
+  {k:'cima',           n:'CIMA · AEMPS',      c:'#d39a0c', g:[2,0]},
+  {k:'pavs',           n:'PAVS',              c:'#18a374', g:[0,1]},
+  {k:'agente',         n:'Agente',            c:'#1A3A5C', g:[1,1]},
+  {k:'fda_aems',       n:'FDA AEMS',          c:'#2d6fd8', g:[2,1]},
+  {k:'ema',            n:'EMA PRAC',          c:'#6044b8', g:[0,2]},
+  {k:'india',          n:'India · CDSCO/PvPI',c:'#0f97a6', g:[1,2]},
+  {k:'portafolio',     n:'Portafolio',        c:'#b8417e', g:[2,2]},
+  {k:'informe',        n:'Informe',           c:'#3d4b5c', g:[3,3]},
+];
+const P = 180, TW = 112, TH = 56;           // paso de cuadrícula y semiejes de la baldosa
+const pos = ([i,j]) => ({x:(i-j)*P, y:(i+j)*P/2});
+const VB = {x:-502, y:-150, w:1004, h:786};
+const SUGERENCIAS = [
+  'Revisa todas las fuentes por «valproato» en los últimos 12 meses y cruza con el portafolio',
+  '¿Qué fuentes están desactualizadas? Dame el estado de todas',
+  'Señales de FDA y EMA de los últimos 90 días que afecten productos de mi portafolio',
+  'Actualiza CIMA y dime los cambios de ficha técnica de esta semana',
+];
+
+// ===================== Estado =====================
+let sb = null, usuario = null, demo = false;
+let tareas = [], actual = null, eventos = [], canal = null, sondeo = null, filtroEst = null;
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const hora = ts => new Date(ts).toLocaleTimeString('es-PE', {timeZone:'America/Lima', hour12:false});
+const fechaCorta = ts => new Date(ts).toLocaleString('es-PE', {timeZone:'America/Lima', day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit', hour12:false});
+const ESTADO_TXT = {pendiente:'en cola', en_curso:'en curso', completada:'completada', error:'error', cancelada:'cancelada'};
+
+// ===================== Tablero SVG =====================
+const NS = 'http://www.w3.org/2000/svg';
+function el(tag, attrs = {}, parent) {
+  const e = document.createElementNS(NS, tag);
+  for (const [k,v] of Object.entries(attrs)) e.setAttribute(k, v);
+  if (parent) parent.appendChild(e);
+  return e;
+}
+const pts = a => a.map(p => p.join(',')).join(' ');
+
+function dibujarBase() {
+  const svg = $('svg');
+  svg.innerHTML = '';
+  const defs = el('defs', {}, svg);
+  const clip = el('clipPath', {id:'clipb'}, defs);
+  el('rect', {x:VB.x, y:VB.y, width:VB.w, height:VB.h}, clip);
+  const g = el('g', {'clip-path':'url(#clipb)'}, svg);
+
+  // cuadrícula isométrica de fondo
+  const grid = el('g', {stroke:'var(--grid)', 'stroke-width':1}, g);
+  for (let t = -6; t <= 9; t += .5) {
+    const a = pos([t,-6]), b = pos([t,9]); el('line', {x1:a.x, y1:a.y, x2:b.x, y2:b.y}, grid);
+    const c = pos([-6,t]), d = pos([9,t]); el('line', {x1:c.x, y1:c.y, x2:d.x, y2:d.y}, grid);
+  }
+  // caminos: centro → cada fuente, portafolio → informe
+  const roads = el('g', {id:'roads'}, g);
+  const centro = pos([1,1]);
+  for (const s of EST) {
+    if (s.k === 'agente' || s.k === 'informe') continue;
+    camino(roads, centro, pos(s.g), s.k);
+  }
+  camino(roads, pos([2,2]), pos([3,3]), 'informe');
+
+  // baldosas
+  const tiles = el('g', {id:'tiles'}, g);
+  for (const s of EST) {
+    const {x,y} = pos(s.g), d = 9;
+    const tg = el('g', {class:'tile-hit', 'data-k':s.k, tabindex:'-1'}, tiles);
+    el('polygon', {points:pts([[x-TW,y],[x,y+TH],[x,y+TH+d],[x-TW,y+d]]), fill:'var(--slab)'}, tg);
+    el('polygon', {points:pts([[x,y+TH],[x+TW,y],[x+TW,y+d],[x,y+TH+d]]), fill:'var(--slab)', opacity:.75}, tg);
+    el('polygon', {points:pts([[x,y-TH],[x+TW,y],[x,y+TH],[x-TW,y]]), fill:'var(--tile)', stroke:s.c, 'stroke-width':3, 'stroke-linejoin':'round', id:'tile-'+s.k}, tg);
+    el('g', {id:'bld-'+s.k}, tg);
+    tg.addEventListener('click', () => filtrar(s.k));
+  }
+}
+
+function camino(parent, a, b, k) {
+  const g = el('g', {id:'road-'+k}, parent);
+  el('line', {x1:a.x, y1:a.y, x2:b.x, y2:b.y, stroke:'var(--road)', 'stroke-width':18, 'stroke-linecap':'round'}, g);
+  el('line', {x1:a.x, y1:a.y, x2:b.x, y2:b.y, stroke:'var(--roadline)', 'stroke-width':2.5, 'stroke-dasharray':'10 12'}, g);
+  g.dataset.path = `M${a.x},${a.y} L${b.x},${b.y}`;
+}
+
+// Edificio isométrico: su altura crece con los registros encontrados
+function edificio(s, st) {
+  const g = $('bld-'+s.k); g.innerHTML = '';
+  const {x:cx, y:cy0} = pos(s.g);
+  const x = cx + 46, y = cy0 + 16, bw = 30, bh = 15;
+  let h = 7;
+  if (s.k === 'agente') h = 22 + Math.min(st.pasos, 14) * 2.2;
+  else if (s.k === 'informe') h = st.st === 'ok' ? 34 : st.st === 'activo' ? 18 : 7;
+  else if (st.n != null) h = 8 + Math.min(10 * Math.log2(1 + st.n), 44);
+  const col = st.st === 'idle' ? 'var(--idle)' : s.c;
+  const top = [[x,y-bh-h],[x+bw,y-h],[x,y+bh-h],[x-bw,y-h]];
+  const izq = [[x-bw,y-h],[x,y+bh-h],[x,y+bh],[x-bw,y]];
+  const der = [[x,y+bh-h],[x+bw,y-h],[x+bw,y],[x,y+bh]];
+  if (st.st === 'activo') el('ellipse', {cx:x, cy:y, rx:bw*1.9, ry:bh*1.9, fill:'none', stroke:'var(--run)', 'stroke-width':3, class:'pulse'}, g);
+  el('polygon', {points:pts(izq), fill:col}, g); el('polygon', {points:pts(izq), fill:'#000', opacity:.22}, g);
+  el('polygon', {points:pts(der), fill:col}, g); el('polygon', {points:pts(der), fill:'#000', opacity:.38}, g);
+  el('polygon', {points:pts(top), fill:col}, g); el('polygon', {points:pts(top), fill:'#fff', opacity:.18}, g);
+  // ventanas en las fuentes con datos
+  if (st.n && s.k !== 'agente' && s.k !== 'informe') {
+    for (let r = 0; r < Math.min(4, Math.floor(h / 12)); r++)
+      el('line', {x1:x+6, y1:y+bh-10-r*11, x2:x+bw-6, y2:y-10-r*11+3, stroke:'#fff', 'stroke-width':2, opacity:.55}, g);
+  }
+  // camino animado mientras la estación trabaja
+  const road = $('road-'+s.k);
+  if (road) {
+    road.querySelectorAll('circle').forEach(c => c.remove());
+    if (st.st === 'activo' && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      for (let i = 0; i < 2; i++) {
+        const c = el('circle', {r:5, fill:s.c}, road);
+        el('animateMotion', {dur:'1.6s', begin:`${i*0.8}s`, repeatCount:'indefinite', path:road.dataset.path}, c);
+      }
+    }
+  }
+}
+
+// ===================== Tarjetas =====================
+const ICONOS = {
+  ok:     '<svg class="ic" viewBox="0 0 16 16"><path d="M3 8.5l3.2 3L13 4.5" fill="none" stroke="var(--ok)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  activo: '<svg class="ic spin" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="none" stroke="var(--run)" stroke-width="2"/><path d="M8 2a6 6 0 0 1 0 12z" fill="var(--run)"/></svg>',
+  aviso:  '<svg class="ic" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.2" fill="none" stroke="var(--warn)" stroke-width="1.8"/><path d="M8 4.5v4.2M8 11.2v.3" stroke="var(--warn)" stroke-width="2" stroke-linecap="round"/></svg>',
+  error:  '<svg class="ic" viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8" stroke="var(--err)" stroke-width="2" stroke-linecap="round"/></svg>',
+  idle:   '<svg class="ic" viewBox="0 0 16 16"><circle cx="8" cy="8" r="5.5" fill="none" stroke="var(--idle)" stroke-width="1.8"/></svg>',
+};
+
+function estados() {
+  const m = {};
+  for (const s of EST) m[s.k] = {st:'idle', n:null, ultima:null, pasos:0, rs:null, ultimoMsg:''};
+  for (const e of eventos) {
+    const st = m[e.estacion] || m.agente, mt = e.metricas || {};
+    st.st = ({inicio:'activo', progreso:'activo', pensamiento:'activo', ok:'ok', aviso:'aviso', error:'error'})[e.tipo] || st.st;
+    if (mt.encontrados != null) st.n = mt.encontrados;
+    if (mt.total != null && st.n == null) st.n = mt.total;
+    if (mt.ultima) st.ultima = mt.ultima;
+    if (mt.rs_por_vencer != null) st.rs = mt.rs_por_vencer;
+    st.ultimoMsg = e.mensaje;
+    if (e.estacion !== 'agente' && e.tipo === 'inicio') m.agente.pasos++;
+  }
+  if (actual) {
+    const ag = m.agente;
+    if (actual.estado === 'en_curso' || actual.estado === 'pendiente') ag.st = 'activo';
+    else if (actual.estado === 'completada') ag.st = 'ok';
+    else if (actual.estado === 'error') ag.st = 'error';
+    else if (actual.estado === 'cancelada') ag.st = 'aviso';
+    // si la tarea terminó, nada sigue "trabajando"
+    if (!['en_curso','pendiente'].includes(actual.estado)) for (const k in m) if (m[k].st === 'activo') m[k].st = 'aviso';
+  }
+  return m;
+}
+
+function lineas(s, st) {
+  const v = x => x == null ? '—' : x;
+  if (s.k === 'agente') {
+    const durs = actual?.iniciado_en ? Math.round(((actual.terminado_en ? new Date(actual.terminado_en) : new Date()) - new Date(actual.iniciado_en)) / 1000) : null;
+    return [['Consultas', st.pasos], ['Estado', actual ? ESTADO_TXT[actual.estado] : 'esperando'], durs != null ? ['Tiempo', durs + ' s'] : null];
+  }
+  if (s.k === 'informe') return [['Estado', st.st === 'ok' ? 'listo' : st.st === 'idle' ? '—' : 'redactando'], ['Hallazgos', v(st.n)]];
+  if (s.k === 'portafolio') return [['Coinciden', v(st.n)], ['RS ≤ 180 días', v(st.rs)]];
+  return [['Encontrados', v(st.n)], ['Último dato', v(st.ultima)]];
+}
+
+function tarjetaHTML(s, st) {
+  return `<div class="h"><span>${esc(s.n)}</span>${ICONOS[st.st]}</div>` +
+    lineas(s, st).filter(Boolean).slice(0, 2).map(([l, val]) => `<div class="l">${esc(l)} <b>${esc(val)}</b></div>`).join('');
+}
+
+function render() {
+  const m = estados();
+  const cards = $('cards'), lista = $('stationlist');
+  cards.innerHTML = ''; lista.innerHTML = '';
+  for (const s of EST) {
+    const st = m[s.k], {x, y} = pos(s.g);
+    edificio(s, st);
+    $('tile-'+s.k).setAttribute('stroke-opacity', st.st === 'idle' ? .45 : 1);
+    for (const parent of [cards, lista]) {
+      const d = document.createElement('div');
+      d.className = `card ${st.st}${filtroEst === s.k ? ' sel' : ''}`;
+      d.style.setProperty('--c', s.c);
+      if (parent === cards) {
+        d.style.left = ((x - 102 - VB.x) / VB.w * 100) + '%';
+        d.style.top = ((y - 22 - VB.y) / VB.h * 100) + '%';
+      }
+      d.title = st.ultimoMsg || s.n;
+      d.innerHTML = tarjetaHTML(s, st);
+      d.addEventListener('click', () => filtrar(s.k));
+      parent.appendChild(d);
+    }
+  }
+  renderLog(); renderInforme(); renderCabecera();
+}
+
+function filtrar(k) { filtroEst = filtroEst === k ? null : k; render(); }
+
+// ===================== Bitácora e informe =====================
+function renderLog() {
+  const ol = $('loglist'), colores = Object.fromEntries(EST.map(s => [s.k, s]));
+  const lista = filtroEst ? eventos.filter(e => e.estacion === filtroEst) : eventos;
+  $('filtro').innerHTML = filtroEst ? `Solo ${esc(colores[filtroEst].n)} · <a href="#" id="quitarFiltro">ver todo</a>` : (eventos.length ? `${eventos.length} pasos` : '');
+  const q = $('quitarFiltro'); if (q) q.onclick = ev => { ev.preventDefault(); filtrar(filtroEst); };
+  const abajo = ol.scrollHeight - ol.scrollTop - ol.clientHeight < 40;
+  ol.innerHTML = lista.length ? lista.map(e => {
+    const s = colores[e.estacion] || colores.agente;
+    return `<li class="${esc(e.tipo)}" style="--c:${s.c}"><time>${hora(e.ts)}</time><span class="dot"></span><div><div class="who">${esc(s.n)}</div><div class="msg">${esc(e.mensaje)}</div></div></li>`;
+  }).join('') : `<li style="display:block;border:none" class="vacio">${actual ? 'Esperando a que el agente empiece…' : 'Selecciona o envía una tarea.'}</li>`;
+  if (abajo) ol.scrollTop = ol.scrollHeight;
+}
+
+function renderInforme() {
+  const box = $('informe'), meta = $('repmeta');
+  if (!actual) { box.innerHTML = '<p class="vacio">El informe aparece aquí cuando el agente termina.</p>'; meta.innerHTML = ''; return; }
+  const partes = [`Enviada ${fechaCorta(actual.creado_en)}`];
+  if (actual.modelo) partes.push(`Motor ${esc(actual.modelo)}`);
+  if (actual.tokens_in) partes.push(`${(actual.tokens_in + actual.tokens_out).toLocaleString('es-PE')} tokens`);
+  if (actual.run_url) partes.push(`<a href="${esc(actual.run_url)}" target="_blank" rel="noopener">Ver corrida</a>`);
+  meta.innerHTML = partes.map(p => `<span>${p}</span>`).join('');
+  if (actual.informe_md) box.innerHTML = DOMPurify.sanitize(marked.parse(actual.informe_md));
+  else if (actual.estado === 'error') box.innerHTML = `<p style="color:var(--err)">${esc(actual.resumen || 'El agente terminó con error.')}</p>`;
+  else if (actual.estado === 'cancelada') box.innerHTML = '<p class="vacio">Tarea cancelada.</p>';
+  else box.innerHTML = '<p class="vacio">El agente sigue trabajando; el informe aparece aquí al terminar.</p>';
+}
+
+function renderCabecera() {
+  $('tareaActual').textContent = actual ? actual.instruccion : '';
+  $('cancelar').hidden = !(actual && ['pendiente','en_curso'].includes(actual.estado) && !demo);
+}
+
+function renderTareas() {
+  const box = $('tasklist');
+  if (!tareas.length) { box.innerHTML = '<div class="vacio">Todavía no has enviado tareas.</div>'; return; }
+  box.innerHTML = tareas.map(t => `<button class="task" type="button" data-id="${t.id}" aria-current="${actual?.id === t.id}">
+      <span class="t">${esc(t.instruccion)}</span>
+      <span class="m"><span class="badge b-${t.estado}">${ESTADO_TXT[t.estado]}</span>${fechaCorta(t.creado_en)}</span></button>`).join('');
+  box.querySelectorAll('.task').forEach(b => b.onclick = () => seleccionar(b.dataset.id));
+}
+
+// ===================== Datos (Supabase) =====================
+async function cargarTareas() {
+  const { data, error } = await sb.from('agente_tareas').select('*').order('creado_en', {ascending:false}).limit(25);
+  if (error) { $('estadoEnvio').textContent = 'No pude leer tus tareas: ' + error.message + ' (¿aplicaste la migración del agente?)'; return; }
+  tareas = data; renderTareas();
+}
+
+async function seleccionar(id) {
+  if (demo) return;
+  actual = tareas.find(t => t.id === id) || null; filtroEst = null; eventos = [];
+  renderTareas(); render();
+  if (canal) { sb.removeChannel(canal); canal = null; }
+  clearInterval(sondeo);
+  if (!actual) return;
+  const { data } = await sb.from('agente_eventos').select('*').eq('tarea_id', id).order('ts').limit(500);
+  eventos = data || []; render();
+  canal = sb.channel('agente-' + id)
+    .on('postgres_changes', {event:'INSERT', schema:'public', table:'agente_eventos', filter:'tarea_id=eq.' + id}, p => {
+      if (!eventos.some(e => e.id === p.new.id)) { eventos.push(p.new); render(); }
+    })
+    .on('postgres_changes', {event:'UPDATE', schema:'public', table:'agente_tareas', filter:'id=eq.' + id}, p => actualizarTarea(p.new))
+    .subscribe();
+  // respaldo por si el tiempo real no está activo
+  sondeo = setInterval(async () => {
+    if (!actual || !['pendiente','en_curso'].includes(actual.estado)) return;
+    const ult = eventos.at(-1)?.id || 0;
+    const [{ data: ev }, { data: t }] = await Promise.all([
+      sb.from('agente_eventos').select('*').eq('tarea_id', id).gt('id', ult).order('ts'),
+      sb.from('agente_tareas').select('*').eq('id', id).maybeSingle()]);
+    if (ev?.length) { eventos.push(...ev.filter(e => !eventos.some(x => x.id === e.id))); }
+    if (t) actualizarTarea(t); else render();
+  }, 6000);
+}
+
+function actualizarTarea(t) {
+  const i = tareas.findIndex(x => x.id === t.id);
+  if (i >= 0) tareas[i] = t;
+  if (actual?.id === t.id) actual = t;
+  renderTareas(); render();
+}
+
+async function enviar() {
+  const instruccion = $('instr').value.trim();
+  if (instruccion.length < 3) { $('estadoEnvio').textContent = 'Escribe qué quieres que haga el agente.'; return; }
+  $('enviar').disabled = true;
+  if (demo) { $('instr').value = ''; correrDemo(instruccion); $('enviar').disabled = false; return; }
+  $('estadoEnvio').textContent = 'Enviando…';
+  const { data, error } = await sb.from('agente_tareas').insert({ instruccion }).select().single();
+  if (error) { $('estadoEnvio').textContent = 'No se pudo enviar: ' + error.message; $('enviar').disabled = false; return; }
+  $('instr').value = '';
+  tareas.unshift(data); renderTareas(); seleccionar(data.id);
+  const { data: r, error: e2 } = await sb.functions.invoke('agente-despachar', { body: { tarea_id: data.id } });
+  $('estadoEnvio').textContent = (!e2 && r?.ok)
+    ? 'Tarea enviada. El agente arranca en unos segundos.'
+    : 'Tarea en cola. El agente la tomará en su próxima revisión (máx. 15 min).';
+  $('enviar').disabled = false;
+}
+
+async function cancelar() {
+  if (!actual) return;
+  const { error } = await sb.from('agente_tareas').update({ estado:'cancelada', terminado_en:new Date().toISOString() }).eq('id', actual.id);
+  if (error) $('estadoEnvio').textContent = 'No se pudo cancelar: ' + error.message;
+}
+
+// ===================== Demostración =====================
+// Cifras tomadas de una búsqueda real de «metformina»/«metformin» en Supabase (oct 2026).
+const GUION = [
+  ['agente','inicio','Leyendo la instrucción con claude-sonnet-5-5',{}],
+  ['agente','pensamiento','Busco metformina en las fuentes peruanas y «metformin» en las internacionales; al final cruzo con el portafolio.',{}],
+  ['digemid','inicio','Buscando «metformina» en Alertas DIGEMID',{}],
+  ['digemid','ok','4 registro(s) en Alertas DIGEMID',{encontrados:4, ultima:'2026-01-26'}],
+  ['modificatorias','inicio','Buscando «metformina» en Modificatorias RS',{}],
+  ['modificatorias','ok','1 registro(s): Metformina e inhibidores SGLT-2',{encontrados:1, ultima:'2025-12-03'}],
+  ['cima','inicio','Buscando «metformina» en CIMA · AEMPS',{}],
+  ['cima','aviso','Sin coincidencias en CIMA · AEMPS',{encontrados:0}],
+  ['pavs','inicio','Buscando «metformina» en PAVS',{}],
+  ['pavs','ok','16 registro(s) en PAVS',{encontrados:16, ultima:'2026-09-10'}],
+  ['fda_aems','inicio','Buscando «metformin» en FDA AEMS',{}],
+  ['fda_aems','ok','11 registro(s) en FDA AEMS',{encontrados:11, ultima:'Oct–Dic 2025'}],
+  ['ema','inicio','Buscando «metformin» en EMA PRAC (señales y arbitrajes)',{}],
+  ['ema','ok','7 registro(s): 3 señales PRAC y 4 arbitrajes',{encontrados:7, ultima:'2023-11-20'}],
+  ['india','inicio','Buscando «metformin» en India · CDSCO/PvPI',{}],
+  ['india','aviso','Sin coincidencias en India · CDSCO/PvPI',{encontrados:0}],
+  ['agente','pensamiento','Hay hallazgos en 5 fuentes; la más reciente es PAVS (sep 2026). Reviso si afectan productos registrados.',{}],
+  ['portafolio','inicio','Cruzando «metformina» con el portafolio registrado',{}],
+  ['portafolio','ok','9 producto(s) del portafolio coinciden; 3 con RS que vence en ≤ 180 días',{encontrados:9, rs_por_vencer:3}],
+  ['informe','inicio','Redactando el informe',{}],
+  ['informe','ok','Informe listo: 39 registros sobre metformina en 5 fuentes; 9 productos del portafolio',{encontrados:39}],
+];
+const INFORME_DEMO = `## Metformina · revisión multifuente
+
+*Informe de ejemplo. Las cifras salen de tu base de Supabase al 09/10/2026; el texto lo redactaría el agente.*
+
+| Fuente | Registros | Último dato |
+|---|---|---|
+| PAVS | 16 | 10/09/2026 |
+| FDA AEMS | 11 | Oct–Dic 2025 |
+| EMA PRAC (señales + arbitrajes) | 7 | 20/11/2023 |
+| Alertas DIGEMID | 4 | 26/01/2026 |
+| Modificatorias RS | 1 | 03/12/2025 |
+| CIMA, India | 0 | — |
+
+### Lo más relevante
+- **Modificatorias N.° 15-2025** (DIGEMID): actualización de seguridad para metformina e inhibidores SGLT-2. Evaluar impacto y comunicar posición a DIGEMID en 15 días hábiles (D.S. 016-2011-SA).
+- **Alerta DIGEMID N.° 09-2026**: incluye Metformina 850 mg entre los productos observados.
+- **PAVS**: 16 alertas de agencias de alta vigilancia; la última, de septiembre de 2026.
+
+### Portafolio
+9 productos con metformina; 3 tienen el registro sanitario por vencer en los próximos 180 días.
+
+### Acciones sugeridas
+1. Verificar que fichas técnicas e insertos de los 9 productos reflejen la Modificatoria N.° 15-2025.
+2. Revisar las 16 alertas PAVS frente al FT-95 del periodo.
+3. Priorizar la reinscripción de los 3 registros por vencer.`;
+
+let demoTimer = null;
+function correrDemo(instruccion) {
+  clearTimeout(demoTimer);
+  const ahora = Date.now();
+  const t = {id:'demo-' + ahora, instruccion: instruccion || 'Revisa todas las fuentes por «metformina» y cruza con el portafolio',
+             estado:'en_curso', creado_en:new Date(ahora).toISOString(), iniciado_en:new Date(ahora).toISOString(), modelo:'claude-sonnet-5-5 (demo)'};
+  tareas = [t, ...tareas.filter(x => !String(x.id).startsWith('demo-'))].slice(0, 5);
+  actual = t; eventos = []; filtroEst = null; renderTareas(); render();
+  let i = 0;
+  const paso = () => {
+    if (actual !== t) return;
+    const [estacion, tipo, mensaje, metricas] = GUION[i];
+    eventos.push({id:i, tarea_id:t.id, ts:new Date().toISOString(), estacion, tipo, mensaje, metricas});
+    i++;
+    if (i === GUION.length) {
+      Object.assign(t, {estado:'completada', terminado_en:new Date().toISOString(), informe_md:INFORME_DEMO, tokens_in:18400, tokens_out:1900});
+      renderTareas(); render();
+      demoTimer = setTimeout(() => correrDemo(t.instruccion), 9000);
+      return;
+    }
+    render();
+    demoTimer = setTimeout(paso, tipo === 'inicio' ? 700 : 1000);
+  };
+  paso();
+}
+
+// ===================== Arranque =====================
+async function iniciar() {
+  dibujarBase();
+  $('sugs').innerHTML = SUGERENCIAS.map(s => `<button class="sug" type="button">${esc(s)}</button>`).join('');
+  $('sugs').querySelectorAll('.sug').forEach(b => b.onclick = () => { $('instr').value = b.textContent; $('instr').focus(); });
+  $('enviar').onclick = enviar;
+  $('cancelar').onclick = cancelar;
+  $('instr').addEventListener('keydown', e => { if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) enviar(); });
+
+  let session = null;
+  try {
+    sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {auth:{persistSession:true, autoRefreshToken:true}});
+    session = (await sb.auth.getSession()).data.session;
+  } catch (e) { /* sin red o sin almacenamiento: modo demostración */ }
+  demo = !session || location.hash === '#demo';
+  if (demo) {
+    $('demoBanner').hidden = false;
+    $('who').textContent = 'Demostración';
+    correrDemo();
+    return;
+  }
+  usuario = session.user;
+  $('who').textContent = usuario.email;
+  await cargarTareas();
+  const viva = tareas.find(t => ['pendiente','en_curso'].includes(t.estado)) || tareas[0];
+  if (viva) seleccionar(viva.id); else render();
+  // nuevas tareas o cambios de estado en la lista
+  sb.channel('agente-lista').on('postgres_changes', {event:'*', schema:'public', table:'agente_tareas'}, p => {
+    if (!p.new?.id) return;
+    if (!tareas.some(t => t.id === p.new.id)) { tareas.unshift(p.new); renderTareas(); } else actualizarTarea(p.new);
+  }).subscribe();
+}
+iniciar();
+</script>
+</body>
+</html>
