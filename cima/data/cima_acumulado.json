@@ -1,18 +1,18 @@
 {
-  "generado": "2026-10-09T19:05:52Z",
-  "generado_str": "09/10/2026 19:05 UTC",
+  "generado": "2026-10-10T18:08:15Z",
+  "generado_str": "10/10/2026 18:08 UTC",
   "fecha_codigo": "ACUMULADO",
   "periodo": {
     "desde": "23/06/2026",
-    "hasta": "09/10/2026",
-    "dias": 108
+    "hasta": "10/10/2026",
+    "dias": 109
   },
   "excel": "ConkosafeIA_Regulatorio_ACUMULADO.xlsx",
   "markdown": "../summaries/cima_ACUMULADO.md",
   "stats": {
-    "total": 13007,
+    "total": 13008,
     "solo_ft": 1894,
-    "solo_prosp": 2487,
+    "solo_prosp": 2488,
     "ambos": 8626,
     "top_labs": [
       {
@@ -58,6 +58,21 @@
     ]
   },
   "registros": [
+    {
+      "nreg": "1211618011",
+      "nombre": "NUVAXOVID JN.1 DISPERSION INYECTABLE EN JERINGA PRECARGADA",
+      "lab": "Sanofi Winthrop Industrie",
+      "fecha": "10/10/2026 06:56",
+      "tipo": "MODIFICADO",
+      "otros": "",
+      "cat": "prosp",
+      "has_ft": false,
+      "has_prosp": true,
+      "ft_pdf": null,
+      "ft_html": null,
+      "p_pdf": "https://cima.aemps.es/cima/pdfs/p/1211618011/P_1211618011.pdf",
+      "p_html": "https://cima.aemps.es/cima/dochtml/p/1211618011/P_1211618011.html"
+    },
     {
       "nreg": "86916",
       "nombre": "TRABECTEDINA TEVA 0,25 MG POLVO PARA CONCENTRADO PARA SOLUCION PARA PERFUSION EFG",
