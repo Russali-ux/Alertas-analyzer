@@ -1,7 +1,7 @@
 # ConkoSafe IA — Cambios en Ficha Técnica y Prospecto (CIMA / AEMPS)
 
-**Generado:** 12/10/2026 21:59 UTC  
-**Periodo:** 23/06/2026 → 12/10/2026 (últimos 111 días)  
+**Generado:** 13/10/2026 20:08 UTC  
+**Periodo:** 23/06/2026 → 13/10/2026 (últimos 112 días)  
 **Fuente:** [CIMA — AEMPS (registroCambios)](https://cima.aemps.es/cima/rest/registroCambios)
 
 ## Resumen
@@ -10,8 +10,8 @@
 |---|---:|
 | Solo Ficha Técnica | 1899 |
 | Solo Prospecto | 2541 |
-| FT + Prospecto (ambos) | 8643 |
-| **TOTAL con FT o Prospecto** | **13083** |
+| FT + Prospecto (ambos) | 8657 |
+| **TOTAL con FT o Prospecto** | **13097** |
 
 Descarga del detalle completo: `ConkosafeIA_Regulatorio_ACUMULADO.xlsx`
 
@@ -23,7 +23,7 @@ Descarga del detalle completo: `ConkosafeIA_Regulatorio_ACUMULADO.xlsx`
 - Teva Gmbh — 448 cambio(s)
 - Sandoz Farmaceutica S.A. — 438 cambio(s)
 - Kern Pharma S.L. — 381 cambio(s)
-- Teva Pharma S.L.U. — 372 cambio(s)
+- Teva Pharma S.L.U. — 374 cambio(s)
 - Aurovitas Spain, S.A.U. — 283 cambio(s)
 - Laboratorios Alter S.A. — 279 cambio(s)
 - Towa Pharmaceutical S.A. — 263 cambio(s)
@@ -32,6 +32,20 @@ Descarga del detalle completo: `ConkosafeIA_Regulatorio_ACUMULADO.xlsx`
 
 | Nº Registro | Medicamento | Laboratorio | Fecha | Tipo | Cambio | Enlaces |
 |---|---|---|---|---|---|---|
+| 91647 | TOFACITINIB GLENMARK 10 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Glenmark Arzneimittel Gmbh | 13/10/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/91647/FT_91647.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/91647/FT_91647.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/91647/P_91647.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91647/P_91647.html) |
+| 91648 | TOFACITINIB GLENMARK 5 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Glenmark Arzneimittel Gmbh | 13/10/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/91648/FT_91648.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/91648/FT_91648.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/91648/P_91648.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91648/P_91648.html) |
+| 91650 | RAMIPRIL/INDAPAMIDA EGIS 5 MG/1,5 MG CAPSULAS DURAS DE LIBERACION MODIFICADA | Egis Pharmaceuticals Plc. | 13/10/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/91650/FT_91650.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/91650/FT_91650.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/91650/P_91650.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91650/P_91650.html) |
+| 91653 | RAMIPRIL/INDAPAMIDA EGIS 10 MG/1,5 MG CAPSULAS DURAS DE LIBERACION MODIFICADA | Egis Pharmaceuticals Plc. | 13/10/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/91653/FT_91653.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/91653/FT_91653.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/91653/P_91653.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91653/P_91653.html) |
+| 91070 | NINTEDANIB REIG JOFRE 100 MG CAPSULAS BLANDAS EFG | Laboratorio Reig Jofre, S.A. | 13/10/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/91070/FT_91070.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/91070/FT_91070.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/91070/P_91070.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91070/P_91070.html) |
+| 91071 | NINTEDANIB REIG JOFRE 150 MG CAPSULAS BLANDAS EFG | Laboratorio Reig Jofre, S.A. | 13/10/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/91071/FT_91071.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/91071/FT_91071.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/91071/P_91071.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91071/P_91071.html) |
+| 91654 | OBLONELA 60 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Les Laboratoires Servier | 13/10/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/91654/FT_91654.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/91654/FT_91654.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/91654/P_91654.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91654/P_91654.html) |
+| 91655 | OBLONELA 30 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Les Laboratoires Servier | 13/10/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/91655/FT_91655.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/91655/FT_91655.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/91655/P_91655.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91655/P_91655.html) |
+| 91656 | OBLONELA 15 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Les Laboratoires Servier | 13/10/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/91656/FT_91656.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/91656/FT_91656.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/91656/P_91656.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91656/P_91656.html) |
+| 90541 | LENVATINIB TEVA 10 MG CAPSULAS DURAS EFG | Teva Pharma S.L.U. | 13/10/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/90541/FT_90541.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/90541/FT_90541.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/90541/P_90541.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/90541/P_90541.html) |
+| 90542 | LENVATINIB TEVA 4 MG CAPSULAS DURAS EFG | Teva Pharma S.L.U. | 13/10/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/90542/FT_90542.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/90542/FT_90542.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/90542/P_90542.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/90542/P_90542.html) |
+| 91562 | LINAGLIPTINA ADALVO 5 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Adalvo Limited | 13/10/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/91562/FT_91562.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/91562/FT_91562.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/91562/P_91562.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91562/P_91562.html) |
+| 91381 | IBUPROFENO/CAFEINA HERMES PHARMA 400MG/100MG GRANULADO RECUBIERTO | Hermes Pharma Gmbh | 13/10/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/91381/FT_91381.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/91381/FT_91381.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/91381/P_91381.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91381/P_91381.html) |
+| 91649 | AZITROMICINA GUFIC 500 MG POLVO PARA CONCENTRADO PARA SOLUCION PARA PERFUSION EFG | Gufic Ireland Limited | 13/10/2026 06:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/91649/FT_91649.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/91649/FT_91649.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/91649/P_91649.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91649/P_91649.html) |
 | 71694 | ALBUREX 200 g/L SOLUCION PARA PERFUSION | Csl Behring Gmbh | 12/10/2026 06:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/71694/P_71694.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/71694/P_71694.html) |
 | 82884 | BERINERT 2000 UI POLVO Y DISOLVENTE PARA SOLUCION INYECTABLE SUBCUTANEA | Csl Behring Gmbh | 12/10/2026 06:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/82884/P_82884.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/82884/P_82884.html) |
 | 74863 | TELMISARTAN VIR 20 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Industria Quimica Y Farmaceutica Vir S.A. | 12/10/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/74863/FT_74863.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/74863/FT_74863.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/74863/P_74863.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/74863/P_74863.html) |
