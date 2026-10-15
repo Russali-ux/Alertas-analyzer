@@ -1,17 +1,17 @@
 # ConkoSafe IA — Cambios en Ficha Técnica y Prospecto (CIMA / AEMPS)
 
-**Generado:** 14/10/2026 18:18 UTC  
-**Periodo:** 23/06/2026 → 14/10/2026 (últimos 113 días)  
+**Generado:** 15/10/2026 18:02 UTC  
+**Periodo:** 23/06/2026 → 15/10/2026 (últimos 114 días)  
 **Fuente:** [CIMA — AEMPS (registroCambios)](https://cima.aemps.es/cima/rest/registroCambios)
 
 ## Resumen
 
 | Categoría | Cantidad |
 |---|---:|
-| Solo Ficha Técnica | 1905 |
-| Solo Prospecto | 2551 |
-| FT + Prospecto (ambos) | 8685 |
-| **TOTAL con FT o Prospecto** | **13141** |
+| Solo Ficha Técnica | 1912 |
+| Solo Prospecto | 2562 |
+| FT + Prospecto (ambos) | 8686 |
+| **TOTAL con FT o Prospecto** | **13160** |
 
 Descarga del detalle completo: `ConkosafeIA_Regulatorio_ACUMULADO.xlsx`
 
@@ -20,7 +20,7 @@ Descarga del detalle completo: `ConkosafeIA_Regulatorio_ACUMULADO.xlsx`
 - Laboratorios Cinfa S.A. — 566 cambio(s)
 - Laboratorios Normon S.A. — 546 cambio(s)
 - Laboratorio Stada S.L. — 479 cambio(s)
-- Teva Gmbh — 450 cambio(s)
+- Teva Gmbh — 451 cambio(s)
 - Sandoz Farmaceutica S.A. — 440 cambio(s)
 - Kern Pharma S.L. — 384 cambio(s)
 - Teva Pharma S.L.U. — 374 cambio(s)
@@ -32,6 +32,25 @@ Descarga del detalle completo: `ConkosafeIA_Regulatorio_ACUMULADO.xlsx`
 
 | Nº Registro | Medicamento | Laboratorio | Fecha | Tipo | Cambio | Enlaces |
 |---|---|---|---|---|---|---|
+| 24700 | TIRODRIL 5mg COMPRIMIDOS | Laboratorio Estedi S.L. | 15/10/2026 06:56 | MODIFICADO | FT | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/24700/FT_24700.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/24700/FT_24700.html) |
+| 1221662003 | PYRUKYND 20 MG + 5 MG COMPRIMIDOS RECUBIERTOS CON PELICULA | Agios Netherlands B.V. | 15/10/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/1221662003/FT_1221662003.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/1221662003/FT_1221662003.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/1221662003/P_1221662003.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/1221662003/P_1221662003.html) |
+| 64888 | KETESSE 50 MG/2 ML SOLUCION INYECTABLE Y PARA PERFUSION | Menarini International Operations Luxembourg S.A. | 15/10/2026 06:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/64888/P_64888.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/64888/P_64888.html) |
+| 70882 | KETESSE 25 mg SOLUCION ORAL EN SOBRE | Menarini International Operations Luxembourg S.A. | 15/10/2026 06:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/70882/P_70882.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/70882/P_70882.html) |
+| 71101 | LATANOPROST TEVA-RATIOPHARM 50 microgramos/ml COLIRIO EN SOLUCION | Teva Gmbh | 15/10/2026 06:56 | MODIFICADO | FT | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/71101/FT_71101.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/71101/FT_71101.html) |
+| 85884 | KETESSE 25 MG GRANULADO EN SOBRE | Menarini International Operations Luxembourg S.A. | 15/10/2026 06:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/85884/P_85884.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/85884/P_85884.html) |
+| 91367 | EFFERALDOL RAPID 1 G COMPRIMIDOS | Upsa S.A.S. | 15/10/2026 06:55 | MODIFICADO | FT | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/91367/FT_91367.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/91367/FT_91367.html) |
+| 91368 | EFFERALDOL RAPID 500 MG COMPRIMIDOS RECUBIERTOS CON PELICULA | Upsa S.A.S. | 15/10/2026 06:55 | MODIFICADO | FT | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/91368/FT_91368.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/91368/FT_91368.html) |
+| 61427 | SILOSTAR 5 mg COMPRIMIDOS | Menarini International Operations Luxembourg S.A. | 15/10/2026 06:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/61427/P_61427.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/61427/P_61427.html) |
+| 71255 | SILOSTAR PLUS 5 mg/25 mg COMPRIMIDOS RECUBIERTOS CON PELICULA | Menarini International Operations Luxembourg S.A. | 15/10/2026 06:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/71255/P_71255.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/71255/P_71255.html) |
+| 71256 | SILOSTAR PLUS 5mg/12,5 mg COMPRIMIDOS RECUBIERTOS CON PELICULA | Menarini International Operations Luxembourg S.A. | 15/10/2026 06:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/71256/P_71256.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/71256/P_71256.html) |
+| 54445 | FASTUM 50 MG CÁPSULAS DURAS | Laboratorios Menarini S.A. | 15/10/2026 06:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/54445/P_54445.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/54445/P_54445.html) |
+| 56387 | FASTUM 25 mg/g GEL | Laboratorios Menarini S.A. | 15/10/2026 06:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/56387/P_56387.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/56387/P_56387.html) |
+| 60930 | KETESSE 25 mg COMPRIMIDOS RECUBIERTOS CON PELICULA | Menarini International Operations Luxembourg S.A. | 15/10/2026 06:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/60930/P_60930.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/60930/P_60930.html) |
+| 66820 | KETESSE 25 mg GRANULADO PARA SOLUCION ORAL | Menarini International Operations Luxembourg S.A. | 15/10/2026 06:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/66820/P_66820.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/66820/P_66820.html) |
+| 64917 | NERVINEX 125 mg COMPRIMIDOS | Laboratori Guidotti S.P.A. | 15/10/2026 06:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/64917/P_64917.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/64917/P_64917.html) |
+| 38394 | CEMIDON B6 50 MG/15 MG COMPRIMIDOS | Chiesi España S.A.U. | 15/10/2026 06:55 | MODIFICADO | FT | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/38394/FT_38394.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/38394/FT_38394.html) |
+| 40689 | CEMIDON B6 150 MG/25 MG COMPRIMIDOS | Chiesi España S.A.U. | 15/10/2026 06:55 | MODIFICADO | FT | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/40689/FT_40689.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/40689/FT_40689.html) |
+| 63335 | CEMIDON B6 300 MG/50 MG COMPRIMIDOS | Chiesi España S.A.U. | 15/10/2026 06:55 | MODIFICADO | FT | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/63335/FT_63335.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/63335/FT_63335.html) |
 | 22903 | VITAMINA D3 KERN PHARMA 2.000 UI/ml SOLUCION ORAL | Kern Pharma S.L. | 14/10/2026 06:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/22903/P_22903.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/22903/P_22903.html) |
 | 75289 | TRIDIAVIR 500 mg COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Laboratorios Serra Pamies S.A.U. | 14/10/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/75289/FT_75289.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/75289/FT_75289.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/75289/P_75289.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/75289/P_75289.html) |
 | 75290 | TRIDIAVIR 1000 mg COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Laboratorios Serra Pamies S.A.U. | 14/10/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/75290/FT_75290.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/75290/FT_75290.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/75290/P_75290.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/75290/P_75290.html) |
@@ -4374,7 +4393,7 @@ Descarga del detalle completo: `ConkosafeIA_Regulatorio_ACUMULADO.xlsx`
 | 67082 | IBUPROFENO ALTER GENERICOS 400 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Laboratorios Alter S.A. | 30/09/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/67082/FT_67082.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/67082/FT_67082.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/67082/P_67082.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/67082/P_67082.html) |
 | 67930 | IBUKERN 600 MG SUSPENSION ORAL | Kern Pharma S.L. | 30/09/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/67930/FT_67930.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/67930/FT_67930.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/67930/P_67930.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/67930/P_67930.html) |
 | 67931 | IBUFARMALID 600 mg SUSPENSION ORAL | Farmalider S.A. | 30/09/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/67931/FT_67931.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/67931/FT_67931.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/67931/P_67931.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/67931/P_67931.html) |
-| 68079 | IBUPROFENO BENEL 20 mg/ ml SUSPENSION ORAL | Farmalider S.A. | 30/09/2026 06:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/68079/P_68079.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/68079/P_68079.html) |
+| 68079 | IBUPROFENO BENEL 20 mg/ ml SUSPENSION ORAL | Almus Farmaceutica S.A.U. | 30/09/2026 06:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/68079/P_68079.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/68079/P_68079.html) |
 | 68200 | IBUFARMALID 400 mg SUSPENSION ORAL | Farmalider S.A. | 30/09/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/68200/FT_68200.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/68200/FT_68200.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/68200/P_68200.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/68200/P_68200.html) |
 | 68746 | HIBITANE 5mg/5mg COMPRIMIDOS PARA CHUPAR SABOR NARANJA | Ionfarma S.L. | 30/09/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/68746/FT_68746.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/68746/FT_68746.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/68746/P_68746.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/68746/P_68746.html) |
 | 69314 | IBUPROFENO (ARGININA) PENSA 600 mg GRANULADO PARA SOLUCION ORAL EFG | Towa Pharmaceutical S.A. | 30/09/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/69314/FT_69314.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/69314/FT_69314.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/69314/P_69314.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/69314/P_69314.html) |
@@ -7972,7 +7991,7 @@ Descarga del detalle completo: `ConkosafeIA_Regulatorio_ACUMULADO.xlsx`
 | 89960 | APIXABAN ZENTIVA 2,5 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Zentiva K.S. | 30/09/2026 06:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/89960/FT_89960.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/89960/FT_89960.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/89960/P_89960.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/89960/P_89960.html) |
 | 89961 | APIXABAN ZENTIVA 5 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Zentiva K.S. | 30/09/2026 06:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/89961/FT_89961.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/89961/FT_89961.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/89961/P_89961.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/89961/P_89961.html) |
 | 90017 | APREMILAST NOUCOR 30 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Noucor Health S.A. | 30/09/2026 06:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/90017/FT_90017.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/90017/FT_90017.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/90017/P_90017.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/90017/P_90017.html) |
-| 90617 | APREMILAST EIGNAPHARMA 10 MG + 20 MG + 30 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Eignapharma S.L. | 30/09/2026 06:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/90617/P_90617.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/90617/P_90617.html) |
+| 90617 | APREMILAST EIGNAPHARMA 10 MG + 20 MG + 30 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Laboratoires Medgen | 30/09/2026 06:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/90617/P_90617.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/90617/P_90617.html) |
 | 90619 | APIXABAN VIATRIS PHARMACEUTICALS 2,5 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Viatris Limited | 30/09/2026 06:55 | MODIFICADO | FT | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/90619/FT_90619.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/90619/FT_90619.html) |
 | 90620 | APIXABAN VIATRIS PHARMACEUTICALS 5 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Viatris Limited | 30/09/2026 06:55 | MODIFICADO | FT | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/90620/FT_90620.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/90620/FT_90620.html) |
 | 90774 | ALMOTRIPTAN QUALIX 12,5 MG COMPRIMIDOS BUCODISPERSABLES EFG | Qualix Pharma S.L. | 30/09/2026 06:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/90774/FT_90774.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/90774/FT_90774.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/90774/P_90774.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/90774/P_90774.html) |
