@@ -1,19 +1,19 @@
 {
-  "generado": "2026-10-16T17:49:50Z",
-  "generado_str": "16/10/2026 17:49 UTC",
+  "generado": "2026-10-17T16:47:05Z",
+  "generado_str": "17/10/2026 16:47 UTC",
   "fecha_codigo": "ACUMULADO",
   "periodo": {
     "desde": "23/06/2026",
-    "hasta": "16/10/2026",
-    "dias": 115
+    "hasta": "17/10/2026",
+    "dias": 116
   },
   "excel": "ConkosafeIA_Regulatorio_ACUMULADO.xlsx",
   "markdown": "../summaries/cima_ACUMULADO.md",
   "stats": {
-    "total": 13212,
+    "total": 13213,
     "solo_ft": 1915,
     "solo_prosp": 2570,
-    "ambos": 8727,
+    "ambos": 8728,
     "top_labs": [
       {
         "lab": "Laboratorios Cinfa S.A.",
@@ -58,6 +58,21 @@
     ]
   },
   "registros": [
+    {
+      "nreg": "1191404012",
+      "nombre": "RINVOQ 1MG/ML SOLUCION ORAL",
+      "lab": "Abbvie Deutschland Gmbh & Co. Kg",
+      "fecha": "17/10/2026 06:56",
+      "tipo": "MODIFICADO",
+      "otros": "",
+      "cat": "both",
+      "has_ft": true,
+      "has_prosp": true,
+      "ft_pdf": "https://cima.aemps.es/cima/pdfs/ft/1191404012/FT_1191404012.pdf",
+      "ft_html": "https://cima.aemps.es/cima/dochtml/ft/1191404012/FT_1191404012.html",
+      "p_pdf": "https://cima.aemps.es/cima/pdfs/p/1191404012/P_1191404012.pdf",
+      "p_html": "https://cima.aemps.es/cima/dochtml/p/1191404012/P_1191404012.html"
+    },
     {
       "nreg": "90028",
       "nombre": "VITELAX 50 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG",

@@ -1,7 +1,7 @@
 # ConkoSafe IA — Cambios en Ficha Técnica y Prospecto (CIMA / AEMPS)
 
-**Generado:** 16/10/2026 17:49 UTC  
-**Periodo:** 23/06/2026 → 16/10/2026 (últimos 115 días)  
+**Generado:** 17/10/2026 16:47 UTC  
+**Periodo:** 23/06/2026 → 17/10/2026 (últimos 116 días)  
 **Fuente:** [CIMA — AEMPS (registroCambios)](https://cima.aemps.es/cima/rest/registroCambios)
 
 ## Resumen
@@ -10,8 +10,8 @@
 |---|---:|
 | Solo Ficha Técnica | 1915 |
 | Solo Prospecto | 2570 |
-| FT + Prospecto (ambos) | 8727 |
-| **TOTAL con FT o Prospecto** | **13212** |
+| FT + Prospecto (ambos) | 8728 |
+| **TOTAL con FT o Prospecto** | **13213** |
 
 Descarga del detalle completo: `ConkosafeIA_Regulatorio_ACUMULADO.xlsx`
 
@@ -32,6 +32,7 @@ Descarga del detalle completo: `ConkosafeIA_Regulatorio_ACUMULADO.xlsx`
 
 | Nº Registro | Medicamento | Laboratorio | Fecha | Tipo | Cambio | Enlaces |
 |---|---|---|---|---|---|---|
+| 1191404012 | RINVOQ 1MG/ML SOLUCION ORAL | Abbvie Deutschland Gmbh & Co. Kg | 17/10/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/1191404012/FT_1191404012.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/1191404012/FT_1191404012.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/1191404012/P_1191404012.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/1191404012/P_1191404012.html) |
 | 90028 | VITELAX 50 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Laboratorios Combix S.L.U. | 16/10/2026 06:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/90028/P_90028.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/90028/P_90028.html) |
 | 90029 | VITELAX 100 MG COMPRIMIDOS RECUBIERTOS CON PELÍCULA EFG | Laboratorios Combix S.L.U. | 16/10/2026 06:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/90029/P_90029.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/90029/P_90029.html) |
 | 90030 | VITELAX 150 MG COMPRIMIDOS RECUBIERTOS CON PELÍCULA EFG | Laboratorios Combix S.L.U. | 16/10/2026 06:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/90030/P_90030.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/90030/P_90030.html) |
