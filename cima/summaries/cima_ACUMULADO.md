@@ -1,7 +1,7 @@
 # ConkoSafe IA — Cambios en Ficha Técnica y Prospecto (CIMA / AEMPS)
 
-**Generado:** 18/10/2026 16:54 UTC  
-**Periodo:** 23/06/2026 → 17/10/2026 (últimos 116 días)  
+**Generado:** 19/10/2026 19:35 UTC  
+**Periodo:** 23/06/2026 → 19/10/2026 (últimos 118 días)  
 **Fuente:** [CIMA — AEMPS (registroCambios)](https://cima.aemps.es/cima/rest/registroCambios)
 
 ## Resumen
@@ -9,22 +9,22 @@
 | Categoría | Cantidad |
 |---|---:|
 | Solo Ficha Técnica | 1915 |
-| Solo Prospecto | 2570 |
-| FT + Prospecto (ambos) | 8728 |
-| **TOTAL con FT o Prospecto** | **13213** |
+| Solo Prospecto | 2576 |
+| FT + Prospecto (ambos) | 8740 |
+| **TOTAL con FT o Prospecto** | **13231** |
 
 Descarga del detalle completo: `ConkosafeIA_Regulatorio_ACUMULADO.xlsx`
 
 ### Top laboratorios
 
 - Laboratorios Cinfa S.A. — 570 cambio(s)
-- Laboratorios Normon S.A. — 546 cambio(s)
+- Laboratorios Normon S.A. — 551 cambio(s)
 - Laboratorio Stada S.L. — 479 cambio(s)
-- Teva Gmbh — 451 cambio(s)
-- Sandoz Farmaceutica S.A. — 440 cambio(s)
-- Kern Pharma S.L. — 385 cambio(s)
-- Teva Pharma S.L.U. — 374 cambio(s)
-- Aurovitas Spain, S.A.U. — 283 cambio(s)
+- Teva Gmbh — 453 cambio(s)
+- Sandoz Farmaceutica S.A. — 442 cambio(s)
+- Kern Pharma S.L. — 388 cambio(s)
+- Teva Pharma S.L.U. — 373 cambio(s)
+- Aurovitas Spain, S.A.U. — 284 cambio(s)
 - Laboratorios Alter S.A. — 279 cambio(s)
 - Towa Pharmaceutical S.A. — 263 cambio(s)
 
@@ -32,6 +32,24 @@ Descarga del detalle completo: `ConkosafeIA_Regulatorio_ACUMULADO.xlsx`
 
 | Nº Registro | Medicamento | Laboratorio | Fecha | Tipo | Cambio | Enlaces |
 |---|---|---|---|---|---|---|
+| BE387493IP | SEVIKAR HCT 40 mg/5 mg/25 mg COMPRIMIDOS RECUBIERTOS CON PELICULA | Daiichi Sankyo Belgium | 19/10/2026 06:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/BE387493IP/P_BE387493IP.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/BE387493IP/P_BE387493IP.html) |
+| 90967 | NEMODIX CON ALCOHOL INCOLORO 20 MG/ML + 0,70 ML/ML SOLUCION CUTANEA | West Quimica Europa S.L. | 19/10/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/90967/FT_90967.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/90967/FT_90967.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/90967/P_90967.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/90967/P_90967.html) |
+| 83938 | HIDROXICLOROQUINA TEVA-RATIOPHARM 200 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Teva Gmbh | 19/10/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/83938/FT_83938.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/83938/FT_83938.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/83938/P_83938.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/83938/P_83938.html) |
+| 76108 | CAPECITABINA KERN PHARMA 150 mg COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Kern Pharma S.L. | 19/10/2026 06:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/76108/FT_76108.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/76108/FT_76108.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/76108/P_76108.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/76108/P_76108.html) |
+| 76109 | CAPECITABINA KERN PHARMA 500 mg COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Kern Pharma S.L. | 19/10/2026 06:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/76109/FT_76109.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/76109/FT_76109.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/76109/P_76109.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/76109/P_76109.html) |
+| 79935 | CAPECITABINA KERN PHARMA 300 MG COMPRIMIDOS RECUBIERTOS CON PELICULA | Kern Pharma S.L. | 19/10/2026 06:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/79935/FT_79935.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/79935/FT_79935.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/79935/P_79935.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/79935/P_79935.html) |
+| 81276 | CELECOXIB AUROVITAS 200 MG CAPSULAS DURAS EFG | Aurovitas Spain, S.A.U. | 19/10/2026 06:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/81276/FT_81276.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/81276/FT_81276.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/81276/P_81276.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/81276/P_81276.html) |
+| 77872 | ESOMEPRAZOL ARISTO 20 MG CAPSULAS DURAS GASTRORRESISTENTES EFG | Aristo Pharma Iberia S.L. | 19/10/2026 06:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/77872/P_77872.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/77872/P_77872.html) |
+| 77873 | ESOMEPRAZOL ARISTO 40 MG CAPSULAS DURAS GASTRORRESISTENTES EFG | Aristo Pharma Iberia S.L. | 19/10/2026 06:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/77873/P_77873.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/77873/P_77873.html) |
+| 90740 | APIXABAN ALMUS 5 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Almus Farmaceutica S.A.U. | 19/10/2026 06:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/90740/P_90740.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/90740/P_90740.html) |
+| 90741 | APIXABAN ALMUS 2,5 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Almus Farmaceutica S.A.U. | 19/10/2026 06:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/90741/P_90741.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/90741/P_90741.html) |
+| 80783 | IMATINIB SANDOZ 100 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Sandoz Farmaceutica S.A. | 19/10/2026 06:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/80783/FT_80783.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/80783/FT_80783.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/80783/P_80783.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/80783/P_80783.html) |
+| 80784 | IMATINIB SANDOZ 400 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Sandoz Farmaceutica S.A. | 19/10/2026 06:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/80784/FT_80784.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/80784/FT_80784.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/80784/P_80784.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/80784/P_80784.html) |
+| 67153 | GABAPENTINA NORMON 400 mg CAPSULAS DURAS EFG | Laboratorios Normon S.A. | 19/10/2026 06:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/67153/FT_67153.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/67153/FT_67153.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/67153/P_67153.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/67153/P_67153.html) |
+| 67154 | GABAPENTINA NORMON 300 mg CAPSULAS DURAS EFG | Laboratorios Normon S.A. | 19/10/2026 06:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/67154/FT_67154.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/67154/FT_67154.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/67154/P_67154.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/67154/P_67154.html) |
+| 70641 | GABAPENTINA NORMON 600 mg COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Laboratorios Normon S.A. | 19/10/2026 06:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/70641/FT_70641.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/70641/FT_70641.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/70641/P_70641.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/70641/P_70641.html) |
+| 70643 | GABAPENTINA NORMON 800 mg COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Laboratorios Normon S.A. | 19/10/2026 06:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/70643/FT_70643.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/70643/FT_70643.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/70643/P_70643.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/70643/P_70643.html) |
+| 78146 | CILOSTAZOL NORMON 100 MG COMPRIMIDOS EFG | Laboratorios Normon S.A. | 19/10/2026 06:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/78146/P_78146.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/78146/P_78146.html) |
 | 1191404012 | RINVOQ 1MG/ML SOLUCION ORAL | Abbvie Deutschland Gmbh & Co. Kg | 17/10/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/1191404012/FT_1191404012.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/1191404012/FT_1191404012.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/1191404012/P_1191404012.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/1191404012/P_1191404012.html) |
 | 90028 | VITELAX 50 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Laboratorios Combix S.L.U. | 16/10/2026 06:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/90028/P_90028.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/90028/P_90028.html) |
 | 90029 | VITELAX 100 MG COMPRIMIDOS RECUBIERTOS CON PELÍCULA EFG | Laboratorios Combix S.L.U. | 16/10/2026 06:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/90029/P_90029.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/90029/P_90029.html) |
@@ -4078,7 +4096,7 @@ Descarga del detalle completo: `ConkosafeIA_Regulatorio_ACUMULADO.xlsx`
 | 90890 | MIRTAZAPINA STADA 15 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Laboratorio Stada S.L. | 30/09/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/90890/FT_90890.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/90890/FT_90890.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/90890/P_90890.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/90890/P_90890.html) |
 | 90891 | MIRTAZAPINA STADA 45 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Laboratorio Stada S.L. | 30/09/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/90891/FT_90891.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/90891/FT_90891.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/90891/P_90891.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/90891/P_90891.html) |
 | 90918 | NASIPRAL 0,3 MG/ML SOLUCION PARA PULVERIZACION NASAL | Infectopharm Arzneimittel Und Consilium Gmbh | 30/09/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/90918/FT_90918.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/90918/FT_90918.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/90918/P_90918.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/90918/P_90918.html) |
-| 90967 | NEXAHEX CON ALCOHOL INCOLORO 20 MG/ML + 0,70 ML/ML SOLUCION CUTANEA | West Quimica Europa S.L. | 30/09/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/90967/FT_90967.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/90967/FT_90967.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/90967/P_90967.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/90967/P_90967.html) |
+| 90967 | NEMODIX CON ALCOHOL INCOLORO 20 MG/ML + 0,70 ML/ML SOLUCION CUTANEA | West Quimica Europa S.L. | 30/09/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/90967/FT_90967.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/90967/FT_90967.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/90967/P_90967.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/90967/P_90967.html) |
 | 90968 | NEXAHEX CON ALCOHOL INCOLORO 20 MG/ML + 0,70 ML/ML SOLUCION PARA PULVERIZACION CUTANEA | West Quimica Europa S.L. | 30/09/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/90968/FT_90968.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/90968/FT_90968.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/90968/P_90968.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/90968/P_90968.html) |
 | 91178 | NINTEDANIB GLENMARK 100 MG CAPSULAS BLANDAS EFG | Glenmark Arzneimittel Gmbh | 30/09/2026 06:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/91178/P_91178.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91178/P_91178.html) |
 | 91230 | NIQUEL SULFATO HEXAHIDRATO ALLERGEAZE 50MG/G (5%) POMADA | Smartpractice Europe Gmbh | 30/09/2026 06:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/91230/P_91230.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91230/P_91230.html) |
@@ -4487,7 +4505,7 @@ Descarga del detalle completo: `ConkosafeIA_Regulatorio_ACUMULADO.xlsx`
 | 82814 | IBUPROFENO ALTER GENERICOS 600 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Laboratorios Alter S.A. | 30/09/2026 06:56 | MODIFICADO | FT | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/82814/FT_82814.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/82814/FT_82814.html) |
 | 82897 | IBUPROFENO FARMALIDER 200 MG COMPRIMIDOS RECUBIERTOS CON PELICULA | Farmalider S.A. | 30/09/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/82897/FT_82897.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/82897/FT_82897.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/82897/P_82897.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/82897/P_82897.html) |
 | 83570 | IBUPROFENO FARMALIDER 400 MG CONCENTRADO PARA SOLUCION PARA PERFUSION | Farmalider S.A. | 30/09/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/83570/FT_83570.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/83570/FT_83570.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/83570/P_83570.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/83570/P_83570.html) |
-| 83938 | HIDROXICLOROQUINA TEVA-RATIOPHARM 200 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Teva Pharma S.L.U. | 30/09/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/83938/FT_83938.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/83938/FT_83938.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/83938/P_83938.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/83938/P_83938.html) |
+| 83938 | HIDROXICLOROQUINA TEVA-RATIOPHARM 200 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Teva Gmbh | 30/09/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/83938/FT_83938.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/83938/FT_83938.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/83938/P_83938.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/83938/P_83938.html) |
 | 84351 | HERBION PASTILLAS PARA CHUPAR | Krka D.D. Novo Mesto | 30/09/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/84351/FT_84351.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/84351/FT_84351.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/84351/P_84351.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/84351/P_84351.html) |
 | 84362 | HIDROCLOROTIAZIDA ARISTO 25 MG COMPRIMIDOS EFG | Aristo Pharma Iberia S.L. | 30/09/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/84362/FT_84362.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/84362/FT_84362.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/84362/P_84362.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/84362/P_84362.html) |
 | 84759 | HIDROCLORURO DE SEVELAMERO WAYMADE 800 MG COMPRIMIDOS RECUBIERTOS CON PELICULA | Waymade B.V. | 30/09/2026 06:56 | MODIFICADO | FT | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/84759/FT_84759.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/84759/FT_84759.html) |

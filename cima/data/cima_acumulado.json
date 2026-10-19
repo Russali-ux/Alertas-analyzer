@@ -1,19 +1,19 @@
 {
-  "generado": "2026-10-18T16:54:16Z",
-  "generado_str": "18/10/2026 16:54 UTC",
+  "generado": "2026-10-19T19:35:19Z",
+  "generado_str": "19/10/2026 19:35 UTC",
   "fecha_codigo": "ACUMULADO",
   "periodo": {
     "desde": "23/06/2026",
-    "hasta": "17/10/2026",
-    "dias": 116
+    "hasta": "19/10/2026",
+    "dias": 118
   },
   "excel": "ConkosafeIA_Regulatorio_ACUMULADO.xlsx",
   "markdown": "../summaries/cima_ACUMULADO.md",
   "stats": {
-    "total": 13213,
+    "total": 13231,
     "solo_ft": 1915,
-    "solo_prosp": 2570,
-    "ambos": 8728,
+    "solo_prosp": 2576,
+    "ambos": 8740,
     "top_labs": [
       {
         "lab": "Laboratorios Cinfa S.A.",
@@ -21,7 +21,7 @@
       },
       {
         "lab": "Laboratorios Normon S.A.",
-        "n": 546
+        "n": 551
       },
       {
         "lab": "Laboratorio Stada S.L.",
@@ -29,23 +29,23 @@
       },
       {
         "lab": "Teva Gmbh",
-        "n": 451
+        "n": 453
       },
       {
         "lab": "Sandoz Farmaceutica S.A.",
-        "n": 440
+        "n": 442
       },
       {
         "lab": "Kern Pharma S.L.",
-        "n": 385
+        "n": 388
       },
       {
         "lab": "Teva Pharma S.L.U.",
-        "n": 374
+        "n": 373
       },
       {
         "lab": "Aurovitas Spain, S.A.U.",
-        "n": 283
+        "n": 284
       },
       {
         "lab": "Laboratorios Alter S.A.",
@@ -58,6 +58,276 @@
     ]
   },
   "registros": [
+    {
+      "nreg": "BE387493IP",
+      "nombre": "SEVIKAR HCT 40 mg/5 mg/25 mg COMPRIMIDOS RECUBIERTOS CON PELICULA",
+      "lab": "Daiichi Sankyo Belgium",
+      "fecha": "19/10/2026 06:56",
+      "tipo": "MODIFICADO",
+      "otros": "",
+      "cat": "prosp",
+      "has_ft": false,
+      "has_prosp": true,
+      "ft_pdf": null,
+      "ft_html": null,
+      "p_pdf": "https://cima.aemps.es/cima/pdfs/p/BE387493IP/P_BE387493IP.pdf",
+      "p_html": "https://cima.aemps.es/cima/dochtml/p/BE387493IP/P_BE387493IP.html"
+    },
+    {
+      "nreg": "90967",
+      "nombre": "NEMODIX CON ALCOHOL INCOLORO 20 MG/ML + 0,70 ML/ML SOLUCION CUTANEA",
+      "lab": "West Quimica Europa S.L.",
+      "fecha": "19/10/2026 06:56",
+      "tipo": "MODIFICADO",
+      "otros": "Otros cambios",
+      "cat": "both",
+      "has_ft": true,
+      "has_prosp": true,
+      "ft_pdf": "https://cima.aemps.es/cima/pdfs/ft/90967/FT_90967.pdf",
+      "ft_html": "https://cima.aemps.es/cima/dochtml/ft/90967/FT_90967.html",
+      "p_pdf": "https://cima.aemps.es/cima/pdfs/p/90967/P_90967.pdf",
+      "p_html": "https://cima.aemps.es/cima/dochtml/p/90967/P_90967.html"
+    },
+    {
+      "nreg": "83938",
+      "nombre": "HIDROXICLOROQUINA TEVA-RATIOPHARM 200 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG",
+      "lab": "Teva Gmbh",
+      "fecha": "19/10/2026 06:56",
+      "tipo": "MODIFICADO",
+      "otros": "Otros cambios",
+      "cat": "both",
+      "has_ft": true,
+      "has_prosp": true,
+      "ft_pdf": "https://cima.aemps.es/cima/pdfs/ft/83938/FT_83938.pdf",
+      "ft_html": "https://cima.aemps.es/cima/dochtml/ft/83938/FT_83938.html",
+      "p_pdf": "https://cima.aemps.es/cima/pdfs/p/83938/P_83938.pdf",
+      "p_html": "https://cima.aemps.es/cima/dochtml/p/83938/P_83938.html"
+    },
+    {
+      "nreg": "76108",
+      "nombre": "CAPECITABINA KERN PHARMA 150 mg COMPRIMIDOS RECUBIERTOS CON PELICULA EFG",
+      "lab": "Kern Pharma S.L.",
+      "fecha": "19/10/2026 06:55",
+      "tipo": "MODIFICADO",
+      "otros": "",
+      "cat": "both",
+      "has_ft": true,
+      "has_prosp": true,
+      "ft_pdf": "https://cima.aemps.es/cima/pdfs/ft/76108/FT_76108.pdf",
+      "ft_html": "https://cima.aemps.es/cima/dochtml/ft/76108/FT_76108.html",
+      "p_pdf": "https://cima.aemps.es/cima/pdfs/p/76108/P_76108.pdf",
+      "p_html": "https://cima.aemps.es/cima/dochtml/p/76108/P_76108.html"
+    },
+    {
+      "nreg": "76109",
+      "nombre": "CAPECITABINA KERN PHARMA 500 mg COMPRIMIDOS RECUBIERTOS CON PELICULA EFG",
+      "lab": "Kern Pharma S.L.",
+      "fecha": "19/10/2026 06:55",
+      "tipo": "MODIFICADO",
+      "otros": "",
+      "cat": "both",
+      "has_ft": true,
+      "has_prosp": true,
+      "ft_pdf": "https://cima.aemps.es/cima/pdfs/ft/76109/FT_76109.pdf",
+      "ft_html": "https://cima.aemps.es/cima/dochtml/ft/76109/FT_76109.html",
+      "p_pdf": "https://cima.aemps.es/cima/pdfs/p/76109/P_76109.pdf",
+      "p_html": "https://cima.aemps.es/cima/dochtml/p/76109/P_76109.html"
+    },
+    {
+      "nreg": "79935",
+      "nombre": "CAPECITABINA KERN PHARMA 300 MG COMPRIMIDOS RECUBIERTOS CON PELICULA",
+      "lab": "Kern Pharma S.L.",
+      "fecha": "19/10/2026 06:55",
+      "tipo": "MODIFICADO",
+      "otros": "",
+      "cat": "both",
+      "has_ft": true,
+      "has_prosp": true,
+      "ft_pdf": "https://cima.aemps.es/cima/pdfs/ft/79935/FT_79935.pdf",
+      "ft_html": "https://cima.aemps.es/cima/dochtml/ft/79935/FT_79935.html",
+      "p_pdf": "https://cima.aemps.es/cima/pdfs/p/79935/P_79935.pdf",
+      "p_html": "https://cima.aemps.es/cima/dochtml/p/79935/P_79935.html"
+    },
+    {
+      "nreg": "81276",
+      "nombre": "CELECOXIB AUROVITAS 200 MG CAPSULAS DURAS EFG",
+      "lab": "Aurovitas Spain, S.A.U.",
+      "fecha": "19/10/2026 06:55",
+      "tipo": "MODIFICADO",
+      "otros": "",
+      "cat": "both",
+      "has_ft": true,
+      "has_prosp": true,
+      "ft_pdf": "https://cima.aemps.es/cima/pdfs/ft/81276/FT_81276.pdf",
+      "ft_html": "https://cima.aemps.es/cima/dochtml/ft/81276/FT_81276.html",
+      "p_pdf": "https://cima.aemps.es/cima/pdfs/p/81276/P_81276.pdf",
+      "p_html": "https://cima.aemps.es/cima/dochtml/p/81276/P_81276.html"
+    },
+    {
+      "nreg": "77872",
+      "nombre": "ESOMEPRAZOL ARISTO 20 MG CAPSULAS DURAS GASTRORRESISTENTES EFG",
+      "lab": "Aristo Pharma Iberia S.L.",
+      "fecha": "19/10/2026 06:55",
+      "tipo": "MODIFICADO",
+      "otros": "",
+      "cat": "prosp",
+      "has_ft": false,
+      "has_prosp": true,
+      "ft_pdf": null,
+      "ft_html": null,
+      "p_pdf": "https://cima.aemps.es/cima/pdfs/p/77872/P_77872.pdf",
+      "p_html": "https://cima.aemps.es/cima/dochtml/p/77872/P_77872.html"
+    },
+    {
+      "nreg": "77873",
+      "nombre": "ESOMEPRAZOL ARISTO 40 MG CAPSULAS DURAS GASTRORRESISTENTES EFG",
+      "lab": "Aristo Pharma Iberia S.L.",
+      "fecha": "19/10/2026 06:55",
+      "tipo": "MODIFICADO",
+      "otros": "",
+      "cat": "prosp",
+      "has_ft": false,
+      "has_prosp": true,
+      "ft_pdf": null,
+      "ft_html": null,
+      "p_pdf": "https://cima.aemps.es/cima/pdfs/p/77873/P_77873.pdf",
+      "p_html": "https://cima.aemps.es/cima/dochtml/p/77873/P_77873.html"
+    },
+    {
+      "nreg": "90740",
+      "nombre": "APIXABAN ALMUS 5 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG",
+      "lab": "Almus Farmaceutica S.A.U.",
+      "fecha": "19/10/2026 06:55",
+      "tipo": "MODIFICADO",
+      "otros": "",
+      "cat": "prosp",
+      "has_ft": false,
+      "has_prosp": true,
+      "ft_pdf": null,
+      "ft_html": null,
+      "p_pdf": "https://cima.aemps.es/cima/pdfs/p/90740/P_90740.pdf",
+      "p_html": "https://cima.aemps.es/cima/dochtml/p/90740/P_90740.html"
+    },
+    {
+      "nreg": "90741",
+      "nombre": "APIXABAN ALMUS 2,5 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG",
+      "lab": "Almus Farmaceutica S.A.U.",
+      "fecha": "19/10/2026 06:55",
+      "tipo": "MODIFICADO",
+      "otros": "",
+      "cat": "prosp",
+      "has_ft": false,
+      "has_prosp": true,
+      "ft_pdf": null,
+      "ft_html": null,
+      "p_pdf": "https://cima.aemps.es/cima/pdfs/p/90741/P_90741.pdf",
+      "p_html": "https://cima.aemps.es/cima/dochtml/p/90741/P_90741.html"
+    },
+    {
+      "nreg": "80783",
+      "nombre": "IMATINIB SANDOZ 100 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG",
+      "lab": "Sandoz Farmaceutica S.A.",
+      "fecha": "19/10/2026 06:55",
+      "tipo": "MODIFICADO",
+      "otros": "",
+      "cat": "both",
+      "has_ft": true,
+      "has_prosp": true,
+      "ft_pdf": "https://cima.aemps.es/cima/pdfs/ft/80783/FT_80783.pdf",
+      "ft_html": "https://cima.aemps.es/cima/dochtml/ft/80783/FT_80783.html",
+      "p_pdf": "https://cima.aemps.es/cima/pdfs/p/80783/P_80783.pdf",
+      "p_html": "https://cima.aemps.es/cima/dochtml/p/80783/P_80783.html"
+    },
+    {
+      "nreg": "80784",
+      "nombre": "IMATINIB SANDOZ 400 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG",
+      "lab": "Sandoz Farmaceutica S.A.",
+      "fecha": "19/10/2026 06:55",
+      "tipo": "MODIFICADO",
+      "otros": "",
+      "cat": "both",
+      "has_ft": true,
+      "has_prosp": true,
+      "ft_pdf": "https://cima.aemps.es/cima/pdfs/ft/80784/FT_80784.pdf",
+      "ft_html": "https://cima.aemps.es/cima/dochtml/ft/80784/FT_80784.html",
+      "p_pdf": "https://cima.aemps.es/cima/pdfs/p/80784/P_80784.pdf",
+      "p_html": "https://cima.aemps.es/cima/dochtml/p/80784/P_80784.html"
+    },
+    {
+      "nreg": "67153",
+      "nombre": "GABAPENTINA NORMON 400 mg CAPSULAS DURAS EFG",
+      "lab": "Laboratorios Normon S.A.",
+      "fecha": "19/10/2026 06:55",
+      "tipo": "MODIFICADO",
+      "otros": "",
+      "cat": "both",
+      "has_ft": true,
+      "has_prosp": true,
+      "ft_pdf": "https://cima.aemps.es/cima/pdfs/ft/67153/FT_67153.pdf",
+      "ft_html": "https://cima.aemps.es/cima/dochtml/ft/67153/FT_67153.html",
+      "p_pdf": "https://cima.aemps.es/cima/pdfs/p/67153/P_67153.pdf",
+      "p_html": "https://cima.aemps.es/cima/dochtml/p/67153/P_67153.html"
+    },
+    {
+      "nreg": "67154",
+      "nombre": "GABAPENTINA NORMON 300 mg CAPSULAS DURAS EFG",
+      "lab": "Laboratorios Normon S.A.",
+      "fecha": "19/10/2026 06:55",
+      "tipo": "MODIFICADO",
+      "otros": "",
+      "cat": "both",
+      "has_ft": true,
+      "has_prosp": true,
+      "ft_pdf": "https://cima.aemps.es/cima/pdfs/ft/67154/FT_67154.pdf",
+      "ft_html": "https://cima.aemps.es/cima/dochtml/ft/67154/FT_67154.html",
+      "p_pdf": "https://cima.aemps.es/cima/pdfs/p/67154/P_67154.pdf",
+      "p_html": "https://cima.aemps.es/cima/dochtml/p/67154/P_67154.html"
+    },
+    {
+      "nreg": "70641",
+      "nombre": "GABAPENTINA NORMON 600 mg COMPRIMIDOS RECUBIERTOS CON PELICULA EFG",
+      "lab": "Laboratorios Normon S.A.",
+      "fecha": "19/10/2026 06:55",
+      "tipo": "MODIFICADO",
+      "otros": "",
+      "cat": "both",
+      "has_ft": true,
+      "has_prosp": true,
+      "ft_pdf": "https://cima.aemps.es/cima/pdfs/ft/70641/FT_70641.pdf",
+      "ft_html": "https://cima.aemps.es/cima/dochtml/ft/70641/FT_70641.html",
+      "p_pdf": "https://cima.aemps.es/cima/pdfs/p/70641/P_70641.pdf",
+      "p_html": "https://cima.aemps.es/cima/dochtml/p/70641/P_70641.html"
+    },
+    {
+      "nreg": "70643",
+      "nombre": "GABAPENTINA NORMON 800 mg COMPRIMIDOS RECUBIERTOS CON PELICULA EFG",
+      "lab": "Laboratorios Normon S.A.",
+      "fecha": "19/10/2026 06:55",
+      "tipo": "MODIFICADO",
+      "otros": "",
+      "cat": "both",
+      "has_ft": true,
+      "has_prosp": true,
+      "ft_pdf": "https://cima.aemps.es/cima/pdfs/ft/70643/FT_70643.pdf",
+      "ft_html": "https://cima.aemps.es/cima/dochtml/ft/70643/FT_70643.html",
+      "p_pdf": "https://cima.aemps.es/cima/pdfs/p/70643/P_70643.pdf",
+      "p_html": "https://cima.aemps.es/cima/dochtml/p/70643/P_70643.html"
+    },
+    {
+      "nreg": "78146",
+      "nombre": "CILOSTAZOL NORMON 100 MG COMPRIMIDOS EFG",
+      "lab": "Laboratorios Normon S.A.",
+      "fecha": "19/10/2026 06:55",
+      "tipo": "MODIFICADO",
+      "otros": "",
+      "cat": "prosp",
+      "has_ft": false,
+      "has_prosp": true,
+      "ft_pdf": null,
+      "ft_html": null,
+      "p_pdf": "https://cima.aemps.es/cima/pdfs/p/78146/P_78146.pdf",
+      "p_html": "https://cima.aemps.es/cima/dochtml/p/78146/P_78146.html"
+    },
     {
       "nreg": "1191404012",
       "nombre": "RINVOQ 1MG/ML SOLUCION ORAL",
@@ -60750,7 +61020,7 @@
     },
     {
       "nreg": "90967",
-      "nombre": "NEXAHEX CON ALCOHOL INCOLORO 20 MG/ML + 0,70 ML/ML SOLUCION CUTANEA",
+      "nombre": "NEMODIX CON ALCOHOL INCOLORO 20 MG/ML + 0,70 ML/ML SOLUCION CUTANEA",
       "lab": "West Quimica Europa S.L.",
       "fecha": "30/09/2026 06:56",
       "tipo": "MODIFICADO",
@@ -66886,7 +67156,7 @@
     {
       "nreg": "83938",
       "nombre": "HIDROXICLOROQUINA TEVA-RATIOPHARM 200 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG",
-      "lab": "Teva Pharma S.L.U.",
+      "lab": "Teva Gmbh",
       "fecha": "30/09/2026 06:56",
       "tipo": "MODIFICADO",
       "otros": "",
