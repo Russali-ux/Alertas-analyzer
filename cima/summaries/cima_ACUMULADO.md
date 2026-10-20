@@ -1,7 +1,7 @@
 # ConkoSafe IA — Cambios en Ficha Técnica y Prospecto (CIMA / AEMPS)
 
-**Generado:** 19/10/2026 19:35 UTC  
-**Periodo:** 23/06/2026 → 19/10/2026 (últimos 118 días)  
+**Generado:** 20/10/2026 18:14 UTC  
+**Periodo:** 23/06/2026 → 20/10/2026 (últimos 119 días)  
 **Fuente:** [CIMA — AEMPS (registroCambios)](https://cima.aemps.es/cima/rest/registroCambios)
 
 ## Resumen
@@ -10,15 +10,15 @@
 |---|---:|
 | Solo Ficha Técnica | 1915 |
 | Solo Prospecto | 2576 |
-| FT + Prospecto (ambos) | 8740 |
-| **TOTAL con FT o Prospecto** | **13231** |
+| FT + Prospecto (ambos) | 8752 |
+| **TOTAL con FT o Prospecto** | **13243** |
 
 Descarga del detalle completo: `ConkosafeIA_Regulatorio_ACUMULADO.xlsx`
 
 ### Top laboratorios
 
 - Laboratorios Cinfa S.A. — 570 cambio(s)
-- Laboratorios Normon S.A. — 551 cambio(s)
+- Laboratorios Normon S.A. — 557 cambio(s)
 - Laboratorio Stada S.L. — 479 cambio(s)
 - Teva Gmbh — 453 cambio(s)
 - Sandoz Farmaceutica S.A. — 442 cambio(s)
@@ -32,6 +32,18 @@ Descarga del detalle completo: `ConkosafeIA_Regulatorio_ACUMULADO.xlsx`
 
 | Nº Registro | Medicamento | Laboratorio | Fecha | Tipo | Cambio | Enlaces |
 |---|---|---|---|---|---|---|
+| 90359 | BRIVARACETAM VISO FARMACEUTICA 10 MG COMPRIMIDOS RECUBIERTOS CON PELÍCULA EFG | Glenmark Arzneimittel Gmbh | 20/10/2026 06:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/90359/FT_90359.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/90359/FT_90359.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/90359/P_90359.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/90359/P_90359.html) |
+| 90360 | BRIVARACETAM VISO FARMACEUTICA 100 MG COMPRIMIDOS RECUBIERTOS CON PELÍCULA EFG | Glenmark Arzneimittel Gmbh | 20/10/2026 06:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/90360/FT_90360.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/90360/FT_90360.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/90360/P_90360.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/90360/P_90360.html) |
+| 90361 | BRIVARACETAM VISO FARMACEUTICA 50 MG COMPRIMIDOS RECUBIERTOS CON PELÍCULA EFG | Glenmark Arzneimittel Gmbh | 20/10/2026 06:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/90361/FT_90361.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/90361/FT_90361.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/90361/P_90361.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/90361/P_90361.html) |
+| 90362 | BRIVARACETAM VISO FARMACEUTICA 75 MG COMPRIMIDOS RECUBIERTOS CON PELÍCULA EFG | Glenmark Arzneimittel Gmbh | 20/10/2026 06:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/90362/FT_90362.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/90362/FT_90362.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/90362/P_90362.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/90362/P_90362.html) |
+| 90363 | BRIVARACETAM VISO FARMACEUTICA 25 MG COMPRIMIDOS RECUBIERTOS CON PELÍCULA EFG | Glenmark Arzneimittel Gmbh | 20/10/2026 06:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/90363/FT_90363.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/90363/FT_90363.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/90363/P_90363.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/90363/P_90363.html) |
+| 55033 | ULTRACAIN CON ADRENALINA 40 MG/ML + 10 MICROGRAMOS/ML SOLUCION INYECTABLE | Laboratorios Normon S.A. | 20/10/2026 06:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/55033/FT_55033.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/55033/FT_55033.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/55033/P_55033.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/55033/P_55033.html) |
+| 55034 | ULTRACAIN CON ADRENALINA 40 MG/ML + 5 MICROGRAMOS/ML SOLUCION INYECTABLE | Laboratorios Normon S.A. | 20/10/2026 06:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/55034/FT_55034.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/55034/FT_55034.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/55034/P_55034.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/55034/P_55034.html) |
+| 85520 | ACIDO TRANEXAMICO BAXTER 100 MG/ML SOLUCION INYECTABLE EFG | Baxter Holding B.V. | 20/10/2026 06:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/85520/FT_85520.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/85520/FT_85520.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/85520/P_85520.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/85520/P_85520.html) |
+| 66949 | PAROXETINA NORMON 20 mg COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Laboratorios Normon S.A. | 20/10/2026 06:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/66949/FT_66949.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/66949/FT_66949.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/66949/P_66949.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/66949/P_66949.html) |
+| 89018 | PAROXETINA NORMON 10 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Laboratorios Normon S.A. | 20/10/2026 06:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/89018/FT_89018.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/89018/FT_89018.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/89018/P_89018.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/89018/P_89018.html) |
+| 89019 | PAROXETINA NORMON 30 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Laboratorios Normon S.A. | 20/10/2026 06:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/89019/FT_89019.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/89019/FT_89019.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/89019/P_89019.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/89019/P_89019.html) |
+| 89020 | PAROXETINA NORMON 40 MG COMPRIMIDOS RECUBIERTOS CON PELICULA | Laboratorios Normon S.A. | 20/10/2026 06:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/89020/FT_89020.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/89020/FT_89020.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/89020/P_89020.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/89020/P_89020.html) |
 | BE387493IP | SEVIKAR HCT 40 mg/5 mg/25 mg COMPRIMIDOS RECUBIERTOS CON PELICULA | Daiichi Sankyo Belgium | 19/10/2026 06:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/BE387493IP/P_BE387493IP.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/BE387493IP/P_BE387493IP.html) |
 | 90967 | NEMODIX CON ALCOHOL INCOLORO 20 MG/ML + 0,70 ML/ML SOLUCION CUTANEA | West Quimica Europa S.L. | 19/10/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/90967/FT_90967.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/90967/FT_90967.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/90967/P_90967.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/90967/P_90967.html) |
 | 83938 | HIDROXICLOROQUINA TEVA-RATIOPHARM 200 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Teva Gmbh | 19/10/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/83938/FT_83938.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/83938/FT_83938.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/83938/P_83938.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/83938/P_83938.html) |
