@@ -25,7 +25,7 @@ jobs:
       - name: 📦 Instalar dependencias
         run: |
           pip install --upgrade pip
-          pip install requests beautifulsoup4 pandas openpyxl pymupdf anthropic "pinecone>=7.3,<9" supabase
+          pip install requests beautifulsoup4 pandas openpyxl "pymupdf>=1.24,<2" anthropic "pinecone>=7.3,<9" supabase
 
       - name: 🔍 Ejecutar scraper DIGEMID
         env:
