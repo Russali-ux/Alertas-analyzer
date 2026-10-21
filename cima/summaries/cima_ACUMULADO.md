@@ -1,7 +1,7 @@
 # ConkoSafe IA — Cambios en Ficha Técnica y Prospecto (CIMA / AEMPS)
 
-**Generado:** 20/10/2026 18:14 UTC  
-**Periodo:** 23/06/2026 → 20/10/2026 (últimos 119 días)  
+**Generado:** 21/10/2026 18:22 UTC  
+**Periodo:** 23/06/2026 → 21/10/2026 (últimos 120 días)  
 **Fuente:** [CIMA — AEMPS (registroCambios)](https://cima.aemps.es/cima/rest/registroCambios)
 
 ## Resumen
@@ -9,9 +9,9 @@
 | Categoría | Cantidad |
 |---|---:|
 | Solo Ficha Técnica | 1915 |
-| Solo Prospecto | 2576 |
-| FT + Prospecto (ambos) | 8752 |
-| **TOTAL con FT o Prospecto** | **13243** |
+| Solo Prospecto | 2580 |
+| FT + Prospecto (ambos) | 8769 |
+| **TOTAL con FT o Prospecto** | **13264** |
 
 Descarga del detalle completo: `ConkosafeIA_Regulatorio_ACUMULADO.xlsx`
 
@@ -19,10 +19,10 @@ Descarga del detalle completo: `ConkosafeIA_Regulatorio_ACUMULADO.xlsx`
 
 - Laboratorios Cinfa S.A. — 570 cambio(s)
 - Laboratorios Normon S.A. — 557 cambio(s)
-- Laboratorio Stada S.L. — 479 cambio(s)
+- Laboratorio Stada S.L. — 481 cambio(s)
 - Teva Gmbh — 453 cambio(s)
 - Sandoz Farmaceutica S.A. — 442 cambio(s)
-- Kern Pharma S.L. — 388 cambio(s)
+- Kern Pharma S.L. — 389 cambio(s)
 - Teva Pharma S.L.U. — 373 cambio(s)
 - Aurovitas Spain, S.A.U. — 284 cambio(s)
 - Laboratorios Alter S.A. — 279 cambio(s)
@@ -32,6 +32,27 @@ Descarga del detalle completo: `ConkosafeIA_Regulatorio_ACUMULADO.xlsx`
 
 | Nº Registro | Medicamento | Laboratorio | Fecha | Tipo | Cambio | Enlaces |
 |---|---|---|---|---|---|---|
+| 3400937881647IP | MOVIPREP POLVO PARA SOLUCION ORAL | Norgine B.V. | 21/10/2026 06:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/3400937881647IP/P_3400937881647IP.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/3400937881647IP/P_3400937881647IP.html) |
+| 90658 | TIGECICLINA TARBIS 50 MG POLVO PARA SOLUCION PARA PERFUSION EFG | Tarbis Farma S.L. | 21/10/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/90658/FT_90658.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/90658/FT_90658.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/90658/P_90658.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/90658/P_90658.html) |
+| 88769 | MANOLLIA 20 MG CAPSULAS DURAS EFG | Aristo Pharma Gmbh | 21/10/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/88769/FT_88769.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/88769/FT_88769.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/88769/P_88769.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/88769/P_88769.html) |
+| 88770 | MANOLLIA 30 MG CAPSULAS DURAS EFG | Aristo Pharma Gmbh | 21/10/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/88770/FT_88770.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/88770/FT_88770.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/88770/P_88770.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/88770/P_88770.html) |
+| 88771 | MANOLLIA 40 MG CAPSULAS DURAS EFG | Aristo Pharma Gmbh | 21/10/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/88771/FT_88771.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/88771/FT_88771.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/88771/P_88771.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/88771/P_88771.html) |
+| 88772 | MANOLLIA 50 MG CAPSULAS DURAS EFG | Aristo Pharma Gmbh | 21/10/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/88772/FT_88772.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/88772/FT_88772.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/88772/P_88772.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/88772/P_88772.html) |
+| 88773 | MANOLLIA 60 MG CAPSULAS DURAS EFG | Aristo Pharma Gmbh | 21/10/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/88773/FT_88773.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/88773/FT_88773.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/88773/P_88773.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/88773/P_88773.html) |
+| 88774 | MANOLLIA 70 MG CAPSULAS DURAS EFG | Aristo Pharma Gmbh | 21/10/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/88774/FT_88774.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/88774/FT_88774.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/88774/P_88774.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/88774/P_88774.html) |
+| 77800 | LEVOTIROXINA SANOFI 50 MICROGRAMOS COMPRIMIDOS | Sanofi Aventis S.A. | 21/10/2026 06:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/77800/P_77800.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/77800/P_77800.html) |
+| 77801 | LEVOTIROXINA SANOFI 75 MICROGRAMOS COMPRIMIDOS | Sanofi Aventis S.A. | 21/10/2026 06:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/77801/P_77801.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/77801/P_77801.html) |
+| 77802 | LEVOTIROXINA SANOFI 100 MICROGRAMOS COMPRIMIDOS | Sanofi Aventis S.A. | 21/10/2026 06:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/77802/P_77802.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/77802/P_77802.html) |
+| 90643 | LINAGLIPTINA KERN PHARMA 5 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Kern Pharma S.L. | 21/10/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/90643/FT_90643.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/90643/FT_90643.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/90643/P_90643.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/90643/P_90643.html) |
+| 80913 | EBASTINA FLAS STADAPHARM 10 MG COMPRIMIDOS BUCODISPERSABLES EFG | Laboratorio Stada S.L. | 21/10/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/80913/FT_80913.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/80913/FT_80913.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/80913/P_80913.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/80913/P_80913.html) |
+| 80914 | EBASTINA FORTE FLAS STADAPHARM 20 MG COMPRIMIDOS BUCODISPERSABLES EFG | Laboratorio Stada S.L. | 21/10/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/80914/FT_80914.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/80914/FT_80914.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/80914/P_80914.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/80914/P_80914.html) |
+| 46406 | VIBRACINA 100 mg CÁPSULAS DURAS | Hospira Invicta S.A. | 21/10/2026 06:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/46406/FT_46406.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/46406/FT_46406.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/46406/P_46406.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/46406/P_46406.html) |
+| 46554 | VIBRACINA 10 mg/ml SUSPENSIÓN ORAL | Hospira Invicta S.A. | 21/10/2026 06:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/46554/FT_46554.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/46554/FT_46554.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/46554/P_46554.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/46554/P_46554.html) |
+| 86550 | ATENZA 54 MG COMPRIMIDOS DE LIBERACION PROLONGADA EFG | Exeltis Healthcare S.L. | 21/10/2026 06:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/86550/FT_86550.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/86550/FT_86550.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/86550/P_86550.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/86550/P_86550.html) |
+| 86551 | ATENZA 27 MG COMPRIMIDOS DE LIBERACION PROLONGADA EFG | Exeltis Healthcare S.L. | 21/10/2026 06:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/86551/FT_86551.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/86551/FT_86551.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/86551/P_86551.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/86551/P_86551.html) |
+| 86552 | ATENZA 36 MG COMPRIMIDOS DE LIBERACION PROLONGADA EFG | Exeltis Healthcare S.L. | 21/10/2026 06:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/86552/FT_86552.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/86552/FT_86552.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/86552/P_86552.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/86552/P_86552.html) |
+| 86553 | ATENZA 18 MG COMPRIMIDOS DE LIBERACION PROLONGADA EFG | Exeltis Healthcare S.L. | 21/10/2026 06:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/86553/FT_86553.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/86553/FT_86553.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/86553/P_86553.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/86553/P_86553.html) |
+| 89260 | ATENZA 45 MG COMPRIMIDOS DE LIBERACIÓN PROLONGADA | Exeltis Healthcare S.L. | 21/10/2026 06:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/89260/FT_89260.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/89260/FT_89260.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/89260/P_89260.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/89260/P_89260.html) |
 | 90359 | BRIVARACETAM VISO FARMACEUTICA 10 MG COMPRIMIDOS RECUBIERTOS CON PELÍCULA EFG | Glenmark Arzneimittel Gmbh | 20/10/2026 06:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/90359/FT_90359.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/90359/FT_90359.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/90359/P_90359.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/90359/P_90359.html) |
 | 90360 | BRIVARACETAM VISO FARMACEUTICA 100 MG COMPRIMIDOS RECUBIERTOS CON PELÍCULA EFG | Glenmark Arzneimittel Gmbh | 20/10/2026 06:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/90360/FT_90360.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/90360/FT_90360.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/90360/P_90360.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/90360/P_90360.html) |
 | 90361 | BRIVARACETAM VISO FARMACEUTICA 50 MG COMPRIMIDOS RECUBIERTOS CON PELÍCULA EFG | Glenmark Arzneimittel Gmbh | 20/10/2026 06:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/90361/FT_90361.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/90361/FT_90361.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/90361/P_90361.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/90361/P_90361.html) |
