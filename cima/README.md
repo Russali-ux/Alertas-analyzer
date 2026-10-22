@@ -97,7 +97,7 @@ controlado** con **💾 Guardar versión**, junto a "Exportar Word".
 | Fecha y hora | `now()` del servidor (se muestra en hora de Lima) | servidor |
 | Integridad | SHA-256 por sección, SHA-256 del contenido y cadena de hash con la versión anterior | servidor |
 
-**Flujo de actualización:** en **📚 Segmentados → 🕘 Historial → 🔄 Nueva versión**:
+**Flujo de actualización:** en **📚 Fichas técnicas → 🕘 Historial → 🔄 Nueva versión**:
 1. Se elige la versión anterior (base).
 2. Se sube la nueva versión de referencia o se toma la vigente en CIMA.
 3. Se ejecuta la separación y cada sección queda marcada **MODIFICADA / NUEVA**, con "⇄ Ver cambios" palabra a palabra.
@@ -107,7 +107,7 @@ Si se genera un producto que ya tiene documento controlado, el visor ofrece **�
 
 **Historial:** muestra versiones, usuario, fecha y hora, control de cambio, motivo, secciones afectadas y hash, con
 **⇄ Comparar** entre cualquier par de versiones y **🛡 Verificar integridad**, que recalcula los hashes y la cadena.
-La columna *Versión controlada* y el buscador de "📚 Segmentados" responden cuántas versiones y cambios tiene cada documento.
+La columna *Versión controlada* y el buscador de "📚 Fichas técnicas" responden cuántas versiones y cambios tiene cada documento.
 
 **Criterios de auditoría (ALCOA+ · 21 CFR Part 11 · EU GMP Anexo 11):**
 - Los registros son **inmutables**: triggers bloquean UPDATE, DELETE y TRUNCATE incluso para el rol `postgres`, y
@@ -138,7 +138,7 @@ producto de CIMA y marca los registros **VENCIDOS** o próximos a vencer.
   fiel aunque el portafolio se recargue.
 - **Cambio de RS = cambio controlado:** genera una nueva versión aunque no cambie ninguna sección,
   con el detalle *"Registro sanitario asociado: EN-… → EN-…"*.
-- El RS aparece en el documento, en el Word y la impresión, y en el historial. En la pestaña Segmentados se puede
+- El RS aparece en el documento, en el Word y la impresión, y en el historial. En la pestaña Fichas técnicas se puede
   buscar por Nº de RS.
 
 SQL: `cima/sql/registro_sanitario.sql` y `cima/sql/registro_sanitario_principio_activo.sql`, que agrega el principio activo al snapshot. Ambos son compatibles con las versiones ya guardadas, que siguen verificando igual.
@@ -154,12 +154,32 @@ SQL: `cima/sql/registro_sanitario.sql` y `cima/sql/registro_sanitario_principio_
   versiones van al **más antiguo** y los demás se marcan como *"duplicado anterior a la regla"*. SQL:
   `cima/sql/registro_sanitario_identidad.sql`.
 
-En la pestaña **📚 Segmentados**, la columna *Medicamento referencia* es el documento de CIMA o subido. Las columnas **RS DIGEMID**, **Producto (RS)** y **Principio activo (RS)** muestran lo elegido en el paso 5 en la versión controlada más reciente de esa referencia. Las versiones guardadas antes de incluir el principio activo lo muestran desde el portafolio actual, marcado *(portafolio)*.
+En la pestaña **📚 Fichas técnicas**, la columna *Medicamento referencia* es el documento de CIMA o subido. Las columnas **RS DIGEMID**, **Producto (RS)** y **Principio activo (RS)** muestran lo elegido en el paso 5 en la versión controlada más reciente de esa referencia. Las versiones guardadas antes de incluir el principio activo lo muestran desde el portafolio actual, marcado *(portafolio)*.
 
 **Límites conocidos:**
 - No hay firma electrónica con re-autenticación. Part 11 la exige para *aprobaciones*, y hoy se registra quién guarda pero no hay flujo de revisión y aprobación.
 - Un superusuario de la base podría desactivar los triggers y recalcular toda la cadena. Para mitigarlo, conviene anclar periódicamente
   el último `hash_cadena` fuera de la base, por ejemplo exportándolo al repositorio.
+
+## Fichas técnicas (antes "Segmentados")
+
+- **Filtros:** buscar, **empresa farmacéutica** (titulares asignados del portafolio, o fabricante / laboratorio
+  titular del documento), tipo (FT / Prospecto), origen (CIMA, subido, EMA ePI) y con / sin registro sanitario.
+- **✏ Editar** (en el acordeón *Versiones*): corrige los **datos** de una ficha sin tocar sus secciones:
+  nombre, laboratorio, Nº CIMA de referencia (opcional), fuente (DIGEMID, titular, EMA…), fecha de versión
+  del documento y **registro sanitario del portafolio**. Pensado para PDF subidos que no tienen ficha de
+  referencia en CIMA. En fichas de CIMA solo se cambian el registro sanitario y la fuente.
+  - Lo puede hacer un administrador o quien guardó la ficha; el motivo es obligatorio.
+  - Única vía: RPC `editar_documento_segmentado` → evento **EDITAR** en la 🧾 bitácora con *antes → después*.
+  - SQL: `sql/fichas_tecnicas_edicion.sql` (ejecutar después de `segmentados_auditoria.sql`).
+  - El registro sanitario vinculado al editar agrupa la ficha bajo ese producto (manda sobre el de la versión controlada).
+
+## EMA ePI (pestaña 🇪🇺)
+
+Muestra lo que carga el repo independiente **EMA-APi** (GitHub Actions → mismo Supabase): estado de la fuente
+(`ema_epi_corridas`, avisa si la API de la EMA está caída), documentos ePI vigentes de EMA / AEMPS, historial de
+cambios con secciones afectadas y el **vínculo propuesto con el Nº CIMA** (`ema_epi_cima_vinculo`), que se puede
+✓ verificar o ✗ rechazar, abrir en CIMA o saltar a su ficha técnica. Lógica en `ema_epi.js`.
 
 ## Segmentación FT / Prospecto → campos de la Ficha Técnica
 
@@ -182,7 +202,7 @@ documento en los campos del esquema "Contenido de la Ficha Técnica":
 - Una versión de un documento CIMA se segmenta **una sola vez**: si ya está
   guardada (misma fecha de versión), se muestra la guardada. Cuando CIMA publica
   una versión nueva, se guarda otra fila y la anterior queda como histórico.
-- **📚 Segmentados** lista lo guardado; **⬇ Excel** exporta los campos del documento abierto.
+- **📚 Fichas técnicas** lista lo guardado; **⬇ Excel** exporta los campos del documento abierto.
 - Esquema y permisos: `cima/sql/documentos_segmentados.sql` (acceso: admin o `perfiles.acceso_cima`).
 
 Limitaciones: CIMA no publica segmentados algunos documentos (p. ej. importaciones
