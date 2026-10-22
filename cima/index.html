@@ -12,6 +12,7 @@
 <script src="generador.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jsdiff/5.1.0/diff.min.js"></script>
 <script src="control.js"></script>
+<script src="ema_epi.js"></script>
 <style>
 :root{
   --bg:#ffffff; --surface:#f5f7fa; --border:#d0d7e3; --accent:#0077cc;
@@ -362,6 +363,17 @@ table.aud td{vertical-align:top}
 .ev.CREAR{background:#e6f4ea;color:#0f7b4f}
 .ev.ELIMINAR{background:#fdecec;color:#a11}
 .ev.DESCARTAR_INCOMPLETO{background:#fff3dc;color:#8a5a00}
+.ev.EDITAR{background:#eaf2fd;color:#0a4d80}
+table.ver button.edit{border:1px solid #8a5a00;color:#8a5a00}
+table.ver button.edit:hover{background:#fff6e0}
+button.epi-v{font-family:var(--sora);font-size:12px;font-weight:600;padding:4px 9px;border-radius:7px;cursor:pointer;background:#fff;margin-left:6px}
+button.epi-v.hist-b{border:1px solid #0f7b4f;color:#0f7b4f}
+button.epi-v.del{border:1px solid #d14343;color:#b42318}
+button.epi-v:disabled{opacity:.6;cursor:wait}
+.controls.ftfiltros{margin-bottom:12px;padding:10px 12px}
+.controls.ftfiltros select{min-width:200px;max-width:280px}
+.cgrid input.ginput{font-size:13px;padding:8px 10px;background:#fff}
+.cgrid input.ginput:disabled{background:#eef1f5;color:#67788c}
 
 /* ── Segmentados a ancho completo: todas las columnas visibles sin scroll ── */
 .wrap.ancho{max-width:none;padding-left:18px;padding-right:18px}
@@ -398,13 +410,14 @@ table.ver td.med{min-width:220px}
   <nav class="tabs" role="tablist">
     <button type="button" class="tab" role="tab" data-tab="tabMonitor">📋 Cambios CIMA (monitor)</button>
     <button type="button" class="tab" role="tab" data-tab="tabGenerador">✍ Generar documento</button>
-    <button type="button" class="tab" role="tab" data-tab="tabSegmentados">📚 Segmentados</button>
+    <button type="button" class="tab" role="tab" data-tab="tabSegmentados">📚 Fichas técnicas</button>
+    <button type="button" class="tab" role="tab" data-tab="tabEmaEpi">🇪🇺 EMA ePI</button>
   </nav>
 
-  <!-- ── Pestaña: documentos segmentados y versiones controladas ── -->
+  <!-- ── Pestaña: fichas técnicas (documentos segmentados) y versiones controladas ── -->
   <section id="tabSegmentados" class="tabpane" hidden>
     <div class="gcard">
-      <div class="gcard-h"><span class="gdot"></span>DOCUMENTOS SEGMENTADOS Y VERSIONES CONTROLADAS
+      <div class="gcard-h"><span class="gdot"></span>FICHAS TÉCNICAS Y VERSIONES CONTROLADAS
         <span style="margin-left:auto;display:flex;gap:14px;align-items:center">
           <label class="gnote" style="margin:0;display:flex;gap:6px;align-items:center;cursor:pointer">
             <input type="checkbox" id="segVerElim"> Mostrar eliminados</label>
@@ -414,6 +427,16 @@ table.ver td.med{min-width:220px}
         <div class="gnote" id="segListaSub" style="margin:0 0 12px"></div>
         <div id="segLista"></div>
       </div>
+    </div>
+  </section>
+
+  <!-- ── Pestaña: EMA / AEMPS ePI (datos del repo EMA-APi), lógica en ema_epi.js ── -->
+  <section id="tabEmaEpi" class="tabpane" hidden>
+    <div class="gcard">
+      <div class="gcard-h"><span class="gdot"></span>EMA / AEMPS · ePI (API OFICIAL FHIR DE LA EMA)
+        <span style="margin-left:auto;display:flex;gap:14px;align-items:center">
+          <button type="button" class="glink" id="epiRecargar">↻ Actualizar</button></span></div>
+      <div class="gcard-b" id="epiCuerpo"></div>
     </div>
   </section>
 
@@ -446,7 +469,7 @@ table.ver td.med{min-width:220px}
     <a class="btn" id="xlsxBtn" href="#" target="_blank" rel="noopener">⬇ Descargar Excel</a>
     <a class="btn ghost" id="mdBtn" href="#" target="_blank" rel="noopener">📄 Ver resumen (MD)</a>
     <button class="btn" id="subirBtn" type="button" title="PDF, Word (.docx) o HTML de una FT o un Prospecto">⬆ Subir FT / Prospecto</button>
-    <button class="btn ghost" id="histBtn" type="button">📚 Segmentados</button>
+    <button class="btn ghost" id="histBtn" type="button">📚 Fichas técnicas</button>
     <input type="file" id="subirInput" accept=".pdf,.docx,.html,.htm" hidden>
   </div>
 
@@ -834,13 +857,14 @@ $('tbody').addEventListener('click', e => {
   if (b) segmentarFila(b.dataset.nreg, b.dataset.tipo);
 });
 
-// ── Pestañas: 1 Cambios CIMA (monitor) · 2 Generar documento · 3 Segmentados ─
+// ── Pestañas: 1 Cambios CIMA (monitor) · 2 Generar documento · 3 Fichas técnicas · 4 EMA ePI ─
 function mostrarTab(id){
   document.querySelectorAll('.tabpane').forEach(p => { p.hidden = p.id !== id; });
   document.querySelectorAll('.tabs .tab').forEach(t => t.classList.toggle('sel', t.dataset.tab === id));
-  // Segmentados usa todo el ancho de la pantalla (tabla de 10 columnas).
-  document.querySelector('.wrap').classList.toggle('ancho', id === 'tabSegmentados');
+  // Fichas técnicas y EMA ePI usan todo el ancho de la pantalla (tablas anchas).
+  document.querySelector('.wrap').classList.toggle('ancho', id === 'tabSegmentados' || id === 'tabEmaEpi');
   if (id === 'tabSegmentados') cargarSegmentados();   // siempre datos frescos (versiones nuevas, eliminados)
+  if (id === 'tabEmaEpi') EmaEpi.cargar();
 }
 function initTabs(){
   document.querySelectorAll('.tabs .tab').forEach(t => t.onclick = () => mostrarTab(t.dataset.tab));
@@ -878,6 +902,12 @@ async function guardarSubida(){
 // versión controlada y acciones por versión. "Eliminar" es lógico y auditado.
 const fechaHoraPE = iso => iso ? new Date(iso).toLocaleString('es-PE',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '—';
 const segAbiertos = new Set();   // grupos desplegados (se conservan al recargar)
+const ftFiltros = { q: '', empresa: '', tipo: '', origen: '', rs: '' };   // filtros de Fichas técnicas
+let ftBusquedaPendiente = null;
+let edicionDisponible = true;    // false si falta sql/fichas_tecnicas_edicion.sql  // búsqueda a aplicar al abrir Fichas técnicas (p. ej. desde EMA ePI)
+const ORIGEN_TXT = { cima: 'CIMA', subida: 'Subido', ema_epi: 'EMA ePI' };
+/** Abre Fichas técnicas filtrando por un texto (Nº CIMA, nombre…). */
+function irAFichas(texto){ ftBusquedaPendiente = texto || ''; mostrarTab('tabSegmentados'); window.scrollTo({ top: 0, behavior: 'smooth' }); }
 
 $('histBtn').onclick = () => { mostrarTab('tabSegmentados'); window.scrollTo({ top: 0, behavior: 'smooth' }); };
 $('segRecargar').onclick = () => cargarSegmentados();
@@ -888,11 +918,19 @@ async function cargarSegmentados(){
   const lista = $('segLista'), sub = $('segListaSub');
   const verElim = $('segVerElim').checked;
   lista.innerHTML = cargando('Cargando…'); sub.textContent = '';
-  let q = sb.from('documentos_segmentados')
-    .select('id, origen, tipo_documento, nregistro, nombre_medicamento, laboratorio_titular, archivo_nombre, archivo_path, fecha_version_cima, creado_en, creado_por, eliminado_en, eliminado_por_nombre, eliminado_por_email, motivo_eliminacion')
-    .order('creado_en', { ascending: false }).limit(500);
-  if (!verElim) q = q.is('eliminado_en', null);
-  const { data, error } = await q;
+  const COLS_BASE = 'id, origen, tipo_documento, nregistro, nombre_medicamento, laboratorio_titular, archivo_nombre, archivo_path, fecha_version_cima, creado_en, creado_por, eliminado_en, eliminado_por_nombre, eliminado_por_email, motivo_eliminacion';
+  const COLS_EDIT = ', fuente_referencia, fecha_version_documento, medicamento_id, rs_numero, rs_producto, rs_principio_activo, editado_en, editado_por_nombre';
+  const leer = cols => {
+    let q = sb.from('documentos_segmentados').select(cols).order('creado_en', { ascending: false }).limit(500);
+    return verElim ? q : q.is('eliminado_en', null);
+  };
+  let { data, error } = await leer(COLS_BASE + COLS_EDIT);
+  // Si aún no se aplicó sql/fichas_tecnicas_edicion.sql, se lee como antes (sin edición).
+  if (error && /fuente_referencia|fecha_version_documento|medicamento_id|rs_numero|editado_|42703/.test(error.message + ' ' + (error.code || ''))){
+    console.warn('Fichas técnicas: falta sql/fichas_tecnicas_edicion.sql; edición deshabilitada.');
+    ({ data, error } = await leer(COLS_BASE));
+    edicionDisponible = false;
+  } else edicionDisponible = true;
   if (error){ lista.innerHTML = `<div class="err" style="display:block">${escH(error.message)}</div>`; return; }
   if (!data.length){ lista.innerHTML = '<div class="empty">Todavía no hay documentos segmentados.</div>'; return; }
   const porId = Object.fromEntries(data.map(d => [d.id, d]));
@@ -911,7 +949,13 @@ async function cargarSegmentados(){
   // registro sanitario quedan en UNA sola fila; sus versiones van en el acordeón.
   // Un documento sin versión controlada se une al producto si comparte Nº CIMA con otro
   // que sí la tiene; si no, queda agrupado por su Nº CIMA.
-  const medDeDoc = d => { const v = rsDeDoc(d); return v && v.medicamento_id; };
+  // Registro sanitario del documento: el vinculado al editar la ficha (✏ Editar) manda;
+  // si no, el de su versión controlada.
+  const snapDeDoc = d => d.medicamento_id
+    ? { medicamento_id: d.medicamento_id, rs_numero: d.rs_numero, rs_producto: d.rs_producto,
+        rs_principio_activo: d.rs_principio_activo, version: Infinity, deDoc: true }
+    : rsDeDoc(d);
+  const medDeDoc = d => { const v = snapDeDoc(d); return v && v.medicamento_id; };
   const medPorCima = {};
   for (const d of data){ const m = medDeDoc(d); if (m && d.nregistro) medPorCima[d.nregistro] ||= m; }
   const clave = d => {
@@ -933,7 +977,8 @@ async function cargarSegmentados(){
       || new Date(b.fecha_version_cima || b.creado_en) - new Date(a.fecha_version_cima || a.creado_en));
     g.vigentes = g.docs.filter(d => !d.eliminado_en);
     g.ref = g.vigentes[0] || g.docs[0];
-    g.rs = g.docs.map(rsDeDoc).filter(Boolean).sort((a, b) => b.version - a.version)[0] || null;
+    g.rs = g.docs.filter(d => !d.eliminado_en).map(snapDeDoc).filter(Boolean).sort((a, b) => b.version - a.version)[0]
+        || g.docs.map(snapDeDoc).filter(Boolean).sort((a, b) => b.version - a.version)[0] || null;
     g.orden = Math.max(...g.docs.map(d => +new Date(d.creado_en)));
     return g;
   }).sort((a, b) => b.orden - a.orden);
@@ -992,6 +1037,10 @@ async function cargarSegmentados(){
     let h = `<button type="button" class="mini abrir" data-id="${escH(d.id)}">Abrir</button>`;
     h += docIds.map(id => `<button type="button" class="mini hist-b" data-doc="${escH(id)}" title="Versiones y controles de cambio">🕘 Historial</button>`).join('');
     if (d.eliminado_en) return h;
+    if (edicionDisponible && puedeEliminar(d.creado_por))
+      h += `<button type="button" class="mini edit" data-id="${escH(d.id)}" title="${d.origen === 'cima'
+        ? 'Vincular registro sanitario / fuente (los datos de CIMA no se editan)'
+        : 'Editar nombre, laboratorio, fuente, fecha de versión y registro sanitario'}">✏ Editar</button>`;
     if (vs.length) h += `<span class="sin-permiso" title="Es la referencia de una versión controlada: no se puede eliminar (integridad del registro)">🔒</span>`;
     else if (puedeEliminar(d.creado_por)) h += `<button type="button" class="mini del" data-id="${escH(d.id)}" title="Eliminar esta versión (queda en la bitácora)">🗑 Eliminar</button>`;
     else h += `<span class="sin-permiso" title="Solo quien lo guardó o un administrador puede eliminarlo">🔒</span>`;
@@ -1004,23 +1053,64 @@ async function cargarSegmentados(){
       <td class="nreg">${escH(d.nregistro || '—')}</td>
       <td><span class="tag ${d.tipo_documento === 'FT' ? 'ft' : 'prosp'}">${d.tipo_documento === 'FT' ? 'FT' : 'PROSP'}</span></td>
       <td class="med">${escH(d.nombre_medicamento || d.archivo_nombre || '—')}
-        <span class="cmono">${d.origen === 'cima' ? 'CIMA' : 'Subido'} · guardado ${fmtFecha(d.creado_en)}</span>${elim}</td>
-      <td class="nreg">${d.fecha_version_cima ? fmtFecha(d.fecha_version_cima) : guion}</td>
+        <span class="cmono">${ORIGEN_TXT[d.origen] || d.origen}${d.fuente_referencia ? ' · fuente ' + escH(d.fuente_referencia) : ''}${
+          d.laboratorio_titular && d.origen !== 'cima' ? ' · ' + escH(d.laboratorio_titular) : ''} · guardado ${fmtFecha(d.creado_en)}${
+          d.rs_numero ? ' · RS ' + escH(d.rs_numero) : ''}</span>${
+          d.editado_en ? `<span class="cmono" style="color:#8a5a00">✏ editado ${escH(fechaHoraPE(d.editado_en))}${d.editado_por_nombre ? ' · ' + escH(d.editado_por_nombre) : ''}</span>` : ''}${elim}</td>
+      <td class="nreg">${d.fecha_version_cima ? fmtFecha(d.fecha_version_cima)
+        : d.fecha_version_documento ? `${fmtDia(d.fecha_version_documento)}<span class="cmono">del documento</span>` : guion}</td>
       <td>${celdaVersionCtrl(d)}</td>
       <td class="acc">${accionesVersion(d)}</td></tr>`;
   };
   const tablaVersiones = g => `<table class="ver"><thead><tr>
-      <th>Nº</th><th>Tipo</th><th>Medicamento de referencia</th><th>Versión CIMA</th><th>Versión controlada</th><th style="text-align:right">Acción</th>
+      <th>Nº CIMA</th><th>Tipo</th><th>Medicamento de referencia</th><th>Versión (CIMA / doc.)</th><th>Versión controlada</th><th style="text-align:right">Acción</th>
     </tr></thead><tbody>${g.docs.map(filaVersion).join('')}</tbody></table>`;
+
+  // ── Datos para los filtros (empresa farmacéutica, tipo, origen, registro sanitario) ──
+  // Nombre normalizado (sin tildes, puntos ni comas) para no duplicar "Kern Pharma S.L." / "KERN PHARMA, S.L".
+  const norm = t => String(t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
+    .replace(/[.,]/g, ' ').replace(/\s+/g, ' ').trim();
+  const empresasTit = new Map(), empresasFab = new Map();   // clave normalizada → nombre a mostrar
+  lista_g.forEach(g => {
+    const p = datosRS(g);
+    const tits = p && p.titulares ? p.titulares.map(t => t.nombre).filter(n => n && n !== '—') : [];
+    const fabs = [p && p.fab, ...g.docs.map(d => d.laboratorio_titular)].filter(Boolean);
+    tits.forEach(n => { if (!empresasTit.has(norm(n))) empresasTit.set(norm(n), n); });
+    fabs.forEach(n => { if (!empresasFab.has(norm(n))) empresasFab.set(norm(n), n); });
+    g.f = {
+      empresa: [...tits.map(n => 'tit:' + norm(n)), ...fabs.map(n => 'fab:' + norm(n))].join('\n'),
+      tipos: [...new Set(g.docs.map(d => d.tipo_documento))].join(' '),
+      origen: [...new Set(g.docs.map(d => d.origen))].join(' '),
+      rs: p && (p.rs || p.producto) ? 'si' : 'no',
+    };
+  });
+  const ordenES = (a, b) => a.localeCompare(b, 'es', { sensitivity: 'base' });
+  const opcionesEmpresa = `<option value="">Todas las empresas</option>`
+    + (empresasTit.size ? `<optgroup label="Titulares asignados (Perú)">${[...empresasTit].sort((a, b) => ordenES(a[1], b[1]))
+        .map(([k, n]) => `<option value="tit:${escH(k)}">${escH(n)}</option>`).join('')}</optgroup>` : '')
+    + (empresasFab.size ? `<optgroup label="Fabricante / laboratorio titular">${[...empresasFab].sort((a, b) => ordenES(a[1], b[1]))
+        .map(([k, n]) => `<option value="fab:${escH(k)}">${escH(n)}</option>`).join('')}</optgroup>` : '');
 
   const totalV = data.filter(d => !d.eliminado_en).length, totalE = data.length - totalV;
   sub.textContent = `${lista_g.length} producto(s) · ${totalV} versión(es) vigente(s)`
     + (verElim ? ` · ${totalE} eliminada(s)` : '') + ' · clic en una fila para desplegar sus versiones';
 
   lista.innerHTML = `
-    <div class="bar"><input type="search" id="histBuscar" class="ginput" style="max-width:460px"
-      placeholder="Buscar por medicamento, Nº CIMA, código (CKS-…) o registro sanitario (EN-…)">
-      <span class="gnote" id="histCuenta"></span></div>
+    <div class="controls ftfiltros">
+      <div class="ctrl" style="flex:1 1 300px"><label>Buscar</label>
+        <input type="search" id="histBuscar" class="ginput" style="min-width:0"
+          placeholder="Medicamento, Nº CIMA, código (CKS-…) o registro sanitario (EN-…)"></div>
+      <div class="ctrl"><label>Empresa farmacéutica</label><select id="ftEmpresa">${opcionesEmpresa}</select></div>
+      <div class="ctrl"><label>Tipo</label><select id="ftTipo" style="min-width:140px">
+        <option value="">Todos</option><option value="FT">Ficha técnica</option><option value="P">Prospecto</option></select></div>
+      <div class="ctrl"><label>Origen</label><select id="ftOrigen" style="min-width:140px">
+        <option value="">Todos</option><option value="cima">CIMA (AEMPS)</option><option value="subida">Subido (PDF / Word)</option>
+        <option value="ema_epi">EMA ePI</option></select></div>
+      <div class="ctrl"><label>Registro sanitario</label><select id="ftRS" style="min-width:150px">
+        <option value="">Todos</option><option value="si">Con RS vinculado</option><option value="no">Sin RS vinculado</option></select></div>
+      <button type="button" class="btn ghost" id="ftLimpiar">Limpiar</button>
+      <span class="gnote" id="histCuenta" style="margin:0 0 8px"></span>
+    </div>
     <div id="histControlados"></div>
     <div class="table-scroll"><table class="sgm"><thead><tr>
       <th>Nº</th><th>Producto</th><th>Principio activo</th><th>Nº Reg. Sanitario</th><th>Fecha vencimiento</th>
@@ -1040,7 +1130,8 @@ async function cargarSegmentados(){
       const refCima = tipos.map(t => `<span class="tag ${t === 'FT' ? 'ft' : 'prosp'}">${t === 'FT' ? 'FT' : 'PROSP'}</span>`).join(' ')
         + ` ${cimas.length ? 'CIMA Nº ' + cimas.map(escH).join(', ') : ''}${nSub ? (cimas.length ? ' · ' : '') + nSub + ' subido(s)' : ''}`
         + (p && p.producto ? '' : ` · ${escH(r.nombre_medicamento || r.archivo_nombre || '—')}`);
-      return `<tr class="grp${abierto ? ' open' : ''}" data-k="${escH(g.k)}" data-buscar="${escH(buscable)}">
+      return `<tr class="grp${abierto ? ' open' : ''}" data-k="${escH(g.k)}" data-buscar="${escH(buscable)}"
+        data-empresa="${escH(g.f.empresa)}" data-tipos="${escH(g.f.tipos)}" data-origen="${escH(g.f.origen)}" data-rs="${g.f.rs}">
         <td class="num">${i + 1}</td>
         <td class="prod">${p && p.producto ? escH(p.producto) : '<span style="color:var(--muted);font-weight:400">Sin registro sanitario vinculado</span>'}
           <span class="cmono">${refCima}${p && p.fuente === 'snapshot' ? ' · datos de la versión controlada' : ''}</span></td>
@@ -1056,18 +1147,38 @@ async function cargarSegmentados(){
     }).join('')}
     </tbody></table></div>`;
 
-  // ── Búsqueda: filtra medicamentos y busca en TODOS los documentos controlados ──
-  let tBusca = null;
-  $('histBuscar').oninput = () => {
-    const q = $('histBuscar').value.trim().toLowerCase();
+  // ── Filtros (se conservan al recargar) + búsqueda en TODOS los documentos controlados ──
+  const FILTROS = { histBuscar: 'q', ftEmpresa: 'empresa', ftTipo: 'tipo', ftOrigen: 'origen', ftRS: 'rs' };
+  for (const [id, k] of Object.entries(FILTROS)){
+    const el = $(id);
+    if (ftFiltros[k] && (el.tagName !== 'SELECT' || [...el.options].some(o => o.value === ftFiltros[k]))) el.value = ftFiltros[k];
+  }
+  const aplicarFiltros = () => {
+    for (const [id, k] of Object.entries(FILTROS)) ftFiltros[k] = $(id).value;
+    const q = ftFiltros.q.trim().toLowerCase(), f = ftFiltros;
     let n = 0;
     lista.querySelectorAll('tr.grp').forEach(tr => {
-      const ok = !q || tr.dataset.buscar.includes(q);
+      const ok = (!q || tr.dataset.buscar.includes(q))
+        && (!f.empresa || tr.dataset.empresa.split('\n').includes(f.empresa))
+        && (!f.tipo || tr.dataset.tipos.split(' ').includes(f.tipo))
+        && (!f.origen || tr.dataset.origen.split(' ').includes(f.origen))
+        && (!f.rs || tr.dataset.rs === f.rs);
       tr.hidden = !ok;
       tr.nextElementSibling.hidden = !ok || !tr.classList.contains('open');
       if (ok) n++;
     });
-    $('histCuenta').textContent = q ? `${n} medicamento(s)` : '';
+    const activos = Object.values(f).some(v => v && String(v).trim());
+    $('histCuenta').textContent = activos ? `${n} de ${lista_g.length} producto(s)` : '';
+    return q;
+  };
+  ['ftEmpresa', 'ftTipo', 'ftOrigen', 'ftRS'].forEach(id => $(id).onchange = aplicarFiltros);
+  $('ftLimpiar').onclick = () => {
+    Object.keys(FILTROS).forEach(id => { $(id).value = ''; });
+    aplicarFiltros(); $('histControlados').innerHTML = '';
+  };
+  let tBusca = null;
+  $('histBuscar').oninput = () => {
+    const q = aplicarFiltros();
     clearTimeout(tBusca);
     tBusca = setTimeout(async () => {
       const caja = $('histControlados'); if (!caja) return;
@@ -1085,6 +1196,9 @@ async function cargarSegmentados(){
       caja.querySelectorAll('.hist-b').forEach(b => b.onclick = () => Control.abrirHistorial(b.dataset.doc));
     }, 400);
   };
+
+  if (ftBusquedaPendiente){ $('histBuscar').value = ftBusquedaPendiente; ftBusquedaPendiente = null; $('histBuscar').oninput(); }
+  else aplicarFiltros();
 
   // ── Clics: acordeón + acciones por versión ──
   lista.querySelector('table.sgm > tbody').onclick = async e => {
@@ -1107,9 +1221,12 @@ async function cargarSegmentados(){
       return;
     }
 
+    const ed = e.target.closest('button.edit');
+    if (ed){ abrirEdicion(porId[ed.dataset.id]); return; }
+
     const ab = e.target.closest('button.abrir');
     if (ab){
-      abrirPanel('Documento segmentado', '', cargando('Cargando…'));
+      abrirPanel('Ficha técnica', '', cargando('Cargando…'));
       try{
         const previo = await cargarDeSupabase({ id: ab.dataset.id });
         seg = { res: previo.res, docId: previo.id, estado: 'previo' };
@@ -1129,13 +1246,18 @@ async function cargarSegmentados(){
 
 // ── Bitácora de auditoría (altas y eliminaciones; solo lectura) ─────────────
 async function abrirBitacora(){
-  abrirPanel('🧾 Bitácora de documentos segmentados', 'Registro inmutable · hora del servidor', cargando('Cargando…'));
+  abrirPanel('🧾 Bitácora de fichas técnicas', 'Registro inmutable · hora del servidor', cargando('Cargando…'));
   const { data, error } = await sb.from('documentos_segmentados_auditoria')
     .select('id, documento_id, evento, motivo, snapshot, usuario_email, usuario_nombre, creado_en')
     .order('creado_en', { ascending: false }).limit(300);
   if (error){ $('segCuerpo').innerHTML = `<div class="err" style="display:block">${escH(error.message)}</div>`; return; }
   if (!data.length){ $('segCuerpo').innerHTML = '<div class="empty">Sin eventos registrados.</div>'; return; }
-  const nombreEv = { CREAR: 'Alta', ELIMINAR: 'Eliminación', DESCARTAR_INCOMPLETO: 'Descarte (guardado incompleto)' };
+  const nombreEv = { CREAR: 'Alta', ELIMINAR: 'Eliminación', DESCARTAR_INCOMPLETO: 'Descarte (guardado incompleto)', EDITAR: 'Edición' };
+  const CAMPO_TXT = { nombre_medicamento: 'Nombre', laboratorio_titular: 'Laboratorio', nregistro: 'Nº CIMA',
+    fuente_referencia: 'Fuente', fecha_version_documento: 'Fecha de versión', medicamento_id: 'Registro sanitario (id)',
+    rs_numero: 'Registro sanitario', rs_producto: 'Producto (RS)' };
+  const cambiosTxt = c => Object.entries(c || {}).filter(([k]) => k !== 'medicamento_id')
+    .map(([k, v]) => `${CAMPO_TXT[k] || k}: ${v.antes ?? '—'} → ${v.despues ?? '—'}`);
   const filas = data.map(a => {
     const s = a.snapshot || {};
     return `<tr><td class="nreg">${escH(fechaHoraPE(a.creado_en))}</td>
@@ -1143,7 +1265,8 @@ async function abrirBitacora(){
       <td class="med">${escH(s.nombre_medicamento || s.archivo_nombre || '—')}
         <span class="cmono">${escH(s.tipo_documento || '')} · Nº ${escH(s.nregistro || '—')} · versión ${s.fecha_version_cima ? fmtFecha(s.fecha_version_cima) : '—'}</span></td>
       <td>${escH(a.usuario_nombre || a.usuario_email || '—')}</td>
-      <td>${escH(a.motivo || '')}</td></tr>`;
+      <td>${escH(a.motivo || '')}${s._cambios ? `<ul class="cdet" style="margin:4px 0 0;padding-left:16px">${
+        cambiosTxt(s._cambios).map(t => `<li>${escH(t)}</li>`).join('')}</ul>` : ''}</td></tr>`;
   }).join('');
   $('segCuerpo').innerHTML = `
     <div class="bar"><button class="btn" type="button" id="audXlsx">⬇ Excel</button>
@@ -1157,11 +1280,119 @@ async function abrirBitacora(){
     data.forEach(a => { const s = a.snapshot || {};
       aoa.push([fechaHoraPE(a.creado_en), nombreEv[a.evento] || a.evento, a.documento_id, s.tipo_documento || '', s.nregistro || '',
                 s.nombre_medicamento || s.archivo_nombre || '', s.fecha_version_cima ? fmtFecha(s.fecha_version_cima) : '',
-                a.usuario_nombre || '', a.usuario_email || '', a.motivo || '']); });
+                a.usuario_nombre || '', a.usuario_email || '',
+                [a.motivo || '', ...cambiosTxt(s._cambios)].filter(Boolean).join(' | ')]); });
     const ws = XLSX.utils.aoa_to_sheet(aoa);
     ws['!cols'] = [{wch:18},{wch:16},{wch:38},{wch:6},{wch:10},{wch:50},{wch:12},{wch:24},{wch:28},{wch:60}];
     const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, 'Bitácora');
     XLSX.writeFile(wb, `Bitacora_Segmentados_${new Date().toISOString().slice(0,10).replace(/-/g,'')}.xlsx`);
+  };
+}
+
+// ── ✏ Editar datos de una ficha (RPC auditada; las secciones no se tocan) ──
+// Un PDF subido (p. ej. FT DIGEMID del titular) muchas veces no tiene ficha de
+// referencia en CIMA: aquí se corrige su nombre, laboratorio, fuente, fecha de
+// versión y el registro sanitario del portafolio al que pertenece. En fichas de
+// CIMA solo se cambia el registro sanitario y la fuente.
+const FUENTES = ['DIGEMID', 'Titular / fabricante', 'AEMPS (CIMA)', 'EMA', 'FDA', 'Otra agencia'];
+function abrirEdicion(d){
+  if (!d) return;
+  const esCima = d.origen === 'cima';
+  const dis = esCima ? ' disabled title="Dato de CIMA: no se edita"' : '';
+  const rsActual = d.medicamento_id ? { id: d.medicamento_id, rs: d.rs_numero, prod: d.rs_producto, pa: d.rs_principio_activo } : null;
+  let rsSel = rsActual;   // selección en el formulario (null = sin vínculo)
+  const rsHTML = () => rsSel
+    ? `<div class="grs-sel"><div><b>${escH(rsSel.rs || '—')}</b><small>${escH(rsSel.prod || '')}${rsSel.pa ? ' · ' + escH(rsSel.pa) : ''}</small></div>
+         <button type="button" class="glink" id="edRsQuitar">Quitar vínculo</button></div>`
+    : `<div class="gnote" style="margin:0">Sin registro sanitario vinculado.</div>`;
+
+  abrirPanel(`✏ Editar ficha · ${d.nombre_medicamento || d.archivo_nombre || ''}`,
+    `${nombreTipo(d.tipo_documento)} · ${ORIGEN_TXT[d.origen] || d.origen}${d.archivo_nombre ? ' · ' + d.archivo_nombre : ''}`, `
+    <p class="gnote" style="margin:0 0 12px">Solo se editan los <b>datos de la ficha</b>; las secciones (a … e.6) no cambian.
+      Cada edición queda en la 🧾 bitácora con usuario, fecha/hora del servidor, motivo y el valor anterior.
+      ${esCima ? '<br>Ficha de <b>CIMA</b>: nombre, Nº y laboratorio vienen de AEMPS; aquí solo se vincula el registro sanitario y la fuente.' : ''}</p>
+    <div class="cgrid">
+      <div><label for="edNombre">Nombre del medicamento</label>
+        <input id="edNombre" class="ginput" value="${escH(d.nombre_medicamento || '')}"${dis}></div>
+      <div><label for="edLab">Laboratorio / titular del documento</label>
+        <input id="edLab" class="ginput" value="${escH(d.laboratorio_titular || '')}"${dis}></div>
+      <div><label for="edNreg">Nº CIMA de referencia (opcional)</label>
+        <input id="edNreg" class="ginput" value="${escH(d.nregistro || '')}" placeholder="Vacío si no hay FT en CIMA"${dis}></div>
+      <div><label for="edFuente">Fuente de la ficha</label>
+        <input id="edFuente" class="ginput" list="edFuentes" value="${escH(d.fuente_referencia || '')}" placeholder="DIGEMID, titular…">
+        <datalist id="edFuentes">${FUENTES.map(f => `<option value="${escH(f)}">`).join('')}</datalist></div>
+      <div><label for="edFecha">Fecha de versión del documento</label>
+        <input id="edFecha" class="ginput" type="date" value="${escH(d.fecha_version_documento || '')}"${dis}>
+        <small>Fecha de revisión que figura en la ficha.</small></div>
+    </div>
+    <div class="czona">
+      <label class="clabel">Registro sanitario del portafolio</label>
+      <div id="edRsActual">${rsHTML()}</div>
+      ${yo && yo.titulares ? `<input type="search" id="edRsBuscar" class="ginput" style="margin-top:8px"
+          placeholder="Buscar por producto, principio activo o Nº de registro (EE-…, EN-…)">
+        <div id="edRsRes" class="gresultados"></div>`
+        : '<p class="gnote">Su cuenta no tiene acceso al portafolio de registros sanitarios: no puede cambiar este vínculo.</p>'}
+    </div>
+    <label class="clabel" for="edMotivo">Motivo de la edición <span class="req">*</span> (mín. 10 caracteres)</label>
+    <textarea id="edMotivo" rows="2" class="ctextarea" placeholder="Ej.: se completa el nombre comercial y se vincula al RS del titular"></textarea>
+    <div class="bar" style="margin-top:12px;justify-content:flex-end">
+      <span class="gnote" id="edErr" style="margin:0 auto 0 0;color:#b42318"></span>
+      <button class="btn ghost" type="button" id="edCancelar">Cancelar</button>
+      <button class="btn" type="button" id="edGuardar">💾 Guardar cambios</button>
+    </div>`);
+
+  const pintarRs = () => {
+    $('edRsActual').innerHTML = rsHTML();
+    if ($('edRsQuitar')) $('edRsQuitar').onclick = () => { rsSel = null; pintarRs(); };
+  };
+  pintarRs();
+  if ($('edRsBuscar')){
+    let t = null;
+    $('edRsBuscar').oninput = () => {
+      clearTimeout(t);
+      t = setTimeout(async () => {
+        const q = $('edRsBuscar').value.trim().replace(/[,()%*]/g, ' ').trim();
+        const box = $('edRsRes'); if (!box) return;
+        if (q.length < 2){ box.innerHTML = ''; return; }
+        const { data, error } = await sb.from('medicamentos')
+          .select('id, descripcion_producto, principio_activo, nro_registro_sanitario, fabricante')
+          .or(`descripcion_producto.ilike.%${q}%,principio_activo.ilike.%${q}%,nro_registro_sanitario.ilike.%${q}%`)
+          .order('descripcion_producto').limit(15);
+        if (error){ box.innerHTML = `<div class="gnote err">${escH(error.message)}</div>`; return; }
+        box.innerHTML = data.length ? data.map(m => `<button type="button" class="gres" data-id="${escH(m.id)}">
+            <b>${escH(m.descripcion_producto || '—')}</b>
+            <small>${escH(m.nro_registro_sanitario || 's/RS')} · ${escH(m.principio_activo || '')}${m.fabricante ? ' · ' + escH(m.fabricante) : ''}</small></button>`).join('')
+          : '<div class="gnote">Sin resultados en el portafolio.</div>';
+        box.querySelectorAll('.gres').forEach(b => b.onclick = () => {
+          const m = data.find(x => x.id === b.dataset.id);
+          rsSel = { id: m.id, rs: m.nro_registro_sanitario, prod: m.descripcion_producto, pa: m.principio_activo };
+          box.innerHTML = ''; $('edRsBuscar').value = ''; pintarRs();
+        });
+      }, 300);
+    };
+  }
+  $('edCancelar').onclick = cerrarPanel;
+  $('edGuardar').onclick = async () => {
+    const err = $('edErr'); err.textContent = '';
+    const cambios = {};
+    const val = id => $(id).value.trim();
+    if (!esCima){
+      if (val('edNombre') !== (d.nombre_medicamento || '')) cambios.nombre_medicamento = val('edNombre');
+      if (val('edLab') !== (d.laboratorio_titular || '')) cambios.laboratorio_titular = val('edLab');
+      if (val('edNreg') !== (d.nregistro || '')) cambios.nregistro = val('edNreg');
+      if (val('edFecha') !== (d.fecha_version_documento || '')) cambios.fecha_version_documento = val('edFecha');
+      if (!val('edNombre')){ err.textContent = 'El nombre del medicamento no puede quedar vacío.'; return; }
+    }
+    if (val('edFuente') !== (d.fuente_referencia || '')) cambios.fuente_referencia = val('edFuente');
+    if ((rsSel && rsSel.id) !== (rsActual && rsActual.id)) cambios.medicamento_id = rsSel ? rsSel.id : null;
+    if (!Object.keys(cambios).length){ err.textContent = 'No hay cambios que guardar.'; return; }
+    const motivo = $('edMotivo').value.trim();
+    if (motivo.length < 10){ err.textContent = 'Indique un motivo de al menos 10 caracteres.'; $('edMotivo').focus(); return; }
+    const b = $('edGuardar'); b.disabled = true; b.textContent = 'Guardando…';
+    const { error } = await sb.rpc('editar_documento_segmentado', { p_id: d.id, p_cambios: cambios, p_motivo: motivo });
+    if (error){ err.textContent = error.message; b.disabled = false; b.textContent = '💾 Guardar cambios'; return; }
+    cerrarPanel();
+    await cargarSegmentados();
   };
 }
 
