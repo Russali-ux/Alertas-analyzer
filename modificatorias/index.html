@@ -108,6 +108,7 @@
   .f label { font-size: 11px; font-weight: bold; color: var(--muted); text-transform: uppercase; letter-spacing: .03em; }
   .f input, .f select, .f textarea { padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; font-family: inherit; width: 100%; }
   .f textarea { resize: vertical; min-height: 64px; }
+  .f textarea[data-k=titular_rs] { min-height: 52px; }
   .f input:focus, .f select:focus, .f textarea:focus { outline: 2px solid rgba(26,140,147,.35); border-color: var(--teal); }
   .f input[readonly] { background: #F7F8FA; color: var(--muted); }
   .f .ro { font-size: 13px; padding: 6px 0; white-space: pre-wrap; word-break: break-word; }
@@ -293,13 +294,21 @@ function dqIssues(d) {
   const out = [];
   const tit = (d.titular_rs || '').trim();
   if (!tit) out.push(['titular_rs', 'Titular vacío']);
-  else if (RX_TITULAR_MALO.test(tit) || tit.length > 70) out.push(['titular_rs', 'Titular mal extraído (texto del documento)']);
+  else if (!titularesDe(d).length) out.push(['titular_rs', 'Titular mal extraído (texto del documento)']);
   if (!(d.principio_activo || '').trim()) out.push(['principio_activo', 'Principio activo vacío']);
   if ((d.resumen || '').trim().length < 25) out.push(['resumen', 'Resumen vacío o muy corto']);
   if (!(d.producto || '').trim()) out.push(['producto', 'Producto vacío']);
   return out;
 }
-const titularValido = d => { const t = (d.titular_rs || '').trim(); return t && !RX_TITULAR_MALO.test(t) && t.length <= 70 ? t : null; };
+// Admite varios titulares separados por "/" (p. ej. "ROCHE FARMA (PERU) SA / FARMINDUSTRIA SA").
+// Cada titular individual se valida por separado (máx. 90 caracteres y sin frases del documento).
+function titularesDe(d) {
+  const t = (d.titular_rs || '').trim();
+  if (!t || RX_TITULAR_MALO.test(t)) return [];
+  const partes = t.split(/\s*[\/;|]\s*|\s*\n\s*/).map(x => x.trim()).filter(Boolean);
+  return partes.length && partes.every(x => x.length <= 90) ? partes : [];
+}
+const titularValido = d => titularesDe(d).length ? d.titular_rs.trim() : null;
 
 function enriquecer(d) {
   d.estado_gestion = d.estado_gestion || 'PENDIENTE';
@@ -363,7 +372,7 @@ function renderKpis() {
   $('kpiGest').textContent = gest;
   $('kpiGestPct').textContent = DATA.length ? `${Math.round(gest * 100 / DATA.length)}% del total` : '—';
   $('kpiDQ').textContent = DATA.filter(d => d._dq.length).length;
-  $('kpiTit').textContent = new Set(DATA.map(titularValido).filter(Boolean).map(t => t.toLowerCase())).size;
+  $('kpiTit').textContent = new Set(DATA.flatMap(titularesDe).map(t => t.toLowerCase())).size;
   document.querySelectorAll('.kpi[data-kpi]').forEach(k => k.classList.toggle('active', k.dataset.kpi === kpiFilter && kpiFilter !== 'todos'));
 }
 
@@ -406,7 +415,7 @@ function renderCharts() {
   });
 
   // Top titulares
-  const tc = {}; DATA.forEach(d => { const t = titularValido(d) || 'Sin titular'; tc[t] = (tc[t] || 0) + 1; });
+  const tc = {}; DATA.forEach(d => { const ts = titularesDe(d); (ts.length ? ts : ['Sin titular']).forEach(t => tc[t] = (tc[t] || 0) + 1); });
   const top = Object.entries(tc).sort((a, b) => b[1] - a[1]).slice(0, 10);
   charts.tit = new Chart($('chartTitular'), {
     type: 'bar',
@@ -436,7 +445,7 @@ function poblarFiltros() {
   const keep = (sel, vals, extra = []) => { const cur = sel.value; sel.length = 1; extra.concat(vals).forEach(([v, t]) => { const o = document.createElement('option'); o.value = v; o.textContent = t; sel.appendChild(o); }); sel.value = cur; };
   keep($('fEstado'), ESTADOS.map(e => [e, e.charAt(0) + e.slice(1).toLowerCase()]));
   keep($('fTipo'), [...new Set(DATA.map(d => d.tipo_modificacion).filter(Boolean))].sort().map(t => [t, t]));
-  keep($('fTitular'), [...new Set(DATA.map(titularValido).filter(Boolean))].sort((a, b) => a.localeCompare(b)).map(t => [t, t]), [['__sin__', '— Sin titular válido —']]);
+  keep($('fTitular'), [...new Set(DATA.flatMap(titularesDe))].sort((a, b) => a.localeCompare(b)).map(t => [t, t]), [['__sin__', '— Sin titular válido —']]);
 }
 
 function filtrar() {
@@ -447,7 +456,7 @@ function filtrar() {
     if (urg && d.urgencia !== urg) return false;
     if (tipo && d.tipo_modificacion !== tipo) return false;
     if (tit === '__sin__' && titularValido(d)) return false;
-    if (tit && tit !== '__sin__' && titularValido(d) !== tit) return false;
+    if (tit && tit !== '__sin__' && !titularesDe(d).includes(tit)) return false;
     if (desde && (d.fecha_publicacion || '') < desde) return false;
     if (hasta && (d.fecha_publicacion || '') > hasta) return false;
     if (soloDQ && !d._dq.length) return false;
@@ -513,7 +522,7 @@ function exportarCSV() {
 const CAMPOS = [
   // [campo, etiqueta, tipo, full?]
   ['producto', 'Producto', 'text'], ['principio_activo', 'Principio activo (IFA)', 'text'],
-  ['titular_rs', 'Titular del Registro Sanitario', 'text', true],
+  ['titular_rs', 'Titular del Registro Sanitario (varios: separar con " / ")', 'area', true],
   ['tipo_modificacion', 'Tipo de modificación', 'text'], ['urgencia', 'Urgencia', 'urg'],
   ['resumen', 'Resumen', 'area', true],
   ['accion_requerida', 'Acción requerida', 'area', true], ['indicador_tiempos', 'Indicador de tiempos', 'area', true],
@@ -557,7 +566,7 @@ async function abrir(id, editar) {
   if (GESTION_OK) h += `<div class="sec-t">Gestión</div><div class="grid2">${CAMPOS_GESTION.map(c => campoHtml(c, d, EDITANDO)).join('')}</div>`;
   h += `<div class="sec-t">Datos de la modificatoria</div><div class="grid2">${CAMPOS.map(c => campoHtml(c, d, EDITANDO)).join('')}</div>`;
   h += `<datalist id="dlTipo">${[...new Set(DATA.map(x => x.tipo_modificacion).filter(Boolean))].map(t => `<option value="${esc(t)}">`).join('')}</datalist>`;
-  h += `<datalist id="dlTit">${[...new Set(DATA.map(titularValido).filter(Boolean))].map(t => `<option value="${esc(t)}">`).join('')}</datalist>`;
+  h += `<datalist id="dlTit">${[...new Set(DATA.flatMap(titularesDe))].map(t => `<option value="${esc(t)}">`).join('')}</datalist>`;
   if (ME.admin && GESTION_OK) h += `<div class="sec-t">Historial de cambios</div><div class="aud" id="audBox"><span class="small">Cargando…</span></div>`;
   $('mBody').innerHTML = h;
   $('mMsg').textContent = ''; $('mMsg').className = 'msg';
@@ -588,6 +597,12 @@ function cambiosPendientes() {
 }
 function marcarCambios() {
   const c = cambiosPendientes();
+  const borrador = { ...ACTUAL }; $('mBody').querySelectorAll('[data-k]').forEach(el => borrador[el.dataset.k] = el.value);
+  const dqNow = dqIssues(borrador);
+  $('mBody').querySelectorAll('[data-f]').forEach(f => {
+    const issue = dqNow.find(x => x[0] === f.dataset.f); f.classList.toggle('dq', !!issue);
+    let m = f.querySelector('.dqmsg'); if (issue) { if (!m) { m = document.createElement('span'); m.className = 'dqmsg'; f.appendChild(m); } m.textContent = '⚠ ' + issue[1]; } else m?.remove();
+  });
   $('mBody').querySelectorAll('[data-f]').forEach(f => f.classList.toggle('changed', f.dataset.f in c));
   const n = Object.keys(c).length;
   $('mSave').disabled = !n;
