@@ -5,280 +5,668 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Monitor Modificatorias DIGEMID — ConkoSafe IA</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <style>
   :root {
-    --navy: #1B5E3E; --teal: #1A8C93; --red: #B3261E; --bg: #F4F6FA;
-    --card: #FFFFFF; --border: #E2E6ED; --text: #1F2937; --muted: #6B7280;
+    --navy: #1B5E3E; --navy-2: #2C7A52; --teal: #1A8C93; --red: #B3261E; --orange: #C2410C; --blue: #2E75B6;
+    --amber: #B45309; --bg: #F4F6FA; --card: #FFFFFF; --border: #E2E6ED; --text: #1F2937; --muted: #6B7280;
+    --ok: #15803D; --ok-bg: #E7F6EC; --warn-bg: #FFF4E5; --err-bg: #FDECEA; --info-bg: #EBF3FB;
   }
   * { box-sizing: border-box; }
-  body { font-family: Arial, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; }
-  header { background: var(--navy); color: #fff; padding: 20px 28px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+  body { font-family: Arial, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; }
+  header { background: var(--navy); color: #fff; padding: 18px 28px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
   header h1 { margin: 0; font-size: 20px; }
   header p { margin: 4px 0 0; font-size: 13px; color: #C9D3EA; }
-  a.back-home {
-    display: inline-flex; align-items: center; gap: 6px;
-    background: rgba(255,255,255,.12); color: #fff; text-decoration: none;
-    font-size: 13px; font-weight: bold; padding: 8px 14px; border-radius: 8px;
-    border: 1px solid rgba(255,255,255,.3); white-space: nowrap; flex-shrink: 0;
-    transition: background .15s ease;
-  }
+  .hdr-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .user-chip { font-size: 12px; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.25); padding: 6px 10px; border-radius: 8px; }
+  .user-chip b.admin { background: #FDE68A; color: #78350F; padding: 1px 6px; border-radius: 6px; margin-left: 6px; font-size: 11px; }
+  a.back-home { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,.12); color: #fff; text-decoration: none;
+    font-size: 13px; font-weight: bold; padding: 8px 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,.3); white-space: nowrap; }
   a.back-home:hover { background: rgba(255,255,255,.24); }
-  .container { max-width: 1300px; margin: 0 auto; padding: 24px 20px 60px; }
-  .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px; margin-bottom: 24px; }
-  .kpi { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; text-align: center; }
+  .container { max-width: 1360px; margin: 0 auto; padding: 22px 20px 60px; }
+  .banner { border-radius: 10px; padding: 12px 16px; font-size: 13px; margin-bottom: 16px; border: 1px solid; }
+  .banner.warn { background: var(--warn-bg); border-color: #F5C98B; color: #7C2D12; }
+  .banner.info { background: var(--info-bg); border-color: #BBD3EE; color: #1E3A5F; }
+  .banner code { background: rgba(0,0,0,.06); padding: 1px 5px; border-radius: 4px; }
+
+  .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 20px; }
+  .kpi { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; cursor: default; position: relative; }
+  .kpi.clickable { cursor: pointer; transition: border-color .15s, box-shadow .15s; }
+  .kpi.clickable:hover { border-color: var(--teal); box-shadow: 0 2px 8px rgba(26,140,147,.12); }
+  .kpi.active { border-color: var(--teal); box-shadow: inset 0 0 0 1px var(--teal); }
   .kpi .label { font-size: 11px; color: var(--muted); font-weight: bold; text-transform: uppercase; letter-spacing: .03em; }
-  .kpi .value { font-size: 26px; font-weight: bold; color: var(--teal); margin-top: 4px; }
-  .kpi .value.inmediata { color: var(--red); }
-  .charts { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 28px; }
-  @media (max-width: 860px) { .charts { grid-template-columns: 1fr; } }
+  .kpi .value { font-size: 26px; font-weight: bold; color: var(--navy); margin-top: 4px; font-variant-numeric: tabular-nums; }
+  .kpi .sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .kpi .value.red { color: var(--red); } .kpi .value.amber { color: var(--amber); } .kpi .value.ok { color: var(--ok); }
+
+  .charts { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 22px; }
+  @media (max-width: 900px) { .charts { grid-template-columns: 1fr; } }
   .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
-  .card h2 { margin: 0 0 12px; font-size: 14px; color: var(--navy); }
-  .controls { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
-  .controls input, .controls select {
-    padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px;
-  }
-  .controls input { flex: 1; min-width: 220px; }
+  .card h2 { margin: 0 0 4px; font-size: 14px; color: var(--navy); }
+  .card .hint { font-size: 11.5px; color: var(--muted); margin: 0 0 10px; }
+  .chart-box { position: relative; height: 240px; }
+
+  .controls { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; align-items: center; }
+  .controls input[type=text], .controls input[type=date], .controls select { padding: 7px 9px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; background: #fff; }
+  .controls input[type=text] { flex: 1; min-width: 220px; }
+  .controls label.chk { font-size: 12.5px; display: inline-flex; align-items: center; gap: 5px; color: var(--text); white-space: nowrap; }
+  .btn { padding: 7px 12px; font-size: 13px; border-radius: 6px; border: 1px solid var(--border); background: #fff; cursor: pointer; font-weight: bold; color: var(--navy); white-space: nowrap; }
+  .btn:hover { background: #F0F4F2; }
+  .btn.primary { background: var(--navy); color: #fff; border-color: var(--navy); }
+  .btn.primary:hover { background: var(--navy-2); }
+  .btn:disabled { opacity: .55; cursor: not-allowed; }
+  .btn.sm { padding: 3px 8px; font-size: 12px; }
+
+  .table-wrap { max-height: 620px; overflow: auto; border: 1px solid var(--border); border-radius: 8px; }
   table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
-  thead th {
-    background: var(--navy); color: #fff; text-align: left; padding: 8px 10px;
-    position: sticky; top: 0; cursor: pointer; user-select: none;
-  }
-  thead th:hover { background: #2C7A52; }
+  thead th { background: var(--navy); color: #fff; text-align: left; padding: 8px 10px; position: sticky; top: 0; z-index: 1; cursor: pointer; user-select: none; white-space: nowrap; }
+  thead th:hover { background: var(--navy-2); }
+  thead th.nosort { cursor: default; } thead th.nosort:hover { background: var(--navy); }
+  thead th .arr { opacity: .7; font-size: 10px; margin-left: 3px; }
   tbody td { padding: 7px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tbody tr { cursor: pointer; }
   tbody tr:nth-child(even) { background: #FAFBFD; }
-  tbody tr:hover { background: #EEF2FA; }
-  .badge { display: inline-block; padding: 1px 8px; border-radius: 10px; font-size: 11px; font-weight: bold; white-space: nowrap; }
-  .badge.INMEDIATA   { background: #FCE4D6; color: var(--red); }
-  .badge.PREVENTIVA  { background: #FFF2CC; color: #ED7D31; }
-  .badge.INFORMATIVA { background: #EBF3FB; color: #2E75B6; }
-  a.src { color: var(--teal); text-decoration: none; font-size: 11px; }
+  tbody tr:hover { background: #EEF4F1; }
+  td.mono { font-variant-numeric: tabular-nums; white-space: nowrap; }
+  td .small { color: var(--muted); font-size: 11.5px; }
+  td.resumen { max-width: 340px; }
+  .clamp { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .badge { display: inline-block; padding: 1px 8px; border-radius: 10px; font-size: 11px; font-weight: bold; white-space: nowrap; border: 1px solid transparent; }
+  .badge.INMEDIATA { background: #FCE4D6; color: var(--red); }
+  .badge.PREVENTIVA { background: #FFF2CC; color: var(--orange); }
+  .badge.INFORMATIVA { background: var(--info-bg); color: var(--blue); }
+  .badge.e-PENDIENTE { background: #F3F4F6; color: #374151; border-color: #D1D5DB; }
+  .badge.e-EN-EVALUACION { background: var(--warn-bg); color: var(--amber); border-color: #F5C98B; }
+  .badge.e-COMUNICADO-DIGEMID { background: var(--info-bg); color: var(--blue); border-color: #BBD3EE; }
+  .badge.e-CERRADO { background: var(--ok-bg); color: var(--ok); border-color: #A7DDB8; }
+  .badge.e-NO-APLICA { background: #F5F5F5; color: #6B7280; border-color: #E5E7EB; }
+  .plazo { font-size: 11.5px; font-weight: bold; white-space: nowrap; }
+  .plazo.vencido { color: var(--red); } .plazo.proximo { color: var(--amber); } .plazo.ok { color: var(--ok); } .plazo.na { color: var(--muted); font-weight: normal; }
+  .flag { display: inline-block; font-size: 10.5px; padding: 0 5px; border-radius: 4px; margin-left: 4px; vertical-align: 1px; }
+  .flag.edit { background: #EDE9FE; color: #5B21B6; }
+  .flag.dq { background: var(--err-bg); color: var(--red); }
+  a.src { color: var(--teal); text-decoration: none; font-size: 11.5px; white-space: nowrap; }
   a.src:hover { text-decoration: underline; }
-  .table-wrap { max-height: 560px; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px; }
   .count-note { font-size: 12px; color: var(--muted); margin: 8px 0 0; }
   .state-note { font-size: 13px; color: var(--muted); padding: 40px; text-align: center; }
   footer { text-align: center; font-size: 11px; color: var(--muted); padding: 20px; }
+
+  /* Modal */
+  .overlay { position: fixed; inset: 0; background: rgba(17,24,39,.45); display: none; align-items: flex-start; justify-content: center; padding: 30px 16px; z-index: 50; overflow-y: auto; }
+  .overlay.open { display: flex; }
+  .modal { background: #fff; border-radius: 12px; width: 100%; max-width: 860px; box-shadow: 0 20px 50px rgba(0,0,0,.25); }
+  .modal-h { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+  .modal-h h3 { margin: 0; font-size: 16px; color: var(--navy); }
+  .modal-h .meta { font-size: 12px; color: var(--muted); margin-top: 3px; }
+  .modal-b { padding: 16px 20px; }
+  .modal-f { padding: 12px 20px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .x { background: none; border: none; font-size: 22px; cursor: pointer; color: var(--muted); line-height: 1; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 16px; }
+  @media (max-width: 640px) { .grid2 { grid-template-columns: 1fr; } }
+  .f { display: flex; flex-direction: column; gap: 4px; }
+  .f.full { grid-column: 1 / -1; }
+  .f label { font-size: 11px; font-weight: bold; color: var(--muted); text-transform: uppercase; letter-spacing: .03em; }
+  .f input, .f select, .f textarea { padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; font-family: inherit; width: 100%; }
+  .f textarea { resize: vertical; min-height: 64px; }
+  .f input:focus, .f select:focus, .f textarea:focus { outline: 2px solid rgba(26,140,147,.35); border-color: var(--teal); }
+  .f input[readonly] { background: #F7F8FA; color: var(--muted); }
+  .f .ro { font-size: 13px; padding: 6px 0; white-space: pre-wrap; word-break: break-word; }
+  .f.changed input, .f.changed select, .f.changed textarea { border-color: #7C3AED; background: #FAF7FF; }
+  .f.dq input, .f.dq textarea { border-color: #F3A59E; }
+  .f .dqmsg { font-size: 11px; color: var(--red); }
+  .sec-t { font-size: 12px; font-weight: bold; color: var(--navy); margin: 18px 0 8px; padding-bottom: 4px; border-bottom: 1px solid var(--border); text-transform: uppercase; letter-spacing: .03em; }
+  .aud { font-size: 12px; }
+  .aud-item { border-left: 3px solid #C4B5FD; padding: 4px 10px; margin-bottom: 8px; }
+  .aud-item .who { color: var(--muted); font-size: 11.5px; }
+  .aud-item .chg { margin-top: 2px; }
+  .aud-item del { color: var(--red); } .aud-item ins { color: var(--ok); text-decoration: none; }
+  .msg { font-size: 12.5px; }
+  .msg.err { color: var(--red); } .msg.ok { color: var(--ok); }
+  .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #111827; color: #fff; padding: 10px 16px; border-radius: 8px; font-size: 13px; z-index: 60; display: none; }
 </style>
 </head>
 <body>
 <header>
   <div>
     <h1>Monitor Modificatorias DIGEMID — Actualizaciones de Seguridad</h1>
-    <p>ConkoSafe IA · Modificaciones al Registro Sanitario (DIGEMID) de tipo seguridad · Datos en vivo desde Supabase</p>
+    <p>ConkoSafe IA · Modificaciones al Registro Sanitario de tipo seguridad · Datos en vivo desde Supabase</p>
   </div>
-  <a class="back-home" href="../">&larr; Volver al inicio</a>
+  <div class="hdr-right">
+    <span class="user-chip" id="userChip">Solo lectura</span>
+    <a class="back-home" href="../">&larr; Volver al inicio</a>
+  </div>
 </header>
+
 <div class="container">
+  <div id="banners"></div>
 
   <div class="kpis">
-    <div class="kpi"><div class="label">Total modificatorias</div><div class="value" id="kpiTotal">—</div></div>
-    <div class="kpi"><div class="label">Inmediatas</div><div class="value inmediata" id="kpiInmediatas">—</div></div>
-    <div class="kpi"><div class="label">Preventivas</div><div class="value" id="kpiPreventivas">—</div></div>
-    <div class="kpi"><div class="label">Titulares distintos</div><div class="value" id="kpiTitulares">—</div></div>
-    <div class="kpi"><div class="label">Periodo cubierto</div><div class="value" id="kpiRango" style="font-size:16px">—</div></div>
+    <div class="kpi clickable" data-kpi="todos"><div class="label">Total modificatorias</div><div class="value" id="kpiTotal">—</div><div class="sub" id="kpiRango">—</div></div>
+    <div class="kpi clickable" data-kpi="pendientes"><div class="label">Sin gestionar</div><div class="value amber" id="kpiPend">—</div><div class="sub">Estado: Pendiente</div></div>
+    <div class="kpi clickable" data-kpi="vencidas"><div class="label">Plazo 15 d.h. vencido</div><div class="value red" id="kpiVenc">—</div><div class="sub">Abiertas fuera de plazo</div></div>
+    <div class="kpi clickable" data-kpi="proximas"><div class="label">Vencen ≤ 5 d.h.</div><div class="value amber" id="kpiProx">—</div><div class="sub">Abiertas por vencer</div></div>
+    <div class="kpi clickable" data-kpi="gestionadas"><div class="label">Comunicadas / cerradas</div><div class="value ok" id="kpiGest">—</div><div class="sub" id="kpiGestPct">—</div></div>
+    <div class="kpi clickable" data-kpi="incompletas"><div class="label">Datos por revisar</div><div class="value red" id="kpiDQ">—</div><div class="sub">Titular / IFA / resumen</div></div>
+    <div class="kpi"><div class="label">Titulares distintos</div><div class="value" id="kpiTit">—</div><div class="sub">Con titular válido</div></div>
   </div>
 
   <div class="charts">
     <div class="card">
-      <h2>Modificatorias por tipo</h2>
-      <canvas id="chartTipo" height="220"></canvas>
+      <h2>Publicaciones por mes</h2>
+      <p class="hint">Modificatorias de seguridad publicadas por DIGEMID, apiladas por estado de gestión.</p>
+      <div class="chart-box"><canvas id="chartMes"></canvas></div>
     </div>
     <div class="card">
-      <h2>Modificatorias por urgencia</h2>
-      <canvas id="chartUrgencia" height="220"></canvas>
+      <h2>Estado de gestión</h2>
+      <p class="hint">Avance del ciclo evaluar → comunicar a DIGEMID → cerrar. Clic en un sector para filtrar.</p>
+      <div class="chart-box"><canvas id="chartEstado"></canvas></div>
+    </div>
+    <div class="card">
+      <h2>Titulares con más modificatorias</h2>
+      <p class="hint">Top 10. Las filas sin titular válido aparecen como “Sin titular”. Clic en una barra para filtrar.</p>
+      <div class="chart-box"><canvas id="chartTitular"></canvas></div>
+    </div>
+    <div class="card">
+      <h2>Completitud de datos</h2>
+      <p class="hint">% de registros con cada campo válido. Lo extraído por el motor heurístico suele requerir corrección manual.</p>
+      <div class="chart-box"><canvas id="chartDQ"></canvas></div>
     </div>
   </div>
 
   <div class="card">
     <h2>Detalle de modificatorias</h2>
+    <p class="hint" id="tablaHint">Clic en una fila para ver el detalle completo.</p>
     <div class="controls">
-      <input type="text" id="buscar" placeholder="Buscar por producto, principio activo, titular o N° de modificación...">
-      <select id="filtroUrgencia">
-        <option value="">Toda urgencia</option>
-        <option value="INMEDIATA">Inmediata</option>
-        <option value="PREVENTIVA">Preventiva</option>
-        <option value="INFORMATIVA">Informativa</option>
-      </select>
-      <select id="filtroTipo"><option value="">Todo tipo</option></select>
+      <input type="text" id="buscar" placeholder="Buscar producto, principio activo, titular, N° de modificación o resumen…">
+      <select id="fEstado"><option value="">Todo estado</option></select>
+      <select id="fUrgencia"><option value="">Toda urgencia</option><option>INMEDIATA</option><option>PREVENTIVA</option><option>INFORMATIVA</option></select>
+      <select id="fTipo"><option value="">Todo tipo</option></select>
+      <select id="fTitular"><option value="">Todo titular</option></select>
+    </div>
+    <div class="controls">
+      <label class="chk">Desde <input type="date" id="fDesde"></label>
+      <label class="chk">Hasta <input type="date" id="fHasta"></label>
+      <label class="chk"><input type="checkbox" id="fDQ"> Solo datos por revisar</label>
+      <label class="chk"><input type="checkbox" id="fEdit"> Solo editadas manualmente</label>
+      <span style="flex:1"></span>
+      <button class="btn" id="btnLimpiar" type="button">Limpiar filtros</button>
+      <button class="btn" id="btnCSV" type="button">⬇ CSV (filtrado)</button>
     </div>
     <div class="table-wrap">
-      <table id="tablaModif">
-        <thead>
-          <tr>
-            <th data-col="fecha_publicacion">Fecha Pub.</th>
-            <th data-col="n_modificacion">N° Modificación</th>
-            <th data-col="producto">Producto / IFA</th>
-            <th data-col="titular_rs">Titular RS</th>
-            <th data-col="tipo_modificacion">Tipo</th>
-            <th data-col="urgencia">Urgencia</th>
-            <th data-col="accion_requerida">Acción Requerida</th>
-            <th data-col="resumen">Resumen IA</th>
-            <th data-col="fuente">Fuente</th>
-          </tr>
-        </thead>
-        <tbody><tr><td colspan="9" class="state-note">Cargando modificatorias desde Supabase…</td></tr></tbody>
+      <table id="tabla">
+        <thead><tr>
+          <th data-col="fecha_publicacion">Fecha pub.</th>
+          <th data-col="n_modificacion">N° modificación</th>
+          <th data-col="producto">Producto / IFA</th>
+          <th data-col="titular_rs">Titular RS</th>
+          <th data-col="urgencia">Urgencia</th>
+          <th data-col="estado_gestion">Estado</th>
+          <th data-col="_plazo">Plazo 15 d.h.</th>
+          <th data-col="resumen">Resumen</th>
+          <th class="nosort">Fuente</th>
+          <th class="nosort admin-only" style="display:none"></th>
+        </tr></thead>
+        <tbody><tr><td colspan="10" class="state-note">Cargando modificatorias desde Supabase…</td></tr></tbody>
       </table>
     </div>
     <p class="count-note" id="contador"></p>
   </div>
-
 </div>
-<footer>Generado automáticamente por el monitor DIGEMID de Modificatorias (GitHub Actions, Lun/Mié/Vie) · Solo modificatorias tipo seguridad (Art. 6,13,36,37,151 D.S. 016-2011-SA / ICH E2C).</footer>
+
+<footer>Monitor DIGEMID de Modificatorias (GitHub Actions, Lun/Mié/Vie) · Solo modificatorias tipo seguridad (Art. 6,13,36,37,151 D.S. 016-2011-SA / ICH E2C) · Plazo calculado en días hábiles (Lun–Vie, sin feriados nacionales de Perú) desde la fecha de publicación.</footer>
+
+<!-- Modal detalle / edición -->
+<div class="overlay" id="ovl" aria-hidden="true">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+    <div class="modal-h">
+      <div><h3 id="mTitle">—</h3><div class="meta" id="mMeta"></div></div>
+      <button class="x" type="button" id="mClose" aria-label="Cerrar">×</button>
+    </div>
+    <div class="modal-b" id="mBody"></div>
+    <div class="modal-f">
+      <span class="msg" id="mMsg"></span>
+      <span style="display:flex;gap:8px">
+        <button class="btn" type="button" id="mCancel">Cerrar</button>
+        <button class="btn primary" type="button" id="mSave" style="display:none">Guardar cambios</button>
+      </span>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
 
 <script>
-// ---- Configuración Supabase (mismo proyecto que cima/pavs/aems) ----
+// ───────────── Configuración (mismo proyecto que cima/pavs/aems) ─────────────
 const SUPABASE_URL = 'https://ggbnfdaxtsngsjssrwrl.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdnYm5mZGF4dHNuZ3Nqc3Nyd3JsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ4ODAzODIsImV4cCI6MjEwMDQ1NjM4Mn0.126hhMpakcOlzp5KyyWdMU56UjwLwn5Xn4Nc13OIjgU';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth: { storageKey: 'sb-alertas-digemid-auth' } });
+
+const TABLE = 'modificatorias_digemid';
+const COLS_BASE = 'id,n_modificacion,producto,principio_activo,titular_rs,fecha_publicacion,tipo_modificacion,urgencia,accion_requerida,indicador_tiempos,base_legal,resumen,motor_analisis,url_pagina_digemid,url_pdf_digemid,fecha_captura,actualizado_en';
+const COLS_GESTION = ',estado_gestion,notas_admin,editado_manualmente,editado_en';
+const ESTADOS = ['PENDIENTE', 'EN EVALUACION', 'COMUNICADO DIGEMID', 'CERRADO', 'NO APLICA'];
+const ESTADOS_CERRADOS = new Set(['COMUNICADO DIGEMID', 'CERRADO', 'NO APLICA']);
+const ESTADO_COLORS = { 'PENDIENTE': '#9CA3AF', 'EN EVALUACION': '#D97706', 'COMUNICADO DIGEMID': '#2E75B6', 'CERRADO': '#15803D', 'NO APLICA': '#D1D5DB' };
+const PLAZO_DH = 15;
 
 let DATA = [];
+let ME = { session: null, admin: false, email: null };
+let GESTION_OK = true;        // false si la migración aún no se aplicó
+let kpiFilter = null;
+let charts = {};
 
-async function fetchAllModificatorias() {
-  const pageSize = 1000;
-  let from = 0;
-  let all = [];
+// ───────────── Utilidades ─────────────
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const safeUrl = u => { try { const x = new URL(u); return /^https?:$/.test(x.protocol) ? x.href : null; } catch { return null; } };
+const fmtFecha = d => d ? d.split('-').reverse().join('/') : '';
+function toast(msg) { const t = $('toast'); t.textContent = msg; t.style.display = 'block'; clearTimeout(t._h); t._h = setTimeout(() => t.style.display = 'none', 3200); }
+
+// ───────────── Días hábiles Perú ─────────────
+function pascua(y) { // algoritmo de Meeus/Butcher
+  const a = y % 19, b = Math.floor(y / 100), c = y % 100, d = Math.floor(b / 4), e = b % 4, f = Math.floor((b + 8) / 25),
+    g = Math.floor((b - f + 1) / 3), h = (19 * a + b - d - g + 15) % 30, i = Math.floor(c / 4), k = c % 4,
+    l = (32 + 2 * e + 2 * i - h - k) % 7, m = Math.floor((a + 11 * h + 22 * l) / 451),
+    mes = Math.floor((h + l - 7 * m + 114) / 31), dia = ((h + l - 7 * m + 114) % 31) + 1;
+  return new Date(Date.UTC(y, mes - 1, dia));
+}
+const _fer = {};
+function feriados(y) {
+  if (_fer[y]) return _fer[y];
+  const s = new Set(['01-01', '05-01', '06-07', '06-29', '07-23', '07-28', '07-29', '08-06', '08-30', '10-08', '11-01', '12-08', '12-09', '12-25'].map(md => `${y}-${md}`));
+  const p = pascua(y);
+  [-3, -2].forEach(off => { const d = new Date(p); d.setUTCDate(d.getUTCDate() + off); s.add(d.toISOString().slice(0, 10)); });
+  return (_fer[y] = s);
+}
+const esHabil = d => { const w = d.getUTCDay(); return w !== 0 && w !== 6 && !feriados(d.getUTCFullYear()).has(d.toISOString().slice(0, 10)); };
+function diasHabilesEntre(desdeISO, hasta) { // días hábiles transcurridos después de la fecha de publicación
+  const d = new Date(desdeISO + 'T00:00:00Z'); let n = 0;
+  const fin = Date.UTC(hasta.getFullYear(), hasta.getMonth(), hasta.getDate());
+  while (true) { d.setUTCDate(d.getUTCDate() + 1); if (d.getTime() > fin) break; if (esHabil(d)) n++; if (n > 9999) break; }
+  return n;
+}
+const HOY = new Date();
+
+// ───────────── Calidad de datos ─────────────
+// El extractor heurístico a veces copia fragmentos del texto ("del Registro Sanitario (TRS) es…") en lugar del titular.
+const RX_TITULAR_MALO = /registro sanitario|\(trs\)|^del |^de la |vigente del producto|present[óo]/i;
+function dqIssues(d) {
+  const out = [];
+  const tit = (d.titular_rs || '').trim();
+  if (!tit) out.push(['titular_rs', 'Titular vacío']);
+  else if (RX_TITULAR_MALO.test(tit) || tit.length > 70) out.push(['titular_rs', 'Titular mal extraído (texto del documento)']);
+  if (!(d.principio_activo || '').trim()) out.push(['principio_activo', 'Principio activo vacío']);
+  if ((d.resumen || '').trim().length < 25) out.push(['resumen', 'Resumen vacío o muy corto']);
+  if (!(d.producto || '').trim()) out.push(['producto', 'Producto vacío']);
+  return out;
+}
+const titularValido = d => { const t = (d.titular_rs || '').trim(); return t && !RX_TITULAR_MALO.test(t) && t.length <= 70 ? t : null; };
+
+function enriquecer(d) {
+  d.estado_gestion = d.estado_gestion || 'PENDIENTE';
+  d._dq = dqIssues(d);
+  d._abierta = !ESTADOS_CERRADOS.has(d.estado_gestion);
+  if (d.fecha_publicacion) {
+    const trans = diasHabilesEntre(d.fecha_publicacion, HOY);
+    d._restantes = PLAZO_DH - trans;
+  } else d._restantes = null;
+  // _plazo: valor ordenable (las cerradas al final)
+  d._plazo = d._abierta && d._restantes !== null ? d._restantes : 99999;
+  return d;
+}
+function plazoHtml(d) {
+  if (!d._abierta) return `<span class="plazo na">Gestionada</span>`;
+  if (d._restantes === null) return `<span class="plazo na">—</span>`;
+  if (d._restantes < 0) return `<span class="plazo vencido">Vencido hace ${-d._restantes} d.h.</span>`;
+  if (d._restantes <= 5) return `<span class="plazo proximo">Quedan ${d._restantes} d.h.</span>`;
+  return `<span class="plazo ok">Quedan ${d._restantes} d.h.</span>`;
+}
+
+// ───────────── Datos ─────────────
+async function fetchAll(cols) {
+  const size = 1000; let from = 0, all = [];
   while (true) {
-    const res = await fetch(
-      `${SUPABASE_URL}/rest/v1/modificatorias_digemid?select=n_modificacion,producto,principio_activo,titular_rs,fecha_publicacion,tipo_modificacion,urgencia,accion_requerida,resumen,url_pagina_digemid,url_pdf_digemid&order=fecha_publicacion.desc`,
-      {
-        headers: {
-          apikey: SUPABASE_ANON_KEY,
-          Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
-          Range: `${from}-${from + pageSize - 1}`,
-        },
-      }
-    );
-    if (!res.ok) throw new Error(`Supabase ${res.status}: ${await res.text()}`);
-    const batch = await res.json();
-    all = all.concat(batch);
-    if (batch.length < pageSize) break;
-    from += pageSize;
+    const { data, error } = await sb.from(TABLE).select(cols).order('fecha_publicacion', { ascending: false }).range(from, from + size - 1);
+    if (error) throw error;
+    all = all.concat(data); if (data.length < size) break; from += size;
   }
   return all;
 }
-
-function renderKpis() {
-  const titulares = new Set(DATA.map(d => (d.titular_rs || '').trim().toLowerCase()).filter(Boolean));
-  const fechas = DATA.map(d => d.fecha_publicacion).filter(Boolean).sort();
-  document.getElementById('kpiTotal').textContent = DATA.length;
-  document.getElementById('kpiInmediatas').textContent = DATA.filter(d => d.urgencia === 'INMEDIATA').length;
-  document.getElementById('kpiPreventivas').textContent = DATA.filter(d => d.urgencia === 'PREVENTIVA').length;
-  document.getElementById('kpiTitulares').textContent = titulares.size;
-  if (fechas.length) {
-    document.getElementById('kpiRango').textContent = `${fechas[0]} – ${fechas[fechas.length - 1]}`;
+async function cargarDatos() {
+  try { DATA = await fetchAll(COLS_BASE + COLS_GESTION); GESTION_OK = true; }
+  catch (e) {
+    if (/column|does not exist|42703/i.test(e.message || '') || e.code === '42703') { DATA = await fetchAll(COLS_BASE); GESTION_OK = false; }
+    else throw e;
   }
+  DATA.forEach(enriquecer);
 }
 
-function renderCharts() {
+async function cargarUsuario() {
   try {
-    const tipoCounts = {};
-    DATA.forEach(d => { const t = d.tipo_modificacion || 'Sin clasificar'; tipoCounts[t] = (tipoCounts[t] || 0) + 1; });
-    const tipos = Object.entries(tipoCounts).sort((a, b) => b[1] - a[1]);
-
-    const urgOrder = ['INMEDIATA', 'PREVENTIVA', 'INFORMATIVA'];
-    const urgColors = { INMEDIATA: '#B3261E', PREVENTIVA: '#ED7D31', INFORMATIVA: '#2E75B6' };
-    const urgCounts = {};
-    DATA.forEach(d => { const u = d.urgencia || 'Sin dato'; urgCounts[u] = (urgCounts[u] || 0) + 1; });
-    const urgLabels = urgOrder.filter(u => urgCounts[u]).concat(Object.keys(urgCounts).filter(u => !urgOrder.includes(u)));
-
-    new Chart(document.getElementById('chartTipo'), {
-      type: 'bar',
-      data: {
-        labels: tipos.map(t => t[0]),
-        datasets: [{ label: 'Modificatorias', data: tipos.map(t => t[1]), backgroundColor: '#1B5E3E' }]
-      },
-      options: { indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true } } }
-    });
-
-    new Chart(document.getElementById('chartUrgencia'), {
-      type: 'doughnut',
-      data: {
-        labels: urgLabels,
-        datasets: [{ data: urgLabels.map(u => urgCounts[u]), backgroundColor: urgLabels.map(u => urgColors[u] || '#9CA3AF') }]
-      },
-      options: { plugins: { legend: { position: 'bottom' } } }
-    });
-  } catch (e) {
-    console.warn('No se pudieron dibujar los gráficos:', e);
-    document.querySelectorAll('.charts canvas').forEach(c => {
-      c.outerHTML = '<p style="color:#6B7280;font-size:12px">Gráfico no disponible (Chart.js no cargó). La tabla sigue funcionando.</p>';
-    });
-  }
+    const { data: { session } } = await sb.auth.getSession();
+    if (!session) return;
+    ME.session = session; ME.email = session.user.email;
+    const { data: perfil } = await sb.from('perfiles').select('rol,nombre,email').eq('id', session.user.id).single();
+    ME.admin = perfil?.rol === 'admin';
+    ME.nombre = perfil?.nombre || perfil?.email || session.user.email;
+  } catch (e) { console.warn('No se pudo leer la sesión:', e); }
 }
 
-function renderTable() {
-  const tbody = document.querySelector('#tablaModif tbody');
-  const buscar = document.getElementById('buscar');
-  const filtroUrgencia = document.getElementById('filtroUrgencia');
-  const filtroTipo = document.getElementById('filtroTipo');
-  const contador = document.getElementById('contador');
+// ───────────── KPIs ─────────────
+function renderKpis() {
+  const fechas = DATA.map(d => d.fecha_publicacion).filter(Boolean).sort();
+  const gest = DATA.filter(d => !d._abierta).length;
+  $('kpiTotal').textContent = DATA.length;
+  $('kpiRango').textContent = fechas.length ? `${fmtFecha(fechas[0])} – ${fmtFecha(fechas.at(-1))}` : '—';
+  $('kpiPend').textContent = DATA.filter(d => d.estado_gestion === 'PENDIENTE').length;
+  $('kpiVenc').textContent = DATA.filter(d => d._abierta && d._restantes !== null && d._restantes < 0).length;
+  $('kpiProx').textContent = DATA.filter(d => d._abierta && d._restantes !== null && d._restantes >= 0 && d._restantes <= 5).length;
+  $('kpiGest').textContent = gest;
+  $('kpiGestPct').textContent = DATA.length ? `${Math.round(gest * 100 / DATA.length)}% del total` : '—';
+  $('kpiDQ').textContent = DATA.filter(d => d._dq.length).length;
+  $('kpiTit').textContent = new Set(DATA.map(titularValido).filter(Boolean).map(t => t.toLowerCase())).size;
+  document.querySelectorAll('.kpi[data-kpi]').forEach(k => k.classList.toggle('active', k.dataset.kpi === kpiFilter && kpiFilter !== 'todos'));
+}
 
-  const tipos = [...new Set(DATA.map(d => d.tipo_modificacion))].filter(Boolean).sort();
-  tipos.forEach(t => {
-    const opt = document.createElement('option');
-    opt.value = t; opt.textContent = t;
-    filtroTipo.appendChild(opt);
-  });
-
-  let sortCol = null, sortDir = 1;
-
-  function render() {
-    const q = buscar.value.toLowerCase();
-    const urgencia = filtroUrgencia.value;
-    const tipo = filtroTipo.value;
-    let rows = DATA.filter(d => {
-      if (urgencia && d.urgencia !== urgencia) return false;
-      if (tipo && d.tipo_modificacion !== tipo) return false;
-      if (!q) return true;
-      return `${d.producto} ${d.principio_activo} ${d.titular_rs} ${d.n_modificacion}`.toLowerCase().includes(q);
-    });
-    if (sortCol) {
-      rows = rows.slice().sort((a, b) => {
-        const va = (a[sortCol] || '').toString().toLowerCase();
-        const vb = (b[sortCol] || '').toString().toLowerCase();
-        return va < vb ? -1 * sortDir : va > vb ? 1 * sortDir : 0;
-      });
-    }
-    tbody.innerHTML = rows.map(d => `
-      <tr>
-        <td>${d.fecha_publicacion || ''}</td>
-        <td>${d.n_modificacion || ''}</td>
-        <td>${d.producto || ''}${d.principio_activo ? `<br><small>${d.principio_activo}</small>` : ''}</td>
-        <td>${d.titular_rs || ''}</td>
-        <td>${d.tipo_modificacion || ''}</td>
-        <td><span class="badge ${d.urgencia || ''}">${d.urgencia || '—'}</span></td>
-        <td>${d.accion_requerida || ''}</td>
-        <td>${d.resumen || ''}</td>
-        <td>
-          ${d.url_pagina_digemid ? `<a class="src" href="${d.url_pagina_digemid}" target="_blank" rel="noopener">Ver publicación ↗</a>` : ''}
-          ${d.url_pdf_digemid ? `<br><a class="src" href="${d.url_pdf_digemid}" target="_blank" rel="noopener">PDF ↗</a>` : ''}
-        </td>
-      </tr>
-    `).join('');
-    contador.textContent = `Mostrando ${rows.length} de ${DATA.length} modificatorias`;
+// ───────────── Gráficos ─────────────
+function renderCharts() {
+  if (typeof Chart === 'undefined') {
+    document.querySelectorAll('.chart-box').forEach(c => c.innerHTML = '<p class="hint">Gráfico no disponible (Chart.js no cargó). La tabla sigue funcionando.</p>');
+    return;
   }
+  Object.values(charts).forEach(c => c.destroy()); charts = {};
+  Chart.defaults.font.family = "Arial, 'Segoe UI', sans-serif"; Chart.defaults.font.size = 11; Chart.defaults.color = '#4B5563';
 
-  document.querySelectorAll('thead th').forEach(th => {
-    th.addEventListener('click', () => {
-      const col = th.dataset.col;
-      sortDir = (sortCol === col) ? -sortDir : 1;
-      sortCol = col;
-      render();
-    });
+  // Por mes, apilado por estado
+  const meses = [...new Set(DATA.map(d => (d.fecha_publicacion || '').slice(0, 7)).filter(Boolean))].sort();
+  if (meses.length) { // rellenar huecos
+    const [y0, m0] = meses[0].split('-').map(Number), [y1, m1] = meses.at(-1).split('-').map(Number);
+    meses.length = 0; for (let y = y0, m = m0; y < y1 || (y === y1 && m <= m1); m++) { if (m > 12) { m = 1; y++; } meses.push(`${y}-${String(m).padStart(2, '0')}`); }
+  }
+  const MES = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'set', 'oct', 'nov', 'dic'];
+  charts.mes = new Chart($('chartMes'), {
+    type: 'bar',
+    data: {
+      labels: meses.map(m => `${MES[+m.slice(5) - 1]} ${m.slice(2, 4)}`),
+      datasets: ESTADOS.filter(e => DATA.some(d => d.estado_gestion === e)).map(e => ({
+        label: e.charAt(0) + e.slice(1).toLowerCase(), data: meses.map(m => DATA.filter(d => d.estado_gestion === e && (d.fecha_publicacion || '').startsWith(m)).length),
+        backgroundColor: ESTADO_COLORS[e], borderRadius: 3, maxBarThickness: 34
+      }))
+    },
+    options: { maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 10 } } },
+      scales: { x: { stacked: true, grid: { display: false } }, y: { stacked: true, beginAtZero: true, ticks: { precision: 0 } } } }
   });
-  buscar.addEventListener('input', render);
-  filtroUrgencia.addEventListener('change', render);
-  filtroTipo.addEventListener('change', render);
-  render();
+
+  // Estado (dona)
+  const est = ESTADOS.map(e => [e, DATA.filter(d => d.estado_gestion === e).length]).filter(x => x[1]);
+  charts.estado = new Chart($('chartEstado'), {
+    type: 'doughnut',
+    data: { labels: est.map(x => x[0]), datasets: [{ data: est.map(x => x[1]), backgroundColor: est.map(x => ESTADO_COLORS[x[0]]), borderWidth: 2, borderColor: '#fff' }] },
+    options: { maintainAspectRatio: false, cutout: '62%', plugins: { legend: { position: 'right', labels: { boxWidth: 10 } } },
+      onClick: (_, el) => { if (el.length) { $('fEstado').value = est[el[0].index][0]; kpiFilter = null; aplicar(); } } }
+  });
+
+  // Top titulares
+  const tc = {}; DATA.forEach(d => { const t = titularValido(d) || 'Sin titular'; tc[t] = (tc[t] || 0) + 1; });
+  const top = Object.entries(tc).sort((a, b) => b[1] - a[1]).slice(0, 10);
+  charts.tit = new Chart($('chartTitular'), {
+    type: 'bar',
+    data: { labels: top.map(t => t[0].length > 34 ? t[0].slice(0, 33) + '…' : t[0]), datasets: [{ data: top.map(t => t[1]),
+      backgroundColor: top.map(t => t[0] === 'Sin titular' ? '#D1D5DB' : '#1B5E3E'), borderRadius: 3, maxBarThickness: 18 }] },
+    options: { indexAxis: 'y', maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { title: i => top[i[0].dataIndex][0] } } },
+      scales: { x: { beginAtZero: true, ticks: { precision: 0 } }, y: { grid: { display: false } } },
+      onClick: (_, el) => { if (el.length) { const t = top[el[0].index][0]; $('fTitular').value = t === 'Sin titular' ? '__sin__' : t; kpiFilter = null; aplicar(); } } }
+  });
+
+  // Completitud
+  const campos = [['Producto', d => (d.producto || '').trim()], ['Principio activo', d => (d.principio_activo || '').trim()],
+    ['Titular RS válido', titularValido], ['Resumen', d => (d.resumen || '').trim().length >= 25], ['URL publicación', d => d.url_pagina_digemid], ['PDF', d => d.url_pdf_digemid]];
+  const pct = campos.map(([, f]) => DATA.length ? Math.round(DATA.filter(f).length * 100 / DATA.length) : 0);
+  charts.dq = new Chart($('chartDQ'), {
+    type: 'bar',
+    data: { labels: campos.map(c => c[0]), datasets: [{ data: pct, backgroundColor: pct.map(p => p >= 90 ? '#15803D' : p >= 60 ? '#D97706' : '#B3261E'), borderRadius: 3, maxBarThickness: 18 }] },
+    options: { indexAxis: 'y', maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => `${c.raw}% completo` } } },
+      scales: { x: { min: 0, max: 100, ticks: { callback: v => v + '%' } }, y: { grid: { display: false } } } }
+  });
+}
+
+// ───────────── Tabla y filtros ─────────────
+let sortCol = 'fecha_publicacion', sortDir = -1, FILTRADAS = [];
+
+function poblarFiltros() {
+  const keep = (sel, vals, extra = []) => { const cur = sel.value; sel.length = 1; extra.concat(vals).forEach(([v, t]) => { const o = document.createElement('option'); o.value = v; o.textContent = t; sel.appendChild(o); }); sel.value = cur; };
+  keep($('fEstado'), ESTADOS.map(e => [e, e.charAt(0) + e.slice(1).toLowerCase()]));
+  keep($('fTipo'), [...new Set(DATA.map(d => d.tipo_modificacion).filter(Boolean))].sort().map(t => [t, t]));
+  keep($('fTitular'), [...new Set(DATA.map(titularValido).filter(Boolean))].sort((a, b) => a.localeCompare(b)).map(t => [t, t]), [['__sin__', '— Sin titular válido —']]);
+}
+
+function filtrar() {
+  const q = $('buscar').value.trim().toLowerCase(), est = $('fEstado').value, urg = $('fUrgencia').value, tipo = $('fTipo').value,
+    tit = $('fTitular').value, desde = $('fDesde').value, hasta = $('fHasta').value, soloDQ = $('fDQ').checked, soloEdit = $('fEdit').checked;
+  return DATA.filter(d => {
+    if (est && d.estado_gestion !== est) return false;
+    if (urg && d.urgencia !== urg) return false;
+    if (tipo && d.tipo_modificacion !== tipo) return false;
+    if (tit === '__sin__' && titularValido(d)) return false;
+    if (tit && tit !== '__sin__' && titularValido(d) !== tit) return false;
+    if (desde && (d.fecha_publicacion || '') < desde) return false;
+    if (hasta && (d.fecha_publicacion || '') > hasta) return false;
+    if (soloDQ && !d._dq.length) return false;
+    if (soloEdit && !d.editado_manualmente) return false;
+    if (kpiFilter === 'pendientes' && d.estado_gestion !== 'PENDIENTE') return false;
+    if (kpiFilter === 'vencidas' && !(d._abierta && d._restantes !== null && d._restantes < 0)) return false;
+    if (kpiFilter === 'proximas' && !(d._abierta && d._restantes !== null && d._restantes >= 0 && d._restantes <= 5)) return false;
+    if (kpiFilter === 'gestionadas' && d._abierta) return false;
+    if (kpiFilter === 'incompletas' && !d._dq.length) return false;
+    if (!q) return true;
+    return [d.producto, d.principio_activo, d.titular_rs, d.n_modificacion, d.resumen, d.notas_admin].join(' ').toLowerCase().includes(q);
+  });
+}
+
+function aplicar() {
+  let rows = filtrar();
+  rows.sort((a, b) => {
+    let va = a[sortCol], vb = b[sortCol];
+    if (typeof va === 'number' || typeof vb === 'number') return ((va ?? 1e9) - (vb ?? 1e9)) * sortDir;
+    va = (va || '').toString().toLowerCase(); vb = (vb || '').toString().toLowerCase();
+    return va < vb ? -sortDir : va > vb ? sortDir : 0;
+  });
+  FILTRADAS = rows;
+  document.querySelectorAll('thead th[data-col]').forEach(th => {
+    th.querySelector('.arr')?.remove();
+    if (th.dataset.col === sortCol) th.insertAdjacentHTML('beforeend', `<span class="arr">${sortDir > 0 ? '▲' : '▼'}</span>`);
+  });
+  const tbody = document.querySelector('#tabla tbody');
+  if (!rows.length) { tbody.innerHTML = `<tr><td colspan="10" class="state-note">No hay modificatorias con estos filtros.</td></tr>`; }
+  else tbody.innerHTML = rows.map(d => {
+    const pg = safeUrl(d.url_pagina_digemid), pdf = safeUrl(d.url_pdf_digemid);
+    return `<tr data-id="${esc(d.id)}">
+      <td class="mono">${esc(fmtFecha(d.fecha_publicacion))}</td>
+      <td class="mono">${esc(d.n_modificacion)}</td>
+      <td><b>${esc(d.producto)}</b>${d.principio_activo ? `<br><span class="small">${esc(d.principio_activo)}</span>` : ''}
+        ${d.editado_manualmente ? '<span class="flag edit" title="Corregida manualmente por un administrador">editada</span>' : ''}
+        ${d._dq.length ? `<span class="flag dq" title="${esc(d._dq.map(x => x[1]).join(' · '))}">revisar</span>` : ''}</td>
+      <td>${titularValido(d) ? esc(d.titular_rs) : `<span class="small" title="${esc(d.titular_rs)}">${d.titular_rs ? '⚠ mal extraído' : '—'}</span>`}</td>
+      <td><span class="badge ${esc(d.urgencia)}">${esc(d.urgencia || '—')}</span></td>
+      <td><span class="badge e-${esc(d.estado_gestion.replace(/ /g, '-'))}">${esc(d.estado_gestion)}</span></td>
+      <td>${plazoHtml(d)}</td>
+      <td class="resumen"><div class="clamp">${esc(d.resumen) || '<span class="small">—</span>'}</div></td>
+      <td>${pg ? `<a class="src" href="${esc(pg)}" target="_blank" rel="noopener">Publicación ↗</a>` : ''}${pdf ? `<br><a class="src" href="${esc(pdf)}" target="_blank" rel="noopener">PDF ↗</a>` : ''}</td>
+      <td class="admin-only" style="display:${ME.admin ? '' : 'none'}"><button class="btn sm" type="button" data-edit="${esc(d.id)}" title="Editar">✎ Editar</button></td>
+    </tr>`;
+  }).join('');
+  $('contador').textContent = `Mostrando ${rows.length} de ${DATA.length} modificatorias` + (kpiFilter && kpiFilter !== 'todos' ? ' · filtro de indicador activo' : '');
+  renderKpis();
+}
+
+function exportarCSV() {
+  const cols = [['fecha_publicacion', 'Fecha publicación'], ['n_modificacion', 'N° modificación'], ['producto', 'Producto'], ['principio_activo', 'Principio activo'],
+    ['titular_rs', 'Titular RS'], ['tipo_modificacion', 'Tipo'], ['urgencia', 'Urgencia'], ['estado_gestion', 'Estado gestión'], ['_restantes', 'Días hábiles restantes'],
+    ['accion_requerida', 'Acción requerida'], ['indicador_tiempos', 'Indicador tiempos'], ['base_legal', 'Base legal'], ['resumen', 'Resumen'], ['notas_admin', 'Notas admin'],
+    ['url_pagina_digemid', 'URL publicación'], ['url_pdf_digemid', 'URL PDF']];
+  const q = v => `"${String(v ?? '').replace(/"/g, '""')}"`;
+  const csv = '﻿' + [cols.map(c => q(c[1])).join(';')].concat(FILTRADAS.map(d => cols.map(([k]) => q(k === '_restantes' && !d._abierta ? '' : d[k])).join(';'))).join('\r\n');
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+  a.download = `modificatorias_digemid_${new Date().toISOString().slice(0, 10)}.csv`; a.click(); URL.revokeObjectURL(a.href);
+}
+
+// ───────────── Modal detalle / edición ─────────────
+const CAMPOS = [
+  // [campo, etiqueta, tipo, full?]
+  ['producto', 'Producto', 'text'], ['principio_activo', 'Principio activo (IFA)', 'text'],
+  ['titular_rs', 'Titular del Registro Sanitario', 'text', true],
+  ['tipo_modificacion', 'Tipo de modificación', 'text'], ['urgencia', 'Urgencia', 'urg'],
+  ['resumen', 'Resumen', 'area', true],
+  ['accion_requerida', 'Acción requerida', 'area', true], ['indicador_tiempos', 'Indicador de tiempos', 'area', true],
+  ['base_legal', 'Base legal', 'text', true],
+  ['url_pagina_digemid', 'URL publicación DIGEMID', 'url', true], ['url_pdf_digemid', 'URL PDF DIGEMID', 'url', true],
+];
+const CAMPOS_GESTION = [['estado_gestion', 'Estado de gestión', 'estado'], ['notas_admin', 'Notas internas del administrador', 'area', true]];
+let ACTUAL = null, EDITANDO = false;
+
+function campoHtml([k, lab, tipo, full], d, editable) {
+  const v = d[k] ?? '';
+  const dq = (d._dq || []).find(x => x[0] === k);
+  const cls = `f${full ? ' full' : ''}${dq ? ' dq' : ''}`;
+  if (!editable) {
+    let val = esc(v) || '<span class="small" style="color:#9CA3AF">—</span>';
+    if (tipo === 'url' && safeUrl(v)) val = `<a class="src" style="white-space:normal" href="${esc(safeUrl(v))}" target="_blank" rel="noopener">${esc(v)}</a>`;
+    if (tipo === 'estado') val = `<span class="badge e-${esc(String(v || 'PENDIENTE').replace(/ /g, '-'))}">${esc(v || 'PENDIENTE')}</span>`;
+    return `<div class="${cls}"><label>${lab}</label><div class="ro">${val}</div>${dq ? `<span class="dqmsg">⚠ ${esc(dq[1])}</span>` : ''}</div>`;
+  }
+  let input;
+  if (tipo === 'area') input = `<textarea data-k="${k}" rows="3">${esc(v)}</textarea>`;
+  else if (tipo === 'urg') input = `<select data-k="${k}">${['', 'INMEDIATA', 'PREVENTIVA', 'INFORMATIVA'].map(o => `<option value="${o}" ${o === (v || '') ? 'selected' : ''}>${o || '—'}</option>`).join('')}</select>`;
+  else if (tipo === 'estado') input = `<select data-k="${k}">${ESTADOS.map(o => `<option value="${o}" ${o === (v || 'PENDIENTE') ? 'selected' : ''}>${o}</option>`).join('')}</select>`;
+  else input = `<input type="${tipo === 'url' ? 'url' : 'text'}" data-k="${k}" value="${esc(v)}" list="${k === 'tipo_modificacion' ? 'dlTipo' : k === 'titular_rs' ? 'dlTit' : ''}">`;
+  return `<div class="${cls}" data-f="${k}"><label>${lab}</label>${input}${dq ? `<span class="dqmsg">⚠ ${esc(dq[1])}</span>` : ''}</div>`;
+}
+
+async function abrir(id, editar) {
+  ACTUAL = DATA.find(d => d.id === id); if (!ACTUAL) return;
+  EDITANDO = !!(editar && ME.admin && GESTION_OK);
+  const d = ACTUAL;
+  $('mTitle').textContent = `${d.producto || 'Sin producto'} — ${d.n_modificacion || ''}`;
+  $('mMeta').innerHTML = `Publicada ${esc(fmtFecha(d.fecha_publicacion))} · Motor: ${esc(d.motor_analisis || '—')}` +
+    (d.editado_manualmente && d.editado_en ? ` · <span class="flag edit">editada ${esc(new Date(d.editado_en).toLocaleString('es-PE'))}</span>` : '');
+  let h = '';
+  if (EDITANDO) h += `<div class="banner info" style="margin-bottom:12px">Modo edición. N° de modificación y fecha de publicación no se editan porque son la clave que usa el scraper. Los campos que corrijas aquí no los sobrescribe la próxima corrida del monitor.</div>`;
+  h += `<div class="grid2">
+    <div class="f"><label>N° modificación</label>${EDITANDO ? `<input readonly value="${esc(d.n_modificacion)}">` : `<div class="ro">${esc(d.n_modificacion)}</div>`}</div>
+    <div class="f"><label>Fecha publicación · Plazo 15 d.h.</label><div class="ro">${esc(fmtFecha(d.fecha_publicacion))} · ${plazoHtml(d)}</div></div>
+  </div>`;
+  if (GESTION_OK) h += `<div class="sec-t">Gestión</div><div class="grid2">${CAMPOS_GESTION.map(c => campoHtml(c, d, EDITANDO)).join('')}</div>`;
+  h += `<div class="sec-t">Datos de la modificatoria</div><div class="grid2">${CAMPOS.map(c => campoHtml(c, d, EDITANDO)).join('')}</div>`;
+  h += `<datalist id="dlTipo">${[...new Set(DATA.map(x => x.tipo_modificacion).filter(Boolean))].map(t => `<option value="${esc(t)}">`).join('')}</datalist>`;
+  h += `<datalist id="dlTit">${[...new Set(DATA.map(titularValido).filter(Boolean))].map(t => `<option value="${esc(t)}">`).join('')}</datalist>`;
+  if (ME.admin && GESTION_OK) h += `<div class="sec-t">Historial de cambios</div><div class="aud" id="audBox"><span class="small">Cargando…</span></div>`;
+  $('mBody').innerHTML = h;
+  $('mMsg').textContent = ''; $('mMsg').className = 'msg';
+  $('mSave').style.display = EDITANDO ? '' : 'none';
+  $('mSave').disabled = true;
+  $('mCancel').textContent = EDITANDO ? 'Cancelar' : 'Cerrar';
+  // Botón "Editar" en modo lectura para admins
+  if (!EDITANDO && ME.admin && GESTION_OK) {
+    $('mCancel').insertAdjacentHTML('beforebegin', `<button class="btn" type="button" id="mEdit">✎ Editar</button>`);
+    $('mEdit').onclick = () => { $('mEdit').remove(); abrir(id, true); };
+  } else $('mEdit')?.remove();
+  if (EDITANDO) {
+    $('mBody').querySelectorAll('[data-k]').forEach(el => el.addEventListener('input', marcarCambios));
+    $('mBody').querySelectorAll('[data-k]').forEach(el => el.addEventListener('change', marcarCambios));
+  }
+  $('ovl').classList.add('open'); $('ovl').setAttribute('aria-hidden', 'false');
+  if (EDITANDO) $('mBody').querySelector('[data-k]:not([readonly])')?.focus();
+  if (ME.admin && GESTION_OK) cargarAuditoria(id);
+}
+
+function cambiosPendientes() {
+  const out = {};
+  $('mBody').querySelectorAll('[data-k]').forEach(el => {
+    const k = el.dataset.k, nuevo = el.value.trim(), viejo = (ACTUAL[k] ?? '').toString().trim();
+    if (nuevo !== viejo) out[k] = nuevo;
+  });
+  return out;
+}
+function marcarCambios() {
+  const c = cambiosPendientes();
+  $('mBody').querySelectorAll('[data-f]').forEach(f => f.classList.toggle('changed', f.dataset.f in c));
+  const n = Object.keys(c).length;
+  $('mSave').disabled = !n;
+  $('mMsg').className = 'msg'; $('mMsg').textContent = n ? `${n} campo(s) modificado(s) sin guardar` : '';
+}
+
+async function guardar() {
+  const cambios = cambiosPendientes(); if (!Object.keys(cambios).length) return;
+  for (const k of ['url_pagina_digemid', 'url_pdf_digemid']) if (cambios[k] && !safeUrl(cambios[k])) { $('mMsg').className = 'msg err'; $('mMsg').textContent = 'La URL debe empezar con http:// o https://'; return; }
+  $('mSave').disabled = true; $('mMsg').className = 'msg'; $('mMsg').textContent = 'Guardando…';
+  const { data, error } = await sb.rpc('admin_actualizar_modificatoria', { target_id: ACTUAL.id, cambios });
+  if (error) { $('mSave').disabled = false; $('mMsg').className = 'msg err'; $('mMsg').textContent = 'No se pudo guardar: ' + error.message; return; }
+  const idx = DATA.findIndex(d => d.id === ACTUAL.id);
+  DATA[idx] = enriquecer({ ...DATA[idx], ...(data || {}), ...(data ? {} : cambios) });
+  cerrar(); poblarFiltros(); renderCharts(); aplicar();
+  toast(`Guardado · ${Object.keys(cambios).length} campo(s) actualizado(s) y registrado(s) en auditoría`);
+}
+
+async function cargarAuditoria(id) {
+  const box = $('audBox'); if (!box) return;
+  const { data, error } = await sb.from('modificatorias_digemid_auditoria').select('usuario_email,cambios,creado_en').eq('modificatoria_id', id).order('creado_en', { ascending: false }).limit(50);
+  if (!$('audBox')) return;
+  if (error) { box.innerHTML = `<span class="small">No se pudo leer el historial: ${esc(error.message)}</span>`; return; }
+  if (!data.length) { box.innerHTML = '<span class="small">Sin cambios manuales. Los datos son los capturados por el monitor.</span>'; return; }
+  const lab = Object.fromEntries(CAMPOS.concat(CAMPOS_GESTION).map(c => [c[0], c[1]]));
+  box.innerHTML = data.map(a => `<div class="aud-item"><div class="who">${esc(new Date(a.creado_en).toLocaleString('es-PE'))} · ${esc(a.usuario_email || 'admin')}</div>
+    ${Object.entries(a.cambios).map(([k, v]) => `<div class="chg"><b>${esc(lab[k] || k)}:</b> <del>${esc(v.antes ?? '∅')}</del> → <ins>${esc(v.despues ?? '∅')}</ins></div>`).join('')}</div>`).join('');
+}
+
+function cerrar() {
+  if (EDITANDO && $('mSave') && !$('mSave').disabled && !confirm('Hay cambios sin guardar. ¿Descartarlos?')) return false;
+  $('ovl').classList.remove('open'); $('ovl').setAttribute('aria-hidden', 'true'); $('mEdit')?.remove(); ACTUAL = null; EDITANDO = false; return true;
+}
+
+// ───────────── Eventos ─────────────
+function bind() {
+  ['buscar', 'fDesde', 'fHasta'].forEach(id => $(id).addEventListener('input', aplicar));
+  ['fEstado', 'fUrgencia', 'fTipo', 'fTitular', 'fDQ', 'fEdit'].forEach(id => $(id).addEventListener('change', aplicar));
+  $('btnLimpiar').onclick = () => { ['buscar', 'fEstado', 'fUrgencia', 'fTipo', 'fTitular', 'fDesde', 'fHasta'].forEach(id => $(id).value = ''); $('fDQ').checked = $('fEdit').checked = false; kpiFilter = null; aplicar(); };
+  $('btnCSV').onclick = exportarCSV;
+  document.querySelectorAll('thead th[data-col]').forEach(th => th.addEventListener('click', () => {
+    const c = th.dataset.col; sortDir = sortCol === c ? -sortDir : (c === 'fecha_publicacion' ? -1 : 1); sortCol = c; aplicar();
+  }));
+  document.querySelectorAll('.kpi[data-kpi]').forEach(k => k.addEventListener('click', () => {
+    kpiFilter = (k.dataset.kpi === 'todos' || kpiFilter === k.dataset.kpi) ? null : k.dataset.kpi;
+    if (k.dataset.kpi === 'todos') $('btnLimpiar').click(); else aplicar();
+  }));
+  document.querySelector('#tabla tbody').addEventListener('click', e => {
+    if (e.target.closest('a')) return;
+    const b = e.target.closest('[data-edit]'); if (b) { abrir(b.dataset.edit, true); return; }
+    const tr = e.target.closest('tr[data-id]'); if (tr) abrir(tr.dataset.id, false);
+  });
+  $('mClose').onclick = cerrar; $('mCancel').onclick = cerrar; $('mSave').onclick = guardar;
+  $('ovl').addEventListener('click', e => { if (e.target === $('ovl')) cerrar(); });
+  document.addEventListener('keydown', e => {
+    if (!$('ovl').classList.contains('open')) return;
+    if (e.key === 'Escape') cerrar();
+    if ((e.ctrlKey || e.metaKey) && e.key === 's' && EDITANDO) { e.preventDefault(); if (!$('mSave').disabled) guardar(); }
+  });
+}
+
+function renderUsuario() {
+  const chip = $('userChip');
+  if (!ME.session) chip.textContent = 'Solo lectura · sin sesión';
+  else chip.innerHTML = `${esc(ME.nombre || ME.email)}${ME.admin ? '<b class="admin">ADMIN · edición</b>' : ' · solo lectura'}`;
+  document.querySelectorAll('.admin-only').forEach(el => el.style.display = ME.admin ? '' : 'none');
+  $('tablaHint').textContent = ME.admin && GESTION_OK ? 'Clic en una fila para ver el detalle, o “✎ Editar” para corregir campos y registrar el estado de gestión.' : 'Clic en una fila para ver el detalle completo.';
+  const b = $('banners'); b.innerHTML = '';
+  if (!GESTION_OK) b.innerHTML = `<div class="banner warn"><b>Falta aplicar la migración de edición.</b> ${ME.admin ? 'Corre <code>modificatorias/schema_edicion_admin.sql</code> en Supabase → SQL Editor para habilitar la edición, el estado de gestión y la auditoría.' : 'El estado de gestión estará disponible cuando un administrador complete la configuración.'}</div>`;
 }
 
 (async function init() {
+  bind();
   try {
-    DATA = await fetchAllModificatorias();
-    renderKpis();
-    renderCharts();
-    renderTable();
+    await Promise.all([cargarUsuario(), cargarDatos()]);
+    renderUsuario(); renderKpis(); renderCharts(); poblarFiltros(); aplicar();
   } catch (e) {
-    document.querySelector('#tablaModif tbody').innerHTML =
-      `<tr><td colspan="9" class="state-note">Error cargando datos de Supabase: ${e.message}</td></tr>`;
+    console.error(e);
+    document.querySelector('#tabla tbody').innerHTML = `<tr><td colspan="10" class="state-note">Error cargando datos de Supabase: ${esc(e.message)}</td></tr>`;
   }
 })();
 </script>
