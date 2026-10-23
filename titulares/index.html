@@ -99,6 +99,28 @@ tr:hover td{background:rgba(0,119,204,.04)}
 .origen-toggle button.active{background:var(--accent);border-color:var(--accent);color:#fff}
 .hint{font-size:11px;color:var(--muted);margin-top:4px}
 
+/* edición / auditoría de productos */
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+@media(max-width:640px){.row3{grid-template-columns:1fr}}
+.ep-sec{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--accent);margin:18px 0 10px;padding-bottom:5px;border-bottom:1px solid var(--border)}
+.field.changed .inp{border-color:#7c3aed;background:#faf7ff}
+.ep-tits{max-height:220px;overflow:auto}
+.ep-tits .tit-opt.on{font-weight:600}
+.act-btns{display:flex;gap:4px;white-space:nowrap}
+.act-btns .btn{padding:4px 8px}
+.aud-tbl td{font-size:11.5px}
+.aud-acc{font-family:var(--mono);font-size:9px;font-weight:700;padding:2px 7px;border-radius:5px;white-space:nowrap}
+.aud-CREADO{background:rgba(0,153,106,.12);color:#00734f}
+.aud-EDITADO{background:rgba(0,119,204,.1);color:#065a99}
+.aud-ELIMINADO{background:rgba(224,0,48,.1);color:#b00020}
+.aud-TITULAR{background:rgba(111,66,193,.1);color:#5a2ea6}
+.aud-chg{margin:1px 0}
+.aud-chg del{color:#b00020}
+.aud-chg ins{color:#00734f;text-decoration:none}
+.aud-motivo{color:var(--sub);font-style:italic}
+.diff-prev{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-size:12px;max-height:160px;overflow:auto}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:#1a2030;color:#fff;padding:10px 16px;border-radius:8px;font-size:13px;z-index:80;box-shadow:0 6px 20px rgba(0,0,0,.25)}
+
 /* encabezados ordenables */
 th.sortable{cursor:pointer;user-select:none}
 th.sortable:hover{color:var(--accent)}
@@ -227,10 +249,11 @@ th.sortable:hover{color:var(--accent)}
       <button class="btn btn-primary gate-hidden admin-only" id="btnNuevoProd" onclick="abrirNuevoProducto()">＋ Nuevo producto</button>
       <button class="btn btn-ghost gate-hidden admin-only" id="btnNuevoTit" onclick="abrirNuevoTitular()">＋ Nuevo titular</button>
       <button class="btn btn-ghost gate-hidden admin-only" id="btnImportar" onclick="document.getElementById('fileExcel').click()">⬆ Importar Excel</button>
+      <button class="btn btn-ghost gate-hidden admin-only" id="btnHistProd" onclick="historialProductos()">🕘 Historial de cambios</button>
       <input type="file" id="fileExcel" accept=".xlsx,.xls,.csv" style="display:none" onchange="importarExcel(event)">
     </div>
     <div id="importMsg"></div>
-    <div class="msg msg-info">Asigna aquí los titulares de cada producto. El titular marcado como <b>principal</b> se autoactiva al registrar una alerta. Solo un administrador puede editar.</div>
+    <div class="msg msg-info">Asigna aquí los titulares de cada producto. El titular marcado como <b>principal</b> se autoactiva al registrar una alerta. Solo un administrador puede editar o eliminar; cada cambio queda registrado (quién, cuándo, antes → después y motivo) en el historial.</div>
     <div class="tbl-wrap">
       <table>
         <thead><tr>
@@ -629,7 +652,11 @@ function renderMeds(){
   tb.innerHTML=rows.map((m,i)=>{
     const asign=titularesDe(m.id);
     const chips=asign.length?asign.map(x=>`<span class="tit-chip">${esc(x.titular.razon_social)}${x.es_principal?' ★':''}</span>`).join(''):'<span style="color:var(--muted)">Sin titular asignado</span>';
-    const acc=esAdmin?`<td class="colAdmin"><button class="btn btn-ghost" style="padding:4px 9px" onclick="editarTitulares('${m.id}')">Asignar</button></td>`:'';
+    const acc=esAdmin?`<td class="colAdmin"><div class="act-btns">
+        <button class="btn btn-ghost" title="Editar datos y titulares" onclick="editarProducto('${m.id}')">✎ Editar</button>
+        <button class="btn btn-ghost" title="Historial de cambios" onclick="historialProductos('${m.id}')">🕘</button>
+        <button class="btn btn-danger" title="Eliminar producto" onclick="eliminarProducto('${m.id}')">🗑</button>
+      </div></td>`:'';
     return `<tr>
       <td style="font-family:var(--mono)">${i+1}</td>
       <td style="min-width:220px">${esc(m.descripcion_producto)}</td>
@@ -650,36 +677,193 @@ function cambiarVista(v){
   $('vistaPortafolio').classList.toggle('gate-hidden',v!=='portafolio');
 }
 
-/* ───────── Asignar titulares a un producto (admin) ───────── */
-async function editarTitulares(medId){
+/* ───────── Editar / eliminar producto + historial (admin, auditado) ───────── */
+const EP_CAMPOS=[
+  // [campo, etiqueta, tipo]
+  ['descripcion_producto','Producto *','text'],
+  ['principio_activo','Principio activo','text'], ['nro_registro_sanitario','N° Registro Sanitario','text'],
+  ['vcto_registro_sanitario','Fecha vencimiento (Reg. Sanitario)','date'], ['nro_expediente_reinscripcion','N° expediente reinscripción','text'],
+  ['fabricante','Fabricante','text'], ['pais','País','text'],
+  ['accion_terapeutica','Acción terapéutica','text'], ['via_administracion','Vía de administración','text'],
+  ['presentacion','Presentación','text'], ['tvu','TVU (vida útil)','text'],
+  ['condicion_almacenamiento','Condición de almacenamiento','text'], ['nro','N° (orden)','number'],
+];
+const EP_LABEL=Object.fromEntries(EP_CAMPOS.map(c=>[c[0],c[1].replace(' *','')]));
+function toast(t){ const d=document.createElement('div'); d.className='toast'; d.textContent=t; document.body.appendChild(d); setTimeout(()=>d.remove(),3400); }
+const _v=x=>(x==null?'':String(x).slice(0,x&&/^\d{4}-\d{2}-\d{2}T/.test(String(x))?10:undefined)).trim();
+
+function editarTitulares(medId){ editarProducto(medId); }   // compatibilidad con llamadas antiguas
+
+function editarProducto(medId){
   const m=MEDS.find(x=>x.id===medId); if(!m) return;
   const actuales=titularesDe(medId);
-  const setSel=new Set(actuales.map(x=>x.titular_id));
-  const principalActual=actuales.find(x=>x.es_principal)?.titular_id||null;
-  const html=TITULARES.map(t=>`
-    <label class="tit-opt"><input type="checkbox" value="${t.id}" ${setSel.has(t.id)?'checked':''}> ${esc(t.razon_social)}
-      <span style="margin-left:auto"><input type="radio" name="ppal" value="${t.id}" ${principalActual===t.id?'checked':''}> principal</span>
-    </label>`).join('');
+  const selIni=new Set(actuales.map(x=>x.titular_id));
+  const ppalIni=actuales.find(x=>x.es_principal)?.titular_id||actuales[0]?.titular_id||'';
+  const fld=([k,lab,tipo])=>`<div class="field" data-f="${k}"><label>${esc(lab)}</label><input class="inp" data-k="${k}" type="${tipo}" value="${esc(_v(m[k]))}"></div>`;
+  const by=k=>EP_CAMPOS.find(c=>c[0]===k);
+  // titulares seleccionados primero
+  const titOrden=[...TITULARES].sort((a,b)=>(selIni.has(b.id)-selIni.has(a.id))||a.razon_social.localeCompare(b.razon_social));
   const box=document.createElement('div'); box.className='overlay'; box.innerHTML=`
-    <div class="modal" style="max-width:480px">
-      <h2>Titulares de: ${esc(m.descripcion_producto)}</h2>
-      <p class="sub">Marca los titulares y define cuál es el principal (se autoactiva en las alertas).</p>
-      <div class="tit-box" id="asignBox">${html}</div>
-      <div class="modal-actions"><button class="btn btn-ghost" id="cancelAsign">Cancelar</button><button class="btn btn-primary" id="saveAsign">Guardar</button></div>
+    <div class="modal" style="max-width:760px">
+      <h2>Editar producto</h2>
+      <p class="sub">${esc(m.descripcion_producto)} · los cambios quedan registrados en el historial con tu usuario, la fecha y el motivo.</p>
+      <div id="epMsg"></div>
+      <div class="ep-sec">Datos del producto</div>
+      ${fld(by('descripcion_producto'))}
+      <div class="row2">${fld(by('principio_activo'))}${fld(by('nro_registro_sanitario'))}</div>
+      <div class="row2">${fld(by('vcto_registro_sanitario'))}${fld(by('nro_expediente_reinscripcion'))}</div>
+      <div class="row2">${fld(by('fabricante'))}${fld(by('pais'))}</div>
+      <div class="row2">${fld(by('accion_terapeutica'))}${fld(by('via_administracion'))}</div>
+      <div class="row3">${fld(by('presentacion'))}${fld(by('tvu'))}${fld(by('nro'))}</div>
+      ${fld(by('condicion_almacenamiento'))}
+      <div class="ep-sec">Titulares del registro sanitario</div>
+      <input class="inp" id="epTitQ" placeholder="🔍 Buscar titular…" style="width:100%;margin-bottom:8px">
+      <div class="tit-box ep-tits" id="epTits">${titOrden.map(t=>`
+        <label class="tit-opt${selIni.has(t.id)?' on':''}" data-name="${esc(t.razon_social.toLowerCase())}"><input type="checkbox" value="${t.id}" ${selIni.has(t.id)?'checked':''}> ${esc(t.razon_social)}
+          <span style="margin-left:auto;font-size:11px;color:var(--sub)"><input type="radio" name="epPpal" value="${t.id}" ${ppalIni===t.id?'checked':''}> principal</span></label>`).join('')||'<div class="hint">No hay titulares. Crea uno con “Nuevo titular”.</div>'}</div>
+      <div class="hint">El principal se autoactiva al registrar alertas. Si no marcas ninguno, se usa el primero seleccionado.</div>
+      <div class="ep-sec">Motivo del cambio *</div>
+      <div class="field"><textarea class="inp" id="epMotivo" rows="2" placeholder="Ej. Corrección según Resolución Directoral N° … / actualización de fecha de vencimiento por reinscripción"></textarea></div>
+      <div id="epResumen"></div>
+      <div class="modal-actions"><button class="btn btn-ghost" id="epCancel">Cancelar</button><button class="btn btn-primary" id="epSave" disabled>Guardar cambios</button></div>
     </div>`;
   document.body.appendChild(box);
-  box.querySelector('#cancelAsign').onclick=()=>box.remove();
-  box.querySelector('#saveAsign').onclick=async()=>{
-    const checks=[...box.querySelectorAll('#asignBox input[type=checkbox]:checked')].map(c=>c.value);
-    const ppal=box.querySelector('#asignBox input[name=ppal]:checked')?.value||null;
-    // borra e inserta de nuevo (simple y consistente)
-    await sb.from('medicamento_titulares').delete().eq('medicamento_id',medId);
-    if(checks.length){
-      const rows=checks.map(tid=>({medicamento_id:medId,titular_id:tid,es_principal:tid===ppal}));
-      const {error}=await sb.from('medicamento_titulares').insert(rows);
-      if(error){ alert('Error: '+error.message); return; }
+  const q=sel=>box.querySelector(sel), qa=sel=>[...box.querySelectorAll(sel)];
+
+  function leer(){
+    const cambios={};
+    qa('[data-k]').forEach(el=>{ const k=el.dataset.k, nv=el.value.trim(), ov=_v(m[k]); if(nv!==ov) cambios[k]=nv; });
+    const sel=qa('#epTits input[type=checkbox]:checked').map(c=>c.value);
+    let ppal=q('#epTits input[name=epPpal]:checked')?.value||'';
+    if(!sel.includes(ppal)) ppal=sel[0]||'';
+    const titCambio = sel.length!==selIni.size || sel.some(id=>!selIni.has(id)) || (sel.length && ppal!==ppalIni);
+    return {cambios, sel, ppal, titCambio};
+  }
+  function refrescar(){
+    const {cambios, sel, ppal, titCambio}=leer();
+    qa('[data-f]').forEach(f=>f.classList.toggle('changed', f.dataset.f in cambios));
+    qa('#epTits .tit-opt').forEach(l=>l.classList.toggle('on', l.querySelector('input[type=checkbox]').checked));
+    const lineas=Object.entries(cambios).map(([k,v])=>`<div class="aud-chg"><b>${esc(EP_LABEL[k])}:</b> <del>${esc(_v(m[k])||'∅')}</del> → <ins>${esc(v||'∅')}</ins></div>`);
+    if(titCambio){
+      const ant=actuales.map(x=>x.titular.razon_social+(x.es_principal?' ★':'')).join(' / ')||'∅';
+      const nue=sel.map(id=>nombreTitular(id)+(id===ppal?' ★':'')).join(' / ')||'∅';
+      lineas.push(`<div class="aud-chg"><b>Titulares:</b> <del>${esc(ant)}</del> → <ins>${esc(nue)}</ins></div>`);
     }
-    box.remove(); await cargarCatalogos();
+    q('#epResumen').innerHTML=lineas.length?`<div class="field"><label>Resumen de cambios (${lineas.length})</label><div class="diff-prev">${lineas.join('')}</div></div>`:'';
+    q('#epSave').disabled=!lineas.length || !q('#epMotivo').value.trim();
+  }
+  box.addEventListener('input',e=>{ if(e.target.id==='epTitQ'){ const t=e.target.value.trim().toLowerCase(); qa('#epTits .tit-opt').forEach(l=>l.style.display=!t||l.dataset.name.includes(t)?'':'none'); return; } refrescar(); });
+  box.addEventListener('change',refrescar);
+  const cerrar=()=>{ const {cambios,titCambio}=leer(); if((Object.keys(cambios).length||titCambio) && !confirm('Hay cambios sin guardar. ¿Descartarlos?')) return; box.remove(); };
+  q('#epCancel').onclick=cerrar;
+  box.addEventListener('click',e=>{ if(e.target===box) cerrar(); });
+  q('#epSave').onclick=async()=>{
+    const {cambios, sel, ppal, titCambio}=leer();
+    const motivo=q('#epMotivo').value.trim();
+    if('descripcion_producto' in cambios && !cambios.descripcion_producto){ q('#epMsg').innerHTML='<div class="msg msg-err">El nombre del producto es obligatorio.</div>'; return; }
+    if(!motivo){ q('#epMsg').innerHTML='<div class="msg msg-err">Indica el motivo del cambio.</div>'; return; }
+    q('#epSave').disabled=true; q('#epSave').textContent='Guardando…';
+    const {error}=await sb.rpc('admin_actualizar_medicamento',{ target_id:medId, cambios,
+      titulares: titCambio ? sel.map(id=>({titular_id:id, es_principal:id===ppal})) : null, motivo });
+    if(error){ q('#epSave').disabled=false; q('#epSave').textContent='Guardar cambios';
+      const hint=/function .* does not exist|PGRST202/i.test(error.message)?' — falta correr titulares/sql/productos_edicion_auditoria.sql en Supabase.':'';
+      q('#epMsg').innerHTML=`<div class="msg msg-err">No se pudo guardar: ${esc(error.message)}${hint}</div>`; return; }
+    const n=Object.keys(cambios).length+(titCambio?1:0);
+    box.remove(); await cargarCatalogos(); toast(`✅ Producto actualizado · ${n} cambio(s) registrado(s) en el historial`);
+  };
+  setTimeout(()=>q('[data-k]')?.focus(),30);
+}
+
+async function eliminarProducto(medId){
+  const m=MEDS.find(x=>x.id===medId); if(!m) return;
+  const tits=titularesDe(medId).map(x=>x.titular.razon_social).join(' / ')||'—';
+  const box=document.createElement('div'); box.className='overlay'; box.innerHTML=`
+    <div class="modal" style="max-width:540px">
+      <h2>Eliminar producto</h2>
+      <p class="sub">Esta acción no se puede deshacer. Queda registrada en el historial con una copia de todos los datos del producto.</p>
+      <div class="diff-prev" style="margin-bottom:14px">
+        <div><b>${esc(m.descripcion_producto)}</b></div>
+        <div>Principio activo: ${esc(m.principio_activo||'—')} · Reg. Sanitario: ${esc(m.nro_registro_sanitario||'—')}</div>
+        <div>Titulares: ${esc(tits)}</div>
+      </div>
+      <div id="dpMsg"><div class="msg msg-info">Verificando alertas vinculadas…</div></div>
+      <div class="field"><label>Motivo de la eliminación *</label><textarea class="inp" id="dpMotivo" rows="2" placeholder="Ej. Registro sanitario cancelado / producto duplicado / ya no pertenece al portafolio"></textarea></div>
+      <div class="modal-actions"><button class="btn btn-ghost" id="dpCancel">Cancelar</button><button class="btn btn-danger" id="dpOk" disabled>Eliminar definitivamente</button></div>
+    </div>`;
+  document.body.appendChild(box);
+  const q=sel=>box.querySelector(sel);
+  q('#dpCancel').onclick=()=>box.remove();
+  let bloqueado=false;
+  const {data:n,error:e1}=await sb.rpc('medicamento_n_alertas',{target_id:medId});
+  if(e1){ q('#dpMsg').innerHTML=`<div class="msg msg-warn">No se pudo verificar las alertas (${esc(e1.message)}). Si el SQL de auditoría no se ha aplicado, la eliminación fallará.</div>`; }
+  else if(n>0){ bloqueado=true; q('#dpMsg').innerHTML=`<div class="msg msg-err">🔒 Este producto tiene <b>${n}</b> alerta(s) registrada(s) en “Alertas por producto”. Para conservar la trazabilidad de los FT-68/FT-69 no se puede eliminar: elimina o reasigna esas alertas primero.</div>`; }
+  else q('#dpMsg').innerHTML='<div class="msg msg-info">Sin alertas vinculadas: se puede eliminar.</div>';
+  const upd=()=>{ q('#dpOk').disabled=bloqueado||!q('#dpMotivo').value.trim(); };
+  q('#dpMotivo').oninput=upd; upd();
+  q('#dpOk').onclick=async()=>{
+    q('#dpOk').disabled=true; q('#dpOk').textContent='Eliminando…';
+    const {error}=await sb.rpc('admin_eliminar_medicamento',{target_id:medId, motivo:q('#dpMotivo').value.trim()});
+    if(error){ q('#dpMsg').innerHTML=`<div class="msg msg-err">${esc(error.message)}</div>`; q('#dpOk').textContent='Eliminar definitivamente'; upd(); return; }
+    box.remove(); await cargarCatalogos(); toast('🗑 Producto eliminado · registrado en el historial');
+  };
+}
+
+/* Historial: de un producto (medId) o de todo el portafolio (sin argumento), incluye productos eliminados */
+async function historialProductos(medId){
+  const m=medId?MEDS.find(x=>x.id===medId):null;
+  const box=document.createElement('div'); box.className='overlay'; box.innerHTML=`
+    <div class="modal" style="max-width:1000px">
+      <h2>🕘 Historial de cambios${m?'':' · Portafolio'}</h2>
+      <p class="sub">${m?esc(m.descripcion_producto):'Últimos 500 cambios en productos y titulares asignados (incluye productos eliminados, altas manuales e importaciones Excel).'}</p>
+      <div class="toolbar" style="margin-bottom:10px">
+        <input class="inp" id="hpQ" placeholder="🔍 Filtrar por producto, usuario, campo o motivo…" style="flex:1;min-width:220px">
+        <select class="inp" id="hpAcc"><option value="">Toda acción</option><option>CREADO</option><option>EDITADO</option><option value="TITULAR">TITULARES</option><option>ELIMINADO</option></select>
+        <button class="btn btn-ghost" id="hpCsv">⬇ CSV</button>
+      </div>
+      <div class="tbl-wrap" style="max-height:60vh"><table class="aud-tbl"><thead><tr><th>Fecha</th><th>Usuario</th>${m?'':'<th>Producto</th>'}<th>Acción</th><th>Detalle</th><th>Motivo</th></tr></thead><tbody id="hpBody"><tr><td colspan="6" style="text-align:center;color:var(--muted);padding:20px">Cargando…</td></tr></tbody></table></div>
+      <div class="modal-actions"><button class="btn btn-ghost" id="hpClose">Cerrar</button></div>
+    </div>`;
+  document.body.appendChild(box);
+  const q=sel=>box.querySelector(sel);
+  q('#hpClose').onclick=()=>box.remove(); box.addEventListener('click',e=>{ if(e.target===box) box.remove(); });
+  let qry=sb.from('medicamentos_auditoria').select('*').order('creado_en',{ascending:false}).limit(500);
+  if(medId) qry=qry.eq('medicamento_id',medId);
+  const {data,error}=await qry;
+  if(error){ const hint=/relation .* does not exist|42P01|PGRST205/i.test(error.message)?' — falta correr titulares/sql/productos_edicion_auditoria.sql en Supabase.':'';
+    q('#hpBody').innerHTML=`<tr><td colspan="6"><div class="msg msg-err">${esc(error.message)}${hint}</div></td></tr>`; return; }
+  const fmtV=v=>{ if(v==null||v==='') return '∅'; const s=String(v); return /^\d{4}-\d{2}-\d{2}$/.test(s)?fmtFecha(s):s; };
+  const detalle=a=>{
+    const c=a.cambios||{};
+    if(a.accion==='EDITADO') return Object.entries(c).map(([k,v])=>`<div class="aud-chg"><b>${esc(EP_LABEL[k]||k)}:</b> <del>${esc(fmtV(v.antes))}</del> → <ins>${esc(fmtV(v.despues))}</ins></div>`).join('');
+    if(a.accion.startsWith('TITULAR')){
+      if(a.accion==='TITULAR PRINCIPAL') return `<div class="aud-chg">${esc(c.titular||'')}: ${c.es_principal?.despues?'<ins>ahora es principal ★</ins>':'<del>deja de ser principal</del>'}</div>`;
+      return `<div class="aud-chg">${a.accion==='TITULAR AGREGADO'?'<ins>+ ':'<del>− '}${esc(c.titular||'')}${c.es_principal?' ★':''}${a.accion==='TITULAR AGREGADO'?'</ins>':'</del>'}</div>`;
+    }
+    if(a.accion==='ELIMINADO') return `<div class="aud-chg">Reg. Sanitario ${esc(c.nro_registro_sanitario||'—')} · ${esc(c.principio_activo||'—')} · Titulares: ${esc((c.titulares||[]).join(' / ')||'—')}</div>`;
+    if(a.accion==='CREADO') return `<div class="aud-chg">Reg. Sanitario ${esc(c.nro_registro_sanitario||'—')} · ${esc(c.principio_activo||'—')}</div>`;
+    return '';
+  };
+  const filtrar=()=>{
+    const t=q('#hpQ').value.trim().toLowerCase(), ac=q('#hpAcc').value;
+    return data.filter(a=>(!ac||a.accion.startsWith(ac)) && (!t||[a.producto,a.usuario_email,a.motivo,JSON.stringify(a.cambios||{})].join(' ').toLowerCase().includes(t)));
+  };
+  const pintar=()=>{
+    const rows=filtrar();
+    q('#hpBody').innerHTML=rows.length?rows.map(a=>`<tr>
+      <td style="font-family:var(--mono);white-space:nowrap">${esc(new Date(a.creado_en).toLocaleString('es-PE'))}</td>
+      <td style="white-space:nowrap">${esc(a.usuario_email||'sistema')}</td>
+      ${m?'':`<td style="min-width:180px">${esc(a.producto||'')}</td>`}
+      <td><span class="aud-acc aud-${a.accion.startsWith('TITULAR')?'TITULAR':a.accion}">${esc(a.accion)}</span></td>
+      <td style="min-width:240px">${detalle(a)}</td>
+      <td class="aud-motivo">${esc(a.motivo||'—')}</td></tr>`).join('')
+      :`<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:20px">${data.length?'Sin resultados con este filtro.':'Aún no hay cambios registrados.'}</td></tr>`;
+  };
+  q('#hpQ').oninput=pintar; q('#hpAcc').onchange=pintar; pintar();
+  q('#hpCsv').onclick=()=>{
+    const qq=v=>`"${String(v??'').replace(/"/g,'""')}"`;
+    const plano=a=>{ const d=document.createElement('div'); d.innerHTML=detalle(a); return d.innerText.replace(/\n+/g,' | '); };
+    const csv='﻿'+['Fecha;Usuario;Producto;Acción;Detalle;Motivo'].concat(filtrar().map(a=>[new Date(a.creado_en).toLocaleString('es-PE'),a.usuario_email,a.producto,a.accion,plano(a),a.motivo].map(qq).join(';'))).join('\r\n');
+    const l=document.createElement('a'); l.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'})); l.download=`historial_productos_${new Date().toISOString().slice(0,10)}.csv`; l.click();
   };
 }
 
