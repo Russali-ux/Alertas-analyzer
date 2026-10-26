@@ -1,23 +1,23 @@
 {
-  "generado": "2026-10-25T17:18:06Z",
-  "generado_str": "25/10/2026 17:18 UTC",
+  "generado": "2026-10-26T19:35:56Z",
+  "generado_str": "26/10/2026 19:35 UTC",
   "fecha_codigo": "ACUMULADO",
   "periodo": {
     "desde": "23/06/2026",
-    "hasta": "23/10/2026",
-    "dias": 122
+    "hasta": "26/10/2026",
+    "dias": 125
   },
   "excel": "ConkosafeIA_Regulatorio_ACUMULADO.xlsx",
   "markdown": "../summaries/cima_ACUMULADO.md",
   "stats": {
-    "total": 13354,
+    "total": 13369,
     "solo_ft": 1926,
-    "solo_prosp": 2596,
-    "ambos": 8832,
+    "solo_prosp": 2599,
+    "ambos": 8844,
     "top_labs": [
       {
         "lab": "Laboratorios Cinfa S.A.",
-        "n": 576
+        "n": 580
       },
       {
         "lab": "Laboratorios Normon S.A.",
@@ -29,7 +29,7 @@
       },
       {
         "lab": "Teva Gmbh",
-        "n": 453
+        "n": 455
       },
       {
         "lab": "Sandoz Farmaceutica S.A.",
@@ -41,7 +41,7 @@
       },
       {
         "lab": "Teva Pharma S.L.U.",
-        "n": 373
+        "n": 372
       },
       {
         "lab": "Aurovitas Spain, S.A.U.",
@@ -53,11 +53,236 @@
       },
       {
         "lab": "Towa Pharmaceutical S.A.",
-        "n": 263
+        "n": 268
       }
     ]
   },
   "registros": [
+    {
+      "nreg": "91456",
+      "nombre": "VITAMINA D3 CINFA 25.000 UI CÁPSULAS BLANDAS",
+      "lab": "Laboratorios Cinfa S.A.",
+      "fecha": "26/10/2026 07:56",
+      "tipo": "MODIFICADO",
+      "otros": "",
+      "cat": "both",
+      "has_ft": true,
+      "has_prosp": true,
+      "ft_pdf": "https://cima.aemps.es/cima/pdfs/ft/91456/FT_91456.pdf",
+      "ft_html": "https://cima.aemps.es/cima/dochtml/ft/91456/FT_91456.html",
+      "p_pdf": "https://cima.aemps.es/cima/pdfs/p/91456/P_91456.pdf",
+      "p_html": "https://cima.aemps.es/cima/dochtml/p/91456/P_91456.html"
+    },
+    {
+      "nreg": "91457",
+      "nombre": "VITAMINA D3 CINFA 50.000 UI CÁPSULAS BLANDAS",
+      "lab": "Laboratorios Cinfa S.A.",
+      "fecha": "26/10/2026 07:56",
+      "tipo": "MODIFICADO",
+      "otros": "",
+      "cat": "both",
+      "has_ft": true,
+      "has_prosp": true,
+      "ft_pdf": "https://cima.aemps.es/cima/pdfs/ft/91457/FT_91457.pdf",
+      "ft_html": "https://cima.aemps.es/cima/dochtml/ft/91457/FT_91457.html",
+      "p_pdf": "https://cima.aemps.es/cima/pdfs/p/91457/P_91457.pdf",
+      "p_html": "https://cima.aemps.es/cima/dochtml/p/91457/P_91457.html"
+    },
+    {
+      "nreg": "56078",
+      "nombre": "FLATORIL 500 microgramos/200 mg CAPSULAS DURAS",
+      "lab": "Almirall S.A.",
+      "fecha": "26/10/2026 07:55",
+      "tipo": "MODIFICADO",
+      "otros": "",
+      "cat": "prosp",
+      "has_ft": false,
+      "has_prosp": true,
+      "ft_pdf": null,
+      "ft_html": null,
+      "p_pdf": "https://cima.aemps.es/cima/pdfs/p/56078/P_56078.pdf",
+      "p_html": "https://cima.aemps.es/cima/dochtml/p/56078/P_56078.html"
+    },
+    {
+      "nreg": "84718",
+      "nombre": "DUTASTERIDA/TAMSULOSINA TEVA-RATIO 0,5 MG/0,4 MG CAPSULAS DURAS EFG",
+      "lab": "Teva Gmbh",
+      "fecha": "26/10/2026 07:55",
+      "tipo": "MODIFICADO",
+      "otros": "Otros cambios",
+      "cat": "both",
+      "has_ft": true,
+      "has_prosp": true,
+      "ft_pdf": "https://cima.aemps.es/cima/pdfs/ft/84718/FT_84718.pdf",
+      "ft_html": "https://cima.aemps.es/cima/dochtml/ft/84718/FT_84718.html",
+      "p_pdf": "https://cima.aemps.es/cima/pdfs/p/84718/P_84718.pdf",
+      "p_html": "https://cima.aemps.es/cima/dochtml/p/84718/P_84718.html"
+    },
+    {
+      "nreg": "86627",
+      "nombre": "EFFERALDOL 650 MG COMPRIMIDOS",
+      "lab": "Upsa S.A.S.",
+      "fecha": "26/10/2026 07:55",
+      "tipo": "MODIFICADO",
+      "otros": "",
+      "cat": "prosp",
+      "has_ft": false,
+      "has_prosp": true,
+      "ft_pdf": null,
+      "ft_html": null,
+      "p_pdf": "https://cima.aemps.es/cima/pdfs/p/86627/P_86627.pdf",
+      "p_html": "https://cima.aemps.es/cima/dochtml/p/86627/P_86627.html"
+    },
+    {
+      "nreg": "76490",
+      "nombre": "DESOPOP 75 MICROGRAMOS COMPRIMIDOS RECUBIERTOS CON PELICULA EFG",
+      "lab": "Laboratorios Effik S.A.",
+      "fecha": "26/10/2026 07:55",
+      "tipo": "MODIFICADO",
+      "otros": "",
+      "cat": "both",
+      "has_ft": true,
+      "has_prosp": true,
+      "ft_pdf": "https://cima.aemps.es/cima/pdfs/ft/76490/FT_76490.pdf",
+      "ft_html": "https://cima.aemps.es/cima/dochtml/ft/76490/FT_76490.html",
+      "p_pdf": "https://cima.aemps.es/cima/pdfs/p/76490/P_76490.pdf",
+      "p_html": "https://cima.aemps.es/cima/dochtml/p/76490/P_76490.html"
+    },
+    {
+      "nreg": "90666",
+      "nombre": "COLECALCIFEROL CINFA 50.000 UI CAPSULAS DURAS",
+      "lab": "Laboratorios Cinfa S.A.",
+      "fecha": "26/10/2026 07:55",
+      "tipo": "MODIFICADO",
+      "otros": "",
+      "cat": "both",
+      "has_ft": true,
+      "has_prosp": true,
+      "ft_pdf": "https://cima.aemps.es/cima/pdfs/ft/90666/FT_90666.pdf",
+      "ft_html": "https://cima.aemps.es/cima/dochtml/ft/90666/FT_90666.html",
+      "p_pdf": "https://cima.aemps.es/cima/pdfs/p/90666/P_90666.pdf",
+      "p_html": "https://cima.aemps.es/cima/dochtml/p/90666/P_90666.html"
+    },
+    {
+      "nreg": "90667",
+      "nombre": "COLECALCIFEROL CINFA 25.000 UI CÁPSULAS DURAS",
+      "lab": "Laboratorios Cinfa S.A.",
+      "fecha": "26/10/2026 07:55",
+      "tipo": "MODIFICADO",
+      "otros": "",
+      "cat": "both",
+      "has_ft": true,
+      "has_prosp": true,
+      "ft_pdf": "https://cima.aemps.es/cima/pdfs/ft/90667/FT_90667.pdf",
+      "ft_html": "https://cima.aemps.es/cima/dochtml/ft/90667/FT_90667.html",
+      "p_pdf": "https://cima.aemps.es/cima/pdfs/p/90667/P_90667.pdf",
+      "p_html": "https://cima.aemps.es/cima/dochtml/p/90667/P_90667.html"
+    },
+    {
+      "nreg": "81432",
+      "nombre": "BISOPROLOL PENSA 1,25 MG COMPRIMIDOS EFG",
+      "lab": "Towa Pharmaceutical S.A.",
+      "fecha": "26/10/2026 07:55",
+      "tipo": "MODIFICADO",
+      "otros": "",
+      "cat": "both",
+      "has_ft": true,
+      "has_prosp": true,
+      "ft_pdf": "https://cima.aemps.es/cima/pdfs/ft/81432/FT_81432.pdf",
+      "ft_html": "https://cima.aemps.es/cima/dochtml/ft/81432/FT_81432.html",
+      "p_pdf": "https://cima.aemps.es/cima/pdfs/p/81432/P_81432.pdf",
+      "p_html": "https://cima.aemps.es/cima/dochtml/p/81432/P_81432.html"
+    },
+    {
+      "nreg": "81433",
+      "nombre": "BISOPROLOL PENSA 3,75 MG COMPRIMIDOS EFG",
+      "lab": "Towa Pharmaceutical S.A.",
+      "fecha": "26/10/2026 07:55",
+      "tipo": "MODIFICADO",
+      "otros": "",
+      "cat": "both",
+      "has_ft": true,
+      "has_prosp": true,
+      "ft_pdf": "https://cima.aemps.es/cima/pdfs/ft/81433/FT_81433.pdf",
+      "ft_html": "https://cima.aemps.es/cima/dochtml/ft/81433/FT_81433.html",
+      "p_pdf": "https://cima.aemps.es/cima/pdfs/p/81433/P_81433.pdf",
+      "p_html": "https://cima.aemps.es/cima/dochtml/p/81433/P_81433.html"
+    },
+    {
+      "nreg": "81434",
+      "nombre": "BISOPROLOL PENSA 7,5 MG COMPRIMIDOS EFG",
+      "lab": "Towa Pharmaceutical S.A.",
+      "fecha": "26/10/2026 07:55",
+      "tipo": "MODIFICADO",
+      "otros": "",
+      "cat": "both",
+      "has_ft": true,
+      "has_prosp": true,
+      "ft_pdf": "https://cima.aemps.es/cima/pdfs/ft/81434/FT_81434.pdf",
+      "ft_html": "https://cima.aemps.es/cima/dochtml/ft/81434/FT_81434.html",
+      "p_pdf": "https://cima.aemps.es/cima/pdfs/p/81434/P_81434.pdf",
+      "p_html": "https://cima.aemps.es/cima/dochtml/p/81434/P_81434.html"
+    },
+    {
+      "nreg": "81435",
+      "nombre": "BISOPROLOL PENSA 2,5 MG COMPRIMIDOS EFG",
+      "lab": "Towa Pharmaceutical S.A.",
+      "fecha": "26/10/2026 07:55",
+      "tipo": "MODIFICADO",
+      "otros": "",
+      "cat": "both",
+      "has_ft": true,
+      "has_prosp": true,
+      "ft_pdf": "https://cima.aemps.es/cima/pdfs/ft/81435/FT_81435.pdf",
+      "ft_html": "https://cima.aemps.es/cima/dochtml/ft/81435/FT_81435.html",
+      "p_pdf": "https://cima.aemps.es/cima/pdfs/p/81435/P_81435.pdf",
+      "p_html": "https://cima.aemps.es/cima/dochtml/p/81435/P_81435.html"
+    },
+    {
+      "nreg": "81436",
+      "nombre": "BISOPROLOL PENSA 5 MG COMPRIMIDOS EFG",
+      "lab": "Towa Pharmaceutical S.A.",
+      "fecha": "26/10/2026 07:55",
+      "tipo": "MODIFICADO",
+      "otros": "",
+      "cat": "both",
+      "has_ft": true,
+      "has_prosp": true,
+      "ft_pdf": "https://cima.aemps.es/cima/pdfs/ft/81436/FT_81436.pdf",
+      "ft_html": "https://cima.aemps.es/cima/dochtml/ft/81436/FT_81436.html",
+      "p_pdf": "https://cima.aemps.es/cima/pdfs/p/81436/P_81436.pdf",
+      "p_html": "https://cima.aemps.es/cima/dochtml/p/81436/P_81436.html"
+    },
+    {
+      "nreg": "91501",
+      "nombre": "ANIDULAFUNGINA HIKMA 100 MG POLVO PARA CONCENTRADO PARA SOLUCION PARA PERFUSION EFG",
+      "lab": "Hikma Farmaceutica (Portugal) S.A.",
+      "fecha": "26/10/2026 07:55",
+      "tipo": "MODIFICADO",
+      "otros": "Otros cambios",
+      "cat": "prosp",
+      "has_ft": false,
+      "has_prosp": true,
+      "ft_pdf": null,
+      "ft_html": null,
+      "p_pdf": "https://cima.aemps.es/cima/pdfs/p/91501/P_91501.pdf",
+      "p_html": "https://cima.aemps.es/cima/dochtml/p/91501/P_91501.html"
+    },
+    {
+      "nreg": "90054",
+      "nombre": "NEUMAX 750 MG COMPRIMIDOS RECUBIERTOS CON PELICULA",
+      "lab": "Laboratorios Gebro Pharma S.A.",
+      "fecha": "26/10/2026 07:55",
+      "tipo": "MODIFICADO",
+      "otros": "",
+      "cat": "both",
+      "has_ft": true,
+      "has_prosp": true,
+      "ft_pdf": "https://cima.aemps.es/cima/pdfs/ft/90054/FT_90054.pdf",
+      "ft_html": "https://cima.aemps.es/cima/dochtml/ft/90054/FT_90054.html",
+      "p_pdf": "https://cima.aemps.es/cima/pdfs/p/90054/P_90054.pdf",
+      "p_html": "https://cima.aemps.es/cima/dochtml/p/90054/P_90054.html"
+    },
     {
       "nreg": "1201498004",
       "nombre": "TRIXEO AEROSPHERE 5 MICROGRAMOS/14,4 MICROGRAMOS/160 MICROGRAMOS SUSPENSION PARA INHALACIÓN EN ENVASE A PRESIÓN",
@@ -87646,7 +87871,7 @@
     {
       "nreg": "84718",
       "nombre": "DUTASTERIDA/TAMSULOSINA TEVA-RATIO 0,5 MG/0,4 MG CAPSULAS DURAS EFG",
-      "lab": "Teva Pharma S.L.U.",
+      "lab": "Teva Gmbh",
       "fecha": "30/09/2026 06:55",
       "tipo": "MODIFICADO",
       "otros": "Otros cambios",

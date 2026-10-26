@@ -1,7 +1,7 @@
 # ConkoSafe IA — Cambios en Ficha Técnica y Prospecto (CIMA / AEMPS)
 
-**Generado:** 25/10/2026 17:18 UTC  
-**Periodo:** 23/06/2026 → 23/10/2026 (últimos 122 días)  
+**Generado:** 26/10/2026 19:35 UTC  
+**Periodo:** 23/06/2026 → 26/10/2026 (últimos 125 días)  
 **Fuente:** [CIMA — AEMPS (registroCambios)](https://cima.aemps.es/cima/rest/registroCambios)
 
 ## Resumen
@@ -9,29 +9,44 @@
 | Categoría | Cantidad |
 |---|---:|
 | Solo Ficha Técnica | 1926 |
-| Solo Prospecto | 2596 |
-| FT + Prospecto (ambos) | 8832 |
-| **TOTAL con FT o Prospecto** | **13354** |
+| Solo Prospecto | 2599 |
+| FT + Prospecto (ambos) | 8844 |
+| **TOTAL con FT o Prospecto** | **13369** |
 
 Descarga del detalle completo: `ConkosafeIA_Regulatorio_ACUMULADO.xlsx`
 
 ### Top laboratorios
 
-- Laboratorios Cinfa S.A. — 576 cambio(s)
+- Laboratorios Cinfa S.A. — 580 cambio(s)
 - Laboratorios Normon S.A. — 557 cambio(s)
 - Laboratorio Stada S.L. — 485 cambio(s)
-- Teva Gmbh — 453 cambio(s)
+- Teva Gmbh — 455 cambio(s)
 - Sandoz Farmaceutica S.A. — 446 cambio(s)
 - Kern Pharma S.L. — 396 cambio(s)
-- Teva Pharma S.L.U. — 373 cambio(s)
+- Teva Pharma S.L.U. — 372 cambio(s)
 - Aurovitas Spain, S.A.U. — 285 cambio(s)
 - Laboratorios Alter S.A. — 285 cambio(s)
-- Towa Pharmaceutical S.A. — 263 cambio(s)
+- Towa Pharmaceutical S.A. — 268 cambio(s)
 
 ## Detalle de cambios
 
 | Nº Registro | Medicamento | Laboratorio | Fecha | Tipo | Cambio | Enlaces |
 |---|---|---|---|---|---|---|
+| 91456 | VITAMINA D3 CINFA 25.000 UI CÁPSULAS BLANDAS | Laboratorios Cinfa S.A. | 26/10/2026 07:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/91456/FT_91456.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/91456/FT_91456.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/91456/P_91456.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91456/P_91456.html) |
+| 91457 | VITAMINA D3 CINFA 50.000 UI CÁPSULAS BLANDAS | Laboratorios Cinfa S.A. | 26/10/2026 07:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/91457/FT_91457.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/91457/FT_91457.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/91457/P_91457.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91457/P_91457.html) |
+| 56078 | FLATORIL 500 microgramos/200 mg CAPSULAS DURAS | Almirall S.A. | 26/10/2026 07:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/56078/P_56078.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/56078/P_56078.html) |
+| 84718 | DUTASTERIDA/TAMSULOSINA TEVA-RATIO 0,5 MG/0,4 MG CAPSULAS DURAS EFG | Teva Gmbh | 26/10/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/84718/FT_84718.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/84718/FT_84718.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/84718/P_84718.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/84718/P_84718.html) |
+| 86627 | EFFERALDOL 650 MG COMPRIMIDOS | Upsa S.A.S. | 26/10/2026 07:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/86627/P_86627.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/86627/P_86627.html) |
+| 76490 | DESOPOP 75 MICROGRAMOS COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Laboratorios Effik S.A. | 26/10/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/76490/FT_76490.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/76490/FT_76490.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/76490/P_76490.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/76490/P_76490.html) |
+| 90666 | COLECALCIFEROL CINFA 50.000 UI CAPSULAS DURAS | Laboratorios Cinfa S.A. | 26/10/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/90666/FT_90666.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/90666/FT_90666.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/90666/P_90666.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/90666/P_90666.html) |
+| 90667 | COLECALCIFEROL CINFA 25.000 UI CÁPSULAS DURAS | Laboratorios Cinfa S.A. | 26/10/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/90667/FT_90667.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/90667/FT_90667.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/90667/P_90667.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/90667/P_90667.html) |
+| 81432 | BISOPROLOL PENSA 1,25 MG COMPRIMIDOS EFG | Towa Pharmaceutical S.A. | 26/10/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/81432/FT_81432.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/81432/FT_81432.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/81432/P_81432.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/81432/P_81432.html) |
+| 81433 | BISOPROLOL PENSA 3,75 MG COMPRIMIDOS EFG | Towa Pharmaceutical S.A. | 26/10/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/81433/FT_81433.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/81433/FT_81433.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/81433/P_81433.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/81433/P_81433.html) |
+| 81434 | BISOPROLOL PENSA 7,5 MG COMPRIMIDOS EFG | Towa Pharmaceutical S.A. | 26/10/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/81434/FT_81434.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/81434/FT_81434.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/81434/P_81434.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/81434/P_81434.html) |
+| 81435 | BISOPROLOL PENSA 2,5 MG COMPRIMIDOS EFG | Towa Pharmaceutical S.A. | 26/10/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/81435/FT_81435.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/81435/FT_81435.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/81435/P_81435.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/81435/P_81435.html) |
+| 81436 | BISOPROLOL PENSA 5 MG COMPRIMIDOS EFG | Towa Pharmaceutical S.A. | 26/10/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/81436/FT_81436.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/81436/FT_81436.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/81436/P_81436.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/81436/P_81436.html) |
+| 91501 | ANIDULAFUNGINA HIKMA 100 MG POLVO PARA CONCENTRADO PARA SOLUCION PARA PERFUSION EFG | Hikma Farmaceutica (Portugal) S.A. | 26/10/2026 07:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/91501/P_91501.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91501/P_91501.html) |
+| 90054 | NEUMAX 750 MG COMPRIMIDOS RECUBIERTOS CON PELICULA | Laboratorios Gebro Pharma S.A. | 26/10/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/90054/FT_90054.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/90054/FT_90054.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/90054/P_90054.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/90054/P_90054.html) |
 | 1201498004 | TRIXEO AEROSPHERE 5 MICROGRAMOS/14,4 MICROGRAMOS/160 MICROGRAMOS SUSPENSION PARA INHALACIÓN EN ENVASE A PRESIÓN | Astrazeneca Ab | 23/10/2026 06:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/1201498004/P_1201498004.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/1201498004/P_1201498004.html) |
 | 84886 | TRIAXIS POLIO SUSPENSION INYECTABLE EN JERINGA PRECARGADA | Sanofi Winthrop Industrie | 23/10/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/84886/FT_84886.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/84886/FT_84886.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/84886/P_84886.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/84886/P_84886.html) |
 | 68637 | SENSEDOL 0.075% CREMA | Especialidades Farmaceuticas Centrum S.A. | 23/10/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/68637/FT_68637.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/68637/FT_68637.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/68637/P_68637.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/68637/P_68637.html) |
@@ -5871,7 +5886,7 @@ Descarga del detalle completo: `ConkosafeIA_Regulatorio_ACUMULADO.xlsx`
 | 84642 | DULOXETINA TEVA-RATIO 30 MG CAPSULAS DURAS GASTRORRESISTENTES EFG | Teva Gmbh | 30/09/2026 06:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/84642/P_84642.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/84642/P_84642.html) |
 | 84643 | DULOXETINA TEVA-RATIO 60 MG CAPSULAS DURAS GASTRORRESISTENTES EFG | Teva Gmbh | 30/09/2026 06:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/84643/P_84643.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/84643/P_84643.html) |
 | 84670 | DUTASTERIDA/TAMSULOSINA RATIO 0,5 MG/0,4 MG CAPSULAS DURAS EFG | Teva Pharma S.L.U. | 30/09/2026 06:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/84670/FT_84670.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/84670/FT_84670.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/84670/P_84670.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/84670/P_84670.html) |
-| 84718 | DUTASTERIDA/TAMSULOSINA TEVA-RATIO 0,5 MG/0,4 MG CAPSULAS DURAS EFG | Teva Pharma S.L.U. | 30/09/2026 06:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/84718/FT_84718.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/84718/FT_84718.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/84718/P_84718.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/84718/P_84718.html) |
+| 84718 | DUTASTERIDA/TAMSULOSINA TEVA-RATIO 0,5 MG/0,4 MG CAPSULAS DURAS EFG | Teva Gmbh | 30/09/2026 06:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/84718/FT_84718.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/84718/FT_84718.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/84718/P_84718.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/84718/P_84718.html) |
 | 84817 | DORZOLAMIDA/TIMOLOL STULLN PF 20 MG/ML + 5 MG/ML COLIRIO EN SOLUCION EN ENVASE UNIDOSIS | Pharma Stulln Gmbh | 30/09/2026 06:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/84817/FT_84817.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/84817/FT_84817.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/84817/P_84817.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/84817/P_84817.html) |
 | 84956 | FACTOR IX OCTAPHARMA 100 UI/ML POLVO Y DISOLVENTE PARA SOLUCION INYECTABLE | Octapharma S.A. | 30/09/2026 06:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/84956/FT_84956.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/84956/FT_84956.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/84956/P_84956.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/84956/P_84956.html) |
 | 84988 | FENILEFRINA ALTAN 0,1 MG/ML SOLUCION INYECTABLE Y PARA PERFUSION | Altan Pharmaceuticals Sa | 30/09/2026 06:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/84988/FT_84988.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/84988/FT_84988.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/84988/P_84988.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/84988/P_84988.html) |
