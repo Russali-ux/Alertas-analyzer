@@ -143,6 +143,7 @@ th.sortable:hover{color:var(--accent)}
 .src-badge.pavs{background:#e9f7ef;color:#11703f}
 .src-badge.fda{background:#eef2ff;color:#3730a3}
 .src-badge.ema{background:#fff7e6;color:#9a5b00}
+.src-badge.modif{background:#e7f4ee;color:#1b5e3f}
 .si-no{display:inline-block;font-size:10px;font-weight:700;padding:1px 6px;border-radius:8px;margin-left:4px}
 .si-no.si{background:#fee2e2;color:#991b1b}.si-no.no{background:#eef0f3;color:#475467}
 .chk-row:last-child{border-bottom:none}
@@ -273,9 +274,10 @@ th.sortable:hover{color:var(--accent)}
     <div id="modalMsg"></div>
 
     <div class="field">
-      <label><span class="step-tag">Paso 1</span> Alerta(s) — selecciona una o varias (DIGEMID, PAVS, FDA AEMS y/o EMA PRAC)</label>
+      <label><span class="step-tag">Paso 1</span> Alerta(s) — selecciona una o varias (DIGEMID, Modificatorias, PAVS, FDA AEMS y/o EMA PRAC)</label>
       <div class="src-tog" id="mFuente">
         <button type="button" class="on" data-f="dig" onclick="cambiarFuente('dig')">📋 DIGEMID</button>
+        <button type="button" data-f="modif" onclick="cambiarFuente('modif')">📑 Modificatorias</button>
         <button type="button" data-f="pavs" onclick="cambiarFuente('pavs')">🌎 PAVS · Alta vigilancia</button>
         <button type="button" data-f="fda" onclick="cambiarFuente('fda')">🇺🇸 FDA AEMS · Señales</button>
         <button type="button" data-f="ema" onclick="cambiarFuente('ema')">🇪🇺 EMA PRAC · Señales</button>
@@ -377,7 +379,7 @@ function nombreMed(id){ const m=MEDS.find(x=>x.id===id); return m?m.descripcion_
 /* ───────── Vista Alertas ───────── */
 async function cargarAlertas(){
   $('tbAlertas').innerHTML='<tr><td colspan="14" style="text-align:center;color:var(--muted);padding:24px">Cargando…</td></tr>';
-  const {data,error}=await sb.from('alertas_producto_titular').select('*, alerta:alertas_digemid(producto,titular_registro_sanitario,resumen_ia,url_pagina_digemid,url_pdf_digemid), pavs:pavs_alertas(ifa,pais,agencia,enlace,fecha_emision,fecha_revision,tipo_alerta,titulo_alerta,reaccion_adversa), fda:fda_aems_senales(producto,principio,senal,periodo,url), ema:ema_prac_halmed_senales(inn,senal,reunion,accion_titular,fuente_url)').order('fecha_publicacion',{ascending:false,nullsFirst:false}).order('creado_en',{ascending:false});
+  const {data,error}=await sb.from('alertas_producto_titular').select('*, alerta:alertas_digemid(producto,titular_registro_sanitario,resumen_ia,url_pagina_digemid,url_pdf_digemid), pavs:pavs_alertas(ifa,pais,agencia,enlace,fecha_emision,fecha_revision,tipo_alerta,titulo_alerta,reaccion_adversa), fda:fda_aems_senales(producto,principio,senal,periodo,url), ema:ema_prac_halmed_senales(inn,senal,reunion,accion_titular,fuente_url), modif:modificatorias_digemid(n_modificacion,producto,principio_activo,titular_rs,tipo_modificacion,url_pagina_digemid,url_pdf_digemid)').order('fecha_publicacion',{ascending:false,nullsFirst:false}).order('creado_en',{ascending:false});
   if(error){ $('alertasMsg').innerHTML=`<div class="msg msg-err">No se pudo cargar: ${esc(error.message)}</div>`; $('tbAlertas').innerHTML=''; return; }
   $('alertasMsg').innerHTML=''; ALERTAS=data||[]; poblarFiltroProductos(); poblarFiltroTitulos(); poblarFiltroTipos(); renderAlertas();
 }
@@ -424,7 +426,7 @@ function _valAlerta(a,k){
     case 'producto': return nombreMed(a.medicamento_id)||'';
     case 'principio': return principioDe(a.medicamento_id)||'';
     case 'titulo': return a.titulo_alerta||'';
-    case 'producto_alerta': return (a.alerta&&a.alerta.producto)||(a.pavs&&a.pavs.ifa)||(a.fda&&a.fda.producto)||(a.ema&&a.ema.inn)||'';
+    case 'producto_alerta': return (a.alerta&&a.alerta.producto)||(a.pavs&&a.pavs.ifa)||(a.fda&&a.fda.producto)||(a.ema&&a.ema.inn)||(a.modif&&(a.modif.producto||a.modif.principio_activo))||'';
     case 'tipo': return a.tipo_alerta||'';
     case 'titular': return nombreTitular(a.titular_1_id)||'';
     case 'titular_impactado': return (a.alerta&&a.alerta.titular_registro_sanitario)||'';
@@ -447,7 +449,7 @@ function alertasFiltradas(ignorarTitular){
     if(tituloF && a.titulo_alerta!==tituloF) return false;
     if(tipoF && a.tipo_alerta!==tipoF) return false;
     if(!q) return true;
-    const hay=(nombreMed(a.medicamento_id)+' '+regSanitarioDe(a.medicamento_id)+' '+principioDe(a.medicamento_id)+' '+(a.titulo_alerta||'')+' '+((a.alerta&&a.alerta.producto)||'')+' '+(a.tipo_alerta||'')+' '+nombreTitular(a.titular_1_id)+' '+nombreTitular(a.titular_2_id)+' '+((a.alerta&&a.alerta.titular_registro_sanitario)||'')+' '+((a.pavs&&[a.pavs.ifa,a.pavs.pais,a.pavs.agencia].join(' '))||'')+' '+(a.origen==='pavs_vinculada'?'pavs':'')+' '+((a.fda&&['fda',a.fda.producto,a.fda.principio,a.fda.senal].join(' '))||'')+' '+((a.ema&&['ema prac',a.ema.inn,a.ema.senal].join(' '))||'')).toLowerCase();
+    const hay=(nombreMed(a.medicamento_id)+' '+regSanitarioDe(a.medicamento_id)+' '+principioDe(a.medicamento_id)+' '+(a.titulo_alerta||'')+' '+((a.alerta&&a.alerta.producto)||'')+' '+(a.tipo_alerta||'')+' '+nombreTitular(a.titular_1_id)+' '+nombreTitular(a.titular_2_id)+' '+((a.alerta&&a.alerta.titular_registro_sanitario)||'')+' '+((a.pavs&&[a.pavs.ifa,a.pavs.pais,a.pavs.agencia].join(' '))||'')+' '+(a.origen==='pavs_vinculada'?'pavs':'')+' '+((a.fda&&['fda',a.fda.producto,a.fda.principio,a.fda.senal].join(' '))||'')+' '+((a.ema&&['ema prac',a.ema.inn,a.ema.senal].join(' '))||'')+' '+((a.modif&&['modificatoria',a.modif.n_modificacion,a.modif.producto,a.modif.principio_activo,a.modif.titular_rs].join(' '))||'')).toLowerCase();
     return hay.includes(q);
   });
 }
@@ -464,12 +466,14 @@ function renderAlertas(){
   if(!rows.length){ $('tbAlertas').innerHTML='<tr><td colspan="14" style="text-align:center;color:var(--muted);padding:24px">Sin alertas registradas todavía.</td></tr>'; return; }
   $('tbAlertas').innerHTML=rows.map(a=>{
     const tits=[a.titular_1_id,a.titular_2_id].filter(Boolean).map(id=>`<span class="tit-chip">${esc(nombreTitular(id))}</span>`).join('')||'<span style="color:var(--muted)">—</span>';
-    const titImp=(a.alerta&&a.alerta.titular_registro_sanitario)?`<span class="tit-chip">${esc(a.alerta.titular_registro_sanitario)}</span>`:'<span style="color:var(--muted)">—</span>';
+    const titImpN=(a.alerta&&a.alerta.titular_registro_sanitario)||(a.modif&&a.modif.titular_rs)||'';
+    const titImp=titImpN?`<span class="tit-chip">${esc(titImpN)}</span>`:'<span style="color:var(--muted)">—</span>';
     const urgP=a.urgencia?`<span class="pill u-${a.urgencia}">${a.urgencia}</span>`:'—';
     const orig=a.origen==='digemid_vinculada'?'🔗 DIGEMID'
       : a.origen==='pavs_vinculada'?`🌎 PAVS${a.pavs&&(a.pavs.agencia||a.pavs.pais)?`<br><span style="color:var(--muted)">${esc([a.pavs.agencia,a.pavs.pais].filter(Boolean).join(' · '))}</span>`:''}`
       : a.origen==='fda_vinculada'?`🇺🇸 FDA AEMS${a.fda&&a.fda.periodo?`<br><span style="color:var(--muted)">${esc(a.fda.periodo)}</span>`:''}`
       : a.origen==='ema_vinculada'?`🇪🇺 EMA PRAC${a.ema&&a.ema.reunion?`<br><span style="color:var(--muted)">${esc(a.ema.reunion)}</span>`:''}`
+      : a.origen==='modif_vinculada'?`📑 MODIFICATORIA${a.modif&&a.modif.tipo_modificacion?`<br><span style="color:var(--muted)">${esc(a.modif.tipo_modificacion)}</span>`:''}`
       : '✍️ Manual';
     const tipoB=a.tipo_alerta?`<span class="tipo-badge ${tipoClaseP(a.tipo_alerta)}">${esc(a.tipo_alerta)}</span>`:'<span style="color:var(--muted)">—</span>';
     const pa=principioDe(a.medicamento_id), rs=regSanitarioDe(a.medicamento_id);
@@ -484,6 +488,7 @@ function renderAlertas(){
       <td style="min-width:150px">${titImp}</td>
       <td style="min-width:160px">${a.alerta&&a.alerta.producto?esc(a.alerta.producto):(a.pavs&&a.pavs.ifa?esc(a.pavs.ifa)
         :a.fda?esc([a.fda.producto,a.fda.principio].filter(Boolean).join(' · '))+`<br><span style="color:var(--muted)">Señal: ${esc(a.fda.senal||'—')}</span>`
+        :a.modif?esc([a.modif.producto,a.modif.principio_activo].filter(Boolean).join(' · '))+`<br><span style="color:var(--muted)">${esc(a.modif.n_modificacion||'')}</span>`
         :a.ema?esc(a.ema.inn||'')+`<br><span style="color:var(--muted)">Señal: ${esc(a.ema.senal||'—')}</span><span class="si-no ${a.ema.accion_titular==='Sí'?'si':'no'}">Acción titular: ${esc(a.ema.accion_titular||'—')}</span>`
         :'<span style=\'color:var(--muted)\'>—</span>')}</td>
       <td>${tipoB}</td>
@@ -503,20 +508,20 @@ const ymLabel=ym=>{ const [y,m]=ym.split('-').map(Number); return `${MESES_ES[m]
 
 /* Registro de alertas_producto_titular → fila del FT-69 */
 function normalizarFT69(a){
-  const esPavs=a.origen==='pavs_vinculada';
-  const autoridad=esPavs ? ['PAVS',[a.pavs&&a.pavs.agencia, a.pavs&&a.pavs.pais&&`(${a.pavs.pais})`].filter(Boolean).join(' ')].filter(Boolean).join(' · ') : 'DIGEMID';
+  const esPavs=a.origen==='pavs_vinculada', m=a.modif||null;
+  const autoridad=m ? 'DIGEMID · Modificatoria' : esPavs ? ['PAVS',[a.pavs&&a.pavs.agencia, a.pavs&&a.pavs.pais&&`(${a.pavs.pais})`].filter(Boolean).join(' ')].filter(Boolean).join(' · ') : 'DIGEMID';
   return {
     fecha:(a.fecha_publicacion||'').slice(0,10),
     autoridad, codigo:a.titulo_alerta||'',
     tipo:a.tipo_alerta||'', urgencia:a.urgencia||'', accion:a.accion_principal||'',
-    producto:nombreMed(a.medicamento_id)||(a.alerta&&a.alerta.producto)||(a.pavs&&a.pavs.ifa)||'',
+    producto:nombreMed(a.medicamento_id)||(a.alerta&&a.alerta.producto)||(m&&m.producto)||(a.pavs&&a.pavs.ifa)||'',
     regSanitario:regSanitarioDe(a.medicamento_id)||'',
-    principio:principioDe(a.medicamento_id)||(a.pavs&&a.pavs.ifa)||'',
+    principio:principioDe(a.medicamento_id)||(m&&m.principio_activo)||(a.pavs&&a.pavs.ifa)||'',
     titulares:[a.titular_1_id,a.titular_2_id].filter(Boolean).map(nombreTitular).filter(Boolean).join(', '),
     resumen:a.resumen||(a.alerta&&a.alerta.resumen_ia)||'',
     estado:(a.estado||'').replace('_',' '), expediente:a.expediente||'',
-    urlAlerta:(a.alerta&&a.alerta.url_pagina_digemid)||(esPavs&&a.pavs&&a.pavs.enlace)||'',
-    urlPdf:a.url_pdf||(a.alerta&&a.alerta.url_pdf_digemid)||''
+    urlAlerta:(a.alerta&&a.alerta.url_pagina_digemid)||(m&&m.url_pagina_digemid)||(esPavs&&a.pavs&&a.pavs.enlace)||'',
+    urlPdf:a.url_pdf||(a.alerta&&a.alerta.url_pdf_digemid)||(m&&m.url_pdf_digemid)||''
   };
 }
 
@@ -933,7 +938,18 @@ function normEma(d){
     accion, resumen:resumen||null, url:d.fuente_url||null,
     inn:d.inn, senal:d.senal, accionTitular:d.accion_titular, reunion:d.reunion, pdf:(d.fuente_archivo||'').startsWith('EMA PDF') };
 }
+/* Modificatorias DIGEMID de seguridad (modificatorias_digemid): N° modificación · producto · IFA · titular. */
+function normModif(d){
+  const resumen=[d.tipo_modificacion&&`Tipo: ${d.tipo_modificacion}`, d.principio_activo&&`IFA: ${d.principio_activo}`,
+                 d.titular_rs&&`Titular RS: ${d.titular_rs}`, d.resumen].filter(Boolean).join(' · ');
+  const urg=['INMEDIATA','PREVENTIVA','INFORMATIVA'].includes(d.urgencia)?d.urgencia:null;
+  return { key:'modif:'+d.id, fuente:'modif', id:d.id, fecha:d.fecha_publicacion||null, etiqueta:d.producto||d.principio_activo||'',
+    titulo:[d.n_modificacion, d.producto].filter(Boolean).join(' — '), tipo:'Modificatoria de seguridad', urgencia:urg,
+    accion:d.accion_requerida||null, resumen:resumen||null, url:d.url_pdf_digemid||d.url_pagina_digemid||null,
+    nMod:d.n_modificacion, producto:d.producto, principio:d.principio_activo, titularRs:d.titular_rs, tipoMod:d.tipo_modificacion };
+}
 const FUENTES={ dig:{nombre:'DIGEMID', ph:'🔍 Buscar alerta por título, producto o tipo…'},
+  modif:{nombre:'MODIFICATORIA', ph:'🔍 Buscar modificatoria por N°, producto, principio activo o titular…'},
   pavs:{nombre:'PAVS', ph:'🔍 Buscar alerta PAVS por título, IFA, país, agencia o tipo…'},
   fda:{nombre:'FDA', ph:'🔍 Buscar señal FDA por producto, principio activo, señal o periodo…'},
   ema:{nombre:'EMA PRAC', ph:'🔍 Buscar señal EMA PRAC por INN, señal o reunión…'} };
@@ -960,6 +976,13 @@ async function buscarDigemid(inmediato){
       const {data,error}=await query;
       if(error){ $('mAlertasList').innerHTML=`<div class="hint" style="padding:8px;color:var(--danger,#b42318)">${esc(error.message)}</div>`; return; }
       lista=(data||[]).map(normEma);
+    }else if(fuenteAl==='modif'){
+      let query=sb.from('modificatorias_digemid').select('id,n_modificacion,producto,principio_activo,titular_rs,fecha_publicacion,tipo_modificacion,urgencia,accion_requerida,resumen,url_pagina_digemid,url_pdf_digemid')
+        .order('fecha_publicacion',{ascending:false,nullsFirst:false}).limit(60);
+      if(q) query=query.or(`n_modificacion.ilike.%${q}%,producto.ilike.%${q}%,principio_activo.ilike.%${q}%,titular_rs.ilike.%${q}%,tipo_modificacion.ilike.%${q}%`);
+      const {data,error}=await query;
+      if(error){ $('mAlertasList').innerHTML=`<div class="hint" style="padding:8px;color:var(--danger,#b42318)">${esc(error.message)}</div>`; return; }
+      lista=(data||[]).map(normModif);
     }else if(fuenteAl==='pavs'){
       let query=sb.from('pavs_alertas').select('id,fecha_emision,pais,agencia,tipo_alerta,titulo_alerta,tipo_producto,ifa,reaccion_adversa,enlace')
         .order('fecha_emision',{ascending:false,nullsFirst:false}).limit(40);
@@ -987,6 +1010,9 @@ function renderAlertaChecks(lista){
       if(x.fuente==='fda') return `<label class="chk-row"><input type="checkbox" value="${x.key}" ${selAlertas.has(x.key)?'checked':''} onchange="toggleAlerta('${x.key}',this.checked)">
         <span>${src}<b>${esc(x.periodo||x.fecha||'')}</b> · <b>Producto:</b> ${esc(x.producto||'—')}
         <br><span class="hint"><b>Principio activo:</b> ${esc(x.principio||'—')} · <b>Señal de riesgo:</b> ${esc(x.senal||'—')}</span></span></label>`;
+      if(x.fuente==='modif') return `<label class="chk-row"><input type="checkbox" value="${x.key}" ${selAlertas.has(x.key)?'checked':''} onchange="toggleAlerta('${x.key}',this.checked)">
+        <span>${src}<b>${esc(x.fecha||'')}</b> · <span class="al-tit">${esc(x.nMod||'')}</span> ${esc((x.producto||'—').slice(0,110))}${x.tipoMod?` <span class="tipo-badge ${tipoClaseP(x.tipoMod)}">${esc(x.tipoMod)}</span>`:''}
+        <br><span class="hint"><b>IFA:</b> ${esc(x.principio||'—')} · <b>Titular RS:</b> ${esc(x.titularRs||'—')}</span></span></label>`;
       if(x.fuente==='ema') return `<label class="chk-row"><input type="checkbox" value="${x.key}" ${selAlertas.has(x.key)?'checked':''} onchange="toggleAlerta('${x.key}',this.checked)">
         <span>${src}<b>${esc(x.reunion||x.fecha||'')}</b> · <b>INN:</b> ${esc((x.inn||'—').slice(0,120))}
         <br><span class="hint"><b>Señal:</b> ${esc(x.senal||'—')} · <b>Acción para titular:</b></span><span class="si-no ${x.accionTitular==='Sí'?'si':'no'}">${esc(x.accionTitular||'—')}</span>${x.pdf?' <span class="hint">(PDF EMA)</span>':''}</span></label>`;
@@ -1005,12 +1031,13 @@ function actualizarHintAlertas(){
 function camposAlerta(x){
   return { alerta_digemid_id: x.fuente==='dig'?x.id:null, alerta_pavs_id: x.fuente==='pavs'?x.id:null,
     alerta_fda_id: x.fuente==='fda'?x.id:null, alerta_ema_id: x.fuente==='ema'?x.id:null,
-    origen: {pavs:'pavs_vinculada', fda:'fda_vinculada', ema:'ema_vinculada'}[x.fuente]||'digemid_vinculada',
+    alerta_modif_id: x.fuente==='modif'?x.id:null,
+    origen: {pavs:'pavs_vinculada', fda:'fda_vinculada', ema:'ema_vinculada', modif:'modif_vinculada'}[x.fuente]||'digemid_vinculada',
     titulo_alerta:x.titulo, tipo_alerta:x.tipo, fecha_publicacion:x.fecha, urgencia:x.urgencia,
     accion_principal:x.accion, resumen:x.resumen, url_pdf:x.url };
 }
 const claveRegistro=a=> a.alerta_pavs_id ? 'pavs:'+a.alerta_pavs_id : a.alerta_fda_id ? 'fda:'+a.alerta_fda_id
-  : a.alerta_ema_id ? 'ema:'+a.alerta_ema_id : (a.alerta_digemid_id ? 'dig:'+a.alerta_digemid_id : null);
+  : a.alerta_ema_id ? 'ema:'+a.alerta_ema_id : a.alerta_modif_id ? 'modif:'+a.alerta_modif_id : (a.alerta_digemid_id ? 'dig:'+a.alerta_digemid_id : null);
 
 /* Paso 2 · Productos por principio activo (selección múltiple) */
 function renderProdChecks(){
@@ -1076,7 +1103,7 @@ async function editar(id){
   $('mExpediente').value=a.expediente||''; onEstadoChange();
   if(kEd && !ALCACHE[kEd]){
     const f=kEd.split(':')[0];
-    ALCACHE[kEd]={ key:kEd, fuente:f, id:{pavs:a.alerta_pavs_id, fda:a.alerta_fda_id, ema:a.alerta_ema_id}[f]||a.alerta_digemid_id, fecha:a.fecha_publicacion, etiqueta:a.titulo_alerta,
+    ALCACHE[kEd]={ key:kEd, fuente:f, id:{pavs:a.alerta_pavs_id, fda:a.alerta_fda_id, ema:a.alerta_ema_id, modif:a.alerta_modif_id}[f]||a.alerta_digemid_id, fecha:a.fecha_publicacion, etiqueta:a.titulo_alerta,
       titulo:a.titulo_alerta, tipo:a.tipo_alerta, urgencia:a.urgencia, accion:a.accion_principal, resumen:a.resumen, url:a.url_pdf };
   }
   marcarFuente(kEd ? kEd.split(':')[0] : 'dig');
