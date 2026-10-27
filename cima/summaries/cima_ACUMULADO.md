@@ -1,30 +1,30 @@
 # ConkoSafe IA — Cambios en Ficha Técnica y Prospecto (CIMA / AEMPS)
 
-**Generado:** 26/10/2026 19:35 UTC  
-**Periodo:** 23/06/2026 → 26/10/2026 (últimos 125 días)  
+**Generado:** 27/10/2026 18:57 UTC  
+**Periodo:** 23/06/2026 → 27/10/2026 (últimos 126 días)  
 **Fuente:** [CIMA — AEMPS (registroCambios)](https://cima.aemps.es/cima/rest/registroCambios)
 
 ## Resumen
 
 | Categoría | Cantidad |
 |---|---:|
-| Solo Ficha Técnica | 1926 |
-| Solo Prospecto | 2599 |
-| FT + Prospecto (ambos) | 8844 |
-| **TOTAL con FT o Prospecto** | **13369** |
+| Solo Ficha Técnica | 1933 |
+| Solo Prospecto | 2611 |
+| FT + Prospecto (ambos) | 8854 |
+| **TOTAL con FT o Prospecto** | **13398** |
 
 Descarga del detalle completo: `ConkosafeIA_Regulatorio_ACUMULADO.xlsx`
 
 ### Top laboratorios
 
-- Laboratorios Cinfa S.A. — 580 cambio(s)
-- Laboratorios Normon S.A. — 557 cambio(s)
+- Laboratorios Cinfa S.A. — 584 cambio(s)
+- Laboratorios Normon S.A. — 569 cambio(s)
 - Laboratorio Stada S.L. — 485 cambio(s)
 - Teva Gmbh — 455 cambio(s)
-- Sandoz Farmaceutica S.A. — 446 cambio(s)
+- Sandoz Farmaceutica S.A. — 447 cambio(s)
 - Kern Pharma S.L. — 396 cambio(s)
 - Teva Pharma S.L.U. — 372 cambio(s)
-- Aurovitas Spain, S.A.U. — 285 cambio(s)
+- Aurovitas Spain, S.A.U. — 289 cambio(s)
 - Laboratorios Alter S.A. — 285 cambio(s)
 - Towa Pharmaceutical S.A. — 268 cambio(s)
 
@@ -32,6 +32,35 @@ Descarga del detalle completo: `ConkosafeIA_Regulatorio_ACUMULADO.xlsx`
 
 | Nº Registro | Medicamento | Laboratorio | Fecha | Tipo | Cambio | Enlaces |
 |---|---|---|---|---|---|---|
+| 90221 | TICAGRELOR INTAS 60 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Intas Third Party Sales 2005 S.L. | 27/10/2026 07:56 | MODIFICADO | FT | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/90221/FT_90221.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/90221/FT_90221.html) |
+| 90222 | TICAGRELOR INTAS 90 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Intas Third Party Sales 2005 S.L. | 27/10/2026 07:56 | MODIFICADO | FT | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/90222/FT_90222.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/90222/FT_90222.html) |
+| 91687 | UROSYMBIO 6 MG/0,4 MG COMPRIMIDOS DE LIBERACION MODIFICADA EFG | Adamed Laboratorios S.L.U. | 27/10/2026 07:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/91687/FT_91687.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/91687/FT_91687.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/91687/P_91687.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91687/P_91687.html) |
+| 56489 | OJOSBEL GOTAS OCULARES, 0,30 mg/0,08 ml Colirio en solución | Laboratorios Cinfa S.A. | 27/10/2026 07:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/56489/FT_56489.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/56489/FT_56489.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/56489/P_56489.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/56489/P_56489.html) |
+| 91685 | NINTEDANIB SUN 100 MG CAPSULAS BLANDAS EFG | Sun Pharmaceutical Industries (Europe) B.V. | 27/10/2026 07:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/91685/FT_91685.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/91685/FT_91685.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/91685/P_91685.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91685/P_91685.html) |
+| 91686 | NINTEDANIB SUN 150 MG CAPSULAS BLANDAS EFG | Sun Pharmaceutical Industries (Europe) B.V. | 27/10/2026 07:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/91686/FT_91686.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/91686/FT_91686.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/91686/P_91686.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91686/P_91686.html) |
+| 86292 | HIDROCORTISONA LORIEN 100 MG POLVO PARA SOLUCION INYECTABLE Y PARA PERFUSION EFG | Laboratorios Lorien S.L. | 27/10/2026 07:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/86292/FT_86292.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/86292/FT_86292.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/86292/P_86292.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/86292/P_86292.html) |
+| 86353 | MEDSAMIC 100 MG/ML SOLUCION INYECTABLE EFG | Medochemie Limited | 27/10/2026 07:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/86353/FT_86353.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/86353/FT_86353.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/86353/P_86353.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/86353/P_86353.html) |
+| 78568 | FLUARIX TETRA SUSPENSION INYECTABLE EN JERINGA PRECARGADA | Glaxosmithkline Biologicals | 27/10/2026 07:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/78568/FT_78568.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/78568/FT_78568.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/78568/P_78568.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/78568/P_78568.html) |
+| 83181 | CANDESARTAN AUROVITAS 4 MG COMPRIMIDOS EFG | Aurovitas Spain, S.A.U. | 27/10/2026 07:55 | MODIFICADO | FT | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/83181/FT_83181.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/83181/FT_83181.html) |
+| 83182 | CANDESARTAN AUROVITAS 8 MG COMPRIMIDOS EFG | Aurovitas Spain, S.A.U. | 27/10/2026 07:55 | MODIFICADO | FT | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/83182/FT_83182.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/83182/FT_83182.html) |
+| 83183 | CANDESARTAN AUROVITAS 16 MG COMPRIMIDOS EFG | Aurovitas Spain, S.A.U. | 27/10/2026 07:55 | MODIFICADO | FT | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/83183/FT_83183.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/83183/FT_83183.html) |
+| 83184 | CANDESARTAN AUROVITAS 32 MG COMPRIMIDOS EFG | Aurovitas Spain, S.A.U. | 27/10/2026 07:55 | MODIFICADO | FT | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/83184/FT_83184.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/83184/FT_83184.html) |
+| 91058 | APREMILAST MACLEODS 30 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Macleods Pharma Espana S.L.U. | 27/10/2026 07:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/91058/P_91058.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91058/P_91058.html) |
+| 65920 | IBUPROFENO NORMON 20 mg/ml SUSPENSION ORAL EFG | Laboratorios Normon S.A. | 27/10/2026 07:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/65920/P_65920.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/65920/P_65920.html) |
+| 69697 | LEVOFLOXACINO NORMON 500 mg COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Laboratorios Normon S.A. | 27/10/2026 07:55 | MODIFICADO | FT | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/69697/FT_69697.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/69697/FT_69697.html) |
+| 75244 | IBUPROFENO NORMON 40 mg/ml SUSPENSION ORAL EFG | Laboratorios Normon S.A. | 27/10/2026 07:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/75244/P_75244.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/75244/P_75244.html) |
+| 77517 | NORMODORM 25 MG COMPRIMIDOS RECUBIERTOS CON PELICULA | Laboratorios Normon S.A. | 27/10/2026 07:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/77517/P_77517.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/77517/P_77517.html) |
+| 80369 | OLMESARTAN NORMON 10 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Laboratorios Normon S.A. | 27/10/2026 07:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/80369/P_80369.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/80369/P_80369.html) |
+| 80370 | OLMESARTAN NORMON 20 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Laboratorios Normon S.A. | 27/10/2026 07:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/80370/P_80370.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/80370/P_80370.html) |
+| 80371 | OLMESARTAN NORMON 40 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Laboratorios Normon S.A. | 27/10/2026 07:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/80371/P_80371.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/80371/P_80371.html) |
+| 82115 | ESTRADIOL MERIESTRA 2 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Sandoz Farmaceutica S.A. | 27/10/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/82115/FT_82115.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/82115/FT_82115.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/82115/P_82115.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/82115/P_82115.html) |
+| 85294 | OLMESARTAN/AMLODIPINO/HIDROCLOROTIAZIDA NORMON 20 MG/5 MG/12,5 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Laboratorios Normon S.A. | 27/10/2026 07:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/85294/P_85294.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/85294/P_85294.html) |
+| 85295 | OLMESARTAN/AMLODIPINO/HIDROCLOROTIAZIDA NORMON 40 MG/10 MG/12,5 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Laboratorios Normon S.A. | 27/10/2026 07:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/85295/P_85295.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/85295/P_85295.html) |
+| 85296 | OLMESARTAN/AMLODIPINO/HIDROCLOROTIAZIDA NORMON 40 MG/10 MG/25 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Laboratorios Normon S.A. | 27/10/2026 07:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/85296/P_85296.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/85296/P_85296.html) |
+| 85297 | OLMESARTAN/AMLODIPINO/HIDROCLOROTIAZIDA NORMON 40 MG/5 MG/12,5 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Laboratorios Normon S.A. | 27/10/2026 07:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/85297/P_85297.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/85297/P_85297.html) |
+| 85298 | OLMESARTAN/AMLODIPINO/HIDROCLOROTIAZIDA NORMON 40 MG/5 MG/25 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Laboratorios Normon S.A. | 27/10/2026 07:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/85298/P_85298.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/85298/P_85298.html) |
+| 62304 | CAPTOPRIL CINFA 25 mg COMPRIMIDOS EFG | Laboratorios Cinfa S.A. | 27/10/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/62304/FT_62304.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/62304/FT_62304.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/62304/P_62304.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/62304/P_62304.html) |
+| 62305 | CAPTOPRIL CINFA 50 mg COMPRIMIDOS EFG | Laboratorios Cinfa S.A. | 27/10/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/62305/FT_62305.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/62305/FT_62305.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/62305/P_62305.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/62305/P_62305.html) |
 | 91456 | VITAMINA D3 CINFA 25.000 UI CÁPSULAS BLANDAS | Laboratorios Cinfa S.A. | 26/10/2026 07:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/91456/FT_91456.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/91456/FT_91456.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/91456/P_91456.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91456/P_91456.html) |
 | 91457 | VITAMINA D3 CINFA 50.000 UI CÁPSULAS BLANDAS | Laboratorios Cinfa S.A. | 26/10/2026 07:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/91457/FT_91457.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/91457/FT_91457.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/91457/P_91457.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91457/P_91457.html) |
 | 56078 | FLATORIL 500 microgramos/200 mg CAPSULAS DURAS | Almirall S.A. | 26/10/2026 07:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/56078/P_56078.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/56078/P_56078.html) |
@@ -3757,7 +3786,7 @@ Descarga del detalle completo: `ConkosafeIA_Regulatorio_ACUMULADO.xlsx`
 | 43504 | PENILEVEL 2.000.000 U.I. POLVO Y DISOLVENTE PARA SOLUCIÓN INYECTABLE | Laboratorios Ern S.A. | 30/09/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/43504/FT_43504.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/43504/FT_43504.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/43504/P_43504.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/43504/P_43504.html) |
 | 44612 | PECTODIL 2 mg/ml SOLUCION INYECTABLE Y PARA PERFUSION | Opella Healthcare Spain S.L. | 30/09/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/44612/FT_44612.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/44612/FT_44612.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/44612/P_44612.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/44612/P_44612.html) |
 | 48882 | PENILEVEL 10.000.000 U.I. POLVO Y DISOLVENTE PARA SOLUCIÓN INYECTABLE | Laboratorios Ern S.A. | 30/09/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/48882/FT_48882.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/48882/FT_48882.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/48882/P_48882.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/48882/P_48882.html) |
-| 56489 | OJOSBEL GOTAS OCULARES, 0,30 mg/0,08 ml Colirio en solución | Dermofarm S.A.U. | 30/09/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/56489/FT_56489.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/56489/FT_56489.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/56489/P_56489.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/56489/P_56489.html) |
+| 56489 | OJOSBEL GOTAS OCULARES, 0,30 mg/0,08 ml Colirio en solución | Laboratorios Cinfa S.A. | 30/09/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/56489/FT_56489.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/56489/FT_56489.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/56489/P_56489.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/56489/P_56489.html) |
 | 56981 | PERSANTIN 100 mg COMPRIMIDOS RECUBIERTOS | Glenwood Gmbh Pharmazeutische Erzeugnisse | 30/09/2026 06:56 | MODIFICADO | FT | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/56981/FT_56981.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/56981/FT_56981.html) |
 | 58365 | OKALDOL CON CAFEINA COMPRIMIDOS MASTICABLES | Industrias Farmaceuticas Puerto Galiano S.A. | 30/09/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/58365/FT_58365.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/58365/FT_58365.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/58365/P_58365.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/58365/P_58365.html) |
 | 59621 | PENTACARINAT 300 MG POLVO PARA SOLUCION INYECTABLE | The Simple Pharma Company Limited | 30/09/2026 06:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/59621/FT_59621.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/59621/FT_59621.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/59621/P_59621.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/59621/P_59621.html) |
