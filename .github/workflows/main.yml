@@ -1,0 +1,59 @@
+# .github/workflows/obsidian_vault.yml
+# Genera el vault de Obsidian (solo alertas públicas) y lo sincroniza a OneDrive.
+name: Obsidian vault → OneDrive
+
+on:
+  schedule:
+    - cron: "17 14 * * *"     # 09:17 Lima, después de los monitores DIGEMID (13:00) y CIMA (13:30 UTC)
+  workflow_dispatch:
+    inputs:
+      desde:
+        description: "Fecha mínima (YYYY-MM-DD) o 'todo'"
+        default: "2020-01-01"
+
+concurrency:
+  group: obsidian-vault
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  vault:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      SUPABASE_URL: https://ggbnfdaxtsngsjssrwrl.supabase.co
+      SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}   # publishable key (solo datos públicos)
+      VAULT_REMOTE: ${{ vars.OBSIDIAN_VAULT_REMOTE || 'onedrive:Conkomerco/Alertas-Vault' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Generar vault
+        run: |
+          pip install requests
+          python obsidian_export.py --salida vault_out --desde "${{ inputs.desde || '2020-01-01' }}"
+
+      - name: Instalar y configurar rclone
+        env:
+          RCLONE_CONF: ${{ secrets.RCLONE_CONF }}
+        run: |
+          curl -fsSL https://rclone.org/install.sh | sudo bash
+          mkdir -p ~/.config/rclone
+          printf '%s' "$RCLONE_CONF" > ~/.config/rclone/rclone.conf
+
+      # Solo se sincronizan las carpetas generadas. "Equipo/", ".obsidian*/" y cualquier
+      # otra nota que cree el equipo NUNCA se tocan ni se borran.
+      - name: Sincronizar a OneDrive
+        run: |
+          set -e
+          for d in Alertas Moleculas Tableros; do
+            rclone sync "vault_out/$d" "$VAULT_REMOTE/$d" \
+              --checksum --max-delete 500 --transfers 8 --stats-one-line -v
+          done
+          rclone copyto "vault_out/00 Inicio.md" "$VAULT_REMOTE/00 Inicio.md" --checksum -v
+          rclone mkdir "$VAULT_REMOTE/Equipo"
