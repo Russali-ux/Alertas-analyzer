@@ -21,10 +21,14 @@ permissions:
 jobs:
   vault:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 120
     env:
       SUPABASE_URL: https://ggbnfdaxtsngsjssrwrl.supabase.co
-      SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}   # publishable key (solo datos públicos)
+      # publishable key (solo datos públicos). Acepta secret o variable de repositorio.
+      SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY || vars.SUPABASE_ANON_KEY }}
+      # Key privilegiada (service_role o sb_secret_). El script solo la usa para leer
+      # pavs_alertas (columnas en lista blanca) y atc_codes. Si falta, PAVS se omite.
+      SUPABASE_PAVS_KEY: ${{ secrets.SUPABASE_PAVS_KEY }}
       VAULT_REMOTE: ${{ vars.OBSIDIAN_VAULT_REMOTE || 'onedrive:Conkomerco/Alertas-Vault' }}
     steps:
       - uses: actions/checkout@v4
