@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ConkoSafe IA · Red de señales</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://unpkg.com/cytoscape@3.30.2/dist/cytoscape.min.js"></script>
+<style>
+:root{
+  --brand-900:#0a1433; --brand-700:#0d1b8c; --brand-600:#2340c9; --brand-100:#e3e9fb; --brand-050:#f1f4fd;
+  --teal-600:#00875f; --ink:#1b2333; --muted:#667085; --line:#e4e7ec; --bg:#f7f8fb; --card:#fff;
+  --danger:#c62828; --warn:#b26a00;
+  --sans:'IBM Plex Sans',system-ui,sans-serif; --mono:'IBM Plex Mono',monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:14px}
+a{color:var(--brand-600)}
+header{background:var(--brand-900);color:#fff;padding:12px 22px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+header h1{margin:0;font-size:18px;font-weight:600}
+header p{margin:2px 0 0;font-size:12px;opacity:.75}
+.pill{font-family:var(--mono);font-size:11px;padding:5px 11px;border-radius:999px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:#fff;text-decoration:none}
+.pill:hover{background:rgba(255,255,255,.2)}
+.hdr-right{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.controls{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;padding:12px 22px;background:#fff;border-bottom:1px solid var(--line)}
+.ctrl{display:flex;flex-direction:column;gap:3px}
+.ctrl label{font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);font-family:var(--mono)}
+select,input[type=search],input[type=number]{font-family:var(--sans);font-size:13px;padding:7px 9px;border:1px solid var(--line);border-radius:8px;background:#fff}
+input[type=search]{min-width:200px}
+input[type=number]{width:70px}
+.check{display:flex;align-items:center;gap:6px;font-size:13px;padding:7px 0}
+.btn{font-family:var(--sans);font-size:13px;font-weight:600;padding:8px 13px;border-radius:8px;border:1px solid var(--brand-700);background:var(--brand-700);color:#fff;cursor:pointer}
+.btn.ghost{background:#fff;color:var(--brand-700)}
+.btn:hover{filter:brightness(1.08)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;padding:8px 22px;background:#fff;border-bottom:1px solid var(--line)}
+.chip{font-size:12px;padding:4px 10px;border-radius:999px;border:1px solid var(--line);cursor:pointer;user-select:none;display:inline-flex;align-items:center;gap:6px;background:#fff}
+.chip .dot{width:9px;height:9px;border-radius:2px;display:inline-block}
+.chip.off{opacity:.38;text-decoration:line-through}
+.chip .n{font-family:var(--mono);font-size:10px;color:var(--muted)}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;padding:12px 22px}
+.kpi{background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 14px}
+.kpi b{display:block;font-size:22px;font-weight:600;color:var(--brand-700)}
+.kpi span{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;font-family:var(--mono)}
+.main{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:12px;padding:0 22px 22px;height:calc(100vh - 300px);min-height:520px}
+.graph{background:#fff;border:1px solid var(--line);border-radius:12px;position:relative;overflow:hidden}
+#cy{position:absolute;inset:0}
+.side{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px;overflow:auto}
+.side h2{font-size:16px;margin:0 0 4px}
+.side h3{font-size:12px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);font-family:var(--mono);margin:14px 0 6px}
+.meta{font-size:12px;color:var(--muted)}
+.tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:999px;margin:2px 4px 2px 0;color:#fff}
+.tl{list-style:none;margin:0;padding:0}
+.tl li{border-left:2px solid var(--brand-100);padding:4px 0 8px 10px;margin-left:4px;font-size:12.5px}
+.tl .f{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.urg{font-size:10px;font-weight:600;padding:1px 6px;border-radius:4px;margin-left:4px}
+.urg.INMEDIATA{background:#fde8e8;color:var(--danger)}
+.urg.PREVENTIVA{background:#fff4e0;color:var(--warn)}
+.rank{list-style:none;margin:0;padding:0}
+.rank li{display:flex;justify-content:space-between;gap:8px;padding:6px 4px;border-bottom:1px solid var(--line);cursor:pointer;font-size:13px}
+.rank li:hover{background:var(--brand-050)}
+.rank .n{font-family:var(--mono);font-size:11px;color:var(--muted);white-space:nowrap}
+.note{font-size:12px;color:var(--muted);background:var(--brand-050);border-radius:8px;padding:8px 10px;margin-top:8px}
+.overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;color:var(--muted);font-size:13px;text-align:center;padding:20px}
+.legend{position:absolute;left:10px;bottom:10px;background:rgba(255,255,255,.92);border:1px solid var(--line);border-radius:8px;padding:6px 9px;font-size:11px;color:var(--muted);z-index:5}
+@media (max-width:1000px){.main{grid-template-columns:1fr;height:auto}.graph{height:560px}.kpis{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>Red de señales</h1>
+    <p>Moléculas conectadas con las agencias que emitieron alertas o señales sobre ellas</p>
+  </div>
+  <div class="hdr-right">
+    <span class="pill" id="who">…</span>
+    <a class="pill" href="../">← Alertas DIGEMID</a>
+  </div>
+</header>
+
+<div class="controls">
+  <div class="ctrl"><label>Periodo</label>
+    <select id="fPeriodo">
+      <option value="12">Últimos 12 meses</option>
+      <option value="24" selected>Últimos 24 meses</option>
+      <option value="60">Últimos 5 años</option>
+      <option value="0">Todo</option>
+    </select></div>
+  <div class="ctrl"><label>Urgencia</label>
+    <select id="fUrg"><option value="">Todas</option><option value="INMEDIATA">Solo INMEDIATA</option></select></div>
+  <div class="ctrl"><label>Grupo ATC</label><select id="fAtc"><option value="">Todos</option></select></div>
+  <div class="ctrl"><label>Mín. agencias</label><input type="number" id="fMinAg" min="1" max="10" value="2"></div>
+  <div class="ctrl"><label>Buscar molécula</label><input type="search" id="fBuscar" placeholder="ej. semaglutida" list="dlMol"><datalist id="dlMol"></datalist></div>
+  <button class="btn ghost" id="bReorg" title="Recalcular la disposición del grafo">Reorganizar</button>
+  <button class="btn ghost" id="bPng">Exportar PNG</button>
+  <button class="btn" id="bCsv">Exportar CSV</button>
+</div>
+<div class="chips" id="chips"></div>
+
+<div class="kpis">
+  <div class="kpi"><b id="kMol">–</b><span>Moléculas en el grafo</span></div>
+  <div class="kpi"><b id="kAg">–</b><span>Agencias</span></div>
+  <div class="kpi"><b id="kAl">–</b><span>Alertas relacionadas</span></div>
+  <div class="kpi"><b id="kCruz">–</b><span>Señales cruzadas (≥2 agencias)</span></div>
+</div>
+
+<div class="main">
+  <div class="graph"><div id="cy"></div><div class="overlay" id="ov">Cargando relaciones…</div>
+    <div class="legend">● molécula (color = grupo ATC, tamaño = n.º alertas) · ■ agencia · grosor de línea = n.º alertas</div>
+  </div>
+  <aside class="side" id="side"></aside>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://ggbnfdaxtsngsjssrwrl.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdnYm5mZGF4dHNuZ3Nqc3Nyd3JsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ4ODAzODIsImV4cCI6MjEwMDQ1NjM4Mn0.126hhMpakcOlzp5KyyWdMU56UjwLwn5Xn4Nc13OIjgU';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth: { storageKey: 'sb-alertas-digemid-auth' } });
+const MAX_MOL = 450;   // tope de moléculas dibujadas (rendimiento y legibilidad)
+
+const ATC = {A:'Tracto alimentario y metabolismo',B:'Sangre',C:'Cardiovascular',D:'Dermatológicos',
+  G:'Genitourinario y hormonas sexuales',H:'Hormonas sistémicas',J:'Antiinfecciosos',L:'Antineoplásicos e inmunomoduladores',
+  M:'Musculoesquelético',N:'Sistema nervioso',P:'Antiparasitarios',R:'Respiratorio',S:'Órganos sensoriales',V:'Varios'};
+const ATC_COLOR = {A:'#0072B2',B:'#D55E00',C:'#CC0000',D:'#E69F00',G:'#CC79A7',H:'#8E6C8A',J:'#009E73',L:'#6A3D9A',
+  M:'#A6761D',N:'#2340c9',P:'#66A61E',R:'#56B4E9',S:'#F0A202',V:'#7F7F7F','?':'#B0B7C3'};
+const AG_PAL = ['#0a1433','#00875f','#c62828','#b26a00','#6a3d9a','#0072b2','#a6761d','#1b9e77','#d95f02','#7570b3',
+  '#e7298a','#66a61e','#e6ab02','#666666','#1f78b4','#33a02c','#fb9a99','#cab2d6','#b15928','#8dd3c7'];
+
+let ROWS = [], AG_COLOR = {}, agOff = new Set(), cy = null, vista = null;
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const grupo = atc => (atc && ATC[atc[0]]) ? atc[0] : '?';
+
+async function iniciar() {
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) { window.location.href = '../'; return; }
+  $('who').textContent = session.user.email;
+  for (const [k, v] of Object.entries(ATC)) $('fAtc').insertAdjacentHTML('beforeend', `<option value="${k}">${k} · ${esc(v)}</option>`);
+  try {
+    ROWS = await cargar();
+  } catch (e) {
+    $('ov').innerHTML = `No se pudieron cargar los datos.<br><small>${esc(e.message)}</small>`; return;
+  }
+  if (!ROWS.length) {
+    $('ov').innerHTML = 'Aún no hay relaciones cargadas.<br><small>Se generan con el workflow diario «Obsidian vault → OneDrive» (requiere el secret SUPABASE_PAVS_KEY).</small>';
+    return;
+  }
+  const ags = [...new Set(ROWS.map(r => r.agencia))].sort();
+  ags.forEach((a, i) => AG_COLOR[a] = AG_PAL[i % AG_PAL.length]);
+  $('dlMol').innerHTML = [...new Set(ROWS.map(r => r.molecula))].sort().map(m => `<option value="${esc(m)}">`).join('');
+  ['fPeriodo','fUrg','fAtc','fMinAg'].forEach(id => $(id).addEventListener('change', render));
+  $('fBuscar').addEventListener('change', () => buscar($('fBuscar').value));
+  $('bReorg').onclick = () => cy && cy.layout(layoutOpts()).run();
+  $('bPng').onclick = exportarPng;
+  $('bCsv').onclick = exportarCsv;
+  render();
+}
+
+async function cargar() {
+  const cols = 'agencia,fuente_nombre,pais,alerta_id,titulo,fecha,anio,tipo,urgencia,url,molecula,molecula_clave,atc';
+  let out = [], desde = 0, lote = 1000;
+  while (true) {
+    const { data, error } = await sb.from('grafo_relaciones').select(cols).order('id').range(desde, desde + lote - 1);
+    if (error) throw error;
+    out = out.concat(data);
+    if (data.length < lote) return out;
+    desde += lote;
+  }
+}
+
+function filtrar() {
+  const meses = +$('fPeriodo').value, urg = $('fUrg').value, atc = $('fAtc').value;
+  let limite = null;
+  if (meses) { const d = new Date(); d.setMonth(d.getMonth() - meses); limite = d.toISOString().slice(0, 10); }
+  return ROWS.filter(r => {
+    if (agOff.has(r.agencia)) return false;
+    if (urg && r.urgencia !== urg) return false;
+    if (atc && grupo(r.atc) !== atc) return false;
+    if (limite) { const f = r.fecha || (r.anio ? `${r.anio}-12-31` : null); if (!f || f < limite) return false; }
+    return true;
+  });
+}
+
+function agregar(rows) {
+  const mol = new Map(), ag = new Map(), ed = new Map();
+  for (const r of rows) {
+    const k = r.molecula_clave;
+    if (!mol.has(k)) mol.set(k, { id: 'm:' + k, nombre: r.molecula, atc: r.atc, ags: new Set(), alertas: new Set(), filas: [] });
+    const m = mol.get(k); m.ags.add(r.agencia); m.alertas.add(r.alerta_id); m.filas.push(r); if (!m.atc && r.atc) m.atc = r.atc;
+    if (!ag.has(r.agencia)) ag.set(r.agencia, { id: 'a:' + r.agencia, nombre: r.agencia, alertas: new Set(), mols: new Map() });
+    const a = ag.get(r.agencia); a.alertas.add(r.alerta_id); a.mols.set(k, (a.mols.get(k) || 0) + 1);
+    const ek = k + '|' + r.agencia; ed.set(ek, (ed.get(ek) || 0) + 1);
+  }
+  return { mol, ag, ed };
+}
+
+function render() {
+  const rows = filtrar();
+  const { mol, ag, ed } = agregar(rows);
+  const minAg = Math.max(1, +$('fMinAg').value || 1);
+  let mols = [...mol.values()].filter(m => m.ags.size >= minAg)
+    .sort((a, b) => b.ags.size - a.ags.size || b.alertas.size - a.alertas.size);
+  const recortado = mols.length > MAX_MOL; mols = mols.slice(0, MAX_MOL);
+  const keep = new Set(mols.map(m => m.id.slice(2)));
+  const agsUsadas = new Set(); mols.forEach(m => m.ags.forEach(a => agsUsadas.add(a)));
+  vista = { mol, ag, mols, recortado, rows };
+
+  const maxAl = Math.max(1, ...mols.map(m => m.alertas.size));
+  const els = [];
+  for (const m of mols) {
+    const g = grupo(m.atc);
+    els.push({ data: { id: m.id, label: m.nombre, tipo: 'mol', color: ATC_COLOR[g],
+      size: 14 + 34 * Math.sqrt(m.alertas.size / maxAl), n: m.alertas.size } });
+  }
+  for (const a of agsUsadas) {
+    els.push({ data: { id: 'a:' + a, label: a, tipo: 'ag', color: AG_COLOR[a], size: 30 + Math.min(30, ag.get(a).alertas.size / 8) } });
+  }
+  for (const [k, n] of ed) {
+    const [mk, a] = k.split('|');
+    if (keep.has(mk)) els.push({ data: { id: 'e:' + k, source: 'm:' + mk, target: 'a:' + a, w: Math.min(8, 1 + Math.log2(n + 1) * 1.6), n, color: AG_COLOR[a] } });
+  }
+
+  $('kMol').textContent = mols.length + (recortado ? '+' : '');
+  $('kAg').textContent = agsUsadas.size;
+  $('kAl').textContent = new Set(rows.filter(r => keep.has(r.molecula_clave)).map(r => r.alerta_id)).size;
+  $('kCruz').textContent = [...mol.values()].filter(m => m.ags.size >= 2).length;
+  dibujarChips(rows);
+
+  $('ov').style.display = mols.length ? 'none' : 'flex';
+  if (!mols.length) $('ov').textContent = 'No hay moléculas con estos filtros. Baja «Mín. agencias» o amplía el periodo.';
+  if (cy) cy.destroy();
+  cy = cytoscape({
+    container: $('cy'), elements: els, wheelSensitivity: 0.25, minZoom: 0.15, maxZoom: 3,
+    style: [
+      { selector: 'node', style: { 'background-color': 'data(color)', 'width': 'data(size)', 'height': 'data(size)',
+          'label': 'data(label)', 'font-family': 'IBM Plex Sans, Arial, sans-serif', 'font-size': 10, 'color': '#1b2333',
+          'text-valign': 'bottom', 'text-margin-y': 3, 'text-outline-color': '#fff', 'text-outline-width': 2,
+          'min-zoomed-font-size': 7 } },
+      { selector: 'node[tipo="ag"]', style: { 'shape': 'round-rectangle', 'font-weight': 600, 'font-size': 12,
+          'color': '#fff', 'text-valign': 'center', 'text-margin-y': 0, 'text-outline-width': 0, 'width': 'label', 'padding': 8 } },
+      { selector: 'edge', style: { 'width': 'data(w)', 'line-color': 'data(color)', 'opacity': .35, 'curve-style': 'haystack' } },
+      { selector: '.dim', style: { 'opacity': .08, 'text-opacity': 0 } },
+      { selector: 'node.sel', style: { 'border-width': 4, 'border-color': '#f5c400' } },
+      { selector: 'edge.hl', style: { 'opacity': .9 } },
+    ],
+    layout: layoutOpts(),
+  });
+  cy.on('tap', 'node', e => seleccionar(e.target.id()));
+  cy.on('tap', e => { if (e.target === cy) { limpiarSel(); panelInicio(); } });
+  panelInicio();
+}
+
+function layoutOpts() {
+  return { name: 'cose', animate: false, randomize: true, padding: 30, numIter: 2000, gravity: 0.35,
+    nodeOverlap: 40, componentSpacing: 80,
+    nodeRepulsion: n => n.data('tipo') === 'ag' ? 900000 : 12000,
+    idealEdgeLength: () => 90, edgeElasticity: () => 60 };
+}
+
+function dibujarChips(rows) {
+  const cnt = {}; ROWS.forEach(r => cnt[r.agencia] = cnt[r.agencia] || new Set());
+  rows.forEach(r => cnt[r.agencia].add(r.alerta_id));
+  $('chips').innerHTML = '<span class="meta" style="align-self:center">Agencias (clic para ocultar):</span>' +
+    Object.keys(AG_COLOR).sort().map(a => `<span class="chip ${agOff.has(a) ? 'off' : ''}" data-a="${esc(a)}">
+      <span class="dot" style="background:${AG_COLOR[a]}"></span>${esc(a)} <span class="n">${cnt[a] ? cnt[a].size : 0}</span></span>`).join('');
+  $('chips').querySelectorAll('.chip').forEach(c => c.onclick = () => {
+    const a = c.dataset.a; agOff.has(a) ? agOff.delete(a) : agOff.add(a); render();
+  });
+}
+
+function limpiarSel() { if (cy) cy.elements().removeClass('dim sel hl'); }
+
+function resaltar(id) {
+  limpiarSel();
+  const n = cy.getElementById(id); if (!n.length) return;
+  const vec = n.closedNeighborhood();
+  cy.elements().not(vec).addClass('dim'); n.addClass('sel'); n.connectedEdges().addClass('hl');
+  cy.fit(vec, 80);
+  if (cy.zoom() > 1.25) { cy.zoom(1.25); cy.center(vec); }
+}
+
+function seleccionar(id) {
+  resaltar(id);
+  if (id.startsWith('m:')) panelMolecula(id.slice(2)); else panelAgencia(id.slice(2));
+}
+
+function buscar(txt) {
+  const t = txt.trim().toLowerCase(); if (!t) return;
+  const m = vista.mols.find(x => x.nombre.toLowerCase() === t) || vista.mols.find(x => x.nombre.toLowerCase().includes(t));
+  if (m) return seleccionar(m.id);
+  const fuera = [...vista.mol.values()].find(x => x.nombre.toLowerCase().includes(t));
+  if (fuera) { panelMolecula(fuera.id.slice(2));
+    $('side').insertAdjacentHTML('afterbegin', '<div class="note">Esta molécula no se dibuja con los filtros actuales (p. ej. «Mín. agencias»). Se muestra su detalle igual.</div>'); }
+  else $('side').innerHTML = `<div class="note">No se encontró «${esc(txt)}» en el periodo y filtros elegidos.</div>`;
+}
+
+function panelInicio() {
+  const top = [...vista.mol.values()].filter(m => m.ags.size >= 2)
+    .sort((a, b) => b.ags.size - a.ags.size || b.alertas.size - a.alertas.size).slice(0, 25);
+  $('side').innerHTML = `<h2>Señales cruzadas</h2>
+    <div class="meta">Moléculas con alertas de 2 o más agencias en el periodo. Clic para ver su línea de tiempo.</div>
+    ${vista.recortado ? `<div class="note">Se dibujan las ${MAX_MOL} moléculas con más agencias. Usa los filtros para acotar.</div>` : ''}
+    <ul class="rank">${top.map(m => `<li data-id="${esc(m.id)}"><span>${esc(m.nombre)}${m.atc ? ` <span class="n">${esc(m.atc)}</span>` : ''}</span>
+      <span class="n">${m.ags.size} ag · ${m.alertas.size} al</span></li>`).join('') || '<li>Sin señales cruzadas en este periodo.</li>'}</ul>`;
+  bindRank();
+}
+
+function bindRank() {
+  $('side').querySelectorAll('.rank li[data-id]').forEach(li => li.onclick = () => {
+    const id = li.dataset.id; cy.getElementById(id).length ? seleccionar(id) : panelMolecula(id.slice(2));
+  });
+}
+
+function panelMolecula(k) {
+  const m = vista.mol.get(k); if (!m) return;
+  const vistas = new Set(), filas = m.filas.filter(r => { const key = r.alerta_id + r.agencia; if (vistas.has(key)) return false; vistas.add(key); return true; })
+    .sort((a, b) => String(b.fecha || b.anio || '').localeCompare(String(a.fecha || a.anio || '')));
+  const g = grupo(m.atc);
+  $('side').innerHTML = `<h2>${esc(m.nombre)}</h2>
+    <div class="meta">${m.atc ? `ATC <b>${esc(m.atc)}</b> · ${esc(ATC[g] || '')}` : 'Sin código ATC'} · ${m.alertas.size} alertas · ${m.ags.size} agencias</div>
+    <h3>Agencias</h3>${[...m.ags].sort().map(a => `<span class="tag" style="background:${AG_COLOR[a]}">${esc(a)}</span>`).join('')}
+    <h3>Línea de tiempo</h3>
+    <ul class="tl">${filas.map(r => `<li><span class="f">${esc(r.fecha || r.anio || 's/f')}</span> · <b>${esc(r.agencia)}</b>
+      ${r.urgencia ? `<span class="urg ${esc(r.urgencia)}">${esc(r.urgencia)}</span>` : ''}<br>
+      ${r.url ? `<a href="${esc(r.url)}" target="_blank" rel="noopener">${esc(r.titulo || 'Ver alerta')}</a>` : esc(r.titulo || '')}
+      ${r.tipo ? `<div class="meta">${esc(r.tipo)} · ${esc(r.fuente_nombre)}</div>` : ''}</li>`).join('')}</ul>
+    <p><a href="#" id="volver">← Volver a señales cruzadas</a></p>`;
+  $('volver').onclick = e => { e.preventDefault(); limpiarSel(); panelInicio(); cy.fit(undefined, 30); };
+}
+
+function panelAgencia(a) {
+  const ag = vista.ag.get(a); if (!ag) return;
+  const lista = [...ag.mols.entries()].sort((x, y) => y[1] - x[1]).slice(0, 60);
+  $('side').innerHTML = `<h2><span class="tag" style="background:${AG_COLOR[a]}">${esc(a)}</span></h2>
+    <div class="meta">${ag.alertas.size} alertas en el periodo · ${ag.mols.size} moléculas</div>
+    <h3>Moléculas más alertadas</h3>
+    <ul class="rank">${lista.map(([k, n]) => { const m = vista.mol.get(k);
+      return `<li data-id="m:${esc(k)}"><span>${esc(m.nombre)}</span><span class="n">${n} al · ${m.ags.size} ag</span></li>`; }).join('')}</ul>
+    <p><a href="#" id="volver">← Volver a señales cruzadas</a></p>`;
+  bindRank();
+  $('volver').onclick = e => { e.preventDefault(); limpiarSel(); panelInicio(); cy.fit(undefined, 30); };
+}
+
+function descargar(nombre, blob) {
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = nombre; a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+function hoy() { return new Date().toISOString().slice(0, 10); }
+function exportarPng() { if (cy) descargar(`red_senales_${hoy()}.png`, cy.png({ output: 'blob', full: true, scale: 2, bg: '#ffffff' })); }
+function exportarCsv() {
+  const q = v => `"${String(v ?? '').replace(/"/g, '""')}"`;
+  const lineas = [['molecula','atc','n_agencias','agencias','n_alertas','ultima_fecha'].join(',')];
+  for (const m of vista.mols) {
+    const ult = m.filas.map(r => r.fecha || '').sort().pop();
+    lineas.push([q(m.nombre), q(m.atc), m.ags.size, q([...m.ags].sort().join(' | ')), m.alertas.size, q(ult)].join(','));
+  }
+  descargar(`red_senales_${hoy()}.csv`, new Blob(['﻿' + lineas.join('\n')], { type: 'text/csv;charset=utf-8' }));
+}
+
+iniciar();
+</script>
+</body>
+</html>
