@@ -1,8 +1,10 @@
 """
 obsidian_export.py — Alertas-analyzer → Vault de Obsidian (Markdown)
 =====================================================================
-Lee SOLO las tablas públicas de Supabase (con la publishable/anon key, así
-RLS impide físicamente leer datos privados) y genera un vault de Obsidian:
+Lee las tablas públicas de Supabase con la publishable/anon key (RLS impide
+físicamente leer datos privados). Opcionalmente, con SUPABASE_PAVS_KEY, lee SOLO
+pavs_alertas (columnas en lista blanca) y atc_codes (diccionario EN→ES).
+Genera un vault de Obsidian:
 
   <SALIDA>/
     00 Inicio.md                 ← portada con conteos y enlaces
@@ -14,6 +16,7 @@ RLS impide físicamente leer datos privados) y genera un vault de Obsidian:
 USO
   SUPABASE_URL=https://ggbnfdaxtsngsjssrwrl.supabase.co \
   SUPABASE_ANON_KEY=sb_publishable_... \
+  SUPABASE_PAVS_KEY=<service key, opcional> \
   python obsidian_export.py --salida vault_out --desde 2020-01-01
 
 Requiere solo `requests`. Salida determinista: si un dato no cambió, el archivo
@@ -84,6 +87,13 @@ FUENTES = {
         "cols": "id,medicamento,reaccion_adversa,anio,fecha_alerta,url_pdf,info",
         "fecha": "fecha_alerta", "filtro_anio": "anio",
     },
+    # Restringida: requiere SUPABASE_PAVS_KEY (solo lectura de columnas en lista blanca)
+    "pavs": {
+        "tabla": "pavs_alertas", "nombre": "PAVS", "pais": "Varios", "privada": True,
+        "cols": "id,anio,fecha_emision,pais,agencia,tipo_alerta,titulo_alerta,tipo_producto,"
+                "ifa,reaccion_adversa,enlace,atc_code",
+        "fecha": "fecha_emision", "filtro_fecha": "fecha_emision",
+    },
     # Opcional (3.900+ noticias): activar con --incluir-noticias
     "ema_noticias": {
         "tabla": "ema_noticias", "nombre": "EMA Noticias", "pais": "UE",
@@ -91,6 +101,9 @@ FUENTES = {
         "fecha": "fecha_publicacion", "filtro_fecha": "fecha_publicacion", "opcional": True,
     },
 }
+
+# Única lista de tablas que puede leer la key privilegiada
+TABLAS_PRIVILEGIADAS = {"pavs_alertas", "atc_codes"}
 
 AVISO = ("> [!info] Nota generada automáticamente desde Alertas-analyzer. "
          "No la edites: se sobrescribe a diario. Comenta en la carpeta **Equipo/** "
@@ -187,11 +200,13 @@ def titulo_molecula(clave: str) -> str:
 # ─────────────────────────────────────────────────────────────────
 # SUPABASE (PostgREST, solo lectura con la publishable key)
 # ─────────────────────────────────────────────────────────────────
-def leer_tabla(url: str, key: str, cfg: dict, desde: date | None) -> list[dict]:
+def leer_tabla(url: str, key: str, cfg: dict, desde: date | None, privilegiada: bool = False) -> list[dict]:
+    if privilegiada and cfg["tabla"] not in TABLAS_PRIVILEGIADAS:
+        raise RuntimeError(f"La key privilegiada no puede leer {cfg['tabla']}")
     headers = {"apikey": key, "Accept": "application/json"}
-    if not key.startswith("sb_publishable_"):
+    if not key.startswith(("sb_publishable_", "sb_secret_")):
         headers["Authorization"] = f"Bearer {key}"   # anon key JWT antigua
-    params = {"select": cfg["cols"], "order": "id.asc"}
+    params = {"select": cfg["cols"], "order": f"{cfg.get('orden', 'id')}.asc"}
     if desde:
         if cfg.get("filtro_fecha"):
             params[cfg["filtro_fecha"]] = f"gte.{desde.isoformat()}"
@@ -215,7 +230,9 @@ def leer_tabla(url: str, key: str, cfg: dict, desde: date | None) -> list[dict]:
 # ─────────────────────────────────────────────────────────────────
 def normalizar(fuente: str, f: dict) -> dict:
     g = f.get
-    r = {"fuente": fuente, "id": str(g("id")), "fecha": "", "anio": None, "titulo": "",
+    cfg = FUENTES[fuente]
+    r = {"fuente": fuente, "fuente_nombre": cfg["nombre"], "pais": cfg["pais"], "atc": "",
+         "id": str(g("id")), "fecha": "", "anio": None, "titulo": "",
          "producto": "", "tipo": "", "urgencia": "", "accion": "", "url": "", "url_pdf": "",
          "cuerpo": [], "moleculas_txt": []}
 
@@ -282,6 +299,25 @@ def normalizar(fuente: str, f: dict) -> dict:
             r["moleculas_txt"] = extraer_moleculas(med, fuente)
         else:
             r["cuerpo"].append("> [!warning] Registro PvPI con datos incompletos en origen; revisar el PDF.")
+    elif fuente == "pavs":
+        agencia = limpiar(g("agencia")) or "s/a"
+        r.update(fecha=g("fecha_emision") or "", anio=g("anio"), titulo=g("titulo_alerta"),
+                 producto=g("ifa"), tipo=f"{limpiar(g('tipo_alerta'))} · {limpiar(g('tipo_producto'))}",
+                 url=g("enlace"), atc=limpiar(g("atc_code")),
+                 fuente_nombre=f"PAVS · {agencia}", pais=limpiar(g("pais")) or "Varios")
+        campo("Agencia", agencia); campo("País", g("pais")); campo("Tipo de producto", g("tipo_producto"))
+        campo("IFA / producto", g("ifa")); campo("Código ATC", g("atc_code"))
+        campo("Descripción", g("reaccion_adversa"))
+        if limpiar(g("tipo_producto")).lower().startswith("farmaco"):
+            # IFA libre: "Hioscina / metamizol sodico (Buscapina 10 mg...)" o
+            # "Analogos de GLP-1 (liraglutida, semaglutida)". Se extraen candidatos de
+            # dentro y fuera del paréntesis y en generar() se validan contra el diccionario ATC.
+            ifa = limpiar(g("ifa"))
+            fuera = re.sub(r"\(.*?\)", " ", ifa)
+            dentro = " , ".join(re.findall(r"\(([^()]*)\)", ifa))
+            r["moleculas_txt"] = extraer_moleculas(f"{fuera} , {dentro}", fuente)
+            r["solo_atc"] = True
+            r["fallback_mol"] = [m for m in extraer_moleculas(fuera, fuente) if len(m.split()) <= 3][:1]
     elif fuente == "ema_noticias":
         r.update(fecha=g("fecha_publicacion") or "", titulo=g("titulo"), tipo=g("categorias"), url=g("url"))
         campo("Medicamentos", g("medicamentos")); campo("Temas", g("temas")); campo("Resumen", g("resumen"))
@@ -290,7 +326,7 @@ def normalizar(fuente: str, f: dict) -> dict:
     r["fecha"] = str(r["fecha"])[:10] if r["fecha"] else ""
     if not r["anio"] and r["fecha"]:
         r["anio"] = int(r["fecha"][:4])
-    for k in ("titulo", "producto", "tipo", "urgencia", "accion", "url", "url_pdf"):
+    for k in ("titulo", "producto", "tipo", "urgencia", "accion", "url", "url_pdf", "fuente_nombre", "pais"):
         r[k] = limpiar(r[k])
     return r
 
@@ -304,7 +340,8 @@ def escribir(ruta: Path, texto: str):
         ruta.write_text(texto, encoding="utf-8", newline="\n")
 
 
-def nota_alerta(r: dict, nombre_fuente: str, pais: str, mols: list[str]) -> str:
+def nota_alerta(r: dict, mols: list[str]) -> str:
+    nombre_fuente, pais = r["fuente_nombre"], r["pais"]
     links = ", ".join(f'"[[{m}]]"' for m in mols)
     fm = [
         "---",
@@ -318,6 +355,7 @@ def nota_alerta(r: dict, nombre_fuente: str, pais: str, mols: list[str]) -> str:
         f"accion: {yaml_str(r['accion'])}",
         f"producto: {yaml_str(r['producto'])}",
         f"moleculas: [{links}]",
+        f"atc: {yaml_str(r['atc'])}",
         f"url: {yaml_str(r['url'])}",
         f"url_pdf: {yaml_str(r['url_pdf'])}",
         f"id_origen: {yaml_str(r['id'])}",
@@ -347,16 +385,33 @@ def nota_alerta(r: dict, nombre_fuente: str, pais: str, mols: list[str]) -> str:
     return "\n".join(fm + cuerpo) + "\n"
 
 
-def generar(registros: list[dict], salida: Path, alias: dict, conteos: dict):
-    # 1) Moléculas: clave → nombre visible (primera forma vista, ordenada)
+def generar(registros: list[dict], salida: Path, alias: dict, conteos: dict,
+            atc: dict | None = None, atc_por_codigo: dict | None = None):
+    atc = atc or {}                 # clave (EN o ES) → (clave_es, codigo ATC)
+    atc_por_codigo = atc_por_codigo or {}
+    mol_atc: dict[str, str] = {}
+    # 1) Moléculas: clave → nombre visible. El diccionario ATC unifica EN/ES.
     nombres_mol: dict[str, str] = {}
     for r in registros:
         claves = []
+        if r.get("atc") and r["atc"] in atc_por_codigo:
+            claves.append(atc_por_codigo[r["atc"]])
+            mol_atc.setdefault(atc_por_codigo[r["atc"]], r["atc"])
+        validadas = []
         for m in r["moleculas_txt"]:
             k = clave_molecula(m, alias)
-            if len(k) >= 3:
+            if k in atc:
+                k, codigo = atc[k]
+                mol_atc.setdefault(k, codigo)
+                validadas.append(k)
+            elif len(k) >= 3 and not (r.get("solo_atc") and atc):
                 claves.append(k)
-                nombres_mol.setdefault(k, titulo_molecula(k))
+        claves += validadas
+        # PAVS: si nada coincide con ATC ni trae código, usa el nombre corto fuera del paréntesis
+        if r.get("solo_atc") and atc and not claves:
+            claves += [k for k in (clave_molecula(m, alias) for m in r.get("fallback_mol", [])) if len(k) >= 3]
+        for k in claves:
+            nombres_mol.setdefault(k, titulo_molecula(k))
         r["mol_claves"] = sorted(set(claves))
 
     # 2) Notas de alertas
@@ -371,27 +426,29 @@ def generar(registros: list[dict], salida: Path, alias: dict, conteos: dict):
         usados.add(nombre.lower())
         carpeta = Path("Alertas") / cfg["nombre"] / str(r["anio"] or "sin-fecha")
         r["nota"] = nombre
-        escribir(salida / carpeta / f"{nombre}.md", nota_alerta(r, cfg["nombre"], cfg["pais"], mols))
+        escribir(salida / carpeta / f"{nombre}.md", nota_alerta(r, mols))
         for k in r["mol_claves"]:
             por_mol[k].append(r)
 
     # 3) Notas de moléculas (lista estática → funciona sin plugins)
     for k, regs in por_mol.items():
-        fuentes = sorted({FUENTES[r["fuente"]]["nombre"] for r in regs})
+        fuentes = sorted({r["fuente_nombre"] for r in regs})
         lineas = [
             "---",
             "tipo_nota: molecula",
+            f"atc: {yaml_str(mol_atc.get(k, ''))}",
             f"fuentes: [{', '.join(yaml_str(f) for f in fuentes)}]",
             f"n_alertas: {len(regs)}",
             "tags: [molecula]",
             "---",
             f"# {nombres_mol[k]}", "",
             AVISO, "",
-            f"**{len(regs)} registros** en {len(fuentes)} fuente(s): {', '.join(fuentes)}", "",
+            f"**{len(regs)} registros** en {len(fuentes)} fuente(s): {', '.join(fuentes)}"
+            + (f" · **ATC:** {mol_atc[k]}" if k in mol_atc else ""), "",
         ]
         for fnombre in fuentes:
             lineas.append(f"## {fnombre}")
-            sel = [r for r in regs if FUENTES[r["fuente"]]["nombre"] == fnombre]
+            sel = [r for r in regs if r["fuente_nombre"] == fnombre]
             for r in sorted(sel, key=lambda x: x["fecha"] or str(x["anio"] or ""), reverse=True):
                 urg = f" — **{r['urgencia']}**" if r["urgencia"] else ""
                 lineas.append(f"- [[{r['nota']}]]{urg}")
@@ -404,7 +461,7 @@ def generar(registros: list[dict], salida: Path, alias: dict, conteos: dict):
     cruzadas = []
     for k, regs in por_mol.items():
         recientes = [r for r in regs if (r["fecha"] or f"{r['anio'] or 0}-12-31") >= limite]
-        fs = sorted({FUENTES[r["fuente"]]["nombre"] for r in recientes})
+        fs = sorted({r["fuente_nombre"] for r in recientes})
         if len(fs) >= 2:
             cruzadas.append((len(fs), len(recientes), nombres_mol[k], fs))
     cruzadas.sort(key=lambda x: (-x[0], -x[1], x[2]))
@@ -477,6 +534,7 @@ def main():
     if "service_role" in key or key.startswith("sb_secret_"):
         sys.exit("Por seguridad este script solo acepta la publishable/anon key (solo datos públicos).")
 
+    key_priv = os.environ.get("SUPABASE_PAVS_KEY", "")
     desde = None if a.desde == "todo" else date.fromisoformat(a.desde)
     salida = Path(a.salida)
     alias = cargar_alias(Path(a.alias))
@@ -485,16 +543,38 @@ def main():
     for fuente, cfg in FUENTES.items():
         if cfg.get("opcional") and not a.incluir_noticias:
             continue
-        filas = leer_tabla(url, key, cfg, desde)
+        if cfg.get("privada"):
+            if not key_priv:
+                print(f"  {cfg['nombre']:<24}  omitida (sin SUPABASE_PAVS_KEY)")
+                continue
+            filas = leer_tabla(url, key_priv, cfg, desde, privilegiada=True)
+        else:
+            filas = leer_tabla(url, key, cfg, desde)
         conteos[fuente] = len(filas)
         registros += [normalizar(fuente, f) for f in filas]
         print(f"  {cfg['nombre']:<24} {len(filas):>5} registros")
 
-    n_mol, n_cruz = generar(registros, salida, alias, conteos)
+    atc, atc_por_codigo = {}, {}
+    if key_priv:
+        cfg_atc = {"tabla": "atc_codes", "cols": "atc_code,atc_name,atc_name_es", "orden": "atc_code"}
+        for f in leer_tabla(url, key_priv, cfg_atc, None, privilegiada=True):
+            codigo = limpiar(f.get("atc_code"))
+            if len(codigo) != 7 or not f.get("atc_name_es"):
+                continue               # solo nivel 5 (principio activo)
+            k_es = clave_molecula(f["atc_name_es"], alias)
+            if len(k_es) < 3:
+                continue
+            atc_por_codigo[codigo] = k_es
+            for nombre in (f["atc_name_es"], f.get("atc_name") or ""):
+                k = clave_molecula(nombre, alias)
+                if len(k) >= 3:
+                    atc.setdefault(k, (k_es, codigo))
+        print(f"  Diccionario ATC          {len(atc_por_codigo):>5} principios activos")
+
+    n_mol, n_cruz = generar(registros, salida, alias, conteos, atc, atc_por_codigo)
     print(f"\nVault generado en {salida}/ → {len(registros)} alertas, {n_mol} moléculas, "
           f"{n_cruz} señales cruzadas")
 
 
 if __name__ == "__main__":
     main()
-
