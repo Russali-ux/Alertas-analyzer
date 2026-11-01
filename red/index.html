@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://unpkg.com/cytoscape@3.30.2/dist/cytoscape.min.js"></script>
+<script src="https://unpkg.com/force-graph@1.52.0/dist/force-graph.min.js"></script>
 <style>
 :root{
   --brand-900:#0a1433; --brand-700:#0d1b8c; --brand-600:#2340c9; --brand-100:#e3e9fb; --brand-050:#f1f4fd;
@@ -46,6 +46,9 @@ input[type=number]{width:70px}
 .main{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:12px;padding:0 22px 22px;height:calc(100vh - 300px);min-height:520px}
 .graph{background:#fff;border:1px solid var(--line);border-radius:12px;position:relative;overflow:hidden}
 #cy{position:absolute;inset:0}
+.graph-tools{position:absolute;right:10px;top:10px;display:flex;gap:6px;z-index:5}
+.graph-tools button{font-family:var(--sans);font-size:12px;border:1px solid var(--line);background:rgba(255,255,255,.92);border-radius:6px;padding:4px 8px;cursor:pointer}
+.graph-tools button.on{background:var(--brand-700);color:#fff;border-color:var(--brand-700)}
 .side{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px;overflow:auto}
 .side h2{font-size:16px;margin:0 0 4px}
 .side h3{font-size:12px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);font-family:var(--mono);margin:14px 0 6px}
@@ -89,10 +92,11 @@ input[type=number]{width:70px}
     </select></div>
   <div class="ctrl"><label>Urgencia</label>
     <select id="fUrg"><option value="">Todas</option><option value="INMEDIATA">Solo INMEDIATA</option></select></div>
+  <div class="ctrl"><label>Agencia</label><select id="fAg"><option value="">Todas</option></select></div>
   <div class="ctrl"><label>Grupo ATC</label><select id="fAtc"><option value="">Todos</option></select></div>
   <div class="ctrl"><label>Mín. agencias</label><input type="number" id="fMinAg" min="1" max="10" value="2"></div>
   <div class="ctrl"><label>Buscar molécula</label><input type="search" id="fBuscar" placeholder="ej. semaglutida" list="dlMol"><datalist id="dlMol"></datalist></div>
-  <button class="btn ghost" id="bReorg" title="Recalcular la disposición del grafo">Reorganizar</button>
+  <button class="btn ghost" id="bReorg" title="Volver a agitar la red">Reorganizar</button>
   <button class="btn ghost" id="bPng">Exportar PNG</button>
   <button class="btn" id="bCsv">Exportar CSV</button>
 </div>
@@ -106,8 +110,11 @@ input[type=number]{width:70px}
 </div>
 
 <div class="main">
-  <div class="graph"><div id="cy"></div><div class="overlay" id="ov">Cargando relaciones…</div>
-    <div class="legend">● molécula (color = grupo ATC, tamaño = n.º alertas) · ■ agencia · grosor de línea = n.º alertas</div>
+  <div class="graph"><div id="cy"></div>
+    <div class="graph-tools"><button id="bMov" class="on" title="Pausar o reanudar el movimiento">Movimiento: ON</button>
+      <button id="bLbl" title="Mostrar siempre los nombres de las moléculas">Nombres</button>
+      <button id="bFit" title="Ajustar a la pantalla">Ajustar</button></div><div class="overlay" id="ov">Cargando relaciones…</div>
+    <div class="legend">● molécula (color = grupo ATC, tamaño = n.º alertas) · ■ agencia · grosor de línea = n.º alertas · arrastra los nodos, rueda = zoom</div>
   </div>
   <aside class="side" id="side"></aside>
 </div>
@@ -126,7 +133,8 @@ const ATC_COLOR = {A:'#0072B2',B:'#D55E00',C:'#CC0000',D:'#E69F00',G:'#CC79A7',H
 const AG_PAL = ['#0a1433','#00875f','#c62828','#b26a00','#6a3d9a','#0072b2','#a6761d','#1b9e77','#d95f02','#7570b3',
   '#e7298a','#66a61e','#e6ab02','#666666','#1f78b4','#33a02c','#fb9a99','#cab2d6','#b15928','#8dd3c7'];
 
-let ROWS = [], AG_COLOR = {}, agOff = new Set(), cy = null, vista = null;
+let ROWS = [], AG_COLOR = {}, agOff = new Set(), fg = null, vista = null;
+let hoverId = null, selId = null, vecinos = new Map(), mover = true, nombres = false;
 
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -137,24 +145,34 @@ async function iniciar() {
   if (!session) { window.location.href = '../'; return; }
   $('who').textContent = session.user.email;
   for (const [k, v] of Object.entries(ATC)) $('fAtc').insertAdjacentHTML('beforeend', `<option value="${k}">${k} · ${esc(v)}</option>`);
-  try {
-    ROWS = await cargar();
-  } catch (e) {
-    $('ov').innerHTML = `No se pudieron cargar los datos.<br><small>${esc(e.message)}</small>`; return;
-  }
+  try { ROWS = await cargar(); }
+  catch (e) { $('ov').innerHTML = `No se pudieron cargar los datos.<br><small>${esc(e.message)}</small>`; return; }
   if (!ROWS.length) {
     $('ov').innerHTML = 'Aún no hay relaciones cargadas.<br><small>Se generan con el workflow diario «Obsidian vault → OneDrive» (requiere el secret SUPABASE_PAVS_KEY).</small>';
     return;
   }
   const ags = [...new Set(ROWS.map(r => r.agencia))].sort();
   ags.forEach((a, i) => AG_COLOR[a] = AG_PAL[i % AG_PAL.length]);
+  $('fAg').insertAdjacentHTML('beforeend', ags.map(a => `<option value="${esc(a)}">${esc(a)}</option>`).join(''));
   $('dlMol').innerHTML = [...new Set(ROWS.map(r => r.molecula))].sort().map(m => `<option value="${esc(m)}">`).join('');
-  ['fPeriodo','fUrg','fAtc','fMinAg'].forEach(id => $(id).addEventListener('change', render));
+  ['fPeriodo','fUrg','fAtc','fMinAg','fAg'].forEach(id => $(id).addEventListener('change', render));
   $('fBuscar').addEventListener('change', () => buscar($('fBuscar').value));
-  $('bReorg').onclick = () => cy && cy.layout(layoutOpts()).run();
+  $('bReorg').onclick = () => { if (!fg) return; fg.graphData().nodes.forEach(n => { n.fx = n.fy = undefined; n.vx = (Math.random() - .5) * 8; n.vy = (Math.random() - .5) * 8; }); setMovimiento(true); fg.d3ReheatSimulation(); };
+  $('bMov').onclick = () => setMovimiento(!mover);
+  $('bLbl').onclick = () => { nombres = !nombres; $('bLbl').classList.toggle('on', nombres); };
+  $('bFit').onclick = () => fg && fg.zoomToFit(600, 40);
   $('bPng').onclick = exportarPng;
   $('bCsv').onclick = exportarCsv;
+  new ResizeObserver(() => { if (fg) fg.width($('cy').clientWidth).height($('cy').clientHeight); }).observe($('cy'));
   render();
+}
+
+function setMovimiento(on) {
+  mover = on; $('bMov').classList.toggle('on', on); $('bMov').textContent = 'Movimiento: ' + (on ? 'ON' : 'OFF');
+  if (!fg) return;
+  // ON: la red se asienta lentamente (~30 s) y vuelve a moverse al arrastrar, como en Obsidian.
+  if (on) { fg.cooldownTicks(Infinity).cooldownTime(Infinity).d3AlphaDecay(0.004).d3AlphaMin(0.001); fg.d3ReheatSimulation(); }
+  else { fg.cooldownTicks(0); }
 }
 
 async function cargar() {
@@ -198,8 +216,8 @@ function agregar(rows) {
 function render() {
   const rows = filtrar();
   const { mol, ag, ed } = agregar(rows);
-  const minAg = Math.max(1, +$('fMinAg').value || 1);
-  let mols = [...mol.values()].filter(m => m.ags.size >= minAg)
+  const minAg = Math.max(1, +$('fMinAg').value || 1), fAg = $('fAg').value;
+  let mols = [...mol.values()].filter(m => m.ags.size >= minAg && (!fAg || m.ags.has(fAg)))
     .sort((a, b) => b.ags.size - a.ags.size || b.alertas.size - a.alertas.size);
   const recortado = mols.length > MAX_MOL; mols = mols.slice(0, MAX_MOL);
   const keep = new Set(mols.map(m => m.id.slice(2)));
@@ -207,55 +225,86 @@ function render() {
   vista = { mol, ag, mols, recortado, rows };
 
   const maxAl = Math.max(1, ...mols.map(m => m.alertas.size));
-  const els = [];
-  for (const m of mols) {
-    const g = grupo(m.atc);
-    els.push({ data: { id: m.id, label: m.nombre, tipo: 'mol', color: ATC_COLOR[g],
-      size: 14 + 34 * Math.sqrt(m.alertas.size / maxAl), n: m.alertas.size } });
-  }
-  for (const a of agsUsadas) {
-    els.push({ data: { id: 'a:' + a, label: a, tipo: 'ag', color: AG_COLOR[a], size: 30 + Math.min(30, ag.get(a).alertas.size / 8) } });
-  }
+  const nodes = [], links = [];
+  for (const m of mols) nodes.push({ id: m.id, label: m.nombre, tipo: 'mol', color: ATC_COLOR[grupo(m.atc)],
+    r: 3 + 9 * Math.sqrt(m.alertas.size / maxAl), n: m.alertas.size, nag: m.ags.size });
+  for (const a of agsUsadas) nodes.push({ id: 'a:' + a, label: a, tipo: 'ag', color: AG_COLOR[a], r: 12, n: ag.get(a).alertas.size });
   for (const [k, n] of ed) {
     const [mk, a] = k.split('|');
-    if (keep.has(mk)) els.push({ data: { id: 'e:' + k, source: 'm:' + mk, target: 'a:' + a, w: Math.min(8, 1 + Math.log2(n + 1) * 1.6), n, color: AG_COLOR[a] } });
+    if (keep.has(mk)) links.push({ source: 'm:' + mk, target: 'a:' + a, n, color: AG_COLOR[a], w: Math.min(5, .6 + Math.log2(n + 1)) });
   }
+  vecinos = new Map(nodes.map(n => [n.id, new Set()]));
+  links.forEach(l => { vecinos.get(l.source).add(l.target); vecinos.get(l.target).add(l.source); });
 
   $('kMol').textContent = mols.length + (recortado ? '+' : '');
   $('kAg').textContent = agsUsadas.size;
   $('kAl').textContent = new Set(rows.filter(r => keep.has(r.molecula_clave)).map(r => r.alerta_id)).size;
   $('kCruz').textContent = [...mol.values()].filter(m => m.ags.size >= 2).length;
   dibujarChips(rows);
-
   $('ov').style.display = mols.length ? 'none' : 'flex';
-  if (!mols.length) $('ov').textContent = 'No hay moléculas con estos filtros. Baja «Mín. agencias» o amplía el periodo.';
-  if (cy) cy.destroy();
-  cy = cytoscape({
-    container: $('cy'), elements: els, wheelSensitivity: 0.25, minZoom: 0.15, maxZoom: 3,
-    style: [
-      { selector: 'node', style: { 'background-color': 'data(color)', 'width': 'data(size)', 'height': 'data(size)',
-          'label': 'data(label)', 'font-family': 'IBM Plex Sans, Arial, sans-serif', 'font-size': 10, 'color': '#1b2333',
-          'text-valign': 'bottom', 'text-margin-y': 3, 'text-outline-color': '#fff', 'text-outline-width': 2,
-          'min-zoomed-font-size': 7 } },
-      { selector: 'node[tipo="ag"]', style: { 'shape': 'round-rectangle', 'font-weight': 600, 'font-size': 12,
-          'color': '#fff', 'text-valign': 'center', 'text-margin-y': 0, 'text-outline-width': 0, 'width': 'label', 'padding': 8 } },
-      { selector: 'edge', style: { 'width': 'data(w)', 'line-color': 'data(color)', 'opacity': .35, 'curve-style': 'haystack' } },
-      { selector: '.dim', style: { 'opacity': .08, 'text-opacity': 0 } },
-      { selector: 'node.sel', style: { 'border-width': 4, 'border-color': '#f5c400' } },
-      { selector: 'edge.hl', style: { 'opacity': .9 } },
-    ],
-    layout: layoutOpts(),
-  });
-  cy.on('tap', 'node', e => seleccionar(e.target.id()));
-  cy.on('tap', e => { if (e.target === cy) { limpiarSel(); panelInicio(); } });
+  if (!mols.length) $('ov').textContent = 'No hay moléculas con estos filtros. Baja «Mín. agencias», cambia la agencia o amplía el periodo.';
+
+  hoverId = selId = null;
+  if (!fg) crearGrafo();
+  fg.graphData({ nodes, links });
+  setMovimiento(mover);
+  setTimeout(() => fg.zoomToFit(800, 40), 1800);
   panelInicio();
 }
 
-function layoutOpts() {
-  return { name: 'cose', animate: false, randomize: true, padding: 30, numIter: 2000, gravity: 0.35,
-    nodeOverlap: 40, componentSpacing: 80,
-    nodeRepulsion: n => n.data('tipo') === 'ag' ? 900000 : 12000,
-    idealEdgeLength: () => 90, edgeElasticity: () => 60 };
+function activo() { return selId || hoverId; }
+function visible(id) { const a = activo(); return !a || id === a || vecinos.get(a)?.has(id); }
+
+function crearGrafo() {
+  fg = ForceGraph()($('cy'))
+    .width($('cy').clientWidth).height($('cy').clientHeight)
+    .backgroundColor('#ffffff')
+    .nodeId('id')
+    .nodeVal(n => n.r * n.r / 16)
+    .nodeRelSize(4)
+    .linkColor(l => { const s = l.source.id ?? l.source, t = l.target.id ?? l.target, a = activo();
+      const on = !a || s === a || t === a; return hexA(l.color, on ? (a ? .85 : .28) : .04); })
+    .linkWidth(l => l.w)
+    .d3VelocityDecay(0.28)
+    .warmupTicks(40)
+    .nodeCanvasObject(dibujarNodo)
+    .nodePointerAreaPaint((n, color, ctx) => { ctx.fillStyle = color; const s = tamAg(n, ctx);
+      if (n.tipo === 'ag') ctx.fillRect(n.x - s.w / 2, n.y - s.h / 2, s.w, s.h); else { ctx.beginPath(); ctx.arc(n.x, n.y, n.r + 2, 0, 2 * Math.PI); ctx.fill(); } })
+    .onNodeHover(n => { hoverId = n ? n.id : null; $('cy').style.cursor = n ? 'pointer' : 'grab'; })
+    .onNodeClick(n => seleccionar(n.id))
+    .onBackgroundClick(() => { selId = null; panelInicio(); })
+    .onNodeDragEnd(() => setMovimiento(mover));
+  fg.d3Force('charge').strength(n => n.tipo === 'ag' ? -480 : -75).distanceMax(420);
+  fg.d3Force('link').distance(l => 60 + 30 / Math.sqrt(l.n)).strength(.35);
+}
+
+function hexA(hex, a) { const h = hex.replace('#', ''); const v = parseInt(h, 16);
+  return `rgba(${(v >> 16) & 255},${(v >> 8) & 255},${v & 255},${a})`; }
+
+function tamAg(n, ctx) { ctx.font = '600 11px IBM Plex Sans, Arial, sans-serif'; const w = ctx.measureText(n.label).width + 14; return { w, h: 20 }; }
+
+function dibujarNodo(n, ctx, escala) {
+  const vis = visible(n.id), alfa = vis ? 1 : .12, foco = n.id === activo();
+  ctx.globalAlpha = alfa;
+  if (n.tipo === 'ag') {
+    const { w, h } = tamAg(n, ctx);
+    ctx.fillStyle = n.color; ctx.beginPath();
+    if (ctx.roundRect) ctx.roundRect(n.x - w / 2, n.y - h / 2, w, h, 5); else ctx.rect(n.x - w / 2, n.y - h / 2, w, h);
+    ctx.fill();
+    if (foco) { ctx.lineWidth = 3 / escala; ctx.strokeStyle = '#f5c400'; ctx.stroke(); }
+    ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(n.label, n.x, n.y + .5);
+  } else {
+    ctx.beginPath(); ctx.arc(n.x, n.y, n.r, 0, 2 * Math.PI); ctx.fillStyle = n.color; ctx.fill();
+    if (foco) { ctx.lineWidth = 3 / escala; ctx.strokeStyle = '#f5c400'; ctx.stroke(); }
+    const mostrar = nombres || foco || (activo() && vis) || escala > 1.6 || (escala > .9 && n.nag >= 4);
+    if (mostrar) {
+      const fs = Math.max(10 / escala, 3.2);
+      ctx.font = `${foco ? 600 : 400} ${fs}px IBM Plex Sans, Arial, sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+      ctx.lineWidth = 3 / escala; ctx.strokeStyle = 'rgba(255,255,255,.9)'; ctx.strokeText(n.label, n.x, n.y + n.r + 2 / escala);
+      ctx.fillStyle = '#1b2333'; ctx.fillText(n.label, n.x, n.y + n.r + 2 / escala);
+    }
+  }
+  ctx.globalAlpha = 1;
 }
 
 function dibujarChips(rows) {
@@ -269,19 +318,12 @@ function dibujarChips(rows) {
   });
 }
 
-function limpiarSel() { if (cy) cy.elements().removeClass('dim sel hl'); }
-
-function resaltar(id) {
-  limpiarSel();
-  const n = cy.getElementById(id); if (!n.length) return;
-  const vec = n.closedNeighborhood();
-  cy.elements().not(vec).addClass('dim'); n.addClass('sel'); n.connectedEdges().addClass('hl');
-  cy.fit(vec, 80);
-  if (cy.zoom() > 1.25) { cy.zoom(1.25); cy.center(vec); }
-}
+function nodoPorId(id) { return fg.graphData().nodes.find(n => n.id === id); }
 
 function seleccionar(id) {
-  resaltar(id);
+  selId = id;
+  const n = nodoPorId(id);
+  if (n && n.x != null) { fg.centerAt(n.x, n.y, 700); fg.zoom(Math.max(fg.zoom(), 1.6), 700); }
   if (id.startsWith('m:')) panelMolecula(id.slice(2)); else panelAgencia(id.slice(2));
 }
 
@@ -291,15 +333,16 @@ function buscar(txt) {
   if (m) return seleccionar(m.id);
   const fuera = [...vista.mol.values()].find(x => x.nombre.toLowerCase().includes(t));
   if (fuera) { panelMolecula(fuera.id.slice(2));
-    $('side').insertAdjacentHTML('afterbegin', '<div class="note">Esta molécula no se dibuja con los filtros actuales (p. ej. «Mín. agencias»). Se muestra su detalle igual.</div>'); }
+    $('side').insertAdjacentHTML('afterbegin', '<div class="note">Esta molécula no se dibuja con los filtros actuales (p. ej. «Mín. agencias» o «Agencia»). Se muestra su detalle igual.</div>'); }
   else $('side').innerHTML = `<div class="note">No se encontró «${esc(txt)}» en el periodo y filtros elegidos.</div>`;
 }
 
 function panelInicio() {
-  const top = [...vista.mol.values()].filter(m => m.ags.size >= 2)
+  const fAg = $('fAg').value;
+  const top = [...vista.mol.values()].filter(m => m.ags.size >= 2 && (!fAg || m.ags.has(fAg)))
     .sort((a, b) => b.ags.size - a.ags.size || b.alertas.size - a.alertas.size).slice(0, 25);
-  $('side').innerHTML = `<h2>Señales cruzadas</h2>
-    <div class="meta">Moléculas con alertas de 2 o más agencias en el periodo. Clic para ver su línea de tiempo.</div>
+  $('side').innerHTML = `<h2>Señales cruzadas${fAg ? ` · ${esc(fAg)}` : ''}</h2>
+    <div class="meta">Moléculas con alertas de 2 o más agencias en el periodo${fAg ? `, incluida ${esc(fAg)}` : ''}. Clic para ver su línea de tiempo.</div>
     ${vista.recortado ? `<div class="note">Se dibujan las ${MAX_MOL} moléculas con más agencias. Usa los filtros para acotar.</div>` : ''}
     <ul class="rank">${top.map(m => `<li data-id="${esc(m.id)}"><span>${esc(m.nombre)}${m.atc ? ` <span class="n">${esc(m.atc)}</span>` : ''}</span>
       <span class="n">${m.ags.size} ag · ${m.alertas.size} al</span></li>`).join('') || '<li>Sin señales cruzadas en este periodo.</li>'}</ul>`;
@@ -308,8 +351,12 @@ function panelInicio() {
 
 function bindRank() {
   $('side').querySelectorAll('.rank li[data-id]').forEach(li => li.onclick = () => {
-    const id = li.dataset.id; cy.getElementById(id).length ? seleccionar(id) : panelMolecula(id.slice(2));
+    const id = li.dataset.id; nodoPorId(id) ? seleccionar(id) : panelMolecula(id.slice(2));
   });
+}
+
+function volverBtn() {
+  $('volver').onclick = e => { e.preventDefault(); selId = null; panelInicio(); fg.zoomToFit(600, 40); };
 }
 
 function panelMolecula(k) {
@@ -326,7 +373,7 @@ function panelMolecula(k) {
       ${r.url ? `<a href="${esc(r.url)}" target="_blank" rel="noopener">${esc(r.titulo || 'Ver alerta')}</a>` : esc(r.titulo || '')}
       ${r.tipo ? `<div class="meta">${esc(r.tipo)} · ${esc(r.fuente_nombre)}</div>` : ''}</li>`).join('')}</ul>
     <p><a href="#" id="volver">← Volver a señales cruzadas</a></p>`;
-  $('volver').onclick = e => { e.preventDefault(); limpiarSel(); panelInicio(); cy.fit(undefined, 30); };
+  volverBtn();
 }
 
 function panelAgencia(a) {
@@ -334,12 +381,13 @@ function panelAgencia(a) {
   const lista = [...ag.mols.entries()].sort((x, y) => y[1] - x[1]).slice(0, 60);
   $('side').innerHTML = `<h2><span class="tag" style="background:${AG_COLOR[a]}">${esc(a)}</span></h2>
     <div class="meta">${ag.alertas.size} alertas en el periodo · ${ag.mols.size} moléculas</div>
+    <p><a href="#" id="soloAg">Filtrar el grafo por ${esc(a)}</a></p>
     <h3>Moléculas más alertadas</h3>
     <ul class="rank">${lista.map(([k, n]) => { const m = vista.mol.get(k);
       return `<li data-id="m:${esc(k)}"><span>${esc(m.nombre)}</span><span class="n">${n} al · ${m.ags.size} ag</span></li>`; }).join('')}</ul>
     <p><a href="#" id="volver">← Volver a señales cruzadas</a></p>`;
-  bindRank();
-  $('volver').onclick = e => { e.preventDefault(); limpiarSel(); panelInicio(); cy.fit(undefined, 30); };
+  bindRank(); volverBtn();
+  $('soloAg').onclick = e => { e.preventDefault(); $('fAg').value = a; render(); };
 }
 
 function descargar(nombre, blob) {
@@ -347,7 +395,7 @@ function descargar(nombre, blob) {
   setTimeout(() => URL.revokeObjectURL(a.href), 1000);
 }
 function hoy() { return new Date().toISOString().slice(0, 10); }
-function exportarPng() { if (cy) descargar(`red_senales_${hoy()}.png`, cy.png({ output: 'blob', full: true, scale: 2, bg: '#ffffff' })); }
+function exportarPng() { const c = $('cy').querySelector('canvas'); if (c) c.toBlob(b => descargar(`red_senales_${hoy()}.png`, b), 'image/png'); }
 function exportarCsv() {
   const q = v => `"${String(v ?? '').replace(/"/g, '""')}"`;
   const lineas = [['molecula','atc','n_agencias','agencias','n_alertas','ultima_fecha'].join(',')];
