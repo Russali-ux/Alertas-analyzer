@@ -104,6 +104,12 @@ FUENTES = {
 
 # Única lista de tablas que puede leer la key privilegiada
 TABLAS_PRIVILEGIADAS = {"pavs_alertas", "atc_codes"}
+# Única tabla en la que la key privilegiada puede ESCRIBIR (módulo Red de señales)
+TABLA_GRAFO = "grafo_relaciones"
+
+# Agencia emisora por fuente (PAVS trae la suya en cada fila)
+AGENCIA = {"digemid": "DIGEMID", "modificatorias": "DIGEMID", "fda_aems": "FDA", "ema_prac": "EMA",
+           "ema_arbitrajes": "EMA", "ema_noticias": "EMA", "cima": "AEMPS", "cdsco": "CDSCO", "pvpi": "PvPI"}
 
 AVISO = ("> [!info] Nota generada automáticamente desde Alertas-analyzer. "
          "No la edites: se sobrescribe a diario. Comenta en la carpeta **Equipo/** "
@@ -231,7 +237,7 @@ def leer_tabla(url: str, key: str, cfg: dict, desde: date | None, privilegiada: 
 def normalizar(fuente: str, f: dict) -> dict:
     g = f.get
     cfg = FUENTES[fuente]
-    r = {"fuente": fuente, "fuente_nombre": cfg["nombre"], "pais": cfg["pais"], "atc": "",
+    r = {"fuente": fuente, "agencia": AGENCIA.get(fuente, cfg["nombre"]), "fuente_nombre": cfg["nombre"], "pais": cfg["pais"], "atc": "",
          "id": str(g("id")), "fecha": "", "anio": None, "titulo": "",
          "producto": "", "tipo": "", "urgencia": "", "accion": "", "url": "", "url_pdf": "",
          "cuerpo": [], "moleculas_txt": []}
@@ -304,7 +310,8 @@ def normalizar(fuente: str, f: dict) -> dict:
         r.update(fecha=g("fecha_emision") or "", anio=g("anio"), titulo=g("titulo_alerta"),
                  producto=g("ifa"), tipo=f"{limpiar(g('tipo_alerta'))} · {limpiar(g('tipo_producto'))}",
                  url=g("enlace"), atc=limpiar(g("atc_code")),
-                 fuente_nombre=f"PAVS · {agencia}", pais=limpiar(g("pais")) or "Varios")
+                 fuente_nombre=f"PAVS · {agencia}", pais=limpiar(g("pais")) or "Varios",
+                 agencia=agencia.upper())
         campo("Agencia", agencia); campo("País", g("pais")); campo("Tipo de producto", g("tipo_producto"))
         campo("IFA / producto", g("ifa")); campo("Código ATC", g("atc_code"))
         campo("Descripción", g("reaccion_adversa"))
@@ -515,7 +522,39 @@ SORT file.mtime DESC''',
         "- Vista de grafo: filtra `path:Moleculas OR path:Equipo` para ver conexiones.", "",
     ]
     escribir(salida / "00 Inicio.md", "\n".join(inicio))
-    return len(por_mol), len(cruzadas)
+
+    # 7) Filas para el módulo "Red de señales" (una por alerta × molécula)
+    filas_grafo = []
+    for r in registros:
+        for k in r["mol_claves"]:
+            filas_grafo.append({
+                "fuente": r["fuente"], "fuente_nombre": r["fuente_nombre"], "agencia": r["agencia"],
+                "pais": r["pais"] or None, "es_restringida": bool(FUENTES[r["fuente"]].get("privada")),
+                "alerta_id": r["id"], "titulo": (r["titulo"] or "")[:500] or None,
+                "fecha": r["fecha"] or None, "anio": r["anio"], "tipo": r["tipo"] or None,
+                "urgencia": r["urgencia"] or None, "url": r["url"] or r["url_pdf"] or None,
+                "molecula": nombres_mol[k], "molecula_clave": k, "atc": mol_atc.get(k) or None,
+            })
+    return len(por_mol), len(cruzadas), filas_grafo
+
+
+def sincronizar_grafo(url: str, key: str, filas: list[dict]):
+    """Reemplaza el contenido de grafo_relaciones: inserta la corrida nueva y borra las anteriores."""
+    import uuid
+    corrida = str(uuid.uuid4())
+    headers = {"apikey": key, "Content-Type": "application/json", "Prefer": "return=minimal"}
+    if not key.startswith(("sb_publishable_", "sb_secret_")):
+        headers["Authorization"] = f"Bearer {key}"
+    endpoint = f"{url}/rest/v1/{TABLA_GRAFO}"
+    for i in range(0, len(filas), 500):
+        lote = [{**f, "corrida": corrida} for f in filas[i:i + 500]]
+        r = requests.post(endpoint, headers=headers, json=lote, timeout=120)
+        if r.status_code >= 400:
+            raise RuntimeError(f"{TABLA_GRAFO}: HTTP {r.status_code} {r.text[:300]}")
+    r = requests.delete(endpoint, headers=headers, params={"corrida": f"neq.{corrida}"}, timeout=120)
+    if r.status_code >= 400:
+        raise RuntimeError(f"{TABLA_GRAFO} (limpieza): HTTP {r.status_code} {r.text[:300]}")
+    print(f"  Red de señales           {len(filas):>5} relaciones sincronizadas")
 
 
 # ─────────────────────────────────────────────────────────────────
@@ -524,6 +563,8 @@ def main():
     ap.add_argument("--salida", default="vault_out")
     ap.add_argument("--desde", default="2020-01-01", help="Fecha mínima (YYYY-MM-DD) o 'todo'")
     ap.add_argument("--incluir-noticias", action="store_true", help="Incluye EMA Noticias (3.900+)")
+    ap.add_argument("--sin-grafo", action="store_true", help="No sincroniza la tabla grafo_relaciones")
+    ap.add_argument("--grafo-json", help="Además guarda las relaciones del grafo en este JSON (pruebas)")
     ap.add_argument("--alias", default=str(Path(__file__).with_name("alias_moleculas.json")))
     a = ap.parse_args()
 
@@ -571,7 +612,11 @@ def main():
                     atc.setdefault(k, (k_es, codigo))
         print(f"  Diccionario ATC          {len(atc_por_codigo):>5} principios activos")
 
-    n_mol, n_cruz = generar(registros, salida, alias, conteos, atc, atc_por_codigo)
+    n_mol, n_cruz, filas_grafo = generar(registros, salida, alias, conteos, atc, atc_por_codigo)
+    if key_priv and not a.sin_grafo:
+        sincronizar_grafo(url, key_priv, filas_grafo)
+    if a.grafo_json:
+        Path(a.grafo_json).write_text(json.dumps(filas_grafo, ensure_ascii=False), encoding="utf-8")
     print(f"\nVault generado en {salida}/ → {len(registros)} alertas, {n_mol} moléculas, "
           f"{n_cruz} señales cruzadas")
 
