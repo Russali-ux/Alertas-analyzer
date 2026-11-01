@@ -164,7 +164,11 @@ async function iniciar() {
   $('bPng').onclick = exportarPng;
   $('bCsv').onclick = exportarCsv;
   new ResizeObserver(() => { if (fg) fg.width($('cy').clientWidth).height($('cy').clientHeight); }).observe($('cy'));
+  // Enlace directo desde el Agente ConkoSafe IA: red/?m=<molécula> abre todo el histórico centrado en ella
+  const mParam = new URLSearchParams(location.search).get('m');
+  if (mParam) { $('fPeriodo').value = '0'; $('fMinAg').value = '1'; $('fBuscar').value = mParam; }
   render();
+  if (mParam) setTimeout(() => buscar(mParam), 2200);
 }
 
 function setMovimiento(on) {
