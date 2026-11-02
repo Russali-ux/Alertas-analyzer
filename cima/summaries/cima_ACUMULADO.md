@@ -1,27 +1,27 @@
 # ConkoSafe IA — Cambios en Ficha Técnica y Prospecto (CIMA / AEMPS)
 
-**Generado:** 01/11/2026 18:33 UTC  
-**Periodo:** 23/06/2026 → 30/10/2026 (últimos 129 días)  
+**Generado:** 02/11/2026 22:29 UTC  
+**Periodo:** 23/06/2026 → 02/11/2026 (últimos 132 días)  
 **Fuente:** [CIMA — AEMPS (registroCambios)](https://cima.aemps.es/cima/rest/registroCambios)
 
 ## Resumen
 
 | Categoría | Cantidad |
 |---|---:|
-| Solo Ficha Técnica | 1972 |
-| Solo Prospecto | 2631 |
-| FT + Prospecto (ambos) | 8908 |
-| **TOTAL con FT o Prospecto** | **13511** |
+| Solo Ficha Técnica | 1976 |
+| Solo Prospecto | 2633 |
+| FT + Prospecto (ambos) | 8934 |
+| **TOTAL con FT o Prospecto** | **13543** |
 
 Descarga del detalle completo: `ConkosafeIA_Regulatorio_ACUMULADO.xlsx`
 
 ### Top laboratorios
 
-- Laboratorios Cinfa S.A. — 616 cambio(s)
+- Laboratorios Cinfa S.A. — 618 cambio(s)
 - Laboratorios Normon S.A. — 575 cambio(s)
 - Laboratorio Stada S.L. — 486 cambio(s)
-- Teva Gmbh — 458 cambio(s)
-- Sandoz Farmaceutica S.A. — 449 cambio(s)
+- Teva Gmbh — 459 cambio(s)
+- Sandoz Farmaceutica S.A. — 451 cambio(s)
 - Kern Pharma S.L. — 396 cambio(s)
 - Teva Pharma S.L.U. — 372 cambio(s)
 - Aurovitas Spain, S.A.U. — 289 cambio(s)
@@ -32,6 +32,38 @@ Descarga del detalle completo: `ConkosafeIA_Regulatorio_ACUMULADO.xlsx`
 
 | Nº Registro | Medicamento | Laboratorio | Fecha | Tipo | Cambio | Enlaces |
 |---|---|---|---|---|---|---|
+| 89896 | TIOTEPA VIVANTA 100 MG POLVO PARA CONCENTRADO PARA SOLUCION PARA PERFUSION EFG | Vivanta Generics S.R.O. | 02/11/2026 07:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/89896/FT_89896.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/89896/FT_89896.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/89896/P_89896.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/89896/P_89896.html) |
+| 89897 | TIOTEPA VIVANTA 15 MG POLVO PARA CONCENTRADO PARA SOLUCION PARA PERFUSION EFG | Vivanta Generics S.R.O. | 02/11/2026 07:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/89897/FT_89897.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/89897/FT_89897.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/89897/P_89897.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/89897/P_89897.html) |
+| 64287 | XAZAL 5 mg COMPRIMIDOS RECUBIERTOS CON PELICULA | Ucb Pharma S.A. | 02/11/2026 07:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/64287/P_64287.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/64287/P_64287.html) |
+| 68153 | XAZAL 0,5 mg/ml SOLUCION ORAL | Ucb Pharma S.A. | 02/11/2026 07:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/68153/P_68153.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/68153/P_68153.html) |
+| 89760 | SUGAMMADEX GALENICUM 100 MG/ML SOLUCIÓN INYECTABLE EFG | Galenicum Health S.L.U. | 02/11/2026 07:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/89760/FT_89760.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/89760/FT_89760.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/89760/P_89760.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/89760/P_89760.html) |
+| 86634 | PARACETAMOL ALMUS PHARMA 650 MG COMPRIMIDOS EFG | Almus Farmaceutica S.A.U. | 02/11/2026 07:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/86634/FT_86634.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/86634/FT_86634.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/86634/P_86634.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/86634/P_86634.html) |
+| 58567 | NITROPLAST 10 PARCHES TRANSDERMICOS | Lacer S.A. | 02/11/2026 07:56 | MODIFICADO | FT | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/58567/FT_58567.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/58567/FT_58567.html) |
+| 62264 | NITROPLAST 15 PARCHES TRANSDERMICOS | Lacer S.A. | 02/11/2026 07:56 | MODIFICADO | FT | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/62264/FT_62264.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/62264/FT_62264.html) |
+| 90073 | NINTEDANIB SANDOZ 100 MG CAPSULAS BLANDAS EFG | Sandoz Farmaceutica S.A. | 02/11/2026 07:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/90073/FT_90073.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/90073/FT_90073.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/90073/P_90073.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/90073/P_90073.html) |
+| 90074 | NINTEDANIB SANDOZ 150 MG CAPSULAS BLANDAS EFG | Sandoz Farmaceutica S.A. | 02/11/2026 07:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/90074/FT_90074.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/90074/FT_90074.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/90074/P_90074.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/90074/P_90074.html) |
+| 91172 | KINPARLEV 1 MG/24 H PARCHE TRANSDERMICO EFG | Orion Corporation | 02/11/2026 07:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/91172/FT_91172.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/91172/FT_91172.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/91172/P_91172.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91172/P_91172.html) |
+| 91173 | KINPARLEV 2 MG/24 H PARCHE TRANSDERMICO EFG | Orion Corporation | 02/11/2026 07:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/91173/FT_91173.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/91173/FT_91173.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/91173/P_91173.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91173/P_91173.html) |
+| 91174 | KINPARLEV 3 MG/24 H PARCHE TRANSDERMICO EFG | Orion Corporation | 02/11/2026 07:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/91174/FT_91174.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/91174/FT_91174.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/91174/P_91174.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91174/P_91174.html) |
+| 91175 | KINPARLEV 4 MG/24 H PARCHE TRANSDERMICO EFG | Orion Corporation | 02/11/2026 07:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/91175/FT_91175.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/91175/FT_91175.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/91175/P_91175.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91175/P_91175.html) |
+| 91176 | KINPARLEV 6 MG/24 H PARCHE TRANSDERMICO EFG | Orion Corporation | 02/11/2026 07:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/91176/FT_91176.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/91176/FT_91176.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/91176/P_91176.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91176/P_91176.html) |
+| 91177 | KINPARLEV 8 MG/24 H PARCHE TRANSDERMICO EFG | Orion Corporation | 02/11/2026 07:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/91177/FT_91177.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/91177/FT_91177.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/91177/P_91177.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91177/P_91177.html) |
+| 91220 | LANREOTIDA ZENTIVA 90 MG SOLUCION INYECTABLE EN JERINGA PRECARGADA EFG | Zentiva K.S. | 02/11/2026 07:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/91220/FT_91220.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/91220/FT_91220.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/91220/P_91220.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91220/P_91220.html) |
+| 91221 | LANREOTIDA ZENTIVA 120 MG SOLUCION INYECTABLE EN JERINGA PRECARGADA EFG | Zentiva K.S. | 02/11/2026 07:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/91221/FT_91221.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/91221/FT_91221.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/91221/P_91221.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91221/P_91221.html) |
+| 91222 | LANREOTIDA ZENTIVA 60 MG SOLUCION INYECTABLE EN JERINGA PRECARGADA EFG | Zentiva K.S. | 02/11/2026 07:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/91222/FT_91222.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/91222/FT_91222.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/91222/P_91222.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91222/P_91222.html) |
+| 90207 | LINAGLIPTINA/METFORMINA VIATRIS 2,5 MG/1.000 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Pharos Pharmaceutical Oriented Services Ltd. | 02/11/2026 07:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/90207/FT_90207.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/90207/FT_90207.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/90207/P_90207.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/90207/P_90207.html) |
+| 90208 | LINAGLIPTINA/METFORMINA VIATRIS 2,5 MG/850 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Pharos Pharmaceutical Oriented Services Ltd. | 02/11/2026 07:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/90208/FT_90208.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/90208/FT_90208.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/90208/P_90208.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/90208/P_90208.html) |
+| 80276 | CELECOXIB OPKO 100 MG CAPSULAS DURAS EFG | Opko Health Spain S.L.U. | 02/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/80276/FT_80276.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/80276/FT_80276.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/80276/P_80276.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/80276/P_80276.html) |
+| 80277 | CELECOXIB OPKO 200 MG CAPSULAS DURAS EFG | Opko Health Spain S.L.U. | 02/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/80277/FT_80277.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/80277/FT_80277.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/80277/P_80277.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/80277/P_80277.html) |
+| 83408 | BISOPROLOL TEVA-RATIOPHARM 2,5 MG COMPRIMIDOS EFG | Teva Gmbh | 02/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/83408/FT_83408.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/83408/FT_83408.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/83408/P_83408.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/83408/P_83408.html) |
+| 65837 | VISTABEL 4 UNIDADES ALLERGAN/0,1 ml POLVO PARA SOLUCION INYECTABLE | Abbvie Spain, S.L.U. | 02/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/65837/FT_65837.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/65837/FT_65837.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/65837/P_65837.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/65837/P_65837.html) |
+| 89468 | AGESTIN 2 MG COMPRIMIDOS EFG | Adalvo Limited | 02/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/89468/FT_89468.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/89468/FT_89468.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/89468/P_89468.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/89468/P_89468.html) |
+| 75642 | GLYCILAX LACTANTES SUPOSITORIOS | Laboratorios Cinfa S.A. | 02/11/2026 07:55 | MODIFICADO | FT | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/75642/FT_75642.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/75642/FT_75642.html) |
+| 75643 | GLYCILAX NIÑOS SUPOSITORIOS | Laboratorios Cinfa S.A. | 02/11/2026 07:55 | MODIFICADO | FT | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/75643/FT_75643.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/75643/FT_75643.html) |
+| 63194 | BOTOX 100 UNIDADES ALLERGAN, POLVO PARA SOLUCIÓN INYECTABLE | Abbvie Spain, S.L.U. | 02/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/63194/FT_63194.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/63194/FT_63194.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/63194/P_63194.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/63194/P_63194.html) |
+| 67037 | BRONCORAL NEO 12 microgramos/PULSACION SOLUCION PARA INHALACION EN ENVASE A PRESION | Chiesi España S.A.U. | 02/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/67037/FT_67037.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/67037/FT_67037.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/67037/P_67037.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/67037/P_67037.html) |
+| 70602 | BOTOX 50 UNIDADES ALLERGAN, POLVO PARA SOLUCIÓN INYECTABLE | Abbvie Spain, S.L.U. | 02/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/70602/FT_70602.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/70602/FT_70602.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/70602/P_70602.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/70602/P_70602.html) |
+| 72377 | BOTOX 200 UNIDADES ALLERGAN, POLVO PARA SOLUCIÓN INYECTABLE | Abbvie Spain, S.L.U. | 02/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/72377/FT_72377.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/72377/FT_72377.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/72377/P_72377.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/72377/P_72377.html) |
 | 68869 | TAMSULOSINA TARBIS 0,4 mg CAPSULAS DURAS DE LIBERACION PROLONGADA EFG | Tarbis Farma S.L. | 30/10/2026 07:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/68869/FT_68869.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/68869/FT_68869.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/68869/P_68869.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/68869/P_68869.html) |
 | 89518 | TICAGRELOR VIVANTA 90 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Vivanta Generics S.R.O. | 30/10/2026 07:56 | MODIFICADO | FT | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/89518/FT_89518.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/89518/FT_89518.html) |
 | 89520 | TICAGRELOR VIVANTA 60 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Vivanta Generics S.R.O. | 30/10/2026 07:56 | MODIFICADO | FT | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/89520/FT_89520.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/89520/FT_89520.html) |
