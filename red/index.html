@@ -8,6 +8,7 @@
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://unpkg.com/force-graph@1.52.0/dist/force-graph.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <style>
 :root{
   --brand-900:#0a1433; --brand-700:#0d1b8c; --brand-600:#2340c9; --brand-100:#e3e9fb; --brand-050:#f1f4fd;
@@ -68,6 +69,18 @@ input[type=number]{width:70px}
 .note{font-size:12px;color:var(--muted);background:var(--brand-050);border-radius:8px;padding:8px 10px;margin-top:8px}
 .overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;color:var(--muted);font-size:13px;text-align:center;padding:20px}
 .legend{position:absolute;left:10px;bottom:10px;background:rgba(255,255,255,.92);border:1px solid var(--line);border-radius:8px;padding:6px 9px;font-size:11px;color:var(--muted);z-index:5}
+/* Exportación PNG: encabezado y panel lateral completo */
+.export-hdr{display:none}
+#exportArea.exporting{background:var(--bg);padding:14px 0 6px}
+#exportArea.exporting .export-hdr{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin:0 22px 4px;padding:12px 16px;background:var(--brand-900);color:#fff;border-radius:10px}
+.export-hdr b{font-size:17px;font-weight:600}
+.export-hdr small{display:block;font-size:11.5px;opacity:.8;margin-top:3px}
+.export-hdr .src{font-family:var(--mono);font-size:10.5px;opacity:.75;text-align:right}
+#exportArea.exporting .main{height:auto}
+#exportArea.exporting .side{overflow:visible}
+#exportArea.exporting .graph-tools,#exportArea.exporting #volver{display:none}
+#exportArea.exporting .tl li:nth-child(n+11):not(.mas){display:none}
+.tl li.mas{border-left-style:dashed;color:var(--muted);font-style:italic}
 @media (max-width:1000px){.main{grid-template-columns:1fr;height:auto}.graph{height:560px}.kpis{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
@@ -103,6 +116,9 @@ input[type=number]{width:70px}
 </div>
 <div class="chips" id="chips"></div>
 
+<div id="exportArea">
+<div class="export-hdr"><div><b id="xTitulo">Red de señales</b><small id="xFiltros"></small></div>
+  <div class="src">ConkoSafe IA · Conkomerco<br><span id="xFecha"></span></div></div>
 <div class="kpis">
   <div class="kpi"><b id="kMol">–</b><span id="kMolL">Moléculas (según filtros)</span></div>
   <div class="kpi"><b id="kAg">–</b><span id="kAgL">Agencias</span></div>
@@ -118,6 +134,7 @@ input[type=number]{width:70px}
     <div class="legend">● molécula (color = grupo ATC, tamaño = n.º alertas) · ■ agencia · grosor de línea = n.º alertas · arrastra los nodos, rueda = zoom</div>
   </div>
   <aside class="side" id="side"></aside>
+</div>
 </div>
 
 <script>
@@ -420,7 +437,53 @@ function descargar(nombre, blob) {
   setTimeout(() => URL.revokeObjectURL(a.href), 1000);
 }
 function hoy() { return new Date().toISOString().slice(0, 10); }
-function exportarPng() { const c = $('cy').querySelector('canvas'); if (c) c.toBlob(b => descargar(`red_senales_${hoy()}.png`, b), 'image/png'); }
+function textoFiltros() {
+  const sel = id => $(id).options[$(id).selectedIndex].text;
+  const partes = [`Periodo: ${sel('fPeriodo')}`, `Urgencia: ${sel('fUrg')}`, `Agencia: ${sel('fAg')}`,
+    `ATC: ${$('fAtc').value || 'Todos'}`, `Mín. agencias: ${$('fMinAg').value}`];
+  if (agOff.size) partes.push(`Ocultas: ${[...agOff].join(', ')}`);
+  return partes.join(' · ');
+}
+
+async function exportarPng() {
+  if (!fg || typeof html2canvas === 'undefined') return;
+  const area = $('exportArea'), graph = document.querySelector('.graph'), btn = $('bPng');
+  const sel = selId ? (nodoPorId(selId)?.label || '') : '';
+  $('xTitulo').textContent = 'Red de señales' + (sel ? ` · ${sel}` : '');
+  $('xFiltros').textContent = textoFiltros();
+  $('xFecha').textContent = new Date().toLocaleString('es-PE', { dateStyle: 'medium', timeStyle: 'short' });
+  btn.disabled = true; btn.textContent = 'Generando…';
+  const alto = graph.offsetHeight;
+  graph.style.height = alto + 'px';
+  // Encuadre de la selección (como en pantalla) y tope de 10 eventos en la línea de tiempo
+  if (selId) fg.zoomToFit(0, 70, n => visible(n.id));
+  const tl = document.querySelector('#side .tl'), extra = tl ? tl.children.length - 10 : 0;
+  let mas = null;
+  if (extra > 0) { mas = document.createElement('li'); mas.className = 'mas';
+    mas.textContent = `… y ${extra} alerta(s) más en la Red de señales`; tl.appendChild(mas); }
+  area.classList.add('exporting');
+  try {
+    // el grafo toma la altura del panel para que la imagen quede pareja
+    const altoPanel = $('side').scrollHeight;
+    if (altoPanel > alto) {
+      graph.style.height = altoPanel + 'px';
+      await new Promise(r => setTimeout(r, 120));
+      fg.width($('cy').clientWidth).height($('cy').clientHeight);
+      if (selId) fg.zoomToFit(0, 70, n => visible(n.id)); else fg.zoomToFit(0, 40);
+    }
+    await new Promise(r => setTimeout(r, 350));
+    const lienzo = await html2canvas(area, { scale: 2, backgroundColor: '#f7f8fb', useCORS: true, logging: false,
+      windowWidth: document.documentElement.scrollWidth });
+    lienzo.toBlob(b => descargar(`red_senales_${sel ? nombreArchivo(sel) + '_' : ''}${hoy()}.png`, b), 'image/png');
+  } catch (e) {
+    alert('No se pudo generar el PNG: ' + e.message);
+  } finally {
+    area.classList.remove('exporting'); graph.style.height = ''; if (mas) mas.remove();
+    setTimeout(() => fg.width($('cy').clientWidth).height($('cy').clientHeight), 50);
+    btn.disabled = false; btn.textContent = 'Exportar PNG';
+  }
+}
+function nombreArchivo(t) { return t.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^A-Za-z0-9]+/g, '_').slice(0, 40); }
 function exportarCsv() {
   const q = v => `"${String(v ?? '').replace(/"/g, '""')}"`;
   const lineas = [['molecula','atc','n_agencias','agencias','n_alertas','ultima_fecha'].join(',')];
