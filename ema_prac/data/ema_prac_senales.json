@@ -1,5 +1,82 @@
 [
   {
+    "molecula": "Binimetinib; encorafenib",
+    "senal": "Neutropenia, febrile neutropenia",
+    "epitt_no": null,
+    "seccion": "actualizacion_producto",
+    "fecha_reunion": "28 September-1 October 2026",
+    "referencia": "EMA/PRAC/206892/2026",
+    "fecha_publicacion": "2026-10-26",
+    "url_pdf": "https://www.ema.europa.eu/en/documents/prac-recommendation/prac-recommendations-signals-adopted-28-september-1-october-2026-prac-meeting_en.pdf",
+    "dedupe_key": "b45e4105f3f8b77fb96ab8be54aa21e9"
+  },
+  {
+    "molecula": "Cisplatin",
+    "senal": "Acute pancreatitis",
+    "epitt_no": "20319",
+    "seccion": "tabla",
+    "fecha_reunion": "28 September-1 October 2026",
+    "referencia": "EMA/PRAC/206892/2026",
+    "fecha_publicacion": "2026-10-26",
+    "url_pdf": "https://www.ema.europa.eu/en/documents/prac-recommendation/prac-recommendations-signals-adopted-28-september-1-october-2026-prac-meeting_en.pdf",
+    "dedupe_key": "96f099361fc961cd0eb215a8c6543b77"
+  },
+  {
+    "molecula": "Elranatamab",
+    "senal": "Tumour lysis syndrome",
+    "epitt_no": "20314",
+    "seccion": "tabla",
+    "fecha_reunion": "28 September-1 October 2026",
+    "referencia": "EMA/PRAC/206892/2026",
+    "fecha_publicacion": "2026-10-26",
+    "url_pdf": "https://www.ema.europa.eu/en/documents/prac-recommendation/prac-recommendations-signals-adopted-28-september-1-october-2026-prac-meeting_en.pdf",
+    "dedupe_key": "04c49910953a30a9acba6b6b9e08fab1"
+  },
+  {
+    "molecula": "Liraglutide; liraglutide / insulin degludec",
+    "senal": "Alopecia",
+    "epitt_no": "20311",
+    "seccion": "tabla",
+    "fecha_reunion": "28 September-1 October 2026",
+    "referencia": "EMA/PRAC/206892/2026",
+    "fecha_publicacion": "2026-10-26",
+    "url_pdf": "https://www.ema.europa.eu/en/documents/prac-recommendation/prac-recommendations-signals-adopted-28-september-1-october-2026-prac-meeting_en.pdf",
+    "dedupe_key": "abdd638e8a9761f7180a0130700da35a"
+  },
+  {
+    "molecula": "Semaglutide; insulin icodec / semaglutide",
+    "senal": "Gastrointestinal volvulus",
+    "epitt_no": "20260",
+    "seccion": "tabla",
+    "fecha_reunion": "28 September-1 October 2026",
+    "referencia": "EMA/PRAC/206892/2026",
+    "fecha_publicacion": "2026-10-26",
+    "url_pdf": "https://www.ema.europa.eu/en/documents/prac-recommendation/prac-recommendations-signals-adopted-28-september-1-october-2026-prac-meeting_en.pdf",
+    "dedupe_key": "c92357021b0f8c69aa60de15757b773c"
+  },
+  {
+    "molecula": "Semaglutide",
+    "senal": "Ischaemic colitis",
+    "epitt_no": "20309",
+    "seccion": "tabla",
+    "fecha_reunion": "28 September-1 October 2026",
+    "referencia": "EMA/PRAC/206892/2026",
+    "fecha_publicacion": "2026-10-26",
+    "url_pdf": "https://www.ema.europa.eu/en/documents/prac-recommendation/prac-recommendations-signals-adopted-28-september-1-october-2026-prac-meeting_en.pdf",
+    "dedupe_key": "b0a9b7b9ca39f6b414bb1513b04e2f0d"
+  },
+  {
+    "molecula": "Tarlatamab",
+    "senal": "Tumour lysis syndrome",
+    "epitt_no": "20313",
+    "seccion": "tabla",
+    "fecha_reunion": "28 September-1 October 2026",
+    "referencia": "EMA/PRAC/206892/2026",
+    "fecha_publicacion": "2026-10-26",
+    "url_pdf": "https://www.ema.europa.eu/en/documents/prac-recommendation/prac-recommendations-signals-adopted-28-september-1-october-2026-prac-meeting_en.pdf",
+    "dedupe_key": "9de5f8228b976591964be38e4a4cf2fc"
+  },
+  {
     "molecula": "Oxacillin",
     "senal": "Drug reaction with eosinophilia and systemic symptoms (DRESS)",
     "epitt_no": null,
