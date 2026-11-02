@@ -42,6 +42,7 @@ input[type=number]{width:70px}
 .kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;padding:12px 22px}
 .kpi{background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 14px}
 .kpi b{display:block;font-size:22px;font-weight:600;color:var(--brand-700)}
+.kpis.sel .kpi{border-color:#f5c400;background:#fffdf3}
 .kpi span{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;font-family:var(--mono)}
 .main{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:12px;padding:0 22px 22px;height:calc(100vh - 300px);min-height:520px}
 .graph{background:#fff;border:1px solid var(--line);border-radius:12px;position:relative;overflow:hidden}
@@ -103,10 +104,10 @@ input[type=number]{width:70px}
 <div class="chips" id="chips"></div>
 
 <div class="kpis">
-  <div class="kpi"><b id="kMol">–</b><span>Moléculas (según filtros)</span></div>
-  <div class="kpi"><b id="kAg">–</b><span>Agencias</span></div>
-  <div class="kpi"><b id="kAl">–</b><span>Alertas relacionadas</span></div>
-  <div class="kpi"><b id="kCruz">–</b><span>Señales cruzadas (≥2 agencias)</span></div>
+  <div class="kpi"><b id="kMol">–</b><span id="kMolL">Moléculas (según filtros)</span></div>
+  <div class="kpi"><b id="kAg">–</b><span id="kAgL">Agencias</span></div>
+  <div class="kpi"><b id="kAl">–</b><span id="kAlL">Alertas relacionadas</span></div>
+  <div class="kpi"><b id="kCruz">–</b><span id="kCruzL">Señales cruzadas (≥2 agencias)</span></div>
 </div>
 
 <div class="main">
@@ -157,6 +158,7 @@ async function iniciar() {
   $('dlMol').innerHTML = [...new Set(ROWS.map(r => r.molecula))].sort().map(m => `<option value="${esc(m)}">`).join('');
   ['fPeriodo','fUrg','fAtc','fMinAg','fAg'].forEach(id => $(id).addEventListener('change', render));
   $('fBuscar').addEventListener('change', () => buscar($('fBuscar').value));
+  $('fBuscar').addEventListener('input', () => { if (!$('fBuscar').value.trim() && vista) { selId = null; panelInicio(); fg && fg.zoomToFit(600, 40); } });
   $('bReorg').onclick = () => { if (!fg) return; fg.graphData().nodes.forEach(n => { n.fx = n.fy = undefined; n.vx = (Math.random() - .5) * 8; n.vy = (Math.random() - .5) * 8; }); setMovimiento(true); fg.d3ReheatSimulation(); };
   $('bMov').onclick = () => setMovimiento(!mover);
   $('bLbl').onclick = () => { nombres = !nombres; $('bLbl').classList.toggle('on', nombres); };
@@ -241,14 +243,8 @@ function render() {
   vecinos = new Map(nodes.map(n => [n.id, new Set()]));
   links.forEach(l => { vecinos.get(l.source).add(l.target); vecinos.get(l.target).add(l.source); });
 
-  // KPI = solo el resultado de los filtros activos (periodo, urgencia, agencia, ATC, mín. agencias y chips)
-  const agsFiltro = new Set(), alertasFiltro = new Set();
-  filtradas.forEach(m => { m.ags.forEach(a => agsFiltro.add(a)); m.alertas.forEach(id => alertasFiltro.add(id)); });
-  $('kMol').textContent = filtradas.length;
-  $('kMol').title = recortado ? `Se dibujan las ${MAX_MOL} con más agencias` : '';
-  $('kAg').textContent = agsFiltro.size;
-  $('kAl').textContent = alertasFiltro.size;
-  $('kCruz').textContent = filtradas.filter(m => m.ags.size >= 2).length;
+  vista.filtradas = filtradas;
+  kpis(filtradas);
   dibujarChips(rows);
   $('ov').style.display = mols.length ? 'none' : 'flex';
   if (!mols.length) $('ov').textContent = 'No hay moléculas con estos filtros. Baja «Mín. agencias», cambia la agencia o amplía el periodo.';
@@ -259,6 +255,23 @@ function render() {
   setMovimiento(mover);
   setTimeout(() => fg.zoomToFit(800, 40), 1800);
   panelInicio();
+}
+
+// KPI = resultado de los filtros activos; si hay una molécula o agencia seleccionada, solo esa selección
+function kpis(lista, etiqueta) {
+  const ags = new Set(), alertas = new Set();
+  lista.forEach(m => { m.ags.forEach(a => ags.add(a)); m.alertas.forEach(id => alertas.add(id)); });
+  const sufijo = etiqueta ? ` · ${etiqueta}` : '';
+  $('kMol').textContent = lista.length;
+  $('kMolL').textContent = (etiqueta ? (lista.length === 1 ? 'Molécula' : 'Moléculas') : 'Moléculas (según filtros)') + sufijo;
+  $('kMol').title = !etiqueta && vista.recortado ? `Se dibujan las ${MAX_MOL} con más agencias` : '';
+  $('kAg').textContent = ags.size;
+  $('kAgL').textContent = 'Agencias' + sufijo;
+  $('kAl').textContent = alertas.size;
+  $('kAlL').textContent = 'Alertas relacionadas' + sufijo;
+  $('kCruz').textContent = lista.filter(m => m.ags.size >= 2).length;
+  $('kCruzL').textContent = 'Señales cruzadas (≥2 agencias)' + sufijo;
+  document.querySelector('.kpis').classList.toggle('sel', !!etiqueta);
 }
 
 function activo() { return selId || hoverId; }
@@ -281,7 +294,7 @@ function crearGrafo() {
       if (n.tipo === 'ag') ctx.fillRect(n.x - s.w / 2, n.y - s.h / 2, s.w, s.h); else { ctx.beginPath(); ctx.arc(n.x, n.y, n.r + 2, 0, 2 * Math.PI); ctx.fill(); } })
     .onNodeHover(n => { hoverId = n ? n.id : null; $('cy').style.cursor = n ? 'pointer' : 'grab'; })
     .onNodeClick(n => seleccionar(n.id))
-    .onBackgroundClick(() => { selId = null; panelInicio(); })
+    .onBackgroundClick(() => { selId = null; $('fBuscar').value = ''; panelInicio(); })
     .onNodeDragEnd(() => setMovimiento(mover));
   fg.d3Force('charge').strength(n => n.tipo === 'ag' ? -480 : -75).distanceMax(420);
   fg.d3Force('link').distance(l => 60 + 30 / Math.sqrt(l.n)).strength(.35);
@@ -347,6 +360,7 @@ function buscar(txt) {
 }
 
 function panelInicio() {
+  kpis(vista.filtradas);
   const fAg = $('fAg').value;
   const top = [...vista.mol.values()].filter(m => m.ags.size >= 2 && (!fAg || m.ags.has(fAg)))
     .sort((a, b) => b.ags.size - a.ags.size || b.alertas.size - a.alertas.size).slice(0, 25);
@@ -365,11 +379,12 @@ function bindRank() {
 }
 
 function volverBtn() {
-  $('volver').onclick = e => { e.preventDefault(); selId = null; panelInicio(); fg.zoomToFit(600, 40); };
+  $('volver').onclick = e => { e.preventDefault(); selId = null; $('fBuscar').value = ''; panelInicio(); fg.zoomToFit(600, 40); };
 }
 
 function panelMolecula(k) {
   const m = vista.mol.get(k); if (!m) return;
+  kpis([m], m.nombre);
   const vistas = new Set(), filas = m.filas.filter(r => { const key = r.alerta_id + r.agencia; if (vistas.has(key)) return false; vistas.add(key); return true; })
     .sort((a, b) => String(b.fecha || b.anio || '').localeCompare(String(a.fecha || a.anio || '')));
   const g = grupo(m.atc);
@@ -387,6 +402,7 @@ function panelMolecula(k) {
 
 function panelAgencia(a) {
   const ag = vista.ag.get(a); if (!ag) return;
+  kpis(vista.filtradas.filter(m => m.ags.has(a)), a);
   const lista = [...ag.mols.entries()].sort((x, y) => y[1] - x[1]).slice(0, 60);
   $('side').innerHTML = `<h2><span class="tag" style="background:${AG_COLOR[a]}">${esc(a)}</span></h2>
     <div class="meta">${ag.alertas.size} alertas en el periodo · ${ag.mols.size} moléculas</div>
