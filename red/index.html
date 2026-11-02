@@ -103,7 +103,7 @@ input[type=number]{width:70px}
 <div class="chips" id="chips"></div>
 
 <div class="kpis">
-  <div class="kpi"><b id="kMol">–</b><span>Moléculas en el grafo</span></div>
+  <div class="kpi"><b id="kMol">–</b><span>Moléculas (según filtros)</span></div>
   <div class="kpi"><b id="kAg">–</b><span>Agencias</span></div>
   <div class="kpi"><b id="kAl">–</b><span>Alertas relacionadas</span></div>
   <div class="kpi"><b id="kCruz">–</b><span>Señales cruzadas (≥2 agencias)</span></div>
@@ -223,6 +223,7 @@ function render() {
   const minAg = Math.max(1, +$('fMinAg').value || 1), fAg = $('fAg').value;
   let mols = [...mol.values()].filter(m => m.ags.size >= minAg && (!fAg || m.ags.has(fAg)))
     .sort((a, b) => b.ags.size - a.ags.size || b.alertas.size - a.alertas.size);
+  const filtradas = mols;   // resultado completo de los filtros (los KPI se calculan sobre esto)
   const recortado = mols.length > MAX_MOL; mols = mols.slice(0, MAX_MOL);
   const keep = new Set(mols.map(m => m.id.slice(2)));
   const agsUsadas = new Set(); mols.forEach(m => m.ags.forEach(a => agsUsadas.add(a)));
@@ -240,10 +241,14 @@ function render() {
   vecinos = new Map(nodes.map(n => [n.id, new Set()]));
   links.forEach(l => { vecinos.get(l.source).add(l.target); vecinos.get(l.target).add(l.source); });
 
-  $('kMol').textContent = mols.length + (recortado ? '+' : '');
-  $('kAg').textContent = agsUsadas.size;
-  $('kAl').textContent = new Set(rows.filter(r => keep.has(r.molecula_clave)).map(r => r.alerta_id)).size;
-  $('kCruz').textContent = [...mol.values()].filter(m => m.ags.size >= 2).length;
+  // KPI = solo el resultado de los filtros activos (periodo, urgencia, agencia, ATC, mín. agencias y chips)
+  const agsFiltro = new Set(), alertasFiltro = new Set();
+  filtradas.forEach(m => { m.ags.forEach(a => agsFiltro.add(a)); m.alertas.forEach(id => alertasFiltro.add(id)); });
+  $('kMol').textContent = filtradas.length;
+  $('kMol').title = recortado ? `Se dibujan las ${MAX_MOL} con más agencias` : '';
+  $('kAg').textContent = agsFiltro.size;
+  $('kAl').textContent = alertasFiltro.size;
+  $('kCruz').textContent = filtradas.filter(m => m.ags.size >= 2).length;
   dibujarChips(rows);
   $('ov').style.display = mols.length ? 'none' : 'flex';
   if (!mols.length) $('ov').textContent = 'No hay moléculas con estos filtros. Baja «Mín. agencias», cambia la agencia o amplía el periodo.';
