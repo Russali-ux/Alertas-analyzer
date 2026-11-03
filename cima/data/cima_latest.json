@@ -1,23 +1,23 @@
 {
-  "generado": "2026-11-02T22:25:39Z",
-  "generado_str": "02/11/2026 22:25 UTC",
-  "fecha_codigo": "20261102",
+  "generado": "2026-11-03T20:14:31Z",
+  "generado_str": "03/11/2026 20:14 UTC",
+  "fecha_codigo": "20261103",
   "periodo": {
-    "desde": "03/10/2026",
-    "hasta": "02/11/2026",
+    "desde": "04/10/2026",
+    "hasta": "03/11/2026",
     "dias": 30
   },
-  "excel": "ConkosafeIA_Regulatorio_20261102.xlsx",
-  "markdown": "../summaries/cima_2026-11-02.md",
+  "excel": "ConkosafeIA_Regulatorio_20261103.xlsx",
+  "markdown": "../summaries/cima_2026-11-03.md",
   "stats": {
-    "total": 959,
-    "solo_ft": 120,
+    "total": 958,
+    "solo_ft": 119,
     "solo_prosp": 222,
     "ambos": 617,
     "top_labs": [
       {
         "lab": "Teva Gmbh",
-        "n": 154
+        "n": 153
       },
       {
         "lab": "Laboratorios Cinfa S.A.",
@@ -14427,21 +14427,6 @@
       "ft_html": "https://cima.aemps.es/cima/dochtml/ft/8399/FT_8399.html",
       "p_pdf": "https://cima.aemps.es/cima/pdfs/p/8399/P_8399.pdf",
       "p_html": "https://cima.aemps.es/cima/dochtml/p/8399/P_8399.html"
-    },
-    {
-      "nreg": "81380",
-      "nombre": "SILDENAFILO TEVAGEN 20 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG",
-      "lab": "Teva Gmbh",
-      "fecha": "03/10/2026 06:56",
-      "tipo": "MODIFICADO",
-      "otros": "",
-      "cat": "ft",
-      "has_ft": true,
-      "has_prosp": false,
-      "ft_pdf": "https://cima.aemps.es/cima/pdfs/ft/81380/FT_81380.pdf",
-      "ft_html": "https://cima.aemps.es/cima/dochtml/ft/81380/FT_81380.html",
-      "p_pdf": null,
-      "p_html": null
     }
   ]
 }
