@@ -1,17 +1,17 @@
 # ConkoSafe IA — Cambios en Ficha Técnica y Prospecto (CIMA / AEMPS)
 
-**Generado:** 03/11/2026 20:18 UTC  
-**Periodo:** 23/06/2026 → 02/11/2026 (últimos 132 días)  
+**Generado:** 04/11/2026 20:34 UTC  
+**Periodo:** 23/06/2026 → 04/11/2026 (últimos 134 días)  
 **Fuente:** [CIMA — AEMPS (registroCambios)](https://cima.aemps.es/cima/rest/registroCambios)
 
 ## Resumen
 
 | Categoría | Cantidad |
 |---|---:|
-| Solo Ficha Técnica | 1976 |
-| Solo Prospecto | 2633 |
-| FT + Prospecto (ambos) | 8934 |
-| **TOTAL con FT o Prospecto** | **13543** |
+| Solo Ficha Técnica | 1980 |
+| Solo Prospecto | 2639 |
+| FT + Prospecto (ambos) | 8953 |
+| **TOTAL con FT o Prospecto** | **13572** |
 
 Descarga del detalle completo: `ConkosafeIA_Regulatorio_ACUMULADO.xlsx`
 
@@ -19,12 +19,12 @@ Descarga del detalle completo: `ConkosafeIA_Regulatorio_ACUMULADO.xlsx`
 
 - Laboratorios Cinfa S.A. — 618 cambio(s)
 - Laboratorios Normon S.A. — 575 cambio(s)
-- Laboratorio Stada S.L. — 486 cambio(s)
+- Laboratorio Stada S.L. — 487 cambio(s)
 - Teva Gmbh — 459 cambio(s)
 - Sandoz Farmaceutica S.A. — 451 cambio(s)
-- Kern Pharma S.L. — 396 cambio(s)
+- Kern Pharma S.L. — 398 cambio(s)
 - Teva Pharma S.L.U. — 372 cambio(s)
-- Aurovitas Spain, S.A.U. — 289 cambio(s)
+- Aurovitas Spain, S.A.U. — 292 cambio(s)
 - Laboratorios Alter S.A. — 285 cambio(s)
 - Towa Pharmaceutical S.A. — 269 cambio(s)
 
@@ -32,6 +32,35 @@ Descarga del detalle completo: `ConkosafeIA_Regulatorio_ACUMULADO.xlsx`
 
 | Nº Registro | Medicamento | Laboratorio | Fecha | Tipo | Cambio | Enlaces |
 |---|---|---|---|---|---|---|
+| 65833 | TRAMADOL ARISTO 100 mg COMPRIMIDOS DE LIBERACION PROLONGADA EFG | Aristo Pharma Iberia S.L. | 04/11/2026 07:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/65833/FT_65833.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/65833/FT_65833.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/65833/P_65833.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/65833/P_65833.html) |
+| 65834 | TRAMADOL ARISTO 150 mg COMPRIMIDOS DE LIBERACION PROLONGADA EFG | Aristo Pharma Iberia S.L. | 04/11/2026 07:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/65834/FT_65834.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/65834/FT_65834.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/65834/P_65834.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/65834/P_65834.html) |
+| 65835 | TRAMADOL ARISTO 200 mg COMPRIMIDOS DE LIBERACION PROLONGADA EFG | Aristo Pharma Iberia S.L. | 04/11/2026 07:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/65835/FT_65835.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/65835/FT_65835.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/65835/P_65835.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/65835/P_65835.html) |
+| 73761 | TOPIRAMATO PHARMA COMBIX 200 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Laboratorios Combix S.L.U. | 04/11/2026 07:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/73761/P_73761.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/73761/P_73761.html) |
+| 73763 | TOPIRAMATO PHARMA COMBIX 50 mg COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Laboratorios Combix S.L.U. | 04/11/2026 07:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/73763/P_73763.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/73763/P_73763.html) |
+| 73765 | TOPIRAMATO PHARMA COMBIX 100 mg COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Laboratorios Combix S.L.U. | 04/11/2026 07:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/73765/P_73765.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/73765/P_73765.html) |
+| 75952 | FENTANILO MATRIX VIATRIS 25 mcg/H PARCHES TRANSDERMICOS EFG | Viatris Limited | 04/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/75952/FT_75952.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/75952/FT_75952.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/75952/P_75952.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/75952/P_75952.html) |
+| 75953 | FENTANILO MATRIX VIATRIS 50 mcg/H PARCHES TRANSDERMICOS EFG | Viatris Limited | 04/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/75953/FT_75953.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/75953/FT_75953.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/75953/P_75953.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/75953/P_75953.html) |
+| 75954 | FENTANILO MATRIX VIATRIS 75 mcg/H PARCHES TRANSDERMICOS EFG | Viatris Limited | 04/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/75954/FT_75954.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/75954/FT_75954.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/75954/P_75954.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/75954/P_75954.html) |
+| 75955 | FENTANILO MATRIX VIATRIS 100 mcg/H PARCHES TRANSDERMICOS EFG | Viatris Limited | 04/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/75955/FT_75955.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/75955/FT_75955.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/75955/P_75955.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/75955/P_75955.html) |
+| 89801 | ELTROMBOPAG KERN PHARMA 12,5 MG COMPRIMIDOS RECUBIERTOS CON PELÍCULA EFG | Kern Pharma S.L. | 04/11/2026 07:55 | MODIFICADO | FT | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/89801/FT_89801.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/89801/FT_89801.html) |
+| 89802 | ELTROMBOPAG KERN PHARMA 25 MG COMPRIMIDOS RECUBIERTOS CON PELÍCULA EFG | Kern Pharma S.L. | 04/11/2026 07:55 | MODIFICADO | FT | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/89802/FT_89802.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/89802/FT_89802.html) |
+| 90942 | EMTRICITABINA/TENOFOVIR ALAFENAMIDA ZENTIVA 200 MG/10 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Zentiva K.S. | 04/11/2026 07:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/90942/P_90942.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/90942/P_90942.html) |
+| 90943 | EMTRICITABINA/TENOFOVIR ALAFENAMIDA ZENTIVA 200MG/25MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Zentiva K.S. | 04/11/2026 07:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/90943/P_90943.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/90943/P_90943.html) |
+| 78235 | DIPREX 20 MG/ML GOTAS ORALES EN SOLUCION EFG | Industria Quimica Y Farmaceutica Vir S.A. | 04/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/78235/FT_78235.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/78235/FT_78235.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/78235/P_78235.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/78235/P_78235.html) |
+| 56961 | CICLOCHEM 10 MG/G CREMA VAGINAL | Galenicum Derma S.L.U. | 04/11/2026 07:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/56961/P_56961.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/56961/P_56961.html) |
+| 80785 | ARIPIPRAZOL TARBIS FARMA 10 mg COMPRIMIDOS EFG | Tarbis Farma S.L. | 04/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/80785/FT_80785.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/80785/FT_80785.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/80785/P_80785.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/80785/P_80785.html) |
+| 80786 | ARIPIPRAZOL TARBIS FARMA 15 mg COMPRIMIDOS EFG | Tarbis Farma S.L. | 04/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/80786/FT_80786.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/80786/FT_80786.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/80786/P_80786.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/80786/P_80786.html) |
+| 80787 | ARIPIPRAZOL TARBIS FARMA 5 mg COMPRIMIDOS EFG | Tarbis Farma S.L. | 04/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/80787/FT_80787.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/80787/FT_80787.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/80787/P_80787.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/80787/P_80787.html) |
+| 81556 | ALPRAZOLAM AUROVITAS 0,25 MG COMPRIMIDOS EFG | Aurovitas Spain, S.A.U. | 04/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/81556/FT_81556.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/81556/FT_81556.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/81556/P_81556.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/81556/P_81556.html) |
+| 81557 | ALPRAZOLAM AUROVITAS 0,5 MG COMPRIMIDOS EFG | Aurovitas Spain, S.A.U. | 04/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/81557/FT_81557.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/81557/FT_81557.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/81557/P_81557.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/81557/P_81557.html) |
+| 81558 | ALPRAZOLAM AUROVITAS 1 MG COMPRIMIDOS EFG | Aurovitas Spain, S.A.U. | 04/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/81558/FT_81558.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/81558/FT_81558.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/81558/P_81558.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/81558/P_81558.html) |
+| 42643 | PROGEVERA 5 mg COMPRIMIDOS | Pfizer S.L. | 04/11/2026 07:55 | MODIFICADO | FT | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/42643/FT_42643.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/42643/FT_42643.html) |
+| 47814 | PROGYNOVA 1 mg COMPRIMIDOS RECUBIERTOS | Advanz Pharma Limited | 04/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/47814/FT_47814.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/47814/FT_47814.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/47814/P_47814.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/47814/P_47814.html) |
+| 53201 | PROGYLUTON COMPRIMIDOS RECUBIERTOS | Advanz Pharma Limited | 04/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/53201/FT_53201.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/53201/FT_53201.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/53201/P_53201.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/53201/P_53201.html) |
+| 59139 | PROGEVERA 10 mg COMPRIMIDOS | Pfizer S.L. | 04/11/2026 07:55 | MODIFICADO | FT | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/59139/FT_59139.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/59139/FT_59139.html) |
+| 88232 | ESOMEPRAZOL TECNIGEN 20 MG COMPRIMIDOS GASTRORRESISTENTES EFG | Tecnimede España Industria Farmaceutica S.A. | 04/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/88232/FT_88232.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/88232/FT_88232.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/88232/P_88232.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/88232/P_88232.html) |
+| 88233 | ESOMEPRAZOL TECNIGEN 40 MG COMPRIMIDOS GASTRORRESISTENTES EFG | Tecnimede España Industria Farmaceutica S.A. | 04/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/88233/FT_88233.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/88233/FT_88233.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/88233/P_88233.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/88233/P_88233.html) |
+| 79267 | MOMETASONA FUROATO STADA 50 MICROGRAMOS/PULVERIZACION SUSPENSION PARA PULVERIZACION NASAL | Laboratorio Stada S.L. | 04/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/79267/FT_79267.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/79267/FT_79267.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/79267/P_79267.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/79267/P_79267.html) |
 | 89896 | TIOTEPA VIVANTA 100 MG POLVO PARA CONCENTRADO PARA SOLUCION PARA PERFUSION EFG | Vivanta Generics S.R.O. | 02/11/2026 07:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/89896/FT_89896.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/89896/FT_89896.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/89896/P_89896.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/89896/P_89896.html) |
 | 89897 | TIOTEPA VIVANTA 15 MG POLVO PARA CONCENTRADO PARA SOLUCION PARA PERFUSION EFG | Vivanta Generics S.R.O. | 02/11/2026 07:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/89897/FT_89897.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/89897/FT_89897.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/89897/P_89897.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/89897/P_89897.html) |
 | 64287 | XAZAL 5 mg COMPRIMIDOS RECUBIERTOS CON PELICULA | Ucb Pharma S.A. | 02/11/2026 07:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/64287/P_64287.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/64287/P_64287.html) |
