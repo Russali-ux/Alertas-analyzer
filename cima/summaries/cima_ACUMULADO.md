@@ -1,37 +1,74 @@
 # ConkoSafe IA — Cambios en Ficha Técnica y Prospecto (CIMA / AEMPS)
 
-**Generado:** 05/11/2026 20:50 UTC  
-**Periodo:** 23/06/2026 → 05/11/2026 (últimos 135 días)  
+**Generado:** 06/11/2026 20:06 UTC  
+**Periodo:** 23/06/2026 → 06/11/2026 (últimos 136 días)  
 **Fuente:** [CIMA — AEMPS (registroCambios)](https://cima.aemps.es/cima/rest/registroCambios)
 
 ## Resumen
 
 | Categoría | Cantidad |
 |---|---:|
-| Solo Ficha Técnica | 1995 |
-| Solo Prospecto | 2643 |
-| FT + Prospecto (ambos) | 8963 |
-| **TOTAL con FT o Prospecto** | **13601** |
+| Solo Ficha Técnica | 1996 |
+| Solo Prospecto | 2660 |
+| FT + Prospecto (ambos) | 8982 |
+| **TOTAL con FT o Prospecto** | **13638** |
 
 Descarga del detalle completo: `ConkosafeIA_Regulatorio_ACUMULADO.xlsx`
 
 ### Top laboratorios
 
-- Laboratorios Cinfa S.A. — 629 cambio(s)
-- Laboratorios Normon S.A. — 576 cambio(s)
+- Laboratorios Cinfa S.A. — 630 cambio(s)
+- Laboratorios Normon S.A. — 581 cambio(s)
 - Laboratorio Stada S.L. — 490 cambio(s)
 - Teva Gmbh — 459 cambio(s)
 - Sandoz Farmaceutica S.A. — 455 cambio(s)
 - Kern Pharma S.L. — 399 cambio(s)
 - Teva Pharma S.L.U. — 372 cambio(s)
-- Aurovitas Spain, S.A.U. — 292 cambio(s)
-- Laboratorios Alter S.A. — 285 cambio(s)
-- Towa Pharmaceutical S.A. — 269 cambio(s)
+- Aurovitas Spain, S.A.U. — 294 cambio(s)
+- Laboratorios Alter S.A. — 293 cambio(s)
+- Towa Pharmaceutical S.A. — 270 cambio(s)
 
 ## Detalle de cambios
 
 | Nº Registro | Medicamento | Laboratorio | Fecha | Tipo | Cambio | Enlaces |
 |---|---|---|---|---|---|---|
+| 84771 | TRESUVI 1 MG/ML SOLUCION PARA PERFUSION EFG | Amomed Pharma Gmbh | 06/11/2026 07:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/84771/P_84771.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/84771/P_84771.html) |
+| 84772 | TRESUVI 2,5 MG/ML SOLUCION PARA PERFUSION EFG | Amomed Pharma Gmbh | 06/11/2026 07:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/84772/P_84772.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/84772/P_84772.html) |
+| 84773 | TRESUVI 5 MG/ML SOLUCION PARA PERFUSION EFG | Amomed Pharma Gmbh | 06/11/2026 07:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/84773/P_84773.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/84773/P_84773.html) |
+| 84774 | TRESUVI 10 MG/ML SOLUCION PARA PERFUSION EFG | Amomed Pharma Gmbh | 06/11/2026 07:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/84774/P_84774.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/84774/P_84774.html) |
+| 80650 | OLMESARTAN/HIDROCLOROTIAZIDA ALTER 40 MG/25 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Laboratorios Alter S.A. | 06/11/2026 07:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/80650/P_80650.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/80650/P_80650.html) |
+| 80651 | OLMESARTAN/HIDROCLOROTIAZIDA ALTER 20 MG/25 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Laboratorios Alter S.A. | 06/11/2026 07:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/80651/P_80651.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/80651/P_80651.html) |
+| 80653 | OLMESARTAN/HIDROCLOROTIAZIDA ALTER 20 MG/12,5 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Laboratorios Alter S.A. | 06/11/2026 07:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/80653/P_80653.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/80653/P_80653.html) |
+| 80658 | OLMESARTAN/HIDROCLOROTIAZIDA ALTER 40 MG/12,5 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Laboratorios Alter S.A. | 06/11/2026 07:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/80658/P_80658.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/80658/P_80658.html) |
+| 73318 | LEVOFLOXACINO SUN 500 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Sun Pharmaceutical Industries (Europe) B.V. | 06/11/2026 07:56 | MODIFICADO | FT | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/73318/FT_73318.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/73318/FT_73318.html) |
+| 91092 | MACITENTAN GLENMARK 10 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Glenmark Arzneimittel Gmbh | 06/11/2026 07:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/91092/P_91092.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91092/P_91092.html) |
+| 78512 | MARIONA DIARIO 0,15 MG/0,03 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Exeltis Healthcare S.L. | 06/11/2026 07:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/78512/FT_78512.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/78512/FT_78512.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/78512/P_78512.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/78512/P_78512.html) |
+| 89031 | METOXALENO S.A.L.F. 20 MICROGRAMOS/ML SOLUCION PARA MODIFICACION DE LAS FRACCIONES SANGUINEAS | S.A.L.F. S.P.A. Laboratorio Farmacologico | 06/11/2026 07:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/89031/P_89031.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/89031/P_89031.html) |
+| 74686 | GALANTAMINA VIATRIS 8 MG CAPSULAS DURAS DE LIBERACION PROLONGADA EFG | Viatris Limited | 06/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/74686/FT_74686.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/74686/FT_74686.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/74686/P_74686.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/74686/P_74686.html) |
+| 74687 | GALANTAMINA VIATRIS 16 MG CAPSULAS DURAS DE LIBERACION PROLONGADA EFG | Viatris Limited | 06/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/74687/FT_74687.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/74687/FT_74687.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/74687/P_74687.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/74687/P_74687.html) |
+| 74688 | GALANTAMINA VIATRIS 24 MG CAPSULAS DURAS DE LIBERACION PROLONGADA EFG | Viatris Limited | 06/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/74688/FT_74688.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/74688/FT_74688.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/74688/P_74688.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/74688/P_74688.html) |
+| 91604 | EMPAGLIFLOZINA AUROVITAS 10 MG COMPRIMIDOS RECUBIERTOS CON PELÍCULA EFG | Aurovitas Spain, S.A.U. | 06/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/91604/FT_91604.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/91604/FT_91604.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/91604/P_91604.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91604/P_91604.html) |
+| 91605 | EMPAGLIFLOZINA AUROVITAS 25 MG COMPRIMIDOS RECUBIERTOS CON PELÍCULA EFG | Aurovitas Spain, S.A.U. | 06/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/91605/FT_91605.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/91605/FT_91605.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/91605/P_91605.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91605/P_91605.html) |
+| 89593 | DEXMEDETOMIDINA HIKMA 100 MICROGRAMOS/ML CONCENTRADO PARA SOLUCIÓN PARA PERFUSIÓN EFG | Hikma Farmaceutica (Portugal) S.A. | 06/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/89593/FT_89593.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/89593/FT_89593.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/89593/P_89593.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/89593/P_89593.html) |
+| 74455 | CITARABINA ACCORD 100 mg/ml SOLUCION INYECTABLE Y PARA PERFUSION | Accord Healthcare S.L.U. | 06/11/2026 07:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/74455/P_74455.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/74455/P_74455.html) |
+| 80738 | ATOLME PLUS 20 MG/25 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Laboratorios Alter S.A. | 06/11/2026 07:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/80738/P_80738.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/80738/P_80738.html) |
+| 80739 | ATOLME PLUS 40 MG/25 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Laboratorios Alter S.A. | 06/11/2026 07:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/80739/P_80739.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/80739/P_80739.html) |
+| 80740 | ATOLME PLUS 40 MG/12,5 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Laboratorios Alter S.A. | 06/11/2026 07:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/80740/P_80740.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/80740/P_80740.html) |
+| 80741 | ATOLME PLUS 20 MG/12,5 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Laboratorios Alter S.A. | 06/11/2026 07:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/80741/P_80741.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/80741/P_80741.html) |
+| 84173 | AMOXICILINA PENSA PHARMA 500 MG CAPSULAS DURAS EFG | Towa Pharmaceutical S.A. | 06/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/84173/FT_84173.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/84173/FT_84173.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/84173/P_84173.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/84173/P_84173.html) |
+| 86013 | SITAGLIPTINA VIATRIS 25 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Viatris Limited | 06/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/86013/FT_86013.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/86013/FT_86013.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/86013/P_86013.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/86013/P_86013.html) |
+| 86014 | SITAGLIPTINA VIATRIS 50 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Viatris Limited | 06/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/86014/FT_86014.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/86014/FT_86014.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/86014/P_86014.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/86014/P_86014.html) |
+| 86015 | SITAGLIPTINA VIATRIS 100 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Viatris Limited | 06/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/86015/FT_86015.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/86015/FT_86015.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/86015/P_86015.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/86015/P_86015.html) |
+| 56941 | FUNGOWAS 10 MG/G CREMA | Chiesi España S.A.U. | 06/11/2026 07:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/56941/P_56941.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/56941/P_56941.html) |
+| 56990 | FUNGOWAS 10 MG/ML SOLUCIÓN CUTÁNEA | Chiesi España S.A.U. | 06/11/2026 07:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/56990/P_56990.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/56990/P_56990.html) |
+| 71913 | RIVASTIGMINA NORMON 2 mg/ml SOLUCION ORAL EFG | Laboratorios Normon S.A. | 06/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/71913/FT_71913.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/71913/FT_71913.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/71913/P_71913.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/71913/P_71913.html) |
+| 76049 | RIVASTIGMINA NORMON 1,5 mg CAPSULAS DURAS EFG | Laboratorios Normon S.A. | 06/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/76049/FT_76049.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/76049/FT_76049.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/76049/P_76049.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/76049/P_76049.html) |
+| 76050 | RIVASTIGMINA NORMON 3 mg CAPSULAS DURAS EFG | Laboratorios Normon S.A. | 06/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/76050/FT_76050.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/76050/FT_76050.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/76050/P_76050.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/76050/P_76050.html) |
+| 76051 | RIVASTIGMINA NORMON 4,5 mg CAPSULAS DURAS EFG | Laboratorios Normon S.A. | 06/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/76051/FT_76051.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/76051/FT_76051.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/76051/P_76051.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/76051/P_76051.html) |
+| 76052 | RIVASTIGMINA NORMON 6 mg CAPSULAS DURAS EFG | Laboratorios Normon S.A. | 06/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/76052/FT_76052.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/76052/FT_76052.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/76052/P_76052.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/76052/P_76052.html) |
+| 61791 | ACEOTO 3 MG/ML GOTAS ÓTICAS EN SOLUCIÓN | Laboratorios Salvat S.A. | 06/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/61791/FT_61791.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/61791/FT_61791.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/61791/P_61791.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/61791/P_61791.html) |
+| 64658 | ACEOTO PLUS 3 mg/ml + 0,25 mg/ml GOTAS ÓTICAS EN SOLUCIÓN | Laboratorios Salvat S.A. | 06/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/64658/FT_64658.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/64658/FT_64658.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/64658/P_64658.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/64658/P_64658.html) |
+| 77783 | AIDESSIA 0,15 MG/0,03 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Laboratorios Cinfa S.A. | 06/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/77783/FT_77783.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/77783/FT_77783.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/77783/P_77783.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/77783/P_77783.html) |
 | 89117 | ROCURONIO AGUETTANT 10 MG/ML SOLUCION INYECTABLE EN JERINGA PRECARGADA | Laboratoire Aguettant | 05/11/2026 07:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/89117/FT_89117.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/89117/FT_89117.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/89117/P_89117.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/89117/P_89117.html) |
 | 64375 | OMEPRAZOL TARBIS 20 mg CAPSULAS DURAS GASTRORRESISTENTES EFG | Tarbis Farma S.L. | 05/11/2026 07:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/64375/FT_64375.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/64375/FT_64375.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/64375/P_64375.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/64375/P_64375.html) |
 | 78683 | MOXIFLOXACINO VIATRIS 400 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Viatris Limited | 05/11/2026 07:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/78683/FT_78683.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/78683/FT_78683.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/78683/P_78683.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/78683/P_78683.html) |
