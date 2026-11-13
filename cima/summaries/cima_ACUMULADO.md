@@ -1,26 +1,26 @@
 # ConkoSafe IA — Cambios en Ficha Técnica y Prospecto (CIMA / AEMPS)
 
-**Generado:** 12/11/2026 21:05 UTC  
-**Periodo:** 23/06/2026 → 12/11/2026 (últimos 142 días)  
+**Generado:** 13/11/2026 20:41 UTC  
+**Periodo:** 23/06/2026 → 13/11/2026 (últimos 143 días)  
 **Fuente:** [CIMA — AEMPS (registroCambios)](https://cima.aemps.es/cima/rest/registroCambios)
 
 ## Resumen
 
 | Categoría | Cantidad |
 |---|---:|
-| Solo Ficha Técnica | 2013 |
-| Solo Prospecto | 2693 |
-| FT + Prospecto (ambos) | 9072 |
-| **TOTAL con FT o Prospecto** | **13778** |
+| Solo Ficha Técnica | 2014 |
+| Solo Prospecto | 2696 |
+| FT + Prospecto (ambos) | 9098 |
+| **TOTAL con FT o Prospecto** | **13808** |
 
 Descarga del detalle completo: `ConkosafeIA_Regulatorio_ACUMULADO.xlsx`
 
 ### Top laboratorios
 
-- Laboratorios Cinfa S.A. — 638 cambio(s)
+- Laboratorios Cinfa S.A. — 642 cambio(s)
 - Laboratorios Normon S.A. — 588 cambio(s)
 - Laboratorio Stada S.L. — 491 cambio(s)
-- Teva Gmbh — 468 cambio(s)
+- Teva Gmbh — 470 cambio(s)
 - Sandoz Farmaceutica S.A. — 465 cambio(s)
 - Kern Pharma S.L. — 400 cambio(s)
 - Teva Pharma S.L.U. — 372 cambio(s)
@@ -32,6 +32,36 @@ Descarga del detalle completo: `ConkosafeIA_Regulatorio_ACUMULADO.xlsx`
 
 | Nº Registro | Medicamento | Laboratorio | Fecha | Tipo | Cambio | Enlaces |
 |---|---|---|---|---|---|---|
+| 58850 | RADIO SALIL SPRAY SOLUCION PARA PULVERIZACION CUTANEA | Laboratorios Vinas S.A. | 13/11/2026 07:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/58850/P_58850.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/58850/P_58850.html) |
+| 70704 | PACLITAXEL KABI 6 mg/ml CONCENTRADO PARA SOLUCION PARA PERFUSION EFG | Fresenius Kabi España, S.A.U. | 13/11/2026 07:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/70704/P_70704.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/70704/P_70704.html) |
+| 89170 | OXIBUPROCAÍNA HIDROCLORURO AGEPHA 4 MG/ML COLIRIO EN SOLUCIÓN | Agepha Pharma S.R.O. | 13/11/2026 07:56 | MODIFICADO | FT | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/89170/FT_89170.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/89170/FT_89170.html) |
+| 76633 | MOXIFLOXACINO TEVAGEN 400 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Teva Gmbh | 13/11/2026 07:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/76633/FT_76633.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/76633/FT_76633.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/76633/P_76633.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/76633/P_76633.html) |
+| 66705 | FERIV 20 mg/ml SOLUCION INYECTABLE O CONCENTRADO PARA SOLUCION PARA PERFUSION | Altan Pharmaceuticals S.A. | 13/11/2026 07:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/66705/FT_66705.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/66705/FT_66705.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/66705/P_66705.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/66705/P_66705.html) |
+| 80182 | ARIPIPRAZOL LICONSA 5 MG COMPRIMIDOS EFG | Laboratorios Liconsa S.A. | 13/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/80182/FT_80182.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/80182/FT_80182.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/80182/P_80182.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/80182/P_80182.html) |
+| 80183 | ARIPIPRAZOL LICONSA 10 MG COMPRIMIDOS EFG | Laboratorios Liconsa S.A. | 13/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/80183/FT_80183.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/80183/FT_80183.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/80183/P_80183.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/80183/P_80183.html) |
+| 80184 | ARIPIPRAZOL LICONSA 15 MG COMPRIMIDOS EFG | Laboratorios Liconsa S.A. | 13/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/80184/FT_80184.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/80184/FT_80184.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/80184/P_80184.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/80184/P_80184.html) |
+| 88887 | ARIPIPRAZOL LABORATORIOS LICONSA 30 MG COMPRIMIDOS EFG | Laboratorios Liconsa S.A. | 13/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/88887/FT_88887.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/88887/FT_88887.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/88887/P_88887.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/88887/P_88887.html) |
+| 88888 | ARIPIPRAZOL LABORATORIOS LICONSA 20 MG COMPRIMIDOS | Laboratorios Liconsa S.A. | 13/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/88888/FT_88888.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/88888/FT_88888.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/88888/P_88888.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/88888/P_88888.html) |
+| 88889 | ARIPIPRAZOL LABORATORIOS LICONSA 15 MG COMPRIMIDOS EFG | Laboratorios Liconsa S.A. | 13/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/88889/FT_88889.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/88889/FT_88889.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/88889/P_88889.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/88889/P_88889.html) |
+| 88890 | ARIPIPRAZOL LABORATORIOS LICONSA 10 MG COMPRIMIDOS EFG | Laboratorios Liconsa S.A. | 13/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/88890/FT_88890.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/88890/FT_88890.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/88890/P_88890.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/88890/P_88890.html) |
+| 88891 | ARIPIPRAZOL LABORATORIOS LICONSA 5 MG COMPRIMIDOS EFG | Laboratorios Liconsa S.A. | 13/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/88891/FT_88891.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/88891/FT_88891.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/88891/P_88891.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/88891/P_88891.html) |
+| 90668 | ARIPIPRAZOL LABORATORIOS LICONSA 2,5 MG COMPRIMIDOS | Laboratorios Liconsa S.A. | 13/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/90668/FT_90668.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/90668/FT_90668.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/90668/P_90668.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/90668/P_90668.html) |
+| 65910 | WETIRIN 0,2 mg COMPRIMIDOS | Ferring S.A.U. | 13/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/65910/FT_65910.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/65910/FT_65910.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/65910/P_65910.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/65910/P_65910.html) |
+| 65911 | WETIRIN 0,1 mg COMPRIMIDOS | Ferring S.A.U. | 13/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/65911/FT_65911.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/65911/FT_65911.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/65911/P_65911.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/65911/P_65911.html) |
+| 82563 | TETRIDAR 20 MICROGRAMOS/80 MICROLITROS SOLUCION INYECTABLE EN PLUMA PRECARGADA | Teva Gmbh | 13/11/2026 07:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/82563/P_82563.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/82563/P_82563.html) |
+| 90301 | ELTROMBOPAG CIPLA 75 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Cipla Europe N.V. | 13/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/90301/FT_90301.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/90301/FT_90301.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/90301/P_90301.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/90301/P_90301.html) |
+| 90302 | ELTROMBOPAG CIPLA 25 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Cipla Europe N.V. | 13/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/90302/FT_90302.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/90302/FT_90302.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/90302/P_90302.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/90302/P_90302.html) |
+| 90337 | ELTROMBOPAG CIPLA 50 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Cipla Europe N.V. | 13/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/90337/FT_90337.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/90337/FT_90337.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/90337/P_90337.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/90337/P_90337.html) |
+| 20120 | CINFAMAR INFANTIL 25 mg COMPRIMIDOS RECUBIERTOS | Laboratorios Cinfa S.A. | 13/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/20120/FT_20120.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/20120/FT_20120.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/20120/P_20120.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/20120/P_20120.html) |
+| 58765 | DIFLUCAN 50 mg CAPSULAS DURAS | Vinci Farma, S.A. | 13/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/58765/FT_58765.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/58765/FT_58765.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/58765/P_58765.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/58765/P_58765.html) |
+| 58766 | DIFLUCAN 150 mg CAPSULAS DURAS | Vinci Farma, S.A. | 13/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/58766/FT_58766.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/58766/FT_58766.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/58766/P_58766.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/58766/P_58766.html) |
+| 58803 | DIFLUCAN 200 mg CAPSULAS DURAS | Vinci Farma, S.A. | 13/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/58803/FT_58803.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/58803/FT_58803.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/58803/P_58803.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/58803/P_58803.html) |
+| 58804 | DIFLUCAN 100 mg CAPSULAS DURAS | Vinci Farma, S.A. | 13/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/58804/FT_58804.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/58804/FT_58804.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/58804/P_58804.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/58804/P_58804.html) |
+| 59672 | DIFLUCAN 10 mg/ml POLVO PARA SUSPENSION ORAL | Vinci Farma, S.A. | 13/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/59672/FT_59672.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/59672/FT_59672.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/59672/P_59672.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/59672/P_59672.html) |
+| 59673 | DIFLUCAN 40 mg/ml POLVO PARA SUSPENSION ORAL | Vinci Farma, S.A. | 13/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/59673/FT_59673.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/59673/FT_59673.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/59673/P_59673.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/59673/P_59673.html) |
+| 60839 | CINFAMAR 50 mg COMPRIMIDOS RECUBIERTOS | Laboratorios Cinfa S.A. | 13/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/60839/FT_60839.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/60839/FT_60839.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/60839/P_60839.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/60839/P_60839.html) |
+| 69197 | CINFAMAR CAFEINA 50 mg/50 mg COMPRIMIDOS RECUBIERTOS | Laboratorios Cinfa S.A. | 13/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/69197/FT_69197.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/69197/FT_69197.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/69197/P_69197.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/69197/P_69197.html) |
+| 72308 | CINFAMAR INFANTIL 12,5 mg SOLUCION ORAL | Laboratorios Cinfa S.A. | 13/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/72308/FT_72308.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/72308/FT_72308.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/72308/P_72308.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/72308/P_72308.html) |
 | 79770 | VORICONAZOL ACCORD 200 MG POLVO PARA SOLUCION PARA PERFUSION EFG | Accord Healthcare S.L.U. | 12/11/2026 07:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/79770/FT_79770.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/79770/FT_79770.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/79770/P_79770.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/79770/P_79770.html) |
 | 81098 | VAXIGRIP TETRA SUSPENSION INYECTABLE EN JERINGA PRECARGADA | Sanofi Winthrop Industrie | 12/11/2026 07:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/81098/P_81098.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/81098/P_81098.html) |
 | 85352 | VAGIRUX 10 MICROGRAMOS COMPRIMIDOS VAGINALES | Gedeon Richter Plc. | 12/11/2026 07:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/85352/FT_85352.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/85352/FT_85352.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/85352/P_85352.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/85352/P_85352.html) |
