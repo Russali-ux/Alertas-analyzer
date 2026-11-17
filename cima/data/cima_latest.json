@@ -1,19 +1,19 @@
 {
-  "generado": "2026-11-16T22:58:32Z",
-  "generado_str": "16/11/2026 22:58 UTC",
-  "fecha_codigo": "20261116",
+  "generado": "2026-11-17T21:51:33Z",
+  "generado_str": "17/11/2026 21:51 UTC",
+  "fecha_codigo": "20261117",
   "periodo": {
-    "desde": "17/10/2026",
-    "hasta": "16/11/2026",
+    "desde": "18/10/2026",
+    "hasta": "17/11/2026",
     "dias": 30
   },
-  "excel": "ConkosafeIA_Regulatorio_20261116.xlsx",
-  "markdown": "../summaries/cima_2026-11-16.md",
+  "excel": "ConkosafeIA_Regulatorio_20261117.xlsx",
+  "markdown": "../summaries/cima_2026-11-17.md",
   "stats": {
-    "total": 641,
+    "total": 640,
     "solo_ft": 102,
     "solo_prosp": 143,
-    "ambos": 396,
+    "ambos": 395,
     "top_labs": [
       {
         "lab": "Laboratorios Cinfa S.A.",
@@ -9657,21 +9657,6 @@
       "ft_html": null,
       "p_pdf": "https://cima.aemps.es/cima/pdfs/p/78146/P_78146.pdf",
       "p_html": "https://cima.aemps.es/cima/dochtml/p/78146/P_78146.html"
-    },
-    {
-      "nreg": "1191404012",
-      "nombre": "RINVOQ 1MG/ML SOLUCION ORAL",
-      "lab": "Abbvie Deutschland Gmbh & Co. Kg",
-      "fecha": "17/10/2026 06:56",
-      "tipo": "MODIFICADO",
-      "otros": "",
-      "cat": "both",
-      "has_ft": true,
-      "has_prosp": true,
-      "ft_pdf": "https://cima.aemps.es/cima/pdfs/ft/1191404012/FT_1191404012.pdf",
-      "ft_html": "https://cima.aemps.es/cima/dochtml/ft/1191404012/FT_1191404012.html",
-      "p_pdf": "https://cima.aemps.es/cima/pdfs/p/1191404012/P_1191404012.pdf",
-      "p_html": "https://cima.aemps.es/cima/dochtml/p/1191404012/P_1191404012.html"
     }
   ]
 }
