@@ -1,37 +1,69 @@
 # ConkoSafe IA — Cambios en Ficha Técnica y Prospecto (CIMA / AEMPS)
 
-**Generado:** 19/11/2026 21:49 UTC  
-**Periodo:** 23/06/2026 → 19/11/2026 (últimos 149 días)  
+**Generado:** 20/11/2026 21:33 UTC  
+**Periodo:** 23/06/2026 → 20/11/2026 (últimos 150 días)  
 **Fuente:** [CIMA — AEMPS (registroCambios)](https://cima.aemps.es/cima/rest/registroCambios)
 
 ## Resumen
 
 | Categoría | Cantidad |
 |---|---:|
-| Solo Ficha Técnica | 2047 |
-| Solo Prospecto | 2748 |
-| FT + Prospecto (ambos) | 9186 |
-| **TOTAL con FT o Prospecto** | **13981** |
+| Solo Ficha Técnica | 2050 |
+| Solo Prospecto | 2749 |
+| FT + Prospecto (ambos) | 9214 |
+| **TOTAL con FT o Prospecto** | **14013** |
 
 Descarga del detalle completo: `ConkosafeIA_Regulatorio_ACUMULADO.xlsx`
 
 ### Top laboratorios
 
 - Laboratorios Cinfa S.A. — 650 cambio(s)
-- Laboratorios Normon S.A. — 597 cambio(s)
+- Laboratorios Normon S.A. — 598 cambio(s)
 - Laboratorio Stada S.L. — 493 cambio(s)
 - Teva Gmbh — 483 cambio(s)
-- Sandoz Farmaceutica S.A. — 473 cambio(s)
+- Sandoz Farmaceutica S.A. — 475 cambio(s)
 - Kern Pharma S.L. — 402 cambio(s)
 - Teva Pharma S.L.U. — 377 cambio(s)
 - Laboratorios Alter S.A. — 305 cambio(s)
 - Aurovitas Spain, S.A.U. — 303 cambio(s)
-- Towa Pharmaceutical S.A. — 273 cambio(s)
+- Tarbis Farma S.L. — 273 cambio(s)
 
 ## Detalle de cambios
 
 | Nº Registro | Medicamento | Laboratorio | Fecha | Tipo | Cambio | Enlaces |
 |---|---|---|---|---|---|---|
+| 1251998001 | TEIZEILD 1 MG/ML CONCENTRADO PARA SOLUCION PARA PERFUSION | Sanofi Winthrop Industrie | 20/11/2026 07:56 | MODIFICADO | FT | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/1251998001/FT_1251998001.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/1251998001/FT_1251998001.html) |
+| 89417 | TERIFLUNOMIDA NEURAXPHARM 14 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Neuraxpharm Spain S.L.U. | 20/11/2026 07:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/89417/P_89417.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/89417/P_89417.html) |
+| 89461 | SUMATRIPTAN LUPIN 6 MG SOLUCION INYECTABLE EN PLUMA PRECARGADA EFG | Lupin Europe Gmbh | 20/11/2026 07:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/89461/FT_89461.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/89461/FT_89461.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/89461/P_89461.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/89461/P_89461.html) |
+| 91755 | SUNITINIB TARBIS 12,5 MG CAPSULAS DURAS EFG | Tarbis Farma S.L. | 20/11/2026 07:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/91755/FT_91755.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/91755/FT_91755.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/91755/P_91755.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91755/P_91755.html) |
+| 91756 | SUNITINIB TARBIS 25 MG CAPSULAS DURAS EFG | Tarbis Farma S.L. | 20/11/2026 07:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/91756/FT_91756.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/91756/FT_91756.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/91756/P_91756.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91756/P_91756.html) |
+| 91757 | SUNITINIB TARBIS 50 MG CAPSULAS DURAS EFG | Tarbis Farma S.L. | 20/11/2026 07:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/91757/FT_91757.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/91757/FT_91757.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/91757/P_91757.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91757/P_91757.html) |
+| 91758 | SUNITINIB TARBIS 37,5 MG CAPSULAS DURAS EFG | Tarbis Farma S.L. | 20/11/2026 07:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/91758/FT_91758.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/91758/FT_91758.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/91758/P_91758.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91758/P_91758.html) |
+| 91130 | NEMODIX 10 MG/ML SOLUCION PARA PULVERIZACION CUTANEA | West Quimica Europa S.L. | 20/11/2026 07:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/91130/FT_91130.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/91130/FT_91130.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/91130/P_91130.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91130/P_91130.html) |
+| 70701 | IRBESARTAN LICONSA 300 MG COMPRIMIDOS EFG | Laboratorios Liconsa S.A. | 20/11/2026 07:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/70701/FT_70701.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/70701/FT_70701.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/70701/P_70701.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/70701/P_70701.html) |
+| 70702 | IRBESARTAN LICONSA 75 MG COMPRIMIDOS EFG | Laboratorios Liconsa S.A. | 20/11/2026 07:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/70702/FT_70702.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/70702/FT_70702.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/70702/P_70702.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/70702/P_70702.html) |
+| 70703 | IRBESARTAN LICONSA 150 MG COMPRIMIDOS EFG | Laboratorios Liconsa S.A. | 20/11/2026 07:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/70703/FT_70703.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/70703/FT_70703.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/70703/P_70703.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/70703/P_70703.html) |
+| 90369 | KETYALIX 25 MG/ML SUSPENSION ORAL | Italfarmaco S.A. | 20/11/2026 07:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/90369/FT_90369.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/90369/FT_90369.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/90369/P_90369.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/90369/P_90369.html) |
+| 91749 | EDOXABAN SWANPOND INVESTMENTS 15 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Swan Pond Investments Limited | 20/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/91749/FT_91749.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/91749/FT_91749.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/91749/P_91749.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91749/P_91749.html) |
+| 91750 | EDOXABAN SWANPOND INVESTMENTS 30 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Swan Pond Investments Limited | 20/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/91750/FT_91750.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/91750/FT_91750.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/91750/P_91750.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91750/P_91750.html) |
+| 91751 | EDOXABAN SWANPOND INVESTMENTS 60 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Swan Pond Investments Limited | 20/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/91751/FT_91751.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/91751/FT_91751.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/91751/P_91751.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91751/P_91751.html) |
+| 48827 | DEPAKINE 200 mg COMPRIMIDOS GASTRORRESISTENTES | Sanofi Aventis S.A. | 20/11/2026 07:55 | MODIFICADO | FT | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/48827/FT_48827.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/48827/FT_48827.html) |
+| 54470 | DEPAKINE 500 mg COMPRIMIDOS GASTRORRESISTENTES | Sanofi Aventis S.A. | 20/11/2026 07:55 | MODIFICADO | FT | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/54470/FT_54470.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/54470/FT_54470.html) |
+| 91753 | DEFERASIROX SANDOZ 90 MG COMPRIMIDOS RECUBIERTOS CON PELÍCULA EFG | Sandoz Farmaceutica S.A. | 20/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/91753/FT_91753.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/91753/FT_91753.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/91753/P_91753.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91753/P_91753.html) |
+| 91754 | DEFERASIROX SANDOZ 360 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Sandoz Farmaceutica S.A. | 20/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/91754/FT_91754.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/91754/FT_91754.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/91754/P_91754.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91754/P_91754.html) |
+| 86376 | CARBAMAZEPINA UMEDICA 100 MG COMPRIMIDOS EFG | Umedica Netherlands B.V. | 20/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/86376/FT_86376.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/86376/FT_86376.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/86376/P_86376.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/86376/P_86376.html) |
+| 86377 | CARBAMAZEPINA UMEDICA 200 MG COMPRIMIDOS EFG | Umedica Netherlands B.V. | 20/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/86377/FT_86377.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/86377/FT_86377.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/86377/P_86377.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/86377/P_86377.html) |
+| 86378 | CARBAMAZEPINA UMEDICA 400 MG COMPRIMIDOS EFG | Umedica Netherlands B.V. | 20/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/86378/FT_86378.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/86378/FT_86378.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/86378/P_86378.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/86378/P_86378.html) |
+| 91759 | CLAVERSAL 1500 MG COMPRIMIDOS GASTRORRESISTENTES | Faes Farma S.A. | 20/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/91759/FT_91759.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/91759/FT_91759.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/91759/P_91759.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91759/P_91759.html) |
+| 91752 | ACIDO ACETILSALICILICO NORMON 100 MG COMPRIMIDOS GASTRORRESISTENTES | Laboratorios Normon S.A. | 20/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/91752/FT_91752.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/91752/FT_91752.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/91752/P_91752.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91752/P_91752.html) |
+| 71370 | URNEVA 0,4 mg CAPSULAS DE LIBERACION PROLONGADA EFG | Tecnimede España Industria Farmaceutica S.A. | 20/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/71370/FT_71370.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/71370/FT_71370.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/71370/P_71370.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/71370/P_71370.html) |
+| 75408 | ANAPEN 0,15 mg/0,3 ml SOLUCION INYECTABLE EN JERINGA PRECARGADA | Bioprojet Pharma | 20/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/75408/FT_75408.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/75408/FT_75408.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/75408/P_75408.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/75408/P_75408.html) |
+| 75409 | ANAPEN 0,30 mg/0,3 ml SOLUCION INYECTABLE EN JERINGA PRECARGADA | Bioprojet Pharma | 20/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/75409/FT_75409.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/75409/FT_75409.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/75409/P_75409.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/75409/P_75409.html) |
+| 73632 | BISOPROLOL COR VIATRIS 2,5 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Viatris Limited | 20/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/73632/FT_73632.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/73632/FT_73632.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/73632/P_73632.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/73632/P_73632.html) |
+| 73633 | BISOPROLOL COR VIATRIS 5 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Viatris Limited | 20/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/73633/FT_73633.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/73633/FT_73633.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/73633/P_73633.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/73633/P_73633.html) |
+| 73634 | BISOPROLOL COR VIATRIS 10 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Viatris Limited | 20/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/73634/FT_73634.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/73634/FT_73634.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/73634/P_73634.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/73634/P_73634.html) |
+| 73635 | BISOPROLOL VIATRIS PHARMACEUTICALS 5 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Viatris Limited | 20/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/73635/FT_73635.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/73635/FT_73635.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/73635/P_73635.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/73635/P_73635.html) |
+| 73636 | BISOPROLOL VIATRIS PHARMACEUTICALS 10 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Viatris Limited | 20/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/73636/FT_73636.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/73636/FT_73636.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/73636/P_73636.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/73636/P_73636.html) |
 | 48048 | TRANGOREX 200 mg COMPRIMIDOS | Sanofi Aventis S.A. | 19/11/2026 07:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/48048/P_48048.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/48048/P_48048.html) |
 | 62925 | TRAMADOL VIATRIS 100 MG/ML GOTAS ORALES EN SOLUCIÓN EFG | Viatris Limited | 19/11/2026 07:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/62925/FT_62925.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/62925/FT_62925.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/62925/P_62925.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/62925/P_62925.html) |
 | 91465 | VELIXA 6 MG/ML SOLUCION INYECTABLE EN PLUMA PRECARGADA | Tecnimede España Industria Farmaceutica S.A. | 19/11/2026 07:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/91465/FT_91465.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/91465/FT_91465.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/91465/P_91465.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91465/P_91465.html) |
