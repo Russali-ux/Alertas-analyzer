@@ -1,18 +1,18 @@
 {
-  "generado": "2026-11-20T21:33:55Z",
-  "generado_str": "20/11/2026 21:33 UTC",
+  "generado": "2026-11-21T20:17:51Z",
+  "generado_str": "21/11/2026 20:17 UTC",
   "fecha_codigo": "ACUMULADO",
   "periodo": {
     "desde": "23/06/2026",
-    "hasta": "20/11/2026",
-    "dias": 150
+    "hasta": "21/11/2026",
+    "dias": 151
   },
   "excel": "ConkosafeIA_Regulatorio_ACUMULADO.xlsx",
   "markdown": "../summaries/cima_ACUMULADO.md",
   "stats": {
-    "total": 14013,
+    "total": 14014,
     "solo_ft": 2050,
-    "solo_prosp": 2749,
+    "solo_prosp": 2750,
     "ambos": 9214,
     "top_labs": [
       {
@@ -58,6 +58,21 @@
     ]
   },
   "registros": [
+    {
+      "nreg": "1251998001",
+      "nombre": "TEIZEILD 1 MG/ML CONCENTRADO PARA SOLUCION PARA PERFUSION",
+      "lab": "Sanofi Winthrop Industrie",
+      "fecha": "21/11/2026 07:56",
+      "tipo": "MODIFICADO",
+      "otros": "Materiales informativos",
+      "cat": "prosp",
+      "has_ft": false,
+      "has_prosp": true,
+      "ft_pdf": null,
+      "ft_html": null,
+      "p_pdf": "https://cima.aemps.es/cima/pdfs/p/1251998001/P_1251998001.pdf",
+      "p_html": "https://cima.aemps.es/cima/dochtml/p/1251998001/P_1251998001.html"
+    },
     {
       "nreg": "1251998001",
       "nombre": "TEIZEILD 1 MG/ML CONCENTRADO PARA SOLUCION PARA PERFUSION",

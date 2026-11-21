@@ -1,7 +1,7 @@
 # ConkoSafe IA — Cambios en Ficha Técnica y Prospecto (CIMA / AEMPS)
 
-**Generado:** 20/11/2026 21:33 UTC  
-**Periodo:** 23/06/2026 → 20/11/2026 (últimos 150 días)  
+**Generado:** 21/11/2026 20:17 UTC  
+**Periodo:** 23/06/2026 → 21/11/2026 (últimos 151 días)  
 **Fuente:** [CIMA — AEMPS (registroCambios)](https://cima.aemps.es/cima/rest/registroCambios)
 
 ## Resumen
@@ -9,9 +9,9 @@
 | Categoría | Cantidad |
 |---|---:|
 | Solo Ficha Técnica | 2050 |
-| Solo Prospecto | 2749 |
+| Solo Prospecto | 2750 |
 | FT + Prospecto (ambos) | 9214 |
-| **TOTAL con FT o Prospecto** | **14013** |
+| **TOTAL con FT o Prospecto** | **14014** |
 
 Descarga del detalle completo: `ConkosafeIA_Regulatorio_ACUMULADO.xlsx`
 
@@ -32,6 +32,7 @@ Descarga del detalle completo: `ConkosafeIA_Regulatorio_ACUMULADO.xlsx`
 
 | Nº Registro | Medicamento | Laboratorio | Fecha | Tipo | Cambio | Enlaces |
 |---|---|---|---|---|---|---|
+| 1251998001 | TEIZEILD 1 MG/ML CONCENTRADO PARA SOLUCION PARA PERFUSION | Sanofi Winthrop Industrie | 21/11/2026 07:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/1251998001/P_1251998001.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/1251998001/P_1251998001.html) |
 | 1251998001 | TEIZEILD 1 MG/ML CONCENTRADO PARA SOLUCION PARA PERFUSION | Sanofi Winthrop Industrie | 20/11/2026 07:56 | MODIFICADO | FT | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/1251998001/FT_1251998001.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/1251998001/FT_1251998001.html) |
 | 89417 | TERIFLUNOMIDA NEURAXPHARM 14 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Neuraxpharm Spain S.L.U. | 20/11/2026 07:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/89417/P_89417.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/89417/P_89417.html) |
 | 89461 | SUMATRIPTAN LUPIN 6 MG SOLUCION INYECTABLE EN PLUMA PRECARGADA EFG | Lupin Europe Gmbh | 20/11/2026 07:56 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/89461/FT_89461.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/89461/FT_89461.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/89461/P_89461.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/89461/P_89461.html) |
