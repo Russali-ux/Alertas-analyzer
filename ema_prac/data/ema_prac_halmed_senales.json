@@ -23714,5 +23714,61 @@
   "fuente_archivo": "The-list-of-all-signals-discussed-at-PRAC-meetings-since-September-2012-listopad-2026.xlsx",
   "fuente_url": "https://halmed.hr/fdsak3jnFsk1Kfa/ostale_stranice/The-list-of-all-signals-discussed-at-PRAC-meetings-since-September-2012-listopad-2026.xlsx",
   "fuente_actualizado": "2026-10-26"
+ },
+ {
+  "inn": "Cefpodoxime",
+  "senal": "Drug interaction between cefpodoxime and proton pump inhibitor resulting in a potentially reduced efficacy of cefpodoxime",
+  "reunion_texto": "26-29 October 2026",
+  "reunion": "26-29 October 2026",
+  "reunion_inicio": "2026-10-26",
+  "accion_titular": "Sí",
+  "accion_raw": "Update of the product information",
+  "nota_texto": "Extraído del PDF de EMA (sección 1, EPITT 20280: Update of the product information). Pendiente de la lista HALMED.",
+  "dedupe_key": "ce88d03fe1514707bd9c772756464798",
+  "fuente_archivo": "EMA PDF (texto extraído)",
+  "fuente_url": "https://www.ema.europa.eu/en/documents/prac-recommendation/prac-recommendations-signals-adopted-26-29-october-2026-prac-meeting_en.pdf",
+  "fuente_actualizado": "2026-11-23"
+ },
+ {
+  "inn": "Human normal immunoglobulin",
+  "senal": "Batch-associated hypersensitivity reactions",
+  "reunion_texto": "26-29 October 2026",
+  "reunion": "26-29 October 2026",
+  "reunion_inicio": "2026-10-26",
+  "accion_titular": "No",
+  "accion_raw": "Supplementary information requested (submission by 13 January 2027)",
+  "nota_texto": "Extraído del PDF de EMA (sección 2, EPITT 20318: Supplementary information requested (submission by 13 January 2027)). Pendiente de la lista HALMED.",
+  "dedupe_key": "3d38dce75131d05c061d5df3098478f7",
+  "fuente_archivo": "EMA PDF (texto extraído)",
+  "fuente_url": "https://www.ema.europa.eu/en/documents/prac-recommendation/prac-recommendations-signals-adopted-26-29-october-2026-prac-meeting_en.pdf",
+  "fuente_actualizado": "2026-11-23"
+ },
+ {
+  "inn": "Lithium; dulaglutide; insulin degludec / liraglutide; insulin glargine / lixisenatide; insulin icodec / semaglutide",
+  "senal": "Drug interaction between lithium and GLP-1 agonists leading to increased lithium levels",
+  "reunion_texto": "26-29 October 2026",
+  "reunion": "26-29 October 2026",
+  "reunion_inicio": "2026-10-26",
+  "accion_titular": "No",
+  "accion_raw": "∙ No action yet on product information update proposed by PRAC ∙ Provide comments on proposed product information wording",
+  "nota_texto": "Extraído del PDF de EMA (sección 3, EPITT 20275: ∙ No action yet on product information update proposed by PRAC ∙ Provide comments on proposed product information wording). Pendiente de la lista HALMED.",
+  "dedupe_key": "01ee842aa7675522cc30e48e66778fdd",
+  "fuente_archivo": "EMA PDF (texto extraído)",
+  "fuente_url": "https://www.ema.europa.eu/en/documents/prac-recommendation/prac-recommendations-signals-adopted-26-29-october-2026-prac-meeting_en.pdf",
+  "fuente_actualizado": "2026-11-23"
+ },
+ {
+  "inn": "Oseltamivir; intravenous zanamivir",
+  "senal": "New information on safety in patients critically ill with influenza",
+  "reunion_texto": "26-29 October 2026",
+  "reunion": "26-29 October 2026",
+  "reunion_inicio": "2026-10-26",
+  "accion_titular": "No",
+  "accion_raw": "Monitor in PSURs",
+  "nota_texto": "Extraído del PDF de EMA (sección 3, EPITT 20299: Monitor in PSURs). Pendiente de la lista HALMED.",
+  "dedupe_key": "5a99e853737ce3ee7a81a24d041f00a3",
+  "fuente_archivo": "EMA PDF (texto extraído)",
+  "fuente_url": "https://www.ema.europa.eu/en/documents/prac-recommendation/prac-recommendations-signals-adopted-26-29-october-2026-prac-meeting_en.pdf",
+  "fuente_actualizado": "2026-11-23"
  }
 ]

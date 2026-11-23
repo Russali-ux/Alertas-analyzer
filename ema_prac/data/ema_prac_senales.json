@@ -1,5 +1,38 @@
 [
   {
+    "molecula": "Cefpodoxime",
+    "senal": "Drug interaction between cefpodoxime and proton pump inhibitor resulting in a potentially reduced efficacy of cefpodoxime",
+    "epitt_no": null,
+    "seccion": "actualizacion_producto",
+    "fecha_reunion": "26-29 October 2026",
+    "referencia": "EMA/PRAC/237906/2026",
+    "fecha_publicacion": "2026-11-23",
+    "url_pdf": "https://www.ema.europa.eu/en/documents/prac-recommendation/prac-recommendations-signals-adopted-26-29-october-2026-prac-meeting_en.pdf",
+    "dedupe_key": "93f77661bd0d869d8a1c27210d026ef9"
+  },
+  {
+    "molecula": "Human normal immunoglobulin",
+    "senal": "Batch-associated hypersensitivity reactions",
+    "epitt_no": "20318",
+    "seccion": "tabla",
+    "fecha_reunion": "26-29 October 2026",
+    "referencia": "EMA/PRAC/237906/2026",
+    "fecha_publicacion": "2026-11-23",
+    "url_pdf": "https://www.ema.europa.eu/en/documents/prac-recommendation/prac-recommendations-signals-adopted-26-29-october-2026-prac-meeting_en.pdf",
+    "dedupe_key": "ba9251aa4ba39af5b7eabe03c6354fc8"
+  },
+  {
+    "molecula": "Oseltamivir; intravenous zanamivir",
+    "senal": "New information on safety in patients critically ill with influenza",
+    "epitt_no": "20299",
+    "seccion": "tabla",
+    "fecha_reunion": "26-29 October 2026",
+    "referencia": "EMA/PRAC/237906/2026",
+    "fecha_publicacion": "2026-11-23",
+    "url_pdf": "https://www.ema.europa.eu/en/documents/prac-recommendation/prac-recommendations-signals-adopted-26-29-october-2026-prac-meeting_en.pdf",
+    "dedupe_key": "c832f7e061587a8ac81bfde6e18e3099"
+  },
+  {
     "molecula": "Binimetinib; encorafenib",
     "senal": "Neutropenia, febrile neutropenia",
     "epitt_no": null,
