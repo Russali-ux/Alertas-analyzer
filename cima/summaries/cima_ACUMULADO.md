@@ -1,7 +1,7 @@
 # ConkoSafe IA — Cambios en Ficha Técnica y Prospecto (CIMA / AEMPS)
 
-**Generado:** 25/11/2026 22:45 UTC  
-**Periodo:** 23/06/2026 → 25/11/2026 (últimos 155 días)  
+**Generado:** 26/11/2026 22:37 UTC  
+**Periodo:** 23/06/2026 → 26/11/2026 (últimos 156 días)  
 **Fuente:** [CIMA — AEMPS (registroCambios)](https://cima.aemps.es/cima/rest/registroCambios)
 
 ## Resumen
@@ -9,21 +9,21 @@
 | Categoría | Cantidad |
 |---|---:|
 | Solo Ficha Técnica | 2067 |
-| Solo Prospecto | 3046 |
-| FT + Prospecto (ambos) | 9426 |
-| **TOTAL con FT o Prospecto** | **14539** |
+| Solo Prospecto | 3125 |
+| FT + Prospecto (ambos) | 9427 |
+| **TOTAL con FT o Prospecto** | **14619** |
 
 Descarga del detalle completo: `ConkosafeIA_Regulatorio_ACUMULADO.xlsx`
 
 ### Top laboratorios
 
-- Teva Gmbh — 664 cambio(s)
-- Laboratorios Cinfa S.A. — 652 cambio(s)
+- Teva Gmbh — 723 cambio(s)
+- Laboratorios Cinfa S.A. — 653 cambio(s)
 - Laboratorios Normon S.A. — 600 cambio(s)
 - Teva Pharma S.L.U. — 521 cambio(s)
 - Laboratorio Stada S.L. — 494 cambio(s)
 - Sandoz Farmaceutica S.A. — 476 cambio(s)
-- Kern Pharma S.L. — 402 cambio(s)
+- Kern Pharma S.L. — 406 cambio(s)
 - Laboratorios Alter S.A. — 305 cambio(s)
 - Aurovitas Spain, S.A.U. — 304 cambio(s)
 - Tarbis Farma S.L. — 273 cambio(s)
@@ -32,6 +32,86 @@ Descarga del detalle completo: `ConkosafeIA_Regulatorio_ACUMULADO.xlsx`
 
 | Nº Registro | Medicamento | Laboratorio | Fecha | Tipo | Cambio | Enlaces |
 |---|---|---|---|---|---|---|
+| 80042 | TADALAFILO TEVA-RATIOPHARM 10 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Teva Gmbh | 26/11/2026 07:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/80042/P_80042.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/80042/P_80042.html) |
+| 80044 | TADALAFILO TEVA-RATIOPHARM 5 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Teva Gmbh | 26/11/2026 07:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/80044/P_80044.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/80044/P_80044.html) |
+| 80045 | TADALAFILO TEVA-RATIOPHARM 20 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Teva Gmbh | 26/11/2026 07:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/80045/P_80045.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/80045/P_80045.html) |
+| 85818 | RIVAROXABAN TEVA 10 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Teva Gmbh | 26/11/2026 07:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/85818/P_85818.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/85818/P_85818.html) |
+| 85819 | RIVAROXABAN TEVA 15 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Teva Gmbh | 26/11/2026 07:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/85819/P_85819.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/85819/P_85819.html) |
+| 85820 | RIVAROXABAN TEVA 20 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Teva Gmbh | 26/11/2026 07:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/85820/P_85820.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/85820/P_85820.html) |
+| 85821 | RIVAROXABAN TEVA 2,5 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Teva Gmbh | 26/11/2026 07:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/85821/P_85821.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/85821/P_85821.html) |
+| 91373 | RIVAROXABAN TEVAGEN 10 MG COMPRIMIDOS RECUBIERTOS CON PELÍCULA EFG | Teva Gmbh | 26/11/2026 07:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/91373/P_91373.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91373/P_91373.html) |
+| 91374 | RIVAROXABAN TEVAGEN 15 MG COMPRIMIDOS RECUBIERTOS CON PELÍCULA EFG | Teva Gmbh | 26/11/2026 07:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/91374/P_91374.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91374/P_91374.html) |
+| 91375 | RIVAROXABAN TEVAGEN 20 MG COMPRIMIDOS RECUBIERTOS CON PELÍCULA EFG | Teva Gmbh | 26/11/2026 07:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/91375/P_91375.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91375/P_91375.html) |
+| 91376 | RIVAROXABAN TEVAGEN 2,5 MG COMPRIMIDOS RECUBIERTOS CON PELÍCULA EFG | Teva Gmbh | 26/11/2026 07:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/91376/P_91376.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/91376/P_91376.html) |
+| 70307 | OLFEN 140 MG APOSITOS ADHESIVOS MEDICAMENTOSOS | Teva Gmbh | 26/11/2026 07:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/70307/P_70307.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/70307/P_70307.html) |
+| 77974 | MOMETASONA FUROATO TEVA 50 MICROGRAMOS SUSPENSION PARA PULVERIZACION NASAL | Teva Gmbh | 26/11/2026 07:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/77974/P_77974.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/77974/P_77974.html) |
+| 89947 | MIRABEGRON TEVA 50 MG COMPRIMIDOS DE LIBERACION PROLONGADA EFG | Teva Gmbh | 26/11/2026 07:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/89947/P_89947.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/89947/P_89947.html) |
+| 73875 | LACIDIPINO TEVA 4 mg COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Teva Gmbh | 26/11/2026 07:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/73875/P_73875.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/73875/P_73875.html) |
+| 83336 | IVABRADINA TEVA GROUP 5 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Teva B.V. | 26/11/2026 07:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/83336/P_83336.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/83336/P_83336.html) |
+| 83375 | IVABRADINA TEVA GROUP 7,5 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Teva B.V. | 26/11/2026 07:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/83375/P_83375.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/83375/P_83375.html) |
+| 71698 | LERCANIDIPINO TEVA-RATIOPHARM 10 mg COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Teva Gmbh | 26/11/2026 07:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/71698/P_71698.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/71698/P_71698.html) |
+| 71699 | LERCANIDIPINO TEVA-RATIOPHARM 20 mg COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Teva Gmbh | 26/11/2026 07:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/71699/P_71699.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/71699/P_71699.html) |
+| 64443 | FLUOXETINA TEVA-RATIOPHARM 20 mg COMPRIMIDOS DISPERSABLES EFG | Teva Gmbh | 26/11/2026 07:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/64443/P_64443.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/64443/P_64443.html) |
+| 68558 | FENTANILO MATRIX RATIOPHARM 25 microgramos/HORA PARCHES TRANSDERMICOS EFG | Teva Gmbh | 26/11/2026 07:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/68558/P_68558.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/68558/P_68558.html) |
+| 68559 | FENTANILO MATRIX RATIOPHARM 50 microgramos/HORA PARCHES TRANSDERMICOS EFG | Teva Gmbh | 26/11/2026 07:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/68559/P_68559.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/68559/P_68559.html) |
+| 68560 | FENTANILO MATRIX RATIOPHARM 75 microgramos/HORA PARCHES TRANSDERMICOS EFG | Teva Gmbh | 26/11/2026 07:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/68560/P_68560.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/68560/P_68560.html) |
+| 68561 | FENTANILO MATRIX RATIOPHARM 100 microgramos/HORA PARCHES TRANSDERMICOS EFG | Teva Gmbh | 26/11/2026 07:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/68561/P_68561.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/68561/P_68561.html) |
+| 70041 | FENTANILO MATRIX RATIOPHARM 12 microgramos/HORA PARCHES TRANSDERMICOS EFG | Teva Gmbh | 26/11/2026 07:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/70041/P_70041.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/70041/P_70041.html) |
+| 82940 | EZETIMIBA/SIMVASTATINA TEVA-RATIO 10 MG/20 MG COMPRIMIDOS EFG | Teva Gmbh | 26/11/2026 07:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/82940/P_82940.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/82940/P_82940.html) |
+| 82941 | EZETIMIBA/SIMVASTATINA TEVA-RATIO 10 MG/40 MG COMPRIMIDOS EFG | Teva Gmbh | 26/11/2026 07:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/82941/P_82941.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/82941/P_82941.html) |
+| 86449 | FESOTERODINA TEVA 4 MG COMPRIMIDOS DE LIBERACION PROLONGADA EFG | Teva B.V. | 26/11/2026 07:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/86449/P_86449.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/86449/P_86449.html) |
+| 86450 | FESOTERODINA TEVA 8 MG COMPRIMIDOS DE LIBERACION PROLONGADA EFG | Teva B.V. | 26/11/2026 07:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/86450/P_86450.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/86450/P_86450.html) |
+| 89165 | FUMARATO DE DIMETILO TEVAGEN 120 MG CÁPSULAS DURAS GASTRORRESISTENTES EFG | Teva Gmbh | 26/11/2026 07:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/89165/P_89165.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/89165/P_89165.html) |
+| 89166 | FUMARATO DE DIMETILO TEVAGEN 240 MG CÁPSULAS DURAS GASTRORRESISTENTES EFG | Teva Gmbh | 26/11/2026 07:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/89166/P_89166.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/89166/P_89166.html) |
+| 66338 | DOXAZOSINA NEO TEVA-RATIOPHARM 4 mg COMPRIMIDOS DE LIBERACION PROLONGADA EFG | Teva Gmbh | 26/11/2026 07:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/66338/P_66338.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/66338/P_66338.html) |
+| 74978 | DOXAZOSINA NEO TEVA-RATIOPHARM 8 MG COMPRIMIDOS DE LIBERACION PROLONGADA EFG | Teva Gmbh | 26/11/2026 07:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/74978/P_74978.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/74978/P_74978.html) |
+| 84026 | DRONEDARONA TEVA 400 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Teva B.V. | 26/11/2026 07:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/84026/P_84026.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/84026/P_84026.html) |
+| 64054 | ENALAPRIL/HIDROCLOROTIAZIDA TEVA-RATIOPHARM 20 mg/ 12, 5 mg COMPRIMIDOS EFG | Teva Gmbh | 26/11/2026 07:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/64054/P_64054.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/64054/P_64054.html) |
+| 65983 | COPAXONE 20 mg/ml SOLUCION INYECTABLE EN JERINGA PRECARGADA | Teva Gmbh | 26/11/2026 07:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/65983/P_65983.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/65983/P_65983.html) |
+| 77324 | EPLERENONA TEVA-RATIO 25 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Teva Gmbh | 26/11/2026 07:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/77324/P_77324.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/77324/P_77324.html) |
+| 77325 | EPLERENONA TEVA-RATIO 50 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Teva Gmbh | 26/11/2026 07:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/77325/P_77325.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/77325/P_77325.html) |
+| 79707 | ENALAPRIL/LERCANIDIPINO TEVA-RATIOPHARM 10 MG/10 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Teva Gmbh | 26/11/2026 07:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/79707/P_79707.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/79707/P_79707.html) |
+| 79727 | ENALAPRIL/LERCANIDIPINO TEVA-RATIOPHARM 20 MG/10 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Teva Gmbh | 26/11/2026 07:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/79727/P_79727.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/79727/P_79727.html) |
+| 79786 | ETORICOXIB KERN PHARMA 30 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Kern Pharma S.L. | 26/11/2026 07:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/79786/P_79786.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/79786/P_79786.html) |
+| 79787 | ETORICOXIB KERN PHARMA 60 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Kern Pharma S.L. | 26/11/2026 07:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/79787/P_79787.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/79787/P_79787.html) |
+| 79788 | ETORICOXIB KERN PHARMA 90 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Kern Pharma S.L. | 26/11/2026 07:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/79788/P_79788.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/79788/P_79788.html) |
+| 79789 | ETORICOXIB KERN PHARMA 120 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Kern Pharma S.L. | 26/11/2026 07:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/79789/P_79789.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/79789/P_79789.html) |
+| 83962 | ENALAPRIL/LERCANIDIPINO TEVA-RATIOPHARM 20 MG/20 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Teva Gmbh | 26/11/2026 07:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/83962/P_83962.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/83962/P_83962.html) |
+| 86518 | EZETIMIBA/ATORVASTATINA TEVA 10 MG/10 MG COMPRIMIDOS RECUBIERTOS CON PELICULA | Teva B.V. | 26/11/2026 07:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/86518/P_86518.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/86518/P_86518.html) |
+| 86519 | EZETIMIBA/ATORVASTATINA TEVA 10 MG/20 MG COMPRIMIDOS RECUBIERTOS CON PELICULA | Teva B.V. | 26/11/2026 07:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/86519/P_86519.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/86519/P_86519.html) |
+| 86520 | EZETIMIBA/ATORVASTATINA TEVA 10 MG/40 MG COMPRIMIDOS RECUBIERTOS CON PELICULA | Teva B.V. | 26/11/2026 07:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/86520/P_86520.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/86520/P_86520.html) |
+| 86521 | EZETIMIBA/ATORVASTATINA TEVA 10 MG/80 MG COMPRIMIDOS RECUBIERTOS CON PELICULA | Teva B.V. | 26/11/2026 07:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/86521/P_86521.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/86521/P_86521.html) |
+| 63526 | CAPTOPRIL/HIDROCLOROTIAZIDA TEVA-RATIOPHARM 50/25 mg COMPRIMIDOS EFG | Teva Gmbh | 26/11/2026 07:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/63526/P_63526.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/63526/P_63526.html) |
+| 70655 | CARVEDILOL TEVA-RATIOPHARM 6,25 mg COMPRIMIDOS EFG | Teva Gmbh | 26/11/2026 07:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/70655/P_70655.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/70655/P_70655.html) |
+| 70697 | CARVEDILOL TEVA-RATIOPHARM 25 mg COMPRIMIDOS EFG | Teva Gmbh | 26/11/2026 07:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/70697/P_70697.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/70697/P_70697.html) |
+| 75340 | CANDESARTÁN TEVA-RATIO 8 MG COMPRIMIDOS EFG | Teva Gmbh | 26/11/2026 07:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/75340/P_75340.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/75340/P_75340.html) |
+| 75341 | CANDESARTÁN TEVA-RATIO 16 MG COMPRIMIDOS EFG | Teva Gmbh | 26/11/2026 07:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/75341/P_75341.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/75341/P_75341.html) |
+| 75342 | CANDESARTÁN TEVA-RATIO 32 MG COMPRIMIDOS EFG | Teva Gmbh | 26/11/2026 07:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/75342/P_75342.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/75342/P_75342.html) |
+| 75760 | CANDESARTAN/HIDROCLOROTIAZIDA TEVA-RATIO 32mg/12,5 mg COMPRIMIDOS EFG | Teva Gmbh | 26/11/2026 07:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/75760/P_75760.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/75760/P_75760.html) |
+| 75761 | CANDESARTAN/HIDROCLOROTIAZIDA TEVA-RATIO 32mg/25 mg COMPRIMIDOS EFG | Teva Gmbh | 26/11/2026 07:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/75761/P_75761.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/75761/P_75761.html) |
+| 76319 | CANDESARTAN /HIDROCLOROTIAZIDA TEVA-RATIO 16/12,5 mg COMPRIMIDOS EFG | Teva Gmbh | 26/11/2026 07:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/76319/P_76319.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/76319/P_76319.html) |
+| 76322 | CANDESARTAN /HIDROCLOROTIAZIDA TEVA-RATIO 8/12,5 mg COMPRIMIDOS EFG | Teva Gmbh | 26/11/2026 07:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/76322/P_76322.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/76322/P_76322.html) |
+| 78331 | CIQORIN 100 MG CAPSULAS BLANDAS EFG | Teva Gmbh | 26/11/2026 07:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/78331/P_78331.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/78331/P_78331.html) |
+| 78332 | CIQORIN 25 MG CAPSULAS BLANDAS EFG | Teva Gmbh | 26/11/2026 07:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/78332/P_78332.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/78332/P_78332.html) |
+| 78333 | CIQORIN 50 MG CAPSULAS BLANDAS EFG | Teva Gmbh | 26/11/2026 07:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/78333/P_78333.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/78333/P_78333.html) |
+| 63517 | BISOPROLOL TEVA-RATIOPHARM 10 mg COMPRIMIDOS EFG | Teva Gmbh | 26/11/2026 07:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/63517/P_63517.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/63517/P_63517.html) |
+| 63518 | BISOPROLOL TEVA-RATIOPHARM 5 mg COMPRIMIDOS EFG | Teva Gmbh | 26/11/2026 07:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/63518/P_63518.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/63518/P_63518.html) |
+| 69669 | CABERGOLINA TEVA 0,5 mg COMPRIMIDOS EFG | Teva Gmbh | 26/11/2026 07:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/69669/P_69669.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/69669/P_69669.html) |
+| 69686 | CABERGOLINA TEVA 2 mg COMPRIMIDOS EFG | Teva Gmbh | 26/11/2026 07:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/69686/P_69686.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/69686/P_69686.html) |
+| 69687 | CABERGOLINA TEVA 1 mg COMPRIMIDOS EFG | Teva Gmbh | 26/11/2026 07:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/69687/P_69687.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/69687/P_69687.html) |
+| 74325 | ACIDO IBANDRONICO TEVA-RATIOPHARM 150 mg COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Teva Gmbh | 26/11/2026 07:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/74325/P_74325.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/74325/P_74325.html) |
+| 78794 | ACIDO ALENDRONICO/COLECALCIFEROL TEVAGEN 70 mg/2.800 UI COMPRIMIDOS | Teva Gmbh | 26/11/2026 07:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/78794/P_78794.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/78794/P_78794.html) |
+| 78795 | ACIDO ALENDRONICO/COLECALCIFEROL TEVAGEN 70 MG/5.600 UI COMPRIMIDOS | Teva Gmbh | 26/11/2026 07:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/78795/P_78795.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/78795/P_78795.html) |
+| 83408 | BISOPROLOL TEVA-RATIOPHARM 2,5 MG COMPRIMIDOS EFG | Teva Gmbh | 26/11/2026 07:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/83408/P_83408.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/83408/P_83408.html) |
+| 83642 | AMLODIPINO/VALSARTAN MACLEODS 10 MG/160 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Macleods Pharma Espana S.L.U. | 26/11/2026 07:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/83642/P_83642.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/83642/P_83642.html) |
+| 83643 | AMLODIPINO/VALSARTAN MACLEODS 5 MG/160 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Macleods Pharma Espana S.L.U. | 26/11/2026 07:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/83643/P_83643.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/83643/P_83643.html) |
+| 85353 | AMLODIPINO/VALSARTAN/HIDROCLOROTIAZIDA TEVA 10 MG/320 MG/25 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Teva B.V. | 26/11/2026 07:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/85353/P_85353.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/85353/P_85353.html) |
+| 87089 | BARNIDIPINO TEVA 10 MG CAPSULAS DURAS DE LIBERACION MODIFICADA EFG | Teva B.V. | 26/11/2026 07:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/87089/P_87089.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/87089/P_87089.html) |
+| 87090 | BARNIDIPINO TEVA 20 MG CAPSULAS DURAS DE LIBERACION MODIFICADA EFG | Teva B.V. | 26/11/2026 07:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/87090/P_87090.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/87090/P_87090.html) |
+| 89789 | APREMILAST TEVA 30 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Teva B.V. | 26/11/2026 07:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/89789/P_89789.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/89789/P_89789.html) |
+| 89790 | APREMILAST TEVA 10 MG + 20 MG + 30 MG COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Teva B.V. | 26/11/2026 07:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/89790/P_89790.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/89790/P_89790.html) |
+| 79515 | COPAXONE 40 MG/ML SOLUCION INYECTABLE EN JERINGA PRECARGADA | Teva Gmbh | 26/11/2026 07:55 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/79515/P_79515.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/79515/P_79515.html) |
+| 76226 | AIACET 75 MICROGRAMOS COMPRIMIDOS RECUBIERTOS CON PELICULA EFG | Laboratorios Cinfa S.A. | 26/11/2026 07:55 | MODIFICADO | FT + Prospecto | [FT-PDF](https://cima.aemps.es/cima/pdfs/ft/76226/FT_76226.pdf) · [FT-HTML](https://cima.aemps.es/cima/dochtml/ft/76226/FT_76226.html) · [P-PDF](https://cima.aemps.es/cima/pdfs/p/76226/P_76226.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/76226/P_76226.html) |
 | 80450 | ZONISAMIDA TEVA 100 MG CAPSULAS DURAS EFG | Teva Gmbh | 25/11/2026 07:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/80450/P_80450.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/80450/P_80450.html) |
 | 80452 | ZONISAMIDA TEVA 50 MG CAPSULAS DURAS EFG | Teva Gmbh | 25/11/2026 07:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/80452/P_80452.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/80452/P_80452.html) |
 | 83995 | VILDAGLIPTINA TEVA 50 MG COMPRIMIDOS EFG | Teva B.V. | 25/11/2026 07:56 | MODIFICADO | Prospecto | [P-PDF](https://cima.aemps.es/cima/pdfs/p/83995/P_83995.pdf) · [P-HTML](https://cima.aemps.es/cima/dochtml/p/83995/P_83995.html) |
